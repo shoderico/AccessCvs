@@ -6,12 +6,14 @@
 #include <QSettings>
 #include <QFileInfo>
 #include <QMessageBox>
-
+//#include <QSysInfo>
 
 AddInFactory::AddInFactory(const QUuid &app, const QUuid &lib)
     : QAxFactory(app, lib)
     , m_className( QLatin1String("AddInMain") )
-    , m_regisryPath( QLatin1String("HKEY_CURRENT_USER\\Software\\Microsoft\\Office\\Access\\Addins") )
+//  , m_registryRoot( QLatin1String("HKEY_LOCAL_MACHINE\\SOFTWARE") )
+    , m_registryRoot( QLatin1String("HKEY_CURRENT_USER\\Software") )
+    , m_registryPath( QLatin1String("\\Microsoft\\Office\\Access\\Addins") )
 {
 }
 
@@ -81,6 +83,40 @@ void AddInFactory::registerClass(const QString &key, QSettings *settings) const
 {
     Q_UNUSED(settings)
 
+    registerClassInternal(key, ws32bit);
+    //if ( is64bit() ) registerClassInternal(key, ws64bit);
+}
+
+void AddInFactory::unregisterClass(const QString &key, QSettings *settings) const
+{
+    Q_UNUSED(settings)
+
+    unregisterClassInternal(key, ws32bit);
+    //if ( is64bit() ) unregisterClassInternal(key, ws64bit);
+}
+
+QString AddInFactory::progID() const
+{
+    return QFileInfo( serverFilePath() ).baseName() + "." + m_className;
+}
+
+bool AddInFactory::is64bit() const
+{
+    QScopedPointer<QSettings> stRoot( new QSettings(m_registryRoot, QSettings::NativeFormat));
+    return stRoot->contains("Wow6432Node");
+}
+
+QString AddInFactory::registryPath(AddInFactory::WordSize ws) const
+{
+    QString path = m_registryRoot;
+    if (ws == ws64bit)
+        path += "\\Wow6432Node";
+    path += m_registryPath;
+    return path;
+}
+
+void AddInFactory::registerClassInternal(const QString &key, AddInFactory::WordSize ws) const
+{
     //[HKEY_CURRENT_USER\Software\Microsoft\Office\Outlook\Addins\SampleAddIn.AddInIFace]
     //"FriendlyName"="Sample Add-in"
     //"Description"="Sample Outlook Add-In"
@@ -88,7 +124,7 @@ void AddInFactory::registerClass(const QString &key, QSettings *settings) const
 
     if ( key == m_className )
     {
-        QScopedPointer<QSettings> st( new QSettings(m_regisryPath, QSettings::NativeFormat));
+        QScopedPointer<QSettings> st( new QSettings( registryPath(ws) , QSettings::NativeFormat));
         st->setValue("/" + progID() + "/LoadBehavior",      3);
         st->setValue("/" + progID() + "/CommandLineSafe",   0);
         st->setValue("/" + progID() + "/FriendlyName",      QString("FriendlyName"));
@@ -96,20 +132,13 @@ void AddInFactory::registerClass(const QString &key, QSettings *settings) const
     }
 }
 
-void AddInFactory::unregisterClass(const QString &key, QSettings *settings) const
+void AddInFactory::unregisterClassInternal(const QString &key, AddInFactory::WordSize ws) const
 {
-    Q_UNUSED(settings)
-
     if ( key == m_className )
     {
-        QScopedPointer<QSettings> st( new QSettings(m_regisryPath, QSettings::NativeFormat));
+        QScopedPointer<QSettings> st( new QSettings( registryPath(ws) , QSettings::NativeFormat));
         st->remove("/" + progID());
     }
-}
-
-QString AddInFactory::progID() const
-{
-    return QFileInfo( serverFilePath() ).baseName() + "." + m_className;
 }
 
 QAXFACTORY_EXPORT(AddInFactory, "{27e3bd9e-2ee3-41ba-a69d-61f510fda820}", "{18bf0f9a-c557-4324-b5d8-f4077561a87e}")

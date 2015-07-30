@@ -20,8 +20,15 @@ public:
 
 private:
     QString m_className;
-    QString m_regisryPath;
+    QString m_registryRoot;
+    QString m_registryPath;
     QString progID() const;
+
+    enum WordSize { ws32bit, ws64bit };
+    bool is64bit() const;
+    QString registryPath(WordSize ws) const;
+    void registerClassInternal(const QString &key, WordSize ws) const;
+    void unregisterClassInternal(const QString &key, WordSize ws) const;
 };
 
 
