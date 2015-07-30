@@ -10,7 +10,7 @@ namespace Model {
 enum ObjectType
 {
     Unknwon,
-    Table,
+    TableDef,
     Query,
     Form,
     Report,

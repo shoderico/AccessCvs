@@ -42,7 +42,9 @@ SOURCES += \
     model/objectmodel.cpp \
     view/checkboxitemdelegete.cpp \
     util/comptr.cpp \
-    util/getcomobject.cpp
+    util/getcomobject.cpp \
+    model/objectsetting.cpp \
+    model/projectsetting.cpp
 
 HEADERS +=\
     addin/msaddndr.h \
@@ -63,7 +65,9 @@ HEADERS +=\
     util/comptr.h \
     officelib/officelib.h \
     util/getcomobject.h \
-    accesscvs_global.h
+    accesscvs_global.h \
+    model/objectsetting.h \
+    model/projectsetting.h
 
 DISTFILES += \
     addin/addin.def \

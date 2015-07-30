@@ -15,7 +15,7 @@ ObjectItem *ObjectItem::fromTableDef(DAO::TableDef *tableDef, QObject *parent)
 {
     ObjectItem *item = new ObjectItem(parent);
 
-    item->setObjectType( Model::Table );
+    item->setObjectType( Model::TableDef );
     item->setName( tableDef->Name() );
     item->setInProject( true );
     item->setCreateDate( tableDef->DateCreated().toDateTime() );

@@ -15,12 +15,15 @@
 
 #include "util/getcomobject.h"
 
+#include "projectsetting.h"
+#include "objectsetting.h"
+
 
 ObjectModel::ObjectModel(QObject * parent)
     : QAbstractItemModel(parent)
     , m_application(0)
 {
-    m_mapItems.insert( Model::Table,  QMap< QString, ObjectItem* >() );
+    m_mapItems.insert( Model::TableDef,  QMap< QString, ObjectItem* >() );
     m_mapItems.insert( Model::Query,  QMap< QString, ObjectItem* >() );
     m_mapItems.insert( Model::Form,   QMap< QString, ObjectItem* >() );
     m_mapItems.insert( Model::Report, QMap< QString, ObjectItem* >() );
@@ -90,7 +93,6 @@ QVariant ObjectModel::data(const QModelIndex &index, int role) const
 
     if (role == Qt::SizeHintRole)
     {
-
     }
     if (role == Qt::DisplayRole || role == Qt::EditRole)
     {
@@ -121,7 +123,7 @@ QVariant ObjectModel::data(const QModelIndex &index, int role) const
         // return QIcon
         QIcon iconTable( ":ui/images/table.png" );
         switch (item->objectType()) {
-        case Model::Table: return QIcon( ":ui/images/table.png" );
+        case Model::TableDef: return QIcon( ":ui/images/table.png" );
         case Model::Query: return QIcon( ":ui/images/table_multiple.png" );
         case Model::Form: return QIcon( ":ui/images/application_form.png" );
         case Model::Report: return QIcon( ":ui/images/report.png" );
@@ -177,20 +179,24 @@ void ObjectModel::loadFromProject()
 
     ComPtr<DAO::Database> currentDb = m_application->CurrentDb();
     ComPtr<Access::CurrentProject> currentProject = m_application->CurrentProject();
-    int projectType = -1;
 
-    if ( currentProject.is() )
-        projectType = currentProject->ProjectType();
+    ProjectSetting setting(this);
+    ObjectSetting *os;
+
+    setting.initialize(m_application);
+
 
     //------------------------------------------------------------------------------------------
     // TableDef
-    if ( projectType == Access::acMDB )
+    if ( setting.isMDB() )
     {
+        os = setting[ Model::TableDef ];
+
         ComPtr<DAO::TableDefs> tableDefs = currentDb->TableDefs();
-        for (int i = 0 ; i < tableDefs->Count() ; ++i )
+        for ( int i = 0 ; i < tableDefs->Count() ; ++i )
         {
             ComPtr<DAO::TableDef> tableDef = tableDefs->Item(i);
-            if ( !tableDef->Name().startsWith("MSys") && tableDef->Connect().isEmpty() )
+            if ( os->isTargetObject( tableDef.ptr() ) )
             {
                 items << ObjectItem::fromTableDef(tableDef.ptr(), this);
             }
@@ -203,13 +209,15 @@ void ObjectModel::loadFromProject()
 
     //------------------------------------------------------------------------------------------
     // Query
-    if ( projectType == Access::acMDB )
+    if ( setting.isMDB() )
     {
+        os = setting[ Model::Query ];
+
         ComPtr<DAO::QueryDefs> queryDefs = currentDb->QueryDefs();
-        for (int i = 0 ; i < queryDefs->Count() ; ++i )
+        for ( int i = 0 ; i < queryDefs->Count() ; ++i )
         {
             ComPtr<DAO::QueryDef> queryDef = queryDefs->Item(i);
-            if ( !queryDef->Name().startsWith("~") && queryDef->Connect().isEmpty() )
+            if ( os->isTargetObject( queryDef.ptr() ) )
             {
                 items << ObjectItem::fromQueryDef(queryDef.ptr(), this);
             }
@@ -218,39 +226,24 @@ void ObjectModel::loadFromProject()
 
     //------------------------------------------------------------------------------------------
     // Form, Report, Macro, Module
-    if ( projectType == Access::acMDB )
+    if ( setting.isMDB() )
     {
+        QList<Model::ObjectType> objectTypes;
+        objectTypes << Model::Form << Model::Report << Model::Macro << Model::Module;
 
         ComPtr<DAO::Containers> containers = currentDb->Containers();
 
-        QStringList containerNames;
-        containerNames << "Forms" << "Reports" << "Scripts" << "Modules";
-        foreach ( QString containerName, containerNames )
+        foreach ( Model::ObjectType objectType, objectTypes )
         {
-            ComPtr<DAO::Container> container = containers->Item( containerName );
+            os = setting[ objectType ];
+
+            ComPtr<DAO::Container> container = containers->Item( os->containerName() );
             ComPtr<DAO::Documents> documents = container->Documents();
             for (int i = 0 ; i < documents->Count() ; ++i )
             {
                 ComPtr<DAO::Document> document = documents->Item(i);
-                if ( !document->Name().startsWith("~") )
+                if ( os->isTargetObject( document.ptr() ) )
                 {
-                    Model::ObjectType objectType = Model::Unknwon;
-                    if ( containerName == "Forms" )
-                    {
-                        objectType = Model::Form;
-                    }
-                    else if ( containerName == "Reports" )
-                    {
-                        objectType = Model::Report;
-                    }
-                    else if ( containerName == "Scripts" )
-                    {
-                        objectType = Model::Macro;
-                    }
-                    else if ( containerName == "Modules" )
-                    {
-                        objectType = Model::Module;
-                    }
                     items << ObjectItem::fromDAODocument(objectType, document.ptr(), this);
                 }
             }
@@ -258,57 +251,61 @@ void ObjectModel::loadFromProject()
     }
     //------------------------------------------------------------------------------------------
     // Form
-    if ( projectType == Access::acADP )
+    if ( setting.isADP() )
     {
+        os = setting[ Model::Form ];
         ComPtr<Access::AllForms> objects = currentProject->AllForms();
         for ( int i = 0 ; i < objects->Count() ; ++i )
         {
             ComPtr<Access::AccessObject> object = objects->Item( i );
-            if ( !object->Name().startsWith("~") )
+            if ( os->isTargetObject( object.ptr() ) )
             {
-                items << ObjectItem::fromAccessObject(Model::Form, object.ptr(), this);
+                items << ObjectItem::fromAccessObject(os->objectType(), object.ptr(), this);
             }
         }
     }
     //------------------------------------------------------------------------------------------
     // Report
-    if ( projectType == Access::acADP )
+    if ( setting.isADP() )
     {
+        os = setting[ Model::Report ];
         ComPtr<Access::AllReports> objects = currentProject->AllReports();
         for ( int i = 0 ; i < objects->Count() ; ++i )
         {
             ComPtr<Access::AccessObject> object = objects->Item( i );
-            if ( !object->Name().startsWith("~") )
+            if ( os->isTargetObject( object.ptr() ) )
             {
-                items << ObjectItem::fromAccessObject(Model::Report, object.ptr(), this);
+                items << ObjectItem::fromAccessObject(os->objectType(), object.ptr(), this);
             }
         }
     }
     //------------------------------------------------------------------------------------------
     // Macro
-    if ( projectType == Access::acADP )
+    if ( setting.isADP() )
     {
+        os = setting[ Model::Macro ];
         ComPtr<Access::AllMacros> objects = currentProject->AllMacros();
         for ( int i = 0 ; i < objects->Count() ; ++i )
         {
             ComPtr<Access::AccessObject> object = objects->Item( i );
-            if ( !object->Name().startsWith("~") )
+            if ( os->isTargetObject( object.ptr() ) )
             {
-                items << ObjectItem::fromAccessObject(Model::Macro, object.ptr(), this);
+                items << ObjectItem::fromAccessObject(os->objectType(), object.ptr(), this);
             }
         }
     }
     //------------------------------------------------------------------------------------------
     // Module
-    if ( projectType == Access::acADP )
+    if ( setting.isADP() )
     {
+        os = setting[ Model::Module ];
         ComPtr<Access::AllModules> objects = currentProject->AllModules();
         for ( int i = 0 ; i < objects->Count() ; ++i )
         {
             ComPtr<Access::AccessObject> object = objects->Item( i );
-            if ( !object->Name().startsWith("~") )
+            if ( os->isTargetObject( object.ptr() ) )
             {
-                items << ObjectItem::fromAccessObject(Model::Module, object.ptr(), this);
+                items << ObjectItem::fromAccessObject(os->objectType(), object.ptr(), this);
             }
         }
     }
@@ -316,6 +313,10 @@ void ObjectModel::loadFromProject()
     //------------------------------------------------------------------------------------------
     // Reference
 
+
+
+    //------------------------------------------------------------------------------------------
+    // reset items
     int first  = 0;
     int last = std::max<int>( m_items.count() - 1 , items.count() - 1 );
     if ( last < 0)
@@ -343,108 +344,57 @@ void ObjectModel::loadFromFileSystem()
     if (!currentProject.is())
         return;
 
-    QDir sourceDir;
-    sourceDir.setPath( currentProject->Path() + "\\source2" );
+    ProjectSetting setting(this);
+    ObjectSetting *os;
+    setting.initialize(m_application);
+
+
+    QDir sourceDir( setting.sourcePath() );
 
     if (!sourceDir.exists())
         return;
 
     //------------------------------------------------------------------------------------------
     // TableDef
+    //------------------------------------------------------------------------------------------
+    // Query
+    //------------------------------------------------------------------------------------------
+    // Form
+    //------------------------------------------------------------------------------------------
+    // Report
+    //------------------------------------------------------------------------------------------
+    // Macro
+    //------------------------------------------------------------------------------------------
+    // Module
     {
-        QDir objectDir( sourceDir.absolutePath() + "\\tabledefs" );
-        if (objectDir.exists())
+        QList<Model::ObjectType> objectTypes;
+        objectTypes << Model::TableDef << Model::Query << Model::Form << Model::Report << Model::Macro << Model::Module;
+
+        foreach ( Model::ObjectType objectType, objectTypes )
         {
-            objectDir.setNameFilters( (QStringList() << ("*" + QString(".xml"))) );
-            QFileInfoList files = objectDir.entryInfoList( QDir::Files );
-            foreach( QFileInfo fi, files)
+            os = setting[ objectType ];
+
+            QDir objectDir( os->sourceObjectPath() );
+            if (objectDir.exists())
             {
-                addItem( ObjectItem::fromFileInfo( Model::Table, fi, this) );
+                objectDir.setNameFilters( (QStringList() << ("*." + os->existCheckExtension() ) ) );
+                QFileInfoList fileInfos = objectDir.entryInfoList( QDir::Files );
+                foreach ( QFileInfo fileInfo, fileInfos )
+                {
+                    addItem( ObjectItem::fromFileInfo( os->objectType(), fileInfo, this) );
+                }
             }
         }
     }
+
     //------------------------------------------------------------------------------------------
     // TableData
     //------------------------------------------------------------------------------------------
     // Relation
-
-    //------------------------------------------------------------------------------------------
-    // Query
-    {
-        QDir objectDir( sourceDir.absolutePath() + "\\queries" );
-        if (objectDir.exists())
-        {
-            objectDir.setNameFilters( (QStringList() << ("*" + QString(".sql"))) );
-            QFileInfoList files = objectDir.entryInfoList( QDir::Files );
-            foreach( QFileInfo fi, files)
-            {
-                addItem( ObjectItem::fromFileInfo( Model::Query, fi, this) );
-            }
-        }
-    }
-
-    //------------------------------------------------------------------------------------------
-    // Form
-    {
-        QDir objectDir( sourceDir.absolutePath() + "\\forms" );
-        if (objectDir.exists())
-        {
-            objectDir.setNameFilters( (QStringList() << ("*" + QString(".frm"))) );
-            QFileInfoList files = objectDir.entryInfoList( QDir::Files );
-            foreach( QFileInfo fi, files)
-            {
-                addItem( ObjectItem::fromFileInfo( Model::Form, fi, this) );
-            }
-        }
-    }
-
-    //------------------------------------------------------------------------------------------
-    // Report
-    {
-        QDir objectDir( sourceDir.absolutePath() + "\\reports" );
-        if (objectDir.exists())
-        {
-            objectDir.setNameFilters( (QStringList() << ("*" + QString(".rpt"))) );
-            QFileInfoList files = objectDir.entryInfoList( QDir::Files );
-            foreach( QFileInfo fi, files)
-            {
-                addItem( ObjectItem::fromFileInfo( Model::Report, fi, this) );
-            }
-        }
-    }
-
-    //------------------------------------------------------------------------------------------
-    // Macro
-    {
-        QDir objectDir( sourceDir.absolutePath() + "\\macros" );
-        if (objectDir.exists())
-        {
-            objectDir.setNameFilters( (QStringList() << ("*" + QString(".mcr"))) );
-            QFileInfoList files = objectDir.entryInfoList( QDir::Files );
-            foreach( QFileInfo fi, files)
-            {
-                addItem( ObjectItem::fromFileInfo( Model::Macro, fi, this) );
-            }
-        }
-    }
-
-    //------------------------------------------------------------------------------------------
-    // Module
-    {
-        QDir objectDir( sourceDir.absolutePath() + "\\modules" );
-        if (objectDir.exists())
-        {
-            objectDir.setNameFilters( (QStringList() << ("*" + QString(".bas"))) );
-            QFileInfoList files = objectDir.entryInfoList( QDir::Files );
-            foreach( QFileInfo fi, files)
-            {
-                addItem( ObjectItem::fromFileInfo( Model::Module, fi, this) );
-            }
-        }
-    }
-
     //------------------------------------------------------------------------------------------
     // Reference
+
+
 
     endResetModel();
 
@@ -471,6 +421,11 @@ void ObjectModel::exportToTempDir()
     //      for objects existing in ProjectOnly
     // without sanitizing and any extra processes.
 
+    // we know the target object types and names.
+    QMap< Model::ObjectType, QMap<QString, ObjectItem*> > allTargets;
+
+    // TODO: build up allTargets from m_items
+
 
     QTime time;
     QTime timeTotal;
@@ -478,161 +433,86 @@ void ObjectModel::exportToTempDir()
     timeTotal.start();
     time.start();
 
+    ProjectSetting setting(this);
+    ObjectSetting *os;
+
+    setting.initialize(m_application);
+
+
+
     ProcessData processData;// = {0};
     SubProcessData subProcessData;// = {0};
     Q_UNUSED(subProcessData);
 
     emit processStart(processData);
 
-    time.start();
-    QString appVersion = m_application->Version();
-    QString appName = m_application->Name();
+
     ComPtr<Access::CurrentProject> currentProject  = m_application->CurrentProject();
     ComPtr<DAO::Database> currentDb = m_application->CurrentDb();
-
     if ( !currentProject.is() )
     {
         QMessageBox::information(0, QString(""), QString("currentProject is null"));
         return;
     }
-    int projectType         = currentProject->ProjectType();
-    QString projectFullName = currentProject->FullName();
-    QString projectPath     = currentProject->Path();
-
-    if ( projectType == Access::acMDB && !currentDb.is() )
+    if ( setting.isMDB() && !currentDb.is() )
     {
         QMessageBox::information(0, QString(""), QString("projectType is null"));
         return;
     }
 
-    qDebug() << appName << appVersion;
-    qDebug() << projectFullName << projectType;
-    qDebug() << "Preparation : " << time.elapsed();
 
-
-    QDir tempSourceDir( currentProject->Path() + "\\source_temp"  );
+    //------------------------------------------------------------------------------------------
+    // clear temp path
+    QDir tempSourceDir( setting.tempPath() );
     tempSourceDir.rmdir("");
     tempSourceDir.mkpath("");
 
-    struct ObjectSetting
-    {
-        int objectType;
-        QDir sourceDir;
-        QString objectPathName;
-        QString containerName;
-        QString tempFileExtension;
-        QString designFileExtension;
-        QString moduleFileExtension;
-
-        QString tempFile(const QString &objectName) {
-            return objectPath() + "\\" + objectName + "." + tempFileExtension;
-        }
-        QString designFile(const QString &objectName) {
-            return objectPath() + "\\" + objectName + "." + designFileExtension;
-        }
-        void mkdirObjectPath() {
-            sourceDir.mkpath( objectPathName );
-        }
-        void saveToFile(const QString &contents, const QString &filePath) {
-            bool withBOM = false;
-            QTextCodec *codecDst = QTextCodec::codecForName("UTF-8");
-
-            QFile fileDst( filePath );
-            if ( fileDst.exists() )
-                fileDst.remove();
-
-            fileDst.open(QIODevice::WriteOnly);
-
-            QTextStream stDst( &fileDst );
-            stDst.setCodec( codecDst );
-            stDst.setGenerateByteOrderMark( withBOM );
-
-            stDst << contents;
-
-            fileDst.close();
-        }
-        QString objectPath() {
-            QString path = sourceDir.absolutePath();
-            if ( !objectPathName.isEmpty() )
-                path += "\\" + objectPathName;
-            return path;
-        }
-    };
-
-    ObjectSetting objectSettings[] = {
-        { Access::acTable,  tempSourceDir, "tabledefs", "",        "tmp","xml","" },
-        { Access::acQuery,  tempSourceDir, "queries",   "",        "tmp","sql","" },
-        { Access::acForm,   tempSourceDir, "forms",     "Forms",   "tmp","frm","bas" },
-        { Access::acReport, tempSourceDir, "reports",   "Reports", "tmp","rpt","bas" },
-        { Access::acMacro,  tempSourceDir, "macros",    "Scripts", "tmp","mcr","" },
-        { Access::acModule, tempSourceDir, "modules",   "Modules", "tmp","bas","" },
-        { -1,               tempSourceDir, "",          "",        "tmp","csv","" }
-    };
-    ObjectSetting *os;
 
 
     //------------------------------------------------------------------------------------------
     // TableDef
-    time.start();
-    if ( projectType == Access::acMDB )
+    if ( setting.isMDB() )
     {
-        os = &objectSettings[ 0 ];
+        time.start();
 
-        os->mkdirObjectPath();
+        os = setting[ Model::TableDef ];
+        os->mkdirTempObjectPath();
 
-        ComPtr<DAO::TableDefs> tableDefs = currentDb->TableDefs();
-        int nCount = tableDefs->Count();
+        QMap<QString, ObjectItem*> targets = allTargets[ os->objectType() ];
+        QStringList objectNames = targets.keys();
 
+        int nCount = objectNames.count(); int nPos = 0;
         emit subProcessStart(processData, { nCount, 0 } );
 
-        for ( int i = 0 ; i < nCount ; ++i )
+        ComPtr<DAO::TableDefs> tableDefs = currentDb->TableDefs();
+        foreach ( QString objectName, objectNames )
         {
-            emit subProcessProgess(processData,  { nCount, i + 1 } );
-
-            ComPtr<DAO::TableDef> tableDef = tableDefs->Item(i);
-            QString objectName   = tableDef->Name();
-            QString connect      = tableDef->Connect();
-            if ( !objectName.startsWith("~") && !objectName.startsWith("MSys"))
-            {
-                if (connect.isEmpty())
-                {
-                    // Local Table
-
-                    // Xml Export
-
-                    // this makes force termination...
-                    //m_application->ExportXML(
-                    //            Access::acExportTable
-                    //            ,objectName
-                    //            ,QString() // DataTarget
-                    //            ,os->tempFile(objectName) // SchemaTarget
-                    //            ,QString() //PresentationTarget
-                    //            ,QString() //ImageTarget
-                    //            ,Access::acUTF16 //Encoding
-                    //            ,Access::acExportAllTableAndFieldProperties //OtherFlags
-                    //            ,QString() //WhereCondition
-                    //            ,QVariant()//AdditionalData
-                    //            );
-
-                    //pTableDef->Indexes()->Item(0)
-
-
-                }
-                else
-                {
-                    // TODO:
-                    // Link Table
-                }
-            }
+            emit subProcessProgess(processData,  { nCount, ++nPos } );
             QApplication::processEvents();
-        }
 
+            //------------------------------------------------------------------------------------------
+            // Export Local Table
+            ComPtr<DAO::TableDef> tableDef = tableDefs->Item( objectName );
+            // this makes force termination...
+            //m_application->ExportXML(
+            //            Access::acExportTable
+            //            ,objectName
+            //            ,QString() // DataTarget
+            //            ,os->tempFile(objectName) // SchemaTarget
+            //            ,QString() //PresentationTarget
+            //            ,QString() //ImageTarget
+            //            ,Access::acUTF16 //Encoding
+            //            ,Access::acExportAllTableAndFieldProperties //OtherFlags
+            //            ,QString() //WhereCondition
+            //            ,QVariant()//AdditionalData
+            //            );
+        }
         emit subProcessEnd(processData, { nCount, nCount } );
         qDebug() << "TableDefs : " << nCount << " : " << time.elapsed();
     }
     //------------------------------------------------------------------------------------------
     // TableData
-    if ( projectType == Access::acMDB )
+    if ( setting.isMDB() )
     {
         // TODO:
         // determine target table names
@@ -645,7 +525,7 @@ void ObjectModel::exportToTempDir()
     }
     //------------------------------------------------------------------------------------------
     // Relation
-    if ( projectType == Access::acMDB )
+    if ( setting.isMDB() )
     {
         // TODO:
     }
@@ -653,39 +533,30 @@ void ObjectModel::exportToTempDir()
 
     //------------------------------------------------------------------------------------------
     // Query
-    time.start();
-    if ( projectType == Access::acMDB )
+    if ( setting.isMDB() )
     {
-        os = &objectSettings[ 1 ];
+        time.start();
 
-        os->mkdirObjectPath();
+        os = setting[ Model::Query ];
+        os->mkdirTempObjectPath();
 
-        ComPtr<DAO::QueryDefs> queryDefs = currentDb->QueryDefs();
-        int nCount = queryDefs->Count();
+        QMap<QString, ObjectItem*> targets = allTargets[ os->objectType() ];
+        QStringList objectNames = targets.keys();
+
+        int nCount = objectNames.count(); int nPos = 0;
         emit subProcessStart(processData, { nCount, 0 } );
 
-        for ( int i = 0 ; i < nCount ; ++i )
+        ComPtr<DAO::QueryDefs> queryDefs = currentDb->QueryDefs();
+        foreach ( QString objectName, objectNames )
         {
-            emit subProcessProgess(processData,  { nCount, i + 1 } );
-            ComPtr<DAO::QueryDef> queryDef = queryDefs->Item(i);
-            QString objectName = queryDef->Name();
-            if ( !objectName.startsWith("~"))
-            {
-                // Access Export
-                if (false)
-                {
-                    //pApplication->dynamicCall("SaveAsText(const int,const QString&,const QString&)", os->objectType, objectName, os->tempFile(objectName) );
-                    //sanitizer.localToUtf8( os->tempFile(objectName), os->designFile(objectName));
-                }
-
-                // Export as SQL
-                if (true)
-                {
-                    QString sql = queryDef->SQL();
-                    os->saveToFile( sql, os->designFile(objectName) );
-                }
-            }
+            emit subProcessProgess(processData,  { nCount, ++nPos } );
             QApplication::processEvents();
+
+            //------------------------------------------------------------------------------------------
+            // Export Query as SQL
+            ComPtr<DAO::QueryDef> queryDef = queryDefs->Item( objectName );
+            QString sql = queryDef->SQL();
+            os->saveToFile( sql, os->designFileInTempPath(objectName) );
         }
         emit subProcessEnd(processData, { nCount, nCount } );
         qDebug() << "Queries : " << nCount << " : " << time.elapsed();
@@ -694,64 +565,60 @@ void ObjectModel::exportToTempDir()
 
     //------------------------------------------------------------------------------------------
     // Form, Report, Macro, Module
-    if ( projectType == Access::acMDB )
+    if ( setting.isMDB() || setting.isADP() )
     {
-        ComPtr<DAO::Containers> containers = currentDb->Containers();
+        QList<Model::ObjectType> objectTypes;
+        objectTypes << Model::Form << Model::Report << Model::Macro << Model::Module;
 
-        time.start();
-        foreach ( int index, (QList<int>() << 2 << 3 << 4 << 5 ) )
+        foreach ( Model::ObjectType objectType, objectTypes )
         {
-            os = &objectSettings[ index ];
+            time.start();
 
-            os->mkdirObjectPath();
+            os = setting[ objectType ];
+            os->mkdirTempObjectPath();
 
-            ComPtr<DAO::Container> container = containers->Item( os->containerName );
-            ComPtr<DAO::Documents> documents = container->Documents();
+            QMap<QString, ObjectItem*> targets = allTargets[ os->objectType() ];
+            QStringList objectNames = targets.keys();
 
-            int nCount = documents->Count();
+            int nCount = objectNames.count(); int nPos = 0;
             emit subProcessStart(processData, { nCount, 0 } );
 
-            for ( int i = 0 ; i < nCount ; ++i )
+            foreach ( QString objectName, objectNames )
             {
-                emit subProcessProgess(processData,  { nCount, i + 1 } );
-                ComPtr<DAO::Document> document = documents->Item(i);
-
-                QString objectName = document->Name();
-                if ( !objectName.startsWith("~") )
-                {
-                    m_application->SaveAsText( (Access::AcObjectType)os->objectType, objectName, os->tempFile(objectName) );
-                }
+                emit subProcessProgess(processData,  { nCount, ++nPos } );
                 QApplication::processEvents();
+
+                //------------------------------------------------------------------------------------------
+                // Export Object as Text
+                m_application->SaveAsText( (Access::AcObjectType)os->accessObjectType(), objectName, os->tempFileInTempPath(objectName) );
             }
             emit subProcessEnd(processData, { nCount, nCount } );
-            qDebug() << os->objectPathName << " : " << nCount << " : " << time.elapsed();
+            qDebug() << os->objectPathName() << " : " << nCount << " : " << time.elapsed();
         }
-
-    }
-    //------------------------------------------------------------------------------------------
-    // Form, Report, Macro, Module
-    // TODO:
-    if ( projectType == Access::acADP )
-    {
-
     }
 
     //------------------------------------------------------------------------------------------
     // Reference
-    time.start();
     {
-        QString contents;
-        contents = "";
+        time.start();
+
+        os = setting[ Model::Reference ];
+        os->mkdirTempObjectPath();
 
         ComPtr<Access::References> references = m_application->References();
-        int nCount = references->Count();
+
+        int nCount = references->Count(); int nPos = 0;
         emit subProcessStart(processData, { nCount, 0 } );
 
+        //------------------------------------------------------------------------------------------
+        // Export References as Text
+        QString contents = "";
         for ( int i = 1 ; i <= nCount ; ++i )
         {
-            emit subProcessProgess(processData,  { nCount, i + 1 } );
-            ComPtr<Access::Reference> reference = references->Item(i);
+            emit subProcessProgess(processData,  { nCount, ++nPos } );
+            QApplication::processEvents();
 
+            ComPtr<Access::Reference> reference = references->Item( i );
             bool refBuiltIn = reference->BuiltIn();
             //if ( !refBuiltIn )
             {
@@ -779,21 +646,14 @@ void ObjectModel::exportToTempDir()
                     contents += "\r\n";
                 }
             }
-            QApplication::processEvents();
         }
-
         // write contents to file
-        {
-            os = &objectSettings[ 6 ];
-
-            QString objectName = "references";
-            os->saveToFile(contents, os->designFile(objectName));
-        }
+        QString objectName = "references";
+        os->saveToFile(contents, os->designFileInTempPath(objectName));
 
         emit subProcessEnd(processData, { nCount, nCount } );
         qDebug() << "References : " << nCount << " : " << time.elapsed();
     }
-
 
     emit processEnd(processData);
     qDebug() << "DONE : " << timeTotal.elapsed() ;
