@@ -1,0 +1,63 @@
+// Generated .IDL file (by the OLE/COM Object Viewer)
+// 
+// typelib filename: MSO.DLL
+
+[
+  uuid(2DF8D04C-5BFA-101B-BDE5-00AA0044DE52),
+  version(2.4),
+  helpstring("Microsoft Office 12.0 Object Library"),
+  helpfile("vbaof11.chm"),
+  helpcontext(0x00000001),
+  custom(0F21F359-AB84-41E8-9A78-36D110E6D2F9, "Microsoft.Office.Core.dll")
+
+]
+library Office
+{
+    // TLib :     // TLib : OLE Automation : {00020430-0000-0000-C000-000000000046}
+    importlib("stdole2.tlb");
+	
+    [
+      odl,
+      uuid(000C03A7-0000-0000-C000-000000000046),
+      helpcontext(0x0004e200),
+      dual,
+      oleautomation
+    ]
+    interface IRibbonUI : IDispatch {
+        [id(0x00000001), helpcontext(0x0004e201)]
+        HRESULT Invalidate();
+        [id(0x00000002), helpcontext(0x0004e202)]
+        HRESULT InvalidateControl([in] BSTR ControlID);
+    };
+
+    [
+      odl,
+      uuid(000C0395-0000-0000-C000-000000000046),
+      helpcontext(0x00046500),
+      dual,
+      oleautomation
+    ]
+    interface IRibbonControl : IDispatch {
+        [id(0x00000001), propget, helpcontext(0x00046501)]
+        HRESULT Id([out, retval] BSTR* Id);
+        [id(0x00000002), propget, helpcontext(0x00046502)]
+        HRESULT Context([out, retval] IDispatch** Context);
+        [id(0x00000003), propget, helpcontext(0x00046503)]
+        HRESULT Tag([out, retval] BSTR* Tag);
+    };
+
+    [
+      odl,
+      uuid(000C0396-0000-0000-C000-000000000046),
+      helpcontext(0x000468e8),
+      dual,
+      oleautomation
+    ]
+    interface IRibbonExtensibility : IDispatch {
+        [id(0x00000001), helpcontext(0x000468e9)]
+        HRESULT GetCustomUI(
+                        [in] BSTR RibbonID, 
+                        [out, retval] BSTR* RibbonXml);
+    };
+};
+

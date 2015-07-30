@@ -1,0 +1,26 @@
+Qt付属の dumpcpp.exe を使って、QAx＊＊ベースのクラスファイルを生成する
+
+guid がいる
+
+Access,1,{4AFFC9A0-5F99-101B-AF4E-00AA003F0F07},9,0
+	OK
+
+VBA,1,{000204EF-0000-0000-C000-000000000046},4,0
+	OK
+
+stdole,0,{00020430-0000-0000-C000-000000000046},2,0
+	OK
+
+DAO,0,{4AC9E1DA-5BAD-4AC7-86E3-24F4CDCECA28},12,0
+	OK
+
+ADODB,0,{00000201-0000-0010-8000-00AA006D2EA4},2,1
+	error
+		C:\Program Files\Common Files\System\ado 配下のTLBを指定
+		dumpcpp "C:\Program Files\Common Files\System\ado\msado21.tlb"
+
+VBIDE,{0002E157-0000-0000-C000-000000000046},5,3
+	OK
+
+
+

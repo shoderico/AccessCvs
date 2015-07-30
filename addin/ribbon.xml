@@ -1,0 +1,18 @@
+<customUI xmlns="http://schemas.microsoft.com/office/2006/01/customui">
+    <ribbon>
+        <tabs>
+            <tab id="CustomTab"
+                 label="Custom Tab">
+                <group id="CustomGroup"
+                    label="Custom Group">
+                    <button id="CustomButton"
+                       size="large"
+                       label="Click me!"
+                       onAction="ButtonClicked"
+                       getImage="GetButtonImage"
+                       />
+                </group>
+            </tab>
+        </tabs>
+    </ribbon>
+</customUI>

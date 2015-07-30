@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/ui">
+        <file>images/application_form.png</file>
+        <file>images/page.png</file>
+        <file>images/report.png</file>
+        <file>images/script.png</file>
+        <file>images/table.png</file>
+        <file>images/table_multiple.png</file>
+    </qresource>
+</RCC>
