@@ -18,16 +18,19 @@ void CheckBoxItemDelegete::paint(QPainter *painter, const QStyleOptionViewItem &
     QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
     style->drawControl(QStyle::CE_ItemViewItem, &opt, painter, opt.widget);
 
-    bool data = index.model()->data(index, Qt::DisplayRole).toBool();
+    int data = index.model()->data(index, Qt::DisplayRole).toInt();
     QStyleOptionButton checkboxstyle;
     QRect checkbox_rect = QApplication::style()->subElementRect(QStyle::SE_CheckBoxIndicator, &checkboxstyle);
 
     checkboxstyle.rect = option.rect;
     checkboxstyle.rect.setLeft(option.rect.x() + option.rect.width()/2 - checkbox_rect.width()/2);
-    if(data)
-        checkboxstyle.state = QStyle::State_On | QStyle::State_Enabled;
-    else
-        checkboxstyle.state = QStyle::State_Off | QStyle::State_Enabled;
+    switch (data)
+    {
+        case 0: checkboxstyle.state = QStyle::State_NoChange | QStyle::State_Enabled;   break;
+        case 1: checkboxstyle.state = QStyle::State_On       | QStyle::State_Enabled;   break;
+        case 2: checkboxstyle.state = QStyle::State_Off      | QStyle::State_Enabled;   break;
+    }
+
 
     style->drawControl(QStyle::CE_CheckBox, &checkboxstyle, painter);
 }

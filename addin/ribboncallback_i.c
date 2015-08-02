@@ -18,7 +18,7 @@
 */
 //@@MIDL_FILE_HEADING(  )
 
-#pragma warning( disable: 4049 )  /* more than 64k source lines */
+//#pragma warning( disable: 4049 )  /* more than 64k source lines */
 
 
 #ifdef __cplusplus
@@ -65,7 +65,7 @@ typedef IID CLSID;
 #define MIDL_DEFINE_GUID(type,name,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) \
         const type name = {l,w1,w2,{b1,b2,b3,b4,b5,b6,b7,b8}}
 
-#endif !_MIDL_USE_GUIDDEF_
+#endif // !_MIDL_USE_GUIDDEF_
 
 MIDL_DEFINE_GUID(IID, LIBID_RibbonCallback,0xab935936,0xc2ca,0x4cad,0xac,0xcc,0xfa,0x11,0x4f,0xde,0x9b,0xe6);
 

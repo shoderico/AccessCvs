@@ -14,18 +14,24 @@ class Application;
 
 class ObjectModel;
 
-class IUnknown;
+class IDispatch;
 
 class MainDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit MainDialog(IUnknown *application,  QWidget *parent = 0);
+    explicit MainDialog(IDispatch *application,  QWidget *parent = 0);
     ~MainDialog();
+public slots:
+    void exception(int code, const QString & source, const QString & desc, const QString & help);
+    void	propertyChanged(const QString & name);
+    void	signal(const QString & name, int argc, void * argv);
 
 private slots:
     void exportObjects();
+    void executeExport();
+    void executeImport();
 
     void processStart(ObjectModel::ProcessData progressData);
     void processEnd(ObjectModel::ProcessData progressData);
@@ -35,7 +41,7 @@ private slots:
 
 private:
     Ui::MainDialog *ui;
-    Access::Application *m_pApplication;
+    Access::Application *m_application;
     ObjectModel *m_model;
 };
 

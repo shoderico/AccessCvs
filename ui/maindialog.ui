@@ -34,7 +34,21 @@
        <item>
         <widget class="QPushButton" name="exportButton">
          <property name="text">
-          <string>Export</string>
+          <string>refresh</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="executeExportButton">
+         <property name="text">
+          <string>execute Export</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="executeImportButton">
+         <property name="text">
+          <string>execute Import</string>
          </property>
         </widget>
        </item>

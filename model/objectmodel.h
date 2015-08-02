@@ -4,16 +4,21 @@
 #include <QAbstractItemModel>
 
 #include "objectitem.h"
+#include "objectitems.h"
 
 namespace Access {
 class Application;
 }
+
 
 class ObjectModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
     ObjectModel(QObject * parent = 0);
+
+    //----------------------------------------------------------------------------------------------------------------------
+    // QAbstractItemModel overrides
 
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
@@ -23,9 +28,6 @@ public:
 
     QVariant data(const QModelIndex &index, int role) const;
 
-    // TODO: implement
-    // index()
-    // parent()
     QModelIndex index(int row, int column, const QModelIndex &parent) const;
     QModelIndex parent(const QModelIndex &child) const;
 
@@ -34,39 +36,76 @@ public:
         NameColumn = 0,
         InProjectColumn,
         InFileSystemColumn,
+        DifferentColumn,
         CreateDateColumn,
         UpdateDateColumn,
         ObjectTypeColumn,
         ColumnCount
     };
 
-    // interface for ui
+
+    //----------------------------------------------------------------------------------------------------------------------
+    // interface procedures
+
     void setApplication(Access::Application *application);
 
+    void prepareInit();
+    void prepareClone();
+    void prepareCommit();
+    void prepareMerge();
 
-    // Step-1 :
-    void loadFromProject();     //                                                      : BLOCK
-    void loadFromFileSystem();  //                                                      :
+    bool prepareExport();
+    bool executeExport();
 
-    // Step-2 :
-    void exportToTempDir();     // InBoth           , InProjectOnly ,                   : BLOCK
-    void sanitizeTempDir();     // InBoth           , InProjectOnly ,                   :
-    void checkDiffInTempDir();  // InBoth           ,               ,                   :
-
-
-    // Step-3 Export
-    void copyToFileSystem();    // InBoth:DiffOnly  , InProjectOnly ,                   :
-    void deleteFromFileSystem();//                  ,               , InFileSystemOnly  :
+    bool prepareImport();
+    bool executeImport();
 
 
-    // Step-3 Import
-    void copyToTempDir();       // InBoth:DiffOnly  ,               , InFileSystemOnly  :
-    void desanitizeTempDir();   // InBoth:DiffOnly  ,               , InFileSystemOnly  :
 
-    // Step-4 Import
-    void importFromTempDir();   // InBoth:DiffOnly  ,               , InFileSystemOnly  : BLOCK
-    void deleteFromProject();   //                  , InProjectOnly ,                   : BLOCK
+    //
+    enum ItemsType
+    {
+        AllItems,
+        InBoth,
+        InBoth_Different,
+        InProjectOnly,
+        InFileSystemOnly
+    };
+    void getItems(ObjectItems *pItems, ItemsType itemsType) const;
 
+
+
+
+    //----------------------------------------------------------------------------------------------------------------------
+    // internal procedures
+
+    // load and build-up model-item from object/file
+    void loadFromProject();                                     //                                                      : BLOCK
+    void loadFromFileSystem();                                  //                                                      :
+
+    // import/export object
+    void exportFromProjectToTempDir(ObjectItems *allTargets);   // InBoth           , InProjectOnly ,                   : BLOCK
+    void importFromTempDirToProject(ObjectItems *allTargets);   // InBoth_DiffOnly  ,               , InFileSystemOnly  : BLOCK : Dirty Project
+
+    // copy files between directories
+    void copyFromTempDirToFileSystem(ObjectItems *allTargets);  // InBoth:DiffOnly  , InProjectOnly ,                   :       : Dirty FileSystem
+    void copyFromFileSystemToTempDir(ObjectItems *allTargets);  // InBoth_DiffOnly  ,               , InFileSystemOnly  :
+
+    // sanitize/de-sanitize files
+    void sanitizeTempDir(ObjectItems *allTargets);              // InBoth           , InProjectOnly ,                   :
+    void desanitizeTempDir(ObjectItems *allTargets);            // InBoth_DiffOnly  ,               , InFileSystemOnly  :
+
+    // compare files and update model-item status
+    void compareTempDir(ObjectItems *allTargets);               // InBoth           ,               ,                   :
+
+    // delete object/file
+    void deleteFromFileSystem(ObjectItems *allTargets);         //                  ,               , InFileSystemOnly  :       : Dirty FileSytem
+    void deleteFromProject(ObjectItems *allTargets);            //                  , InProjectOnly ,                   : BLOCK : Dirty Project
+
+
+
+    //----------------------------------------------------------------------------------------------------------------------
+    // progress notification
 
 public:
     struct ProcessData
@@ -80,7 +119,6 @@ public:
         int position;
     };
 
-
 signals:
     void processStart(ObjectModel::ProcessData processData);
     void processEnd(ObjectModel::ProcessData processData);
@@ -88,15 +126,20 @@ signals:
     void subProcessEnd(ObjectModel::ProcessData processData, ObjectModel::SubProcessData subProcessData);
     void subProcessProgess(ObjectModel::ProcessData processData, ObjectModel::SubProcessData subProcessData);
 
+
+
+
+
 private:
     QList<ObjectItem*> m_items;
-    QMap< Model::ObjectType, QMap< QString, ObjectItem* > > m_mapItems;
+    ObjectItems m_mapItems;
     Access::Application *m_application;
 
     void addItem( ObjectItem* item);
+    void clearTempDir();
 };
 
-Q_DECLARE_METATYPE(ObjectModel::ProcessData);
-Q_DECLARE_METATYPE(ObjectModel::SubProcessData);
+Q_DECLARE_METATYPE(ObjectModel::ProcessData)
+Q_DECLARE_METATYPE(ObjectModel::SubProcessData)
 
 #endif // OBJECTMODEL_H

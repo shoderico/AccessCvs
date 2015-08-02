@@ -5,6 +5,7 @@
 #include <QMap>
 
 #include "objectitem.h"
+//#include "util/comptr.h"
 
 class ObjectSetting;
 //#include "objectsetting.h"
@@ -18,8 +19,9 @@ class ProjectSetting : public QObject
     Q_OBJECT
 public:
     explicit ProjectSetting(QObject *parent = 0);
+    ~ProjectSetting();
 
-    void initialize(const Access::Application* application);
+    void initialize(Access::Application* application);
 
     bool isMDB() const;
     bool isADP() const;
@@ -29,8 +31,14 @@ public:
 
     ObjectSetting* operator[](Model::ObjectType objectType);
 
+    Access::Application *application() const;
+
+public slots:
+    void exception(int code, const QString & source, const QString & desc, const QString & help);
+
 private:
     QMap<Model::ObjectType, ObjectSetting*> m_objectSettings;
+    Access::Application *m_application;
     int m_projectType;
     QString m_projectPath;
 

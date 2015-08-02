@@ -44,7 +44,11 @@ SOURCES += \
     util/comptr.cpp \
     util/getcomobject.cpp \
     model/objectsetting.cpp \
-    model/projectsetting.cpp
+    model/projectsetting.cpp \
+    model/objectitems.cpp \
+    util/fileutil.cpp \
+    util/codecinfo.cpp \
+    model/sanitizesetting.cpp
 
 HEADERS +=\
     addin/msaddndr.h \
@@ -67,7 +71,11 @@ HEADERS +=\
     util/getcomobject.h \
     accesscvs_global.h \
     model/objectsetting.h \
-    model/projectsetting.h
+    model/projectsetting.h \
+    model/objectitems.h \
+    util/fileutil.h \
+    util/codecinfo.h \
+    model/sanitizesetting.h
 
 DISTFILES += \
     addin/addin.def \

@@ -26,12 +26,13 @@ public:
         if (m_ptr)
         {
             m_ptr->clear();
+            delete m_ptr;
             m_ptr = 0;
         }
     }
 
     bool is() { return (m_ptr != 0); }
-    T* ptr() { return m_ptr; }
+    T* ptr() const { return m_ptr; }
 
 private:
     T* m_ptr;

@@ -23,12 +23,6 @@ ObjectModel::ObjectModel(QObject * parent)
     : QAbstractItemModel(parent)
     , m_application(0)
 {
-    m_mapItems.insert( Model::TableDef,  QMap< QString, ObjectItem* >() );
-    m_mapItems.insert( Model::Query,  QMap< QString, ObjectItem* >() );
-    m_mapItems.insert( Model::Form,   QMap< QString, ObjectItem* >() );
-    m_mapItems.insert( Model::Report, QMap< QString, ObjectItem* >() );
-    m_mapItems.insert( Model::Macro,  QMap< QString, ObjectItem* >() );
-    m_mapItems.insert( Model::Module, QMap< QString, ObjectItem* >() );
 }
 
 int ObjectModel::columnCount(const QModelIndex &parent) const
@@ -56,12 +50,13 @@ QVariant ObjectModel::headerData(int section, Qt::Orientation orientation, int r
     {
         switch (section)
         {
-        case NameColumn: return tr("Name");
-        case InProjectColumn: return tr("InProject");
-        case InFileSystemColumn: return tr("InRepository");
-        case CreateDateColumn: return tr("CreateDate");
-        case UpdateDateColumn: return tr("UpdateDate");
-        case ObjectTypeColumn: return tr("ObjectType");
+            case NameColumn: return tr("Name");
+            case InProjectColumn: return tr("InProject");
+            case InFileSystemColumn: return tr("InRepository");
+            case CreateDateColumn: return tr("CreateDate");
+            case UpdateDateColumn: return tr("UpdateDate");
+            case ObjectTypeColumn: return tr("ObjectType");
+            case DifferentColumn: return tr("Different");
         }
     }
 
@@ -97,13 +92,13 @@ QVariant ObjectModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole || role == Qt::EditRole)
     {
         switch (index.column()) {
-        case NameColumn:          return item->name();
-        case InProjectColumn:     return item->inProject();
-        case InFileSystemColumn:  return item->inFileSystem();
-        case CreateDateColumn:    return item->createDate();
-        case UpdateDateColumn:    return item->updateDate();
-        case ObjectTypeColumn:    return item->objectType();
-            break;
+            case NameColumn:          return item->name();
+            case InProjectColumn:     return (int)item->inProject();
+            case InFileSystemColumn:  return (int)item->inFileSystem();
+            case CreateDateColumn:    return item->createDate();
+            case UpdateDateColumn:    return item->updateDate();
+            case ObjectTypeColumn:    return item->objectType();
+            case DifferentColumn:    return item->isDifferent();
         default:
             break;
         }
@@ -121,20 +116,20 @@ QVariant ObjectModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DecorationRole && index.column() == NameColumn)
     {
         // return QIcon
-        QIcon iconTable( ":ui/images/table.png" );
-        switch (item->objectType()) {
-        case Model::TableDef: return QIcon( ":ui/images/table.png" );
-        case Model::Query: return QIcon( ":ui/images/table_multiple.png" );
-        case Model::Form: return QIcon( ":ui/images/application_form.png" );
-        case Model::Report: return QIcon( ":ui/images/report.png" );
-        case Model::Macro: return QIcon( ":ui/images/script.png" );
-        case Model::Module: return QIcon( ":ui/images/page.png" );
 
-            break;
+        // TODO: make icon manager
+        switch (item->objectType()) {
+            case Model::TableDef:   return QIcon( ":ui/images/table.png" );
+            case Model::Query:      return QIcon( ":ui/images/table_multiple.png" );
+            case Model::Form:       return QIcon( ":ui/images/application_form.png" );
+            case Model::Report:     return QIcon( ":ui/images/report.png" );
+            case Model::Macro:      return QIcon( ":ui/images/script.png" );
+            case Model::Module:     return QIcon( ":ui/images/page.png" );
+
         default:
             break;
         }
-        return iconTable;
+        return QVariant();
     }
 
     if (role == Qt::CheckStateRole)
@@ -171,6 +166,364 @@ void ObjectModel::setApplication(Access::Application *application)
     m_application = application;
 }
 
+void ObjectModel::prepareInit()
+{
+    //-------------------------------------------------------------------------------------------
+    // `git init <directory>`
+
+    //-------------------------------------------------------------------------------------------
+    // ... prepareCommit()
+    // ... executeCommit()
+
+    //-------------------------------------------------------------------------------------------
+    // ... preparePush()
+    // ... executePush()
+}
+
+void ObjectModel::prepareClone()
+{
+    //-------------------------------------------------------------------------------------------
+    // `git clone <repo-url> <directory>`
+
+    //-------------------------------------------------------------------------------------------
+    // ... openProject()    : done by user
+    // ... createProject()  : done by user
+
+    //-------------------------------------------------------------------------------------------
+    // ... prepareMerge()
+    // ... executeMerge()
+}
+
+void ObjectModel::prepareCommit()
+{
+    //-------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------
+    //:prepare to determine target objects to reflect
+
+    // access save & compile
+    // `git checkout <branch>`              // make sure we are in proper branch
+
+
+    //-------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------
+    //:determine target objects to reflect from Project to FileSytem
+    prepareExport();
+
+    //-------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------
+    //:confirm to reflect from Project to FileSystem
+
+
+    //-------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------
+    //:execute to reflect from Project to FileSystem
+    executeExport();
+
+
+    //-------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------
+    //: and now, we are in git problem
+    //
+
+    //-------------------------------------------------------------------------------------------
+    // `git status --porcelain`             // ... and show status of objects
+    //      MADRCU?!
+
+    //-------------------------------------------------------------------------------------------
+    // `git diff`                           // ... and show diffs in external gui
+
+    //-------------------------------------------------------------------------------------------
+    //                                      // ... and select target objects ( extensions )
+    // for unstaged files :
+    //      `git add <file>`         : will be commit
+    //      `git checkout -- <file>` : discard change in working directory
+    // for staged files :
+    //      `git reset HEAD <file>`  : unstage
+
+    //-------------------------------------------------------------------------------------------
+    //                                      // ... and show commit dialog
+    // `git commit -m <commit message> ...` // ... and enter commit message and `git commit`
+
+
+    //                                      // ... and if user changed from default selection, Merge will be required.
+}
+
+void ObjectModel::prepareMerge()
+{
+    //-------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------
+    //:prepare to determine target objects to be imported
+
+    // `git checkout <branch>`              // make sure we are in proper branch
+    // `git pull`                           // pull recent updates from remote
+
+
+    //-------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------
+    //:determine target objects to be imported
+    prepareImport();
+
+    //-------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------
+    //:confirm
+
+    //-------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------
+    //:execute
+    executeImport();
+
+    //-------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------
+    //:and now we are in access problem
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+bool ObjectModel::prepareExport()
+{
+    //-------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------
+    //:determine target objects to reflect from Project to FileSytem
+
+    // refresh model items
+    loadFromProject();                          //                  : BLOCK :                   :
+    loadFromFileSystem();                       //                  :       :                   :
+
+    clearTempDir();
+
+    // for InProjectOnly
+    {
+        // .
+    }
+
+    // for InFileSytemOnly
+    {
+        // .
+    }
+
+    // for InBoth
+    {
+        ObjectItems targets;
+        getItems(&targets, InBoth);
+
+        exportFromProjectToTempDir(&targets);   // InBoth           : BLOCK :                   :
+        sanitizeTempDir(&targets);              // InBoth           :       :                   :
+        compareTempDir(&targets);               // InBoth           :       :                   :
+        //.
+    }
+
+    return true;
+}
+
+bool ObjectModel::executeExport()
+{
+    //-------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------
+    //:execute to reflect from Project to FileSystem
+
+    // TODO: targets must be selected only
+
+    // for InProjectOnly
+    {
+        ObjectItems targets;
+        getItems(&targets, InProjectOnly);
+        exportFromProjectToTempDir(&targets);       // InProjectOnly    : BLOCK :                   :
+        sanitizeTempDir(&targets);                  // InProjectOnly    :       :                   :
+        copyFromTempDirToFileSystem(&targets);      // InProjectOnly    :       : Dirty FileSystem  : need one-more step? like confirm
+    }
+
+    // for InFileSytemOnly
+    {
+        ObjectItems targets;
+        getItems(&targets, InFileSystemOnly);
+        deleteFromFileSystem(&targets);             // InFileSystemOnly :       : Dirty FileSystem  : need one-more step? like confirm
+    }
+
+    // for InBoth
+    {
+        // for InBoth_Different
+        {
+            ObjectItems targets;
+            getItems(&targets, InBoth_Different);
+            copyFromTempDirToFileSystem(&targets);  // InBoth_Different :       : Dirty FileSystem  : need one-more step? like confirm
+        }
+    }
+
+    return true;
+}
+
+bool ObjectModel::prepareImport()
+{
+    //-------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------
+    //:determine target objects to be imported
+
+    // refresh model items
+    loadFromProject();                          //                  : BLOCK :               :
+    loadFromFileSystem();                       //                  :       :               :
+
+    clearTempDir();
+
+    // for InProjectOnly
+    {
+        //.
+    }
+
+    // for InFileSytemOnly
+    {
+        //.
+    }
+
+    // for InBoth
+    {
+        ObjectItems targets;
+        getItems(&targets, InBoth);
+
+        exportFromProjectToTempDir(&targets);       // InBoth           : BLOCK :               :
+        sanitizeTempDir(&targets);                  // InBoth           :       :               :
+        compareTempDir(&targets);                   // InBoth           :       :               :
+
+        // for InBoth_Different
+        {
+            //.
+        }
+    }
+
+    return true;
+}
+
+bool ObjectModel::executeImport()
+{
+    //-------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------
+    //:execute
+
+    // TODO: targets must be selected only
+
+    // for InProjectOnly
+    {
+        ObjectItems targets;
+        getItems(&targets, InProjectOnly);
+        deleteFromProject(&targets);                // InProjectOnly    : BLOCK : Dirty Project : need one-more step? like confirm
+    }
+
+    // for InFileSytemOnly
+    {
+        ObjectItems targets;
+        getItems(&targets, InFileSystemOnly);
+        copyFromFileSystemToTempDir(&targets);      // InFileSytemOnly  :       :               :
+        desanitizeTempDir(&targets);                // InFileSytemOnly  :       :               :
+        importFromTempDirToProject(&targets);       // InFileSystemOnly : BLOCK : Dirty Project : need one-more step? like confirm
+    }
+
+    // for InBoth
+    {
+        // for InBoth_Different
+        {
+            ObjectItems targets;
+            getItems(&targets, InBoth_Different);
+            copyFromFileSystemToTempDir(&targets);  // InBoth_Different :       :               :
+            desanitizeTempDir(&targets);            // InBoth_Different :       :               :
+            importFromTempDirToProject(&targets);   // InBoth_Different : BLOCK : Dirty Project : need one-more step? like confirm
+        }
+    }
+
+    return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void ObjectModel::getItems(ObjectItems *pItems, ObjectModel::ItemsType itemsType) const
+{
+    foreach ( ObjectItem *item, m_items )
+    {
+        ObjectItem *toBeInserted = NULL;
+        switch (itemsType)
+        {
+            case AllItems:
+            {
+                toBeInserted = item;
+                break;
+            }
+            case InBoth:
+            {
+                if ( item->inProject()    == Model::Present &&
+                     item->inFileSystem() == Model::Present )
+                    toBeInserted = item;
+                break;
+            }
+            case InBoth_Different:
+            {
+                if ( item->inProject()    == Model::Present &&
+                     item->inFileSystem() == Model::Present &&
+                     item->isDifferent()  == Model::DifferentContents )
+                    toBeInserted = item;
+                break;
+            }
+            case InProjectOnly:
+            {
+                if ( item->inProject()    == Model::Present &&
+                     item->inFileSystem() == Model::Absent )
+                    toBeInserted = item;
+                break;
+            }
+            case InFileSystemOnly:
+            {
+                if ( item->inProject()    == Model::Absent &&
+                     item->inFileSystem() == Model::Present )
+                    toBeInserted = item;
+                break;
+            }
+        }
+
+        if (toBeInserted)
+        {
+            (*pItems)[ toBeInserted->objectType() ][ toBeInserted->name() ] = toBeInserted;
+        }
+    }
+
+
+}
+
 
 void ObjectModel::loadFromProject()
 {
@@ -198,7 +551,7 @@ void ObjectModel::loadFromProject()
             ComPtr<DAO::TableDef> tableDef = tableDefs->Item(i);
             if ( os->isTargetObject( tableDef.ptr() ) )
             {
-                items << ObjectItem::fromTableDef(tableDef.ptr(), this);
+                items << os->createItemFromProject(tableDef.ptr(), this);
             }
         }
     }
@@ -219,7 +572,7 @@ void ObjectModel::loadFromProject()
             ComPtr<DAO::QueryDef> queryDef = queryDefs->Item(i);
             if ( os->isTargetObject( queryDef.ptr() ) )
             {
-                items << ObjectItem::fromQueryDef(queryDef.ptr(), this);
+                items << os->createItemFromProject(queryDef.ptr(), this);
             }
         }
     }
@@ -229,7 +582,11 @@ void ObjectModel::loadFromProject()
     if ( setting.isMDB() )
     {
         QList<Model::ObjectType> objectTypes;
-        objectTypes << Model::Form << Model::Report << Model::Macro << Model::Module;
+        objectTypes << Model::Form
+                    << Model::Report
+                    << Model::Macro
+                    << Model::Module
+                       ;
 
         ComPtr<DAO::Containers> containers = currentDb->Containers();
 
@@ -244,7 +601,7 @@ void ObjectModel::loadFromProject()
                 ComPtr<DAO::Document> document = documents->Item(i);
                 if ( os->isTargetObject( document.ptr() ) )
                 {
-                    items << ObjectItem::fromDAODocument(objectType, document.ptr(), this);
+                    items << os->createItemFromProject(document.ptr(), this);
                 }
             }
         }
@@ -260,7 +617,7 @@ void ObjectModel::loadFromProject()
             ComPtr<Access::AccessObject> object = objects->Item( i );
             if ( os->isTargetObject( object.ptr() ) )
             {
-                items << ObjectItem::fromAccessObject(os->objectType(), object.ptr(), this);
+                items << os->createItemFromProject(object.ptr(), this);
             }
         }
     }
@@ -275,7 +632,7 @@ void ObjectModel::loadFromProject()
             ComPtr<Access::AccessObject> object = objects->Item( i );
             if ( os->isTargetObject( object.ptr() ) )
             {
-                items << ObjectItem::fromAccessObject(os->objectType(), object.ptr(), this);
+                items << os->createItemFromProject(object.ptr(), this);
             }
         }
     }
@@ -290,7 +647,7 @@ void ObjectModel::loadFromProject()
             ComPtr<Access::AccessObject> object = objects->Item( i );
             if ( os->isTargetObject( object.ptr() ) )
             {
-                items << ObjectItem::fromAccessObject(os->objectType(), object.ptr(), this);
+                items << os->createItemFromProject(object.ptr(), this);
             }
         }
     }
@@ -305,27 +662,37 @@ void ObjectModel::loadFromProject()
             ComPtr<Access::AccessObject> object = objects->Item( i );
             if ( os->isTargetObject( object.ptr() ) )
             {
-                items << ObjectItem::fromAccessObject(os->objectType(), object.ptr(), this);
+                items << os->createItemFromProject(object.ptr(), this);
             }
         }
     }
 
     //------------------------------------------------------------------------------------------
     // Reference
+    {
+        os = setting[ Model::Reference ];
+        items << os->createItemFromProject(NULL, this);
+    }
 
 
 
     //------------------------------------------------------------------------------------------
     // reset items
-    int first  = 0;
-    int last = std::max<int>( m_items.count() - 1 , items.count() - 1 );
-    if ( last < 0)
-        last = 0;
-    beginInsertRows( QModelIndex(), first, last);
-    qDeleteAll(m_items);
-    m_items.clear();
-    foreach( ObjectItem *item, items)
-        addItem( item );
+    beginRemoveRows( QModelIndex(), 0, m_items.count() - 1 );
+    {
+        qDeleteAll(m_items);
+        m_items.clear();
+
+        foreach (Model::ObjectType t, m_mapItems.keys() )
+            m_mapItems[t].clear();
+    }
+    endRemoveRows();
+
+    beginInsertRows( QModelIndex(), 0, items.count() - 1);
+    {
+        foreach( ObjectItem *item, items)
+            addItem( item );
+    }
     endInsertRows();
 }
 
@@ -333,12 +700,13 @@ void ObjectModel::loadFromFileSystem()
 {
     // load items from local file system.
 
-    beginResetModel();
 
-    foreach ( ObjectItem *item, m_items )
+    beginResetModel();
     {
-        item->setInFileSystem(false);
+        foreach ( ObjectItem *item, m_items )
+            item->setInFileSystem( Model::Absent );
     }
+    endResetModel();
 
     ComPtr<Access::CurrentProject> currentProject = m_application->CurrentProject();
     if (!currentProject.is())
@@ -348,11 +716,11 @@ void ObjectModel::loadFromFileSystem()
     ObjectSetting *os;
     setting.initialize(m_application);
 
-
     QDir sourceDir( setting.sourcePath() );
-
     if (!sourceDir.exists())
         return;
+
+    QList<ObjectItem *> items;
 
     //------------------------------------------------------------------------------------------
     // TableDef
@@ -366,9 +734,18 @@ void ObjectModel::loadFromFileSystem()
     // Macro
     //------------------------------------------------------------------------------------------
     // Module
+    //------------------------------------------------------------------------------------------
+    // Reference
     {
         QList<Model::ObjectType> objectTypes;
-        objectTypes << Model::TableDef << Model::Query << Model::Form << Model::Report << Model::Macro << Model::Module;
+        objectTypes << Model::TableDef
+                    << Model::Query
+                    << Model::Form
+                    << Model::Report
+                    << Model::Macro
+                    << Model::Module
+                    << Model::Reference
+                       ;
 
         foreach ( Model::ObjectType objectType, objectTypes )
         {
@@ -381,7 +758,7 @@ void ObjectModel::loadFromFileSystem()
                 QFileInfoList fileInfos = objectDir.entryInfoList( QDir::Files );
                 foreach ( QFileInfo fileInfo, fileInfos )
                 {
-                    addItem( ObjectItem::fromFileInfo( os->objectType(), fileInfo, this) );
+                    items << os->createItemFromFileSystem(fileInfo, this);
                 }
             }
         }
@@ -391,41 +768,25 @@ void ObjectModel::loadFromFileSystem()
     // TableData
     //------------------------------------------------------------------------------------------
     // Relation
-    //------------------------------------------------------------------------------------------
-    // Reference
 
 
 
+    // update / insert items
+    beginResetModel();
+    {
+        foreach ( ObjectItem *item, items )
+            addItem( item );
+    }
     endResetModel();
-
 }
 
-/*
-QCryptographicHash hash( QCryptographicHash::Sha1 );
-QFile file( fileName );
 
-if ( file.open( QIODevice::ReadOnly ) ) {
-    hash.addData( file.readAll() );
-} else {
-    // Handle "cannot open file" error
-}
-
-// Retrieve the SHA1 signature of the file
-QByteArray sig = hash.result();
-*/
-
-void ObjectModel::exportToTempDir()
+void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
 {
     // export to temp directory
     //      for objects existing in both Project and FileSystem
     //      for objects existing in ProjectOnly
     // without sanitizing and any extra processes.
-
-    // we know the target object types and names.
-    QMap< Model::ObjectType, QMap<QString, ObjectItem*> > allTargets;
-
-    // TODO: build up allTargets from m_items
-
 
     QTime time;
     QTime timeTotal;
@@ -461,13 +822,6 @@ void ObjectModel::exportToTempDir()
     }
 
 
-    //------------------------------------------------------------------------------------------
-    // clear temp path
-    QDir tempSourceDir( setting.tempPath() );
-    tempSourceDir.rmdir("");
-    tempSourceDir.mkpath("");
-
-
 
     //------------------------------------------------------------------------------------------
     // TableDef
@@ -478,7 +832,7 @@ void ObjectModel::exportToTempDir()
         os = setting[ Model::TableDef ];
         os->mkdirTempObjectPath();
 
-        QMap<QString, ObjectItem*> targets = allTargets[ os->objectType() ];
+        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
 
         int nCount = objectNames.count(); int nPos = 0;
@@ -493,43 +847,12 @@ void ObjectModel::exportToTempDir()
             //------------------------------------------------------------------------------------------
             // Export Local Table
             ComPtr<DAO::TableDef> tableDef = tableDefs->Item( objectName );
-            // this makes force termination...
-            //m_application->ExportXML(
-            //            Access::acExportTable
-            //            ,objectName
-            //            ,QString() // DataTarget
-            //            ,os->tempFile(objectName) // SchemaTarget
-            //            ,QString() //PresentationTarget
-            //            ,QString() //ImageTarget
-            //            ,Access::acUTF16 //Encoding
-            //            ,Access::acExportAllTableAndFieldProperties //OtherFlags
-            //            ,QString() //WhereCondition
-            //            ,QVariant()//AdditionalData
-            //            );
+            os->exportFromProjectToTempDir(tableDef.ptr(), objectName);
+
         }
         emit subProcessEnd(processData, { nCount, nCount } );
         qDebug() << "TableDefs : " << nCount << " : " << time.elapsed();
     }
-    //------------------------------------------------------------------------------------------
-    // TableData
-    if ( setting.isMDB() )
-    {
-        // TODO:
-        // determine target table names
-        // import
-            // build select sql with order by
-            // write data as tab-delimited csv with UCS2
-        // export
-            // read one by one..
-
-    }
-    //------------------------------------------------------------------------------------------
-    // Relation
-    if ( setting.isMDB() )
-    {
-        // TODO:
-    }
-
 
     //------------------------------------------------------------------------------------------
     // Query
@@ -540,13 +863,15 @@ void ObjectModel::exportToTempDir()
         os = setting[ Model::Query ];
         os->mkdirTempObjectPath();
 
-        QMap<QString, ObjectItem*> targets = allTargets[ os->objectType() ];
+        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
 
         int nCount = objectNames.count(); int nPos = 0;
         emit subProcessStart(processData, { nCount, 0 } );
 
+        // TODO: universal iteration
         ComPtr<DAO::QueryDefs> queryDefs = currentDb->QueryDefs();
+
         foreach ( QString objectName, objectNames )
         {
             emit subProcessProgess(processData,  { nCount, ++nPos } );
@@ -555,8 +880,7 @@ void ObjectModel::exportToTempDir()
             //------------------------------------------------------------------------------------------
             // Export Query as SQL
             ComPtr<DAO::QueryDef> queryDef = queryDefs->Item( objectName );
-            QString sql = queryDef->SQL();
-            os->saveToFile( sql, os->designFileInTempPath(objectName) );
+            os->exportFromProjectToTempDir(queryDef.ptr(), objectName);
         }
         emit subProcessEnd(processData, { nCount, nCount } );
         qDebug() << "Queries : " << nCount << " : " << time.elapsed();
@@ -565,10 +889,17 @@ void ObjectModel::exportToTempDir()
 
     //------------------------------------------------------------------------------------------
     // Form, Report, Macro, Module
+    //------------------------------------------------------------------------------------------
+    // Reference
     if ( setting.isMDB() || setting.isADP() )
     {
         QList<Model::ObjectType> objectTypes;
-        objectTypes << Model::Form << Model::Report << Model::Macro << Model::Module;
+        objectTypes << Model::Form
+                    << Model::Report
+                    << Model::Macro
+                    << Model::Module
+                    << Model::Reference
+                       ;
 
         foreach ( Model::ObjectType objectType, objectTypes )
         {
@@ -577,7 +908,7 @@ void ObjectModel::exportToTempDir()
             os = setting[ objectType ];
             os->mkdirTempObjectPath();
 
-            QMap<QString, ObjectItem*> targets = allTargets[ os->objectType() ];
+            QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
             QStringList objectNames = targets.keys();
 
             int nCount = objectNames.count(); int nPos = 0;
@@ -590,7 +921,7 @@ void ObjectModel::exportToTempDir()
 
                 //------------------------------------------------------------------------------------------
                 // Export Object as Text
-                m_application->SaveAsText( (Access::AcObjectType)os->accessObjectType(), objectName, os->tempFileInTempPath(objectName) );
+                os->exportFromProjectToTempDir(NULL, objectName);
             }
             emit subProcessEnd(processData, { nCount, nCount } );
             qDebug() << os->objectPathName() << " : " << nCount << " : " << time.elapsed();
@@ -598,77 +929,442 @@ void ObjectModel::exportToTempDir()
     }
 
     //------------------------------------------------------------------------------------------
-    // Reference
+    // TableData
+    if ( setting.isMDB() )
     {
-        time.start();
+        // TODO: implement tabledata export
 
-        os = setting[ Model::Reference ];
-        os->mkdirTempObjectPath();
+        // determine target table names
+        // import
+            // build select sql with order by
+            // write data as tab-delimited csv with UCS2
+        // export
+            // read one by one..
 
-        ComPtr<Access::References> references = m_application->References();
-
-        int nCount = references->Count(); int nPos = 0;
-        emit subProcessStart(processData, { nCount, 0 } );
-
-        //------------------------------------------------------------------------------------------
-        // Export References as Text
-        QString contents = "";
-        for ( int i = 1 ; i <= nCount ; ++i )
-        {
-            emit subProcessProgess(processData,  { nCount, ++nPos } );
-            QApplication::processEvents();
-
-            ComPtr<Access::Reference> reference = references->Item( i );
-            bool refBuiltIn = reference->BuiltIn();
-            //if ( !refBuiltIn )
-            {
-                QString refName = reference->Name();
-                QString refGuid = reference->Guid();
-
-                if ( refGuid.length() > 0 )
-                {
-                    QString refMajor = QString().setNum( reference->Major() );
-                    QString refMinor = QString().setNum( reference->Minor() );
-                    contents += refName;
-                    contents += "," + (refBuiltIn ? QString("1") : QString("0"));
-                    contents += "," + refGuid;
-                    contents += "," + refMajor;
-                    contents += "," + refMinor;
-                    contents += "\r\n";
-                }
-                else
-                {
-                    // references of types mdb,accdb,mde etc don't have a GUID
-                    QString fullPath = reference->FullPath();
-                    contents += refName;
-                    contents += "," + (refBuiltIn ? QString("1") : QString("0"));
-                    contents += "," + fullPath;
-                    contents += "\r\n";
-                }
-            }
-        }
-        // write contents to file
-        QString objectName = "references";
-        os->saveToFile(contents, os->designFileInTempPath(objectName));
-
-        emit subProcessEnd(processData, { nCount, nCount } );
-        qDebug() << "References : " << nCount << " : " << time.elapsed();
     }
+    //------------------------------------------------------------------------------------------
+    // Relation
+    if ( setting.isMDB() )
+    {
+        // TODO: implement relation export
+    }
+
 
     emit processEnd(processData);
     qDebug() << "DONE : " << timeTotal.elapsed() ;
 }
 
+void ObjectModel::importFromTempDirToProject(ObjectItems *allTargets)
+{
+    QTime time;
+    QTime timeTotal;
+    timeTotal.start();
+    time.start();
+
+    ProjectSetting setting(this);
+    ObjectSetting *os;
+
+    setting.initialize(m_application);
+
+
+    // TableDef
+    // TableData
+    // Relation
+    {
+        // TODO: implement import object
+    }
+    // Query
+    if (setting.isMDB())
+    {
+        os = setting[ Model::Query ];
+        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
+        QStringList objectNames = targets.keys();
+
+        int nCount = objectNames.count(); int nPos = 0;
+        Q_UNUSED(nCount)
+        Q_UNUSED(nPos)
+
+        ComPtr<DAO::Database> currentDb = m_application->CurrentDb();
+        ComPtr<DAO::QueryDefs> queryDefs = currentDb->QueryDefs();
+
+        foreach (QString objectName, objectNames)
+        {
+            ObjectItem *item = targets[ objectName ];
+
+            if (item->inProject() == Model::Present)
+            {
+                ComPtr<DAO::QueryDef> queryDef = queryDefs->Item( objectName );
+                os->importFromTempDirToProject(queryDef.ptr(), objectName);
+            }
+            else
+            {
+                os->importFromTempDirToProject(NULL, objectName);
+            }
+        }
+    }
+
+    // Form. Report, Macro, Module, Rerefence
+    {
+        QList<Model::ObjectType> objectTypes;
+        objectTypes << Model::Form
+                    << Model::Report
+                    << Model::Macro
+                    << Model::Module
+                    << Model::Reference
+                    ;
+
+        foreach (Model::ObjectType objectType, objectTypes)
+        {
+            os = setting[ objectType ];
+
+            QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
+            QStringList objectNames = targets.keys();
+
+            int nCount = objectNames.count(); int nPos = 0;
+            Q_UNUSED(nCount)
+            Q_UNUSED(nPos)
+
+            foreach (QString objectName, objectNames)
+            {
+                os->importFromTempDirToProject(NULL, objectName);
+            }
+        }
+    }
+}
+
+void ObjectModel::copyFromTempDirToFileSystem(ObjectItems *allTargets)
+{
+    QTime time;
+    QTime timeTotal;
+    timeTotal.start();
+    time.start();
+
+    ProjectSetting setting(this);
+    ObjectSetting *os;
+
+    setting.initialize(m_application);
+
+    QList<Model::ObjectType> objectTypes;
+    objectTypes << Model::TableDef
+                << Model::Query
+                << Model::Form
+                << Model::Report
+                << Model::Macro
+                << Model::Module
+                << Model::Reference
+                ;
+
+    foreach (Model::ObjectType objectType, objectTypes)
+    {
+        os = setting[ objectType ];
+        os->mkdirSourceObjectPath();
+
+        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
+        QStringList objectNames = targets.keys();
+
+        int nCount = objectNames.count(); int nPos = 0;
+        Q_UNUSED(nCount)
+        Q_UNUSED(nPos)
+
+        foreach (QString objectName, objectNames)
+        {
+            os->copyFromTempDirToFileSystem(objectName);
+        }
+    }
+}
+
+void ObjectModel::copyFromFileSystemToTempDir(ObjectItems *allTargets)
+{
+    QTime time;
+    QTime timeTotal;
+    timeTotal.start();
+    time.start();
+
+    ProjectSetting setting(this);
+    ObjectSetting *os;
+
+    setting.initialize(m_application);
+
+    QList<Model::ObjectType> objectTypes;
+    objectTypes << Model::TableDef
+                << Model::Query
+                << Model::Form
+                << Model::Report
+                << Model::Macro
+                << Model::Module
+                << Model::Reference
+                ;
+
+    foreach (Model::ObjectType objectType, objectTypes)
+    {
+        os = setting[ objectType ];
+
+        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
+        QStringList objectNames = targets.keys();
+
+        int nCount = objectNames.count(); int nPos = 0;
+        Q_UNUSED(nCount)
+        Q_UNUSED(nPos)
+
+        foreach (QString objectName, objectNames)
+        {
+            os->copyFromFileSystemToTempDir(objectName);
+        }
+    }
+
+}
+
+void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
+{
+    QTime time;
+    QTime timeTotal;
+    timeTotal.start();
+    time.start();
+
+    ProjectSetting setting(this);
+    ObjectSetting *os;
+
+    setting.initialize(m_application);
+
+    QList<Model::ObjectType> objectTypes;
+    objectTypes
+                << Model::TableDef
+                << Model::Query
+                << Model::Form
+                << Model::Report
+                << Model::Macro
+                << Model::Module
+                << Model::Reference
+                ;
+
+    foreach (Model::ObjectType objectType, objectTypes)
+    {
+        os = setting[ objectType ];
+
+        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
+        QStringList objectNames = targets.keys();
+
+        int nCount = objectNames.count(); int nPos = 0;
+        Q_UNUSED(nCount)
+        Q_UNUSED(nPos)
+
+        foreach (QString objectName, objectNames)
+        {
+            os->sanitizeTempDir(NULL, objectName);
+        }
+    }
+}
+
+void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
+{
+    QTime time;
+    QTime timeTotal;
+    timeTotal.start();
+    time.start();
+
+    ProjectSetting setting(this);
+    ObjectSetting *os;
+
+    setting.initialize(m_application);
+
+    QList<Model::ObjectType> objectTypes;
+    objectTypes << Model::TableDef
+                << Model::Query
+                << Model::Form
+                << Model::Report
+                << Model::Macro
+                << Model::Module
+                << Model::Reference
+                ;
+
+    foreach (Model::ObjectType objectType, objectTypes)
+    {
+        os = setting[ objectType ];
+
+        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
+        QStringList objectNames = targets.keys();
+
+        int nCount = objectNames.count(); int nPos = 0;
+        Q_UNUSED(nCount)
+        Q_UNUSED(nPos)
+
+        foreach (QString objectName, objectNames)
+        {
+            os->desanitizeTempDir(NULL, objectName);
+        }
+    }
+
+}
+
+void ObjectModel::compareTempDir(ObjectItems *allTargets)
+{
+    QTime time;
+    QTime timeTotal;
+    timeTotal.start();
+    time.start();
+
+    ProjectSetting setting(this);
+    ObjectSetting *os;
+
+    setting.initialize(m_application);
+
+    QList<Model::ObjectType> objectTypes;
+    objectTypes << Model::TableDef
+                << Model::Query
+                << Model::Form
+                << Model::Report
+                << Model::Macro
+                << Model::Module
+                << Model::Reference
+                ;
+
+    foreach (Model::ObjectType objectType, objectTypes)
+    {
+        os = setting[ objectType ];
+
+        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
+        QStringList objectNames = targets.keys();
+
+        int nCount = objectNames.count(); int nPos = 0;
+        Q_UNUSED(nCount)
+        Q_UNUSED(nPos)
+
+        foreach (QString objectName, objectNames)
+        {
+            bool isDifferent = false;
+            os->compareTempDir(objectName, &isDifferent);
+
+            ObjectItem *item = targets[ objectName ];
+            if (isDifferent == true && item->isDifferent() != Model::DifferentContents )
+                item->setDifferent( Model::DifferentContents );
+            else if (isDifferent == false && item->isDifferent() != Model::SameContents )
+                item->setDifferent( Model::SameContents );
+
+        }
+    }
+
+
+    // update items
+    emit dataChanged( createIndex(0, DifferentColumn), createIndex( m_items.count()-1, DifferentColumn ) );
+
+}
+
+void ObjectModel::deleteFromFileSystem(ObjectItems *allTargets)
+{
+    QTime time;
+    QTime timeTotal;
+    timeTotal.start();
+    time.start();
+
+    ProjectSetting setting(this);
+    ObjectSetting *os;
+
+    setting.initialize(m_application);
+
+    QList<Model::ObjectType> objectTypes;
+    objectTypes << Model::TableDef
+                << Model::Query
+                << Model::Form
+                << Model::Report
+                << Model::Macro
+                << Model::Module
+                << Model::Reference
+                ;
+
+    foreach (Model::ObjectType objectType, objectTypes)
+    {
+        os = setting[ objectType ];
+
+        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
+        QStringList objectNames = targets.keys();
+
+        int nCount = objectNames.count(); int nPos = 0;
+        Q_UNUSED(nCount)
+        Q_UNUSED(nPos)
+
+        foreach (QString objectName, objectNames)
+        {
+            os->deleteFromFileSystem(objectName);
+        }
+    }
+}
+
+void ObjectModel::deleteFromProject(ObjectItems *allTargets)
+{
+    QTime time;
+    QTime timeTotal;
+    timeTotal.start();
+    time.start();
+
+    ProjectSetting setting(this);
+    ObjectSetting *os;
+
+    setting.initialize(m_application);
+
+    QList<Model::ObjectType> objectTypes;
+    objectTypes << Model::TableDef
+                << Model::Query
+                << Model::Form
+                << Model::Report
+                << Model::Macro
+                << Model::Module
+                ;
+
+    foreach (Model::ObjectType objectType, objectTypes)
+    {
+        os = setting[ objectType ];
+
+        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
+        QStringList objectNames = targets.keys();
+
+        int nCount = objectNames.count(); int nPos = 0;
+        Q_UNUSED(nCount)
+        Q_UNUSED(nPos)
+
+        foreach (QString objectName, objectNames)
+        {
+            os->deleteFromProject(objectName);
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void ObjectModel::addItem(ObjectItem *item)
 {
+
     if ( m_mapItems[ item->objectType() ].contains( item->name() ) )
     {
         // already exists.
         // so we must merge.
         ObjectItem *itemInList = m_mapItems[ item->objectType() ].value( item->name() );
-        itemInList->setInProject( itemInList->inProject() || item->inProject() );
-        itemInList->setInFileSystem(itemInList->inFileSystem() || item->inFileSystem() );
+
+        //TODO: object existent merge logic must be function.
+
+        itemInList->setInProject(
+                    (itemInList->inProject() == Model::Present || item->inProject() == Model::Present) ? Model::Present :
+                    (itemInList->inProject() == Model::Absent  || item->inProject() == Model::Absent ) ? Model::Absent  :
+                                                                                                         Model::OE_Unchecked );
+        itemInList->setInFileSystem(
+                    (itemInList->inFileSystem() == Model::Present || item->inFileSystem() == Model::Present) ? Model::Present :
+                    (itemInList->inFileSystem() == Model::Absent  || item->inFileSystem() == Model::Absent ) ? Model::Absent  :
+                                                                                                               Model::OE_Unchecked );
+
         itemInList->setCreateDate(   item      ->createDate().isValid() ? item      ->createDate()
                                  : ( itemInList->createDate().isValid() ? itemInList->createDate()
                                  : QDateTime() ) );
@@ -682,6 +1378,19 @@ void ObjectModel::addItem(ObjectItem *item)
     {
         m_items << item;
         m_mapItems[ item->objectType() ].insert( item->name(), item );
+    }
+}
+
+void ObjectModel::clearTempDir()
+{
+    ProjectSetting setting(this);
+    setting.initialize(m_application);
+
+    QDir tempDir( setting.tempPath() );
+    if (tempDir.exists())
+    {
+        tempDir.removeRecursively();
+        tempDir.mkpath(".");
     }
 }
 

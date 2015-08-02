@@ -5,6 +5,9 @@
 
 #include "objectsetting.h"
 
+#include <QAxObject>
+#include <QMessageBox>
+
 ProjectSetting::ProjectSetting(QObject *parent)
     : QObject(parent)
     , m_projectType(-1)
@@ -13,8 +16,8 @@ ProjectSetting::ProjectSetting(QObject *parent)
     m_tempPathName   = "source_temp";
 
     m_objectSettings.insert( Model::TableDef,   new TableDefSetting (this) );
-    m_objectSettings.insert( Model::TableData,  new TableDataSetting(this) );
-    m_objectSettings.insert( Model::Relation,   new RelationSetting (this) );
+//  m_objectSettings.insert( Model::TableData,  new TableDataSetting(this) );
+//  m_objectSettings.insert( Model::Relation,   new RelationSetting (this) );
     m_objectSettings.insert( Model::Query,      new QuerySetting    (this) );
     m_objectSettings.insert( Model::Form,       new FormSetting     (this) );
     m_objectSettings.insert( Model::Report,     new ReportSetting   (this) );
@@ -23,14 +26,27 @@ ProjectSetting::ProjectSetting(QObject *parent)
     m_objectSettings.insert( Model::Reference,  new ReferenceSetting(this) );
 }
 
-void ProjectSetting::initialize(const Access::Application *application)
+ProjectSetting::~ProjectSetting()
 {
+    QList<Model::ObjectType> objectTypes;
+    foreach ( Model::ObjectType objectType, m_objectSettings.keys() )
+    {
+        delete m_objectSettings[ objectType ];
+        m_objectSettings[ objectType ] = NULL;
+    }
+}
+
+void ProjectSetting::initialize(Access::Application *application)
+{
+    m_application = application;
     ComPtr<Access::CurrentProject> currentProject = application->CurrentProject();
     if (currentProject.is())
     {
         m_projectPath = currentProject->Path();
         m_projectType = currentProject->ProjectType();
     }
+
+//   connect( application, SIGNAL(exception(int,QString,QString,QString)), this, SLOT(exception(int,QString,QString,QString)) );
 }
 
 bool ProjectSetting::isMDB() const
@@ -56,5 +72,15 @@ QString ProjectSetting::tempPath() const
 ObjectSetting *ProjectSetting::operator[](Model::ObjectType objectType)
 {
     return m_objectSettings[ objectType ];
+}
+
+Access::Application *ProjectSetting::application() const
+{
+    return m_application;
+}
+
+void ProjectSetting::exception(int code, const QString &source, const QString &desc, const QString &help)
+{
+    QMessageBox::information(0, "", desc);
 }
 
