@@ -280,18 +280,20 @@ bool TableDefSetting::exportFromProjectToTempDir(QAxObject *object, const QStrin
         // TODO: implement tabledef export
 
         // this makes force termination...
-        //m_application->ExportXML(
-        //            Access::acExportTable
-        //            ,objectName
-        //            ,QString() // DataTarget
-        //            ,os->tempFile(objectName) // SchemaTarget
-        //            ,QString() //PresentationTarget
-        //            ,QString() //ImageTarget
-        //            ,Access::acUTF16 //Encoding
-        //            ,Access::acExportAllTableAndFieldProperties //OtherFlags
-        //            ,QString() //WhereCondition
-        //            ,QVariant()//AdditionalData
-        //            );
+        m_projectSetting->application()
+            ->ExportXML(
+                    Access::acExportTable
+                    ,objectName
+                    ,QString() // DataTarget
+                    ,tempFilePathInTempDir(objectName) // SchemaTarget
+                    ,QString() //PresentationTarget
+                    ,QString() //ImageTarget
+                    ,Access::acUTF16 //Encoding
+                    ,Access::acExportAllTableAndFieldProperties //OtherFlags
+                    ,QString() //WhereCondition
+                    ,QVariant()//AdditionalData
+                    );
+
         return true;
     }
     return false;

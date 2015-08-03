@@ -43,6 +43,7 @@ public:
         ColumnCount
     };
 
+    // TODO: split Model and Manager
 
     //----------------------------------------------------------------------------------------------------------------------
     // interface procedures
@@ -54,6 +55,7 @@ public:
     void prepareCommit();
     void prepareMerge();
 
+    // TODO: prepareExport(), prepareImport() replace with refreshItems()
     bool prepareExport();
     bool executeExport();
 
@@ -62,7 +64,7 @@ public:
 
 
 
-    //
+    // items getter
     enum ItemsType
     {
         AllItems,
@@ -71,6 +73,9 @@ public:
         InProjectOnly,
         InFileSystemOnly
     };
+    // TODO: define select-state ( selected, not-select, both)
+    // TODO: extend getItems() to specify select state
+    // TODO: can be non-public ?
     void getItems(ObjectItems *pItems, ItemsType itemsType) const;
 
 
@@ -106,7 +111,7 @@ public:
 
     //----------------------------------------------------------------------------------------------------------------------
     // progress notification
-
+    // TODO: simplify notification (too many slots...). unify arguments (processType, objectType, depth, min, max, value).
 public:
     struct ProcessData
     {
@@ -117,6 +122,27 @@ public:
     {
         int count;
         int position;
+    };
+    enum ProcessType
+    {
+        RefreshProcess,
+        ExportProcess,
+        ImportProcess,
+
+        LoadFromProjectProcess,
+        LoadFromFileSystemProcess,
+
+        ExportFromProcess,
+        ImportFromTempDirProcess,
+
+        CopyFromTempDirProcess,
+        CopyFromFileSystemProcess,
+
+        SanitizeTempDirProcess,
+        DesanitizeTempDirProcess,
+
+        DeleteFromFileSystemProcess,
+        DeleteFromProjectProcess
     };
 
 signals:

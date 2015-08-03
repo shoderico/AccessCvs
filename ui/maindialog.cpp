@@ -137,22 +137,28 @@ void MainDialog::executeImport()
 void MainDialog::processStart(ObjectModel::ProcessData progressData)
 {
 //    QMessageBox::information(this, QString(), QString("MainDialog::processEnd"));
+    ui->progressBar->setRange(0, progressData.count);
     ui->progressBar->setValue(0);
-    ui->progressBar->setMaximum( progressData.count );
+//    ui->progressBar->setMaximum( progressData.count );
 }
 
 void MainDialog::processEnd(ObjectModel::ProcessData progressData)
 {
     Q_UNUSED(progressData);
     ui->progressBar->setValue(0);
+    ui->progressBar->setMaximum(1);
+    ui->progressBar->reset();
 //    QMessageBox::information(this, QString(), QString("MainDialog::processEnd"));
 }
 
 void MainDialog::subProcessStart(ObjectModel::ProcessData progressData, ObjectModel::SubProcessData subProcessData)
 {
     Q_UNUSED(progressData);
+    Q_UNUSED(subProcessData);
+//    ui->progressBar->setValue(0);
+//    ui->progressBar->setMaximum(subProcessData.count);
+    ui->progressBar->setRange(0, subProcessData.count);
     ui->progressBar->setValue(0);
-    ui->progressBar->setMaximum(subProcessData.count);
 }
 
 void MainDialog::subProcessEnd(ObjectModel::ProcessData progressData, ObjectModel::SubProcessData subProcessData)
@@ -160,6 +166,8 @@ void MainDialog::subProcessEnd(ObjectModel::ProcessData progressData, ObjectMode
     Q_UNUSED(progressData);
     Q_UNUSED(subProcessData);
     ui->progressBar->setValue(0);
+    ui->progressBar->setMaximum(1);
+    ui->progressBar->reset();
 //    QMessageBox::information(this, QString(), QString("MainDialog::subProcessEnd"));
 }
 
