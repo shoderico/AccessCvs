@@ -6,7 +6,7 @@
 #include <QFile>
 #include <QTextStream>
 
-#include <QMessageBox>
+#include <QDebug>
 
 #include <QWinWidget>
 
@@ -36,15 +36,14 @@ AddInImpl::AddInImpl(QObject *parent)
     {
         hr = pTypeLib->GetTypeInfoOfGuid( IID_IRibbonCallback, &pTypeInfo );
         if ( !SUCCEEDED( hr ) )
-            QMessageBox::information(0, QString(""), QString("AddInFactory::createObject  GetTypeInfoOfGuid failed"));
+             qCritical() << "GetTypeInfoOfGuid failed";
 
         pTypeLib->Release();
     }
     else
-        QMessageBox::information(0, QString(""), QString("AddInFactory::createObject  LoadTypeLib failed"));
+        qCritical() << "LoadTypeLib failed";
 
     m_pTypeInfo = pTypeInfo;
-
 }
 
 long AddInImpl::queryInterface(const QUuid &iid, void **iface)
@@ -260,7 +259,7 @@ HRESULT AddInImpl::GetCustomUI(BSTR RibbonID, BSTR *RibbonXml)
     QFile file(resource.absoluteFilePath());
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        QMessageBox::information(0, QString(""), QString("AddInImpl::GetCustomUI resource file open error"));
+        qCritical() << "AddInImpl::GetCustomUI resource file open error";
         return E_OUTOFMEMORY;
     }
     QTextStream in( &file );
@@ -306,7 +305,7 @@ HRESULT AddInImpl::GetButtonImage(IDispatch *ribbonControl, IPictureDisp **pictu
     hr = ribbonControl->QueryInterface(IID_IRibbonControl, (void**)&rc);
     if ( FAILED(hr) || !rc )
     {
-        QMessageBox::information(0, QString(""), QString("IRibbonControl is failed "));
+        qCritical() << "IRibbonControl QueryInterface is failed ";
         return hr;
     }
     BSTR bstrControlId = NULL;
