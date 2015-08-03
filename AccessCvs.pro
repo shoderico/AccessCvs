@@ -48,7 +48,8 @@ SOURCES += \
     model/objectitems.cpp \
     util/fileutil.cpp \
     util/codecinfo.cpp \
-    model/sanitizesetting.cpp
+    model/sanitizesetting.cpp \
+    addin/comutil.cpp
 
 HEADERS +=\
     addin/msaddndr.h \
@@ -75,7 +76,8 @@ HEADERS +=\
     model/objectitems.h \
     util/fileutil.h \
     util/codecinfo.h \
-    model/sanitizesetting.h
+    model/sanitizesetting.h \
+    addin/comutil.h
 
 DISTFILES += \
     addin/addin.def \

@@ -7,14 +7,9 @@
 
 #include <QMessageBox>
 
-#include <oleauto.h>
-#include <ocidl.h>
-#include <olectl.h>
-
-#include <QtWin>
 #include <QWinWidget>
 
-
+#include "comutil.h"
 #include "ui/maindialog.h"
 
 
@@ -305,36 +300,11 @@ HRESULT AddInImpl::GetButtonImage(IDispatch *ribbonControl, IPictureDisp **pictu
 
     QString imagePath = ":/addin/";
     if ( controlId == "CustomButton")
-    {
         imagePath += "button.png";
-    }
-    QPixmap pixmap( imagePath );
-    HBITMAP hbm = QtWin::toHBITMAP( pixmap, QtWin::HBitmapAlpha );
 
-
-    IPictureDisp  *pd;
-    PICTDESC pdesc;
-    memset( &pdesc, 0, sizeof(pdesc) );
-    pdesc.cbSizeofstruct = sizeof(pdesc);
-    pdesc.picType = PICTYPE_BITMAP;
-
-    pdesc.bmp.hbitmap = hbm;
-
-    pdesc.bmp.hpal = NULL;
-    hr = OleCreatePictureIndirect( &pdesc, IID_IPicture, TRUE, (void**)&pd );
-    //::DeleteObject(hbm);  // no need to delete object
-
-    if ( FAILED(hr) )
-    {
-        pd = NULL;
-        QMessageBox::information(0, QString(""), QString("ButtonClicked failed "));
-    }
-
+    IPictureDisp  *pd = ComUtil::loadPicture(imagePath);
     if ( pd )
-    {
-        //QMessageBox::information(0, QString(""), QString("ButtonClicked succeed "));
         *picture = pd;
-    }
 
 
    return S_OK;
