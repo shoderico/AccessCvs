@@ -24,6 +24,7 @@ RC_FILE  = addin/addin.rc
 include(../QtSolutions/qtwinmigrate/src/qtwinmigrate.pri)
 
 DEFINES += ACCESSCVS_LIBRARY
+DEFINES += QT_MESSAGELOGCONTEXT
 
 SOURCES += \
     addin/msaddndr_i.c \
@@ -49,7 +50,8 @@ SOURCES += \
     util/fileutil.cpp \
     util/codecinfo.cpp \
     model/sanitizesetting.cpp \
-    addin/comutil.cpp
+    addin/comutil.cpp \
+    util/logfile.cpp
 
 HEADERS +=\
     addin/msaddndr.h \
@@ -77,7 +79,8 @@ HEADERS +=\
     util/fileutil.h \
     util/codecinfo.h \
     model/sanitizesetting.h \
-    addin/comutil.h
+    addin/comutil.h \
+    util/logfile.h
 
 DISTFILES += \
     addin/addin.def \

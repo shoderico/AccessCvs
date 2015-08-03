@@ -7,6 +7,7 @@ class AddInFactory : public QAxFactory
 {
 public:
     AddInFactory(const QUuid &app, const QUuid &lib);
+    ~AddInFactory();
 
     QStringList featureList() const;
     const QMetaObject *metaObject(const QString &key) const;

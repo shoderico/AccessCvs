@@ -1,6 +1,8 @@
 #include "addinfactory.h"
 
 #include "addinmain.h"
+#include "util/logfile.h"
+#include <QDebug>
 
 #include <QSettings>
 #include <QFileInfo>
@@ -12,6 +14,13 @@ AddInFactory::AddInFactory(const QUuid &app, const QUuid &lib)
     , m_registryRoot( QLatin1String("HKEY_CURRENT_USER\\Software") )
     , m_registryPath( QLatin1String("\\Microsoft\\Office\\Access\\Addins") )
 {
+    (void)new LogFile( serverDirPath() + "\\log", "log_", false );
+    qInstallMessageHandler(LogFile::MessageOutput);
+}
+
+AddInFactory::~AddInFactory()
+{
+    delete LogFile::instance();
 }
 
 QStringList AddInFactory::featureList() const
