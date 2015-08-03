@@ -9,5 +9,5 @@ AddInMain::AddInMain(QObject *parent)
 
 QAxAggregated *AddInMain::createAggregate()
 {
-    return new AddInImpl();
+    return new AddInImpl(this);
 }

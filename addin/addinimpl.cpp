@@ -24,7 +24,8 @@
 //_COM_SMARTPTR_TYPEDEF(ITypeInfo, __uuidof(ITypeInfo));
 
 
-AddInImpl::AddInImpl()
+AddInImpl::AddInImpl(QObject *parent)
+    : QObject(parent)
 {
     HRESULT hr;
     ITypeLib *pTypeLib = NULL;

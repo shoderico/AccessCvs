@@ -2,6 +2,7 @@
 #define ADDINIMPL_H
 
 #include <QAxAggregated>
+#include <QObject>
 
 #include "msaddndr.h"
 #include "ribbon.h"
@@ -11,13 +12,15 @@
 //class MainDialog;
 
 class AddInImpl
-        : public QAxAggregated
+        : public QObject
+        , public QAxAggregated
         , public IDTExtensibility2
         , public IRibbonExtensibility
         , public IRibbonCallback
 {
+    Q_OBJECT
 public:
-    AddInImpl();
+    explicit AddInImpl(QObject *parent = 0);
 
     long queryInterface(const QUuid &iid, void **iface);
 
