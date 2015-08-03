@@ -1,7 +1,7 @@
 #include "addinfactory.h"
 
 #include "addinmain.h"
-#include "util/logfile.h"
+#include "logfile.h"
 #include <QDebug>
 
 #include <QSettings>
