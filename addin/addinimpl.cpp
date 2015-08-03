@@ -268,8 +268,8 @@ HRESULT AddInImpl::ButtonClicked(IDispatch *ribbonControl)
     //QMessageBox::information(0, QString(""), QString("ButtonClicked"));
     Q_UNUSED(ribbonControl);
 
-
-    Access::Application application( m_pApplication );
+    Access::_Application *applicationCoClass = new Access::_Application(m_pApplication);
+    Access::Application application( applicationCoClass );
     QWinWidget winWidget( (HWND)application.hWndAccessApp() );
     winWidget.showCentered();
 
