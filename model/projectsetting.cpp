@@ -6,7 +6,7 @@
 #include "objectsetting.h"
 
 #include <QAxObject>
-#include <QMessageBox>
+#include <QDebug>
 
 ProjectSetting::ProjectSetting(QObject *parent)
     : QObject(parent)
@@ -46,7 +46,6 @@ void ProjectSetting::initialize(Access::Application *application)
         m_projectType = currentProject->ProjectType();
     }
 
-//   connect( application, SIGNAL(exception(int,QString,QString,QString)), this, SLOT(exception(int,QString,QString,QString)) );
 }
 
 bool ProjectSetting::isMDB() const
@@ -81,6 +80,8 @@ Access::Application *ProjectSetting::application() const
 
 void ProjectSetting::exception(int code, const QString &source, const QString &desc, const QString &help)
 {
-    QMessageBox::information(0, "", desc);
+    // whatever connect() succeed, never called exception().
+    //connect( application, SIGNAL(exception(int,QString,QString,QString)), this, SLOT(exception(int,QString,QString,QString)) );
+    qDebug() << code << source << desc << help;
 }
 
