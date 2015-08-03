@@ -3,6 +3,8 @@
 
 #include <QObject>
 
+#include <QFileInfo>
+
 #include "objectitem.h"
 
 class ProjectSetting;

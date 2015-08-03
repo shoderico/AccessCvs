@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QString>
 #include <QDateTime>
-#include <QFileInfo>
 
 namespace Model {
 enum ObjectType
@@ -53,16 +52,6 @@ enum ObjectDifference
     SameContents = 2
 };
 
-}
-
-namespace Access {
-class AccessObject;
-}
-
-namespace DAO {
-class TableDef;
-class QueryDef;
-class Document;
 }
 
 class ObjectItem : public QObject
@@ -142,12 +131,6 @@ public:
     Model::GitStatus gitStatusInWorkTree() const { return m_gitStatusInWorkTree; }
     void setGitStatusInWorkTree(const Model::GitStatus status) { m_gitStatusInWorkTree = status; }
 
-
-//    static ObjectItem *fromTableDef(DAO::TableDef* tableDef, QObject *parent = 0);
-//    static ObjectItem *fromQueryDef(DAO::QueryDef* queryDef, QObject *parent = 0);
-//    static ObjectItem *fromAccessObject(Model::ObjectType objectType, Access::AccessObject* accessObject, QObject *parent = 0);
-//    static ObjectItem *fromDAODocument(Model::ObjectType objectType, DAO::Document* daoDocument, QObject *parent = 0);
-//    static ObjectItem *fromFileInfo(Model::ObjectType objectType, QFileInfo &fileInfo, QObject *parent = 0);
 
 protected:
     QString     m_name;
