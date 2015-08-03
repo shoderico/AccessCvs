@@ -8,7 +8,6 @@
 #include <QApplication>
 #include <QThread>
 #include <QDebug>
-#include <QMessageBox>
 
 #include "officelib/officelib.h"
 #include "util/comptr.h"
@@ -812,12 +811,12 @@ void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
     ComPtr<DAO::Database> currentDb = m_application->CurrentDb();
     if ( !currentProject.is() )
     {
-        QMessageBox::information(0, QString(""), QString("currentProject is null"));
+        qDebug() << "currentProject is null";
         return;
     }
     if ( setting.isMDB() && !currentDb.is() )
     {
-        QMessageBox::information(0, QString(""), QString("projectType is null"));
+        qDebug() << "currentProject is null";
         return;
     }
 
