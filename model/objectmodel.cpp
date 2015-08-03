@@ -2,17 +2,12 @@
 
 #include <QIcon>
 #include <QDir>
-#include <QTextCodec>
-#include <QTextStream>
 
-#include <QApplication>
-#include <QThread>
+#include <QApplication> // requred for QApplication::processEvents();
 #include <QDebug>
 
 #include "officelib/officelib.h"
 #include "util/comptr.h"
-
-#include "util/getcomobject.h"
 
 #include "projectsetting.h"
 #include "objectsetting.h"
