@@ -1,12 +1,12 @@
 #include "projectsetting.h"
 
+#include <QDebug>
+
 #include "officelib/officelib.h"
 #include "util/comptr.h"
 
 #include "objectsetting.h"
 
-#include <QAxObject>
-#include <QDebug>
 
 ProjectSetting::ProjectSetting(QObject *parent)
     : QObject(parent)
