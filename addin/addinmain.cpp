@@ -2,13 +2,12 @@
 
 #include "addinimpl.h"
 
-AddInMain::AddInMain(ITypeInfo *pTypeInfo, QObject *parent)
+AddInMain::AddInMain(QObject *parent)
     : QObject(parent)
-    , m_pTypeInfo(pTypeInfo)
 {
 }
 
 QAxAggregated *AddInMain::createAggregate()
 {
-    return new AddInImpl(m_pTypeInfo);
+    return new AddInImpl();
 }

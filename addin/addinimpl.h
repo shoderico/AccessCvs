@@ -17,7 +17,7 @@ class AddInImpl
         , public IRibbonCallback
 {
 public:
-    AddInImpl( ITypeInfo *pTypeInfo);
+    AddInImpl();
 
     long queryInterface(const QUuid &iid, void **iface);
 

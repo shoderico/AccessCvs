@@ -1,12 +1,9 @@
 #include "addinfactory.h"
 
 #include "addinmain.h"
-#include "ribboncallback.h"
 
 #include <QSettings>
 #include <QFileInfo>
-#include <QMessageBox>
-//#include <QSysInfo>
 
 AddInFactory::AddInFactory(const QUuid &app, const QUuid &lib)
     : QAxFactory(app, lib)
@@ -34,27 +31,7 @@ const QMetaObject *AddInFactory::metaObject(const QString &key) const
 QObject *AddInFactory::createObject(const QString &key)
 {
     if (key == m_className)
-    {
-        HRESULT hr;
-        ITypeLib *pTypeLib = NULL;
-        ITypeInfo *pTypeInfo = NULL;
-        QString typeLibResourcePath = serverFilePath() + "\\2";
-        hr = LoadTypeLib( reinterpret_cast<const OLECHAR *>( typeLibResourcePath.utf16() ), &pTypeLib);
-        if ( SUCCEEDED( hr ) )
-        {
-            hr = pTypeLib->GetTypeInfoOfGuid( IID_IRibbonCallback, &pTypeInfo );
-            if ( !SUCCEEDED( hr ) )
-                QMessageBox::information(0, QString(""), QString("AddInFactory::createObject  GetTypeInfoOfGuid failed"));
-
-            pTypeLib->Release();
-        }
-        else
-            QMessageBox::information(0, QString(""), QString("AddInFactory::createObject  LoadTypeLib failed"));
-
-        AddInMain *object = new AddInMain(pTypeInfo, 0);
-
-        return object;
-    }
+        return  new AddInMain(this);
     return 0;
 }
 

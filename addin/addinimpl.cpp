@@ -1,5 +1,6 @@
 #include "addinimpl.h"
 
+#include <QAxFactory>
 #include <QUuid>
 #include <QResource>
 #include <QFile>
@@ -23,10 +24,26 @@
 //_COM_SMARTPTR_TYPEDEF(ITypeInfo, __uuidof(ITypeInfo));
 
 
-AddInImpl::AddInImpl(ITypeInfo *pTypeInfo)
-    : m_pTypeInfo(pTypeInfo)
-//    , m_pDlg(0)
+AddInImpl::AddInImpl()
 {
+    HRESULT hr;
+    ITypeLib *pTypeLib = NULL;
+    ITypeInfo *pTypeInfo = NULL;
+    QString typeLibResourcePath = QAxFactory::serverFilePath() + "\\2";
+    hr = LoadTypeLib( reinterpret_cast<const OLECHAR *>( typeLibResourcePath.utf16() ), &pTypeLib);
+    if ( SUCCEEDED( hr ) )
+    {
+        hr = pTypeLib->GetTypeInfoOfGuid( IID_IRibbonCallback, &pTypeInfo );
+        if ( !SUCCEEDED( hr ) )
+            QMessageBox::information(0, QString(""), QString("AddInFactory::createObject  GetTypeInfoOfGuid failed"));
+
+        pTypeLib->Release();
+    }
+    else
+        QMessageBox::information(0, QString(""), QString("AddInFactory::createObject  LoadTypeLib failed"));
+
+    m_pTypeInfo = pTypeInfo;
+
 }
 
 long AddInImpl::queryInterface(const QUuid &iid, void **iface)
