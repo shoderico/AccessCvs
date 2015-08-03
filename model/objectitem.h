@@ -147,7 +147,7 @@ public:
 //    static ObjectItem *fromQueryDef(DAO::QueryDef* queryDef, QObject *parent = 0);
 //    static ObjectItem *fromAccessObject(Model::ObjectType objectType, Access::AccessObject* accessObject, QObject *parent = 0);
 //    static ObjectItem *fromDAODocument(Model::ObjectType objectType, DAO::Document* daoDocument, QObject *parent = 0);
-    static ObjectItem *fromFileInfo(Model::ObjectType objectType, QFileInfo &fileInfo, QObject *parent = 0);
+//    static ObjectItem *fromFileInfo(Model::ObjectType objectType, QFileInfo &fileInfo, QObject *parent = 0);
 
 protected:
     QString     m_name;

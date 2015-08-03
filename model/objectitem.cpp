@@ -67,14 +67,14 @@ ObjectItem::ObjectItem(QObject *parent)
 //    return item;
 //}
 
-ObjectItem *ObjectItem::fromFileInfo(Model::ObjectType objectType, QFileInfo &fileInfo, QObject *parent)
-{
-    ObjectItem *item = new ObjectItem(parent);
+//ObjectItem *ObjectItem::fromFileInfo(Model::ObjectType objectType, QFileInfo &fileInfo, QObject *parent)
+//{
+//    ObjectItem *item = new ObjectItem(parent);
 
-    item->setObjectType( objectType );
-    item->setName( fileInfo.completeBaseName() );
-    item->setInFileSystem( Model::Present );
+//    item->setObjectType( objectType );
+//    item->setName( fileInfo.completeBaseName() );
+//    item->setInFileSystem( Model::Present );
 
-    return item;
-}
+//    return item;
+//}
 
