@@ -111,18 +111,7 @@ public:
 
     //----------------------------------------------------------------------------------------------------------------------
     // progress notification
-    // TODO: simplify notification (too many slots...). unify arguments (processType, objectType, depth, min, max, value).
 public:
-    struct ProcessData
-    {
-        int count;
-        int position;
-    };
-    struct SubProcessData
-    {
-        int count;
-        int position;
-    };
     enum ProcessType
     {
         RefreshProcess,
@@ -132,28 +121,23 @@ public:
         LoadFromProjectProcess,
         LoadFromFileSystemProcess,
 
-        ExportFromProcess,
-        ImportFromTempDirProcess,
+        ExportFromProjectToTempDirProcess,
+        ImportFromTempDirToProjectProcess,
 
-        CopyFromTempDirProcess,
-        CopyFromFileSystemProcess,
+        CopyFromTempDirToFileSystemProcess,
+        CopyFromFileSystemToTempDirProcess,
 
         SanitizeTempDirProcess,
         DesanitizeTempDirProcess,
+        CompareTempDirProcess,
 
         DeleteFromFileSystemProcess,
         DeleteFromProjectProcess
     };
-
 signals:
-    void processStart(ObjectModel::ProcessData processData);
-    void processEnd(ObjectModel::ProcessData processData);
-    void subProcessStart(ObjectModel::ProcessData processData, ObjectModel::SubProcessData subProcessData);
-    void subProcessEnd(ObjectModel::ProcessData processData, ObjectModel::SubProcessData subProcessData);
-    void subProcessProgess(ObjectModel::ProcessData processData, ObjectModel::SubProcessData subProcessData);
-
-
-
+    void progressStart(int type, int count);
+    void progressEnd(int type);
+    void progressChange(int type, int position);
 
 
 private:
@@ -165,7 +149,5 @@ private:
     void clearTempDir();
 };
 
-Q_DECLARE_METATYPE(ObjectModel::ProcessData)
-Q_DECLARE_METATYPE(ObjectModel::SubProcessData)
 
 #endif // OBJECTMODEL_H

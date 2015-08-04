@@ -8,6 +8,7 @@
 
 #include "officelib/officelib.h"
 #include "util/comptr.h"
+#include "util/progressnotifier.h"
 
 #include "projectsetting.h"
 #include "objectsetting.h"
@@ -694,6 +695,7 @@ void ObjectModel::loadFromFileSystem()
 {
     // load items from local file system.
 
+    ProgressNotifier mainProg(LoadFromFileSystemProcess, this);
 
     beginResetModel();
     {
@@ -750,8 +752,10 @@ void ObjectModel::loadFromFileSystem()
             {
                 objectDir.setNameFilters( (QStringList() << ("*." + os->existCheckExtension() ) ) );
                 QFileInfoList fileInfos = objectDir.entryInfoList( QDir::Files );
+                ProgressNotifier subProg(LoadFromFileSystemProcess, fileInfos.length(), this);
                 foreach ( QFileInfo fileInfo, fileInfos )
                 {
+                    subProg.next();
                     items << os->createItemFromFileSystem(fileInfo, this);
                 }
             }
@@ -794,12 +798,7 @@ void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
     setting.initialize(m_application);
 
 
-
-    ProcessData processData;// = {0};
-    SubProcessData subProcessData;// = {0};
-    Q_UNUSED(subProcessData);
-
-    emit processStart(processData);
+    ProgressNotifier mainProg(ExportFromProjectToTempDirProcess, this);
 
 
     ComPtr<Access::CurrentProject> currentProject  = m_application->CurrentProject();
@@ -829,14 +828,13 @@ void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
 
-        int nCount = objectNames.count(); int nPos = 0;
-        emit subProcessStart(processData, { nCount, 0 } );
+        int nCount = objectNames.count();
+        ProgressNotifier subProg(ExportFromProjectToTempDirProcess, nCount, this);
 
         ComPtr<DAO::TableDefs> tableDefs = currentDb->TableDefs();
         foreach ( QString objectName, objectNames )
         {
-            emit subProcessProgess(processData,  { nCount, ++nPos } );
-            QApplication::processEvents();
+            subProg.next();
 
             //------------------------------------------------------------------------------------------
             // Export Local Table
@@ -844,7 +842,6 @@ void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
             os->exportFromProjectToTempDir(tableDef.ptr(), objectName);
 
         }
-        emit subProcessEnd(processData, { nCount, nCount } );
         qDebug() << "TableDefs : " << nCount << " : " << time.elapsed();
     }
 
@@ -860,23 +857,21 @@ void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
 
-        int nCount = objectNames.count(); int nPos = 0;
-        emit subProcessStart(processData, { nCount, 0 } );
+        int nCount = objectNames.count();
+        ProgressNotifier subProg(ExportFromProjectToTempDirProcess, nCount, this);
 
         // TODO: universal iteration
         ComPtr<DAO::QueryDefs> queryDefs = currentDb->QueryDefs();
 
         foreach ( QString objectName, objectNames )
         {
-            emit subProcessProgess(processData,  { nCount, ++nPos } );
-            QApplication::processEvents();
+            subProg.next();
 
             //------------------------------------------------------------------------------------------
             // Export Query as SQL
             ComPtr<DAO::QueryDef> queryDef = queryDefs->Item( objectName );
             os->exportFromProjectToTempDir(queryDef.ptr(), objectName);
         }
-        emit subProcessEnd(processData, { nCount, nCount } );
         qDebug() << "Queries : " << nCount << " : " << time.elapsed();
     }
 
@@ -905,19 +900,16 @@ void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
             QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
             QStringList objectNames = targets.keys();
 
-            int nCount = objectNames.count(); int nPos = 0;
-            emit subProcessStart(processData, { nCount, 0 } );
+            int nCount = objectNames.count();
+            ProgressNotifier subProg(ExportFromProjectToTempDirProcess, nCount, this);
 
             foreach ( QString objectName, objectNames )
             {
-                emit subProcessProgess(processData,  { nCount, ++nPos } );
-                QApplication::processEvents();
-
+                subProg.next();
                 //------------------------------------------------------------------------------------------
                 // Export Object as Text
                 os->exportFromProjectToTempDir(NULL, objectName);
             }
-            emit subProcessEnd(processData, { nCount, nCount } );
             qDebug() << os->objectPathName() << " : " << nCount << " : " << time.elapsed();
         }
     }
@@ -944,7 +936,6 @@ void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
     }
 
 
-    emit processEnd(processData);
     qDebug() << "DONE : " << timeTotal.elapsed() ;
 }
 
@@ -954,6 +945,7 @@ void ObjectModel::importFromTempDirToProject(ObjectItems *allTargets)
     QTime timeTotal;
     timeTotal.start();
     time.start();
+    ProgressNotifier mainProg(ImportFromTempDirToProjectProcess, this);
 
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -974,15 +966,16 @@ void ObjectModel::importFromTempDirToProject(ObjectItems *allTargets)
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
 
-        int nCount = objectNames.count(); int nPos = 0;
-        Q_UNUSED(nCount)
-        Q_UNUSED(nPos)
+        int nCount = objectNames.count();
+        ProgressNotifier subProg(ImportFromTempDirToProjectProcess, nCount, this);
+
 
         ComPtr<DAO::Database> currentDb = m_application->CurrentDb();
         ComPtr<DAO::QueryDefs> queryDefs = currentDb->QueryDefs();
 
         foreach (QString objectName, objectNames)
         {
+            subProg.next();
             ObjectItem *item = targets[ objectName ];
 
             if (item->inProject() == Model::Present)
@@ -1014,12 +1007,12 @@ void ObjectModel::importFromTempDirToProject(ObjectItems *allTargets)
             QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
             QStringList objectNames = targets.keys();
 
-            int nCount = objectNames.count(); int nPos = 0;
-            Q_UNUSED(nCount)
-            Q_UNUSED(nPos)
+            int nCount = objectNames.count();
+            ProgressNotifier subProg(ImportFromTempDirToProjectProcess, nCount, this);
 
             foreach (QString objectName, objectNames)
             {
+                subProg.next();
                 os->importFromTempDirToProject(NULL, objectName);
             }
         }
@@ -1032,6 +1025,7 @@ void ObjectModel::copyFromTempDirToFileSystem(ObjectItems *allTargets)
     QTime timeTotal;
     timeTotal.start();
     time.start();
+    ProgressNotifier mainProg(CopyFromTempDirToFileSystemProcess, this);
 
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1056,12 +1050,12 @@ void ObjectModel::copyFromTempDirToFileSystem(ObjectItems *allTargets)
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
 
-        int nCount = objectNames.count(); int nPos = 0;
-        Q_UNUSED(nCount)
-        Q_UNUSED(nPos)
+        int nCount = objectNames.count();
+        ProgressNotifier subProg(CopyFromTempDirToFileSystemProcess, nCount, this);
 
         foreach (QString objectName, objectNames)
         {
+            subProg.next();
             os->copyFromTempDirToFileSystem(objectName);
         }
     }
@@ -1073,6 +1067,7 @@ void ObjectModel::copyFromFileSystemToTempDir(ObjectItems *allTargets)
     QTime timeTotal;
     timeTotal.start();
     time.start();
+    ProgressNotifier mainProg(CopyFromFileSystemToTempDirProcess, this);
 
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1096,12 +1091,12 @@ void ObjectModel::copyFromFileSystemToTempDir(ObjectItems *allTargets)
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
 
-        int nCount = objectNames.count(); int nPos = 0;
-        Q_UNUSED(nCount)
-        Q_UNUSED(nPos)
+        int nCount = objectNames.count();
+        ProgressNotifier subProg(CopyFromFileSystemToTempDirProcess, nCount, this);
 
         foreach (QString objectName, objectNames)
         {
+            subProg.next();
             os->copyFromFileSystemToTempDir(objectName);
         }
     }
@@ -1114,6 +1109,7 @@ void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
     QTime timeTotal;
     timeTotal.start();
     time.start();
+    ProgressNotifier mainProg(SanitizeTempDirProcess, this);
 
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1138,12 +1134,12 @@ void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
 
-        int nCount = objectNames.count(); int nPos = 0;
-        Q_UNUSED(nCount)
-        Q_UNUSED(nPos)
+        int nCount = objectNames.count();
+        ProgressNotifier subProg(SanitizeTempDirProcess, nCount, this);
 
         foreach (QString objectName, objectNames)
         {
+            subProg.next();
             os->sanitizeTempDir(NULL, objectName);
         }
     }
@@ -1155,6 +1151,7 @@ void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
     QTime timeTotal;
     timeTotal.start();
     time.start();
+    ProgressNotifier mainProg(DesanitizeTempDirProcess, this);
 
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1178,12 +1175,12 @@ void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
 
-        int nCount = objectNames.count(); int nPos = 0;
-        Q_UNUSED(nCount)
-        Q_UNUSED(nPos)
+        int nCount = objectNames.count();
+        ProgressNotifier subProg(DesanitizeTempDirProcess, nCount, this);
 
         foreach (QString objectName, objectNames)
         {
+            subProg.next();
             os->desanitizeTempDir(NULL, objectName);
         }
     }
@@ -1196,6 +1193,7 @@ void ObjectModel::compareTempDir(ObjectItems *allTargets)
     QTime timeTotal;
     timeTotal.start();
     time.start();
+    ProgressNotifier mainProg(CompareTempDirProcess, this);
 
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1219,12 +1217,12 @@ void ObjectModel::compareTempDir(ObjectItems *allTargets)
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
 
-        int nCount = objectNames.count(); int nPos = 0;
-        Q_UNUSED(nCount)
-        Q_UNUSED(nPos)
+        int nCount = objectNames.count();
+        ProgressNotifier subProg(CompareTempDirProcess, nCount, this);
 
         foreach (QString objectName, objectNames)
         {
+            subProg.next();
             bool isDifferent = false;
             os->compareTempDir(objectName, &isDifferent);
 
@@ -1249,6 +1247,7 @@ void ObjectModel::deleteFromFileSystem(ObjectItems *allTargets)
     QTime timeTotal;
     timeTotal.start();
     time.start();
+    ProgressNotifier mainProg(DeleteFromFileSystemProcess, this);
 
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1272,12 +1271,12 @@ void ObjectModel::deleteFromFileSystem(ObjectItems *allTargets)
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
 
-        int nCount = objectNames.count(); int nPos = 0;
-        Q_UNUSED(nCount)
-        Q_UNUSED(nPos)
+        int nCount = objectNames.count();
+        ProgressNotifier subProg(DeleteFromFileSystemProcess, nCount, this);
 
         foreach (QString objectName, objectNames)
         {
+            subProg.next();
             os->deleteFromFileSystem(objectName);
         }
     }
@@ -1289,6 +1288,7 @@ void ObjectModel::deleteFromProject(ObjectItems *allTargets)
     QTime timeTotal;
     timeTotal.start();
     time.start();
+    ProgressNotifier mainProg(DeleteFromProjectProcess, this);
 
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1311,12 +1311,12 @@ void ObjectModel::deleteFromProject(ObjectItems *allTargets)
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
 
-        int nCount = objectNames.count(); int nPos = 0;
-        Q_UNUSED(nCount)
-        Q_UNUSED(nPos)
+        int nCount = objectNames.count();
+        ProgressNotifier subProg(DeleteFromProjectProcess, nCount, this);
 
         foreach (QString objectName, objectNames)
         {
+            subProg.next();
             os->deleteFromProject(objectName);
         }
     }

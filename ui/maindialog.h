@@ -33,11 +33,9 @@ private slots:
     void executeExport();
     void executeImport();
 
-    void processStart(ObjectModel::ProcessData progressData);
-    void processEnd(ObjectModel::ProcessData progressData);
-    void subProcessStart(ObjectModel::ProcessData progressData, ObjectModel::SubProcessData subProcessData);
-    void subProcessEnd(ObjectModel::ProcessData progressData, ObjectModel::SubProcessData subProcessData);
-    void subProcessProgress(ObjectModel::ProcessData progressData, ObjectModel::SubProcessData subProcessData);
+    void progressStart(int type, int count);
+    void progressChange(int type, int value);
+    void progressEnd(int type);
 
 private:
     Ui::MainDialog *ui;
