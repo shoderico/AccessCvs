@@ -277,8 +277,6 @@ bool TableDefSetting::exportFromProjectToTempDir(QAxObject *object, const QStrin
     DAO::TableDef *tableDef = dynamic_cast<DAO::TableDef*>(object);
     if (tableDef)
     {
-        // TODO: implement tabledef export
-
         // this makes force termination...
         m_projectSetting->application()
             ->ExportXML(
