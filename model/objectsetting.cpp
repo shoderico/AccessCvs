@@ -545,6 +545,7 @@ bool AccessObjectSetting::importFromTempDirToProject(QAxObject *object, const QS
 AccessDesignObjectSetting::AccessDesignObjectSetting(ProjectSetting *parent)
     : AccessObjectSetting(parent)
     , m_codecForProject(0)
+    , m_sanitizer(new SanitizeSetting(this))
 {
 }
 
@@ -602,9 +603,7 @@ bool AccessDesignObjectSetting::sanitizeTempDir(QAxObject *object, const QString
 
 
     // sanitize
-    // TODO: sanitizer must be a member variable .
-    SanitizeSetting sanitizer;
-    sanitizer.sanitize( streamSrc, streamDstDesign, streamDstModule, m_codecForCvs );
+    m_sanitizer->sanitize( streamSrc, streamDstDesign, streamDstModule, m_codecForCvs );
 
 
     // TODO: add post process for subclasses.

@@ -8,6 +8,7 @@
 #include "objectitem.h"
 
 class ProjectSetting;
+class SanitizeSetting;
 class CodecInfo;
 
 class QAxObject;
@@ -191,6 +192,7 @@ public:
 protected:
     CodecInfo *m_codecForProject;
     void determineCodecForProject();
+    SanitizeSetting *m_sanitizer;
 };
 
 
