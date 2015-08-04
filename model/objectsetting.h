@@ -143,6 +143,8 @@ public:
     virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
     virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
     virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
+protected:
+    virtual void determineCodecForProject();
 };
 
 class TableDataSetting : public ObjectSetting

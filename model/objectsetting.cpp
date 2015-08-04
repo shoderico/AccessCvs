@@ -315,17 +315,46 @@ bool TableDefSetting::importFromTempDirToProject(QAxObject *object, const QStrin
 bool TableDefSetting::sanitizeTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
-    Q_UNUSED(objectName)
-    // TODO: sanitize tabledef
+
+    // we have to convert ONLY codec.
+
+    // codec
+    determineCodecForProject();
+
+    FileUtil::copyContents(   tempFilePathInTempDir(objectName), m_codecForProject,
+                            designFilePathInTempDir(objectName), m_codecForCvs );
+    FileUtil::deleteFile(     tempFilePathInTempDir(objectName) );
+
     return true;
 }
 
 bool TableDefSetting::desanitizeTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
-    Q_UNUSED(objectName)
-    // TODO: de-sanitize tabledef
+
+    // we have to convert ONLY codec.
+
+    // codec
+    determineCodecForProject();
+
+    FileUtil::copyContents( designFilePathInTempDir(objectName), m_codecForCvs,
+                              tempFilePathInTempDir(objectName), m_codecForProject );
+    FileUtil::deleteFile(   designFilePathInTempDir(objectName) );
+
     return true;
+}
+
+void TableDefSetting::determineCodecForProject()
+{
+    // TableDef is saved with UTF-16LE in xml format
+    // so we have to convert ONLY codec.
+    if (!m_codecForProject)
+    {
+        m_codecForProject = new CodecInfo(this);
+        m_codecForProject->setCodec( QTextCodec::codecForName("UTF-16LE") );
+        m_codecForProject->setBom( true );
+        m_codecForProject->setLineEnd("\r\n");
+    }
 }
 
 
