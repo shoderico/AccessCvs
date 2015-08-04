@@ -406,9 +406,9 @@ QuerySetting::QuerySetting(ProjectSetting *parent)
     m_containerName       = "";
 
     m_tempFileExtension   = "sql";
-    m_designFileExtension = m_designFileExtension;
+    m_designFileExtension = m_tempFileExtension;
     m_moduleFileExtension = "";
-    m_existCheckExtension = m_designFileExtension;
+    m_existCheckExtension = m_tempFileExtension;
 }
 
 bool QuerySetting::isTargetObject(QAxObject *object) const
