@@ -19,6 +19,7 @@ ObjectSetting::ObjectSetting(ProjectSetting *parent)
     : QObject(parent)
     , m_projectSetting(parent)
     , m_codecForCvs(new CodecInfo(this))
+    , m_codecForProject(0)
 {
     m_codecForCvs->setCodec( QTextCodec::codecForName("UTF-8") );
     m_codecForCvs->setBom(false);
@@ -143,6 +144,12 @@ bool ObjectSetting::deleteFromProject(const QString &objectName)
         doCmd->DeleteObject( (Access::AcObjectType)m_accessObjectType, objectName );
     }
     return true;
+}
+
+void ObjectSetting::determineCodecForProject()
+{
+    // do nothing here.
+    // if m_codecForProject is requred, override this function in subclass
 }
 
 bool ObjectSetting::deleteFromTempDir(const QString &objectName)
@@ -542,7 +549,6 @@ bool AccessObjectSetting::importFromTempDirToProject(QAxObject *object, const QS
 
 AccessDesignObjectSetting::AccessDesignObjectSetting(ProjectSetting *parent)
     : AccessObjectSetting(parent)
-    , m_codecForProject(0)
     , m_sanitizer(new SanitizeSetting(this))
 {
 }
@@ -839,7 +845,6 @@ MacroSetting::MacroSetting(ProjectSetting *parent)
 
 ModuleSetting::ModuleSetting(ProjectSetting *parent)
     : AccessObjectSetting(parent)
-    , m_codecForProject(0)
 {
     m_objectType          = Model::Module;
     m_accessObjectType    = Access::acModule;

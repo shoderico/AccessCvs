@@ -75,6 +75,8 @@ public:
     virtual bool deleteFromFileSystem(const QString &objectName);
     virtual bool deleteFromProject(const QString &objectName);
 
+    virtual void determineCodecForProject();
+
 protected:
     enum DirectoryType
     {
@@ -113,6 +115,7 @@ protected:
     ProjectSetting *m_projectSetting;
 
     CodecInfo *m_codecForCvs;
+    CodecInfo *m_codecForProject;
 };
 
 /*
@@ -190,8 +193,7 @@ public:
     virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
     virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
 protected:
-    CodecInfo *m_codecForProject;
-    void determineCodecForProject();
+    virtual void determineCodecForProject();
     SanitizeSetting *m_sanitizer;
 };
 
@@ -223,8 +225,7 @@ public:
     virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
     virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
 protected:
-    CodecInfo *m_codecForProject;
-    void determineCodecForProject();
+    virtual void determineCodecForProject();
 };
 
 
