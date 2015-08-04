@@ -360,6 +360,7 @@ void TableDefSetting::determineCodecForProject()
 
 //=============================================================================
 // TableData
+// TODO: imeplement tabledata export/import
 
 TableDataSetting::TableDataSetting(ProjectSetting *parent)
     : ObjectSetting(parent)
@@ -378,6 +379,7 @@ TableDataSetting::TableDataSetting(ProjectSetting *parent)
 
 //=============================================================================
 // Relation
+// TODO: imeplement relationship export/import
 
 RelationSetting::RelationSetting(ProjectSetting *parent)
     : ObjectSetting(parent)
