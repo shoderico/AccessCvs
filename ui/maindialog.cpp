@@ -113,6 +113,7 @@ void MainDialog::propertyChanged(const QString &name)
 
 void MainDialog::signal(const QString &name, int argc, void *argv)
 {
+    Q_UNUSED(argc) Q_UNUSED(argv)
     QMessageBox::information(this, "", QString("propertyChanged ") + name);
 }
 
