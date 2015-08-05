@@ -311,7 +311,7 @@ bool ObjectModel::refreshItems()
     // for InBoth
     {
         ObjectItems targets;
-        getItems(&targets, InBoth);
+        getItems(&targets, InBoth, false);
 
         exportFromProjectToTempDir(&targets);   // InBoth           : BLOCK :                   :
         sanitizeTempDir(&targets);              // InBoth           :       :                   :
