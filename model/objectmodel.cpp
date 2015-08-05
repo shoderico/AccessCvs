@@ -332,12 +332,12 @@ bool ObjectModel::executeExport()
     //-------------------------------------------------------------------------------------------
     //:execute to reflect from Project to FileSystem
 
-    // TODO: targets must be selected only
+    bool selectedOnly = true;
 
     // for InProjectOnly
     {
         ObjectItems targets;
-        getItems(&targets, InProjectOnly);
+        getItems(&targets, InProjectOnly, selectedOnly);
         exportFromProjectToTempDir(&targets);       // InProjectOnly    : BLOCK :                   :
         sanitizeTempDir(&targets);                  // InProjectOnly    :       :                   :
         copyFromTempDirToFileSystem(&targets);      // InProjectOnly    :       : Dirty FileSystem  : need one-more step? like confirm
@@ -346,7 +346,7 @@ bool ObjectModel::executeExport()
     // for InFileSytemOnly
     {
         ObjectItems targets;
-        getItems(&targets, InFileSystemOnly);
+        getItems(&targets, InFileSystemOnly, selectedOnly);
         deleteFromFileSystem(&targets);             // InFileSystemOnly :       : Dirty FileSystem  : need one-more step? like confirm
     }
 
@@ -355,7 +355,7 @@ bool ObjectModel::executeExport()
         // for InBoth_Different
         {
             ObjectItems targets;
-            getItems(&targets, InBoth_Different);
+            getItems(&targets, InBoth_Different, selectedOnly);
             copyFromTempDirToFileSystem(&targets);  // InBoth_Different :       : Dirty FileSystem  : need one-more step? like confirm
         }
     }
@@ -370,19 +370,19 @@ bool ObjectModel::executeImport()
     //-------------------------------------------------------------------------------------------
     //:execute
 
-    // TODO: targets must be selected only
+    bool selectedOnly = true;
 
     // for InProjectOnly
     {
         ObjectItems targets;
-        getItems(&targets, InProjectOnly);
+        getItems(&targets, InProjectOnly, selectedOnly);
         deleteFromProject(&targets);                // InProjectOnly    : BLOCK : Dirty Project : need one-more step? like confirm
     }
 
     // for InFileSytemOnly
     {
         ObjectItems targets;
-        getItems(&targets, InFileSystemOnly);
+        getItems(&targets, InFileSystemOnly, selectedOnly);
         copyFromFileSystemToTempDir(&targets);      // InFileSytemOnly  :       :               :
         desanitizeTempDir(&targets);                // InFileSytemOnly  :       :               :
         importFromTempDirToProject(&targets);       // InFileSystemOnly : BLOCK : Dirty Project : need one-more step? like confirm
@@ -393,7 +393,7 @@ bool ObjectModel::executeImport()
         // for InBoth_Different
         {
             ObjectItems targets;
-            getItems(&targets, InBoth_Different);
+            getItems(&targets, InBoth_Different, selectedOnly);
             copyFromFileSystemToTempDir(&targets);  // InBoth_Different :       :               :
             desanitizeTempDir(&targets);            // InBoth_Different :       :               :
             importFromTempDirToProject(&targets);   // InBoth_Different : BLOCK : Dirty Project : need one-more step? like confirm
@@ -427,54 +427,84 @@ bool ObjectModel::executeImport()
 
 
 
-void ObjectModel::getItems(ObjectItems *pItems, ObjectModel::ItemsType itemsType) const
+void ObjectModel::getItems(ObjectItems *pItems, ObjectModel::ItemsTypes itemsType, bool selectedOnly) const
 {
     foreach ( ObjectItem *item, m_items )
     {
         ObjectItem *toBeInserted = NULL;
-        switch (itemsType)
+        if (selectedOnly && !item->isSelected())
+            continue;
+
+        if (!toBeInserted && itemsType & InBoth)
         {
-            case AllItems:
-            {
+            if ( item->inProject()    == Model::Present &&
+                 item->inFileSystem() == Model::Present )
                 toBeInserted = item;
-                break;
-            }
-            case InBoth:
-            {
-                if ( item->inProject()    == Model::Present &&
-                     item->inFileSystem() == Model::Present )
-                    toBeInserted = item;
-                break;
-            }
-            case InBoth_Different:
-            {
-                if ( item->inProject()    == Model::Present &&
-                     item->inFileSystem() == Model::Present &&
-                     item->isDifferent()  == Model::DifferentContents )
-                    toBeInserted = item;
-                break;
-            }
-            case InProjectOnly:
-            {
-                if ( item->inProject()    == Model::Present &&
-                     item->inFileSystem() == Model::Absent )
-                    toBeInserted = item;
-                break;
-            }
-            case InFileSystemOnly:
-            {
-                if ( item->inProject()    == Model::Absent &&
-                     item->inFileSystem() == Model::Present )
-                    toBeInserted = item;
-                break;
-            }
+        }
+        if (!toBeInserted && itemsType & InBoth_Different)
+        {
+            if ( item->inProject()    == Model::Present &&
+                 item->inFileSystem() == Model::Present &&
+                 item->isDifferent()  == Model::DifferentContents )
+                toBeInserted = item;
+        }
+        if (!toBeInserted && itemsType & InProjectOnly)
+        {
+            if ( item->inProject()    == Model::Present &&
+                 item->inFileSystem() == Model::Absent )
+                toBeInserted = item;
+        }
+        if (!toBeInserted && itemsType & InFileSystemOnly)
+        {
+            if ( item->inProject()    == Model::Absent &&
+                 item->inFileSystem() == Model::Present )
+                toBeInserted = item;
         }
 
-        if (toBeInserted)
+        if (toBeInserted && ( (selectedOnly && item->isSelected()) || !selectedOnly ) )
         {
             (*pItems)[ toBeInserted->objectType() ][ toBeInserted->name() ] = toBeInserted;
         }
     }
+}
+
+void ObjectModel::selectItemsForImport(bool resetSelection)
+{
+    selectItems( InProjectOnly | InFileSystemOnly | InBoth_Different, resetSelection );
+}
+
+void ObjectModel::selectItemsForExport(bool resetSelection)
+{
+    selectItems( InProjectOnly | InFileSystemOnly | InBoth_Different, resetSelection );
+}
+
+void ObjectModel::selectItems(ObjectModel::ItemsTypes itemsType, bool resetSelection)
+{
+    int first = m_items.count();
+    int last = 0;
+    if (resetSelection)
+    {
+        foreach ( ObjectItem *item, m_items )
+            item->setSelected(false);
+        first = 0;
+        last = m_items.length() - 1;
+    }
+
+    ObjectItems targets;
+    getItems(&targets, itemsType, false);
+    foreach ( Model::ObjectType objectType, targets.keys() )
+    {
+        foreach ( ObjectItem *item, targets[ objectType].values() )
+        {
+            item->setSelected( true );
+
+            int row = m_items.indexOf(item);
+            if (first > row) first = row;
+            if (last  < row) last  = row;
+        }
+    }
+
+    emit dataChanged( createIndex(first, 0), createIndex(last, ColumnCount) );
 }
 
 

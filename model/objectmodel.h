@@ -65,20 +65,26 @@ public:
 
 
 
+
     // items getter
     enum ItemsType
     {
-        AllItems,
-        InBoth,
-        InBoth_Different,
-        InProjectOnly,
-        InFileSystemOnly
+        NoItems          = 0,
+        InBoth           = 1,
+        InBoth_Different = 2,
+        InProjectOnly    = 4,
+        InFileSystemOnly = 8,
+        AllItems         = 15,
     };
+    Q_DECLARE_FLAGS(ItemsTypes, ItemsType)
     // TODO: define select-state ( selected, not-select, both)
     // TODO: extend getItems() to specify select state
     // TODO: can be non-public ?
-    void getItems(ObjectItems *pItems, ItemsType itemsType) const;
+    void getItems(ObjectItems *pItems, ItemsTypes itemsType, bool selectedOnly = true) const;
 
+    void selectItemsForImport(bool resetSelection = true);
+    void selectItemsForExport(bool resetSelection = true);
+    void selectItems(ItemsTypes itemsType, bool resetSelection = true);
 
 
 
@@ -150,5 +156,6 @@ private:
     void clearTempDir();
 };
 
+Q_DECLARE_OPERATORS_FOR_FLAGS(ObjectModel::ItemsTypes)
 
 #endif // OBJECTMODEL_H
