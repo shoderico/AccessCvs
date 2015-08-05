@@ -57,11 +57,10 @@ public:
     void prepareCommit();
     void prepareMerge();
 
-    // TODO: prepareExport(), prepareImport() replace with refreshItems()
-    bool prepareExport();
-    bool executeExport();
 
-    bool prepareImport();
+    bool refreshItems();
+
+    bool executeExport();
     bool executeImport();
 
 

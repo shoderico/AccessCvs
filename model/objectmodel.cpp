@@ -216,7 +216,7 @@ void ObjectModel::prepareCommit()
     //-------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------
     //:determine target objects to reflect from Project to FileSytem
-    prepareExport();
+    refreshItems();
 
     //-------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------
@@ -270,7 +270,7 @@ void ObjectModel::prepareMerge()
     //-------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------
     //:determine target objects to be imported
-    prepareImport();
+    refreshItems();
 
     //-------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------
@@ -286,26 +286,7 @@ void ObjectModel::prepareMerge()
     //:and now we are in access problem
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-bool ObjectModel::prepareExport()
+bool ObjectModel::refreshItems()
 {
     //-------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------
@@ -340,6 +321,10 @@ bool ObjectModel::prepareExport()
 
     return true;
 }
+
+
+
+
 
 bool ObjectModel::executeExport()
 {
@@ -378,45 +363,6 @@ bool ObjectModel::executeExport()
     return true;
 }
 
-bool ObjectModel::prepareImport()
-{
-    //-------------------------------------------------------------------------------------------
-    //-------------------------------------------------------------------------------------------
-    //:determine target objects to be imported
-
-    // refresh model items
-    loadItemFromProject();                          //                  : BLOCK :               :
-    loadItemFromFileSystem();                       //                  :       :               :
-
-    clearTempDir();
-
-    // for InProjectOnly
-    {
-        //.
-    }
-
-    // for InFileSytemOnly
-    {
-        //.
-    }
-
-    // for InBoth
-    {
-        ObjectItems targets;
-        getItems(&targets, InBoth);
-
-        exportFromProjectToTempDir(&targets);       // InBoth           : BLOCK :               :
-        sanitizeTempDir(&targets);                  // InBoth           :       :               :
-        compareTempDir(&targets);                   // InBoth           :       :               :
-
-        // for InBoth_Different
-        {
-            //.
-        }
-    }
-
-    return true;
-}
 
 bool ObjectModel::executeImport()
 {
