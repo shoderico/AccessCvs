@@ -312,7 +312,7 @@ bool ObjectModel::refreshItems()
 
     // for InBoth
     {
-        // smart refresh
+        // for smart refresh, we assume the contents is the same if item's updateDate <= filetime of TempFile
         assumeItemsTheSameByFileTime();
 
         ObjectItems targets;
@@ -322,7 +322,7 @@ bool ObjectModel::refreshItems()
         sanitizeTempDir(&targets);              // InBoth           :       :                   :
         compareTempDir(&targets);               // InBoth           :       :                   :
 
-        // if Different, we must rollback filetime of TempFile for smart refresh
+        // for smart refresh, we must rollback filetime of TempFile if different.
         rollbackFileTimeIfDifferent(&targets);
 
         //.
@@ -366,12 +366,16 @@ bool ObjectModel::executeExport()
             ObjectItems targets;
             getItems(&targets, InBoth_Different, selectedOnly);
             copyFromTempDirToFileSystem(&targets);  // InBoth_Different :       : Dirty FileSystem  : need one-more step? like confirm
+
+            updateFileTimeInTempDir(&targets, QDateTime::currentDateTime()); // for smart-refresh, we need to update filetime which rollbacked in smart-refresh process
         }
         // for InBoth_Same
         {
             ObjectItems targets;
             getItems(&targets, InBoth_Same, selectedOnly);
             copyFromTempDirToFileSystem(&targets);  // InBoth_Same      :       : Dirty FileSystem  : need one-more step? like confirm
+
+            updateFileTimeInTempDir(&targets, QDateTime::currentDateTime()); // for smart-refresh, we need to update filetime which rollbacked in smart-refresh process
         }
     }
 
@@ -401,6 +405,8 @@ bool ObjectModel::executeImport()
         copyFromFileSystemToTempDir(&targets);      // InFileSytemOnly  :       :               :
         desanitizeTempDir(&targets);                // InFileSytemOnly  :       :               :
         importFromTempDirToProject(&targets);       // InFileSystemOnly : BLOCK : Dirty Project : need one-more step? like confirm
+
+        updateFileTimeInTempDir(&targets, QDateTime::currentDateTime()); // for smart refresh, update filetime of TempFile if imported
     }
 
     // for InBoth
@@ -412,6 +418,8 @@ bool ObjectModel::executeImport()
             copyFromFileSystemToTempDir(&targets);  // InBoth_Different :       :               :
             desanitizeTempDir(&targets);            // InBoth_Different :       :               :
             importFromTempDirToProject(&targets);   // InBoth_Different : BLOCK : Dirty Project : need one-more step? like confirm
+
+            updateFileTimeInTempDir(&targets, QDateTime::currentDateTime()); // for smart refresh, update filetime of TempFile if imported
         }
         // for InBoth_Different
         {
@@ -420,6 +428,8 @@ bool ObjectModel::executeImport()
             copyFromFileSystemToTempDir(&targets);  // InBoth_Same      :       :               :
             desanitizeTempDir(&targets);            // InBoth_Same      :       :               :
             importFromTempDirToProject(&targets);   // InBoth_Same      : BLOCK : Dirty Project : need one-more step? like confirm
+
+            updateFileTimeInTempDir(&targets, QDateTime::currentDateTime()); // for smart refresh, update filetime of TempFile if imported
         }
     }
 
@@ -566,6 +576,22 @@ void ObjectModel::rollbackFileTimeIfDifferent(ObjectItems *allTargets)
             {
                 os->rollbackFileTimeTempDir(item->name(), item->exportDate());
             }
+        }
+    }
+}
+
+void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTime &fileTime)
+{
+    ProjectSetting setting(this);
+    ObjectSetting *os;
+    setting.initialize(m_application);
+
+    foreach ( Model::ObjectType objectType, allTargets->keys() )
+    {
+        os = setting[ objectType ];
+        foreach ( ObjectItem* item, allTargets->value( objectType ).values() )
+        {
+            os->rollbackFileTimeTempDir( item->name(), fileTime );
         }
     }
 }

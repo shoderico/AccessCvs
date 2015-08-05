@@ -89,6 +89,7 @@ public:
 
     void assumeItemsTheSameByFileTime();
     void rollbackFileTimeIfDifferent(ObjectItems *allTargets);
+    void updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTime &fileTime);
 
 
 
