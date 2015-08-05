@@ -282,11 +282,16 @@ HRESULT AddInImpl::ButtonClicked(IDispatch *ribbonControl)
 
     Access::_Application *applicationCoClass = new Access::_Application(m_pApplication);
     Access::Application application( applicationCoClass );
-    QWinWidget winWidget( (HWND)application.hWndAccessApp() );
-    winWidget.showCentered();
+//    QWinWidget winWidget( (HWND)application.hWndAccessApp() );
+//    winWidget.showCentered();
 
-    MainDialog dlg( m_pApplication, &winWidget );
-    dlg.exec();
+//    MainDialog dlg( m_pApplication, &winWidget );
+//    dlg.exec();
+
+    QWinWidget *winWidget = new QWinWidget( (HWND)application.hWndAccessApp() );
+    winWidget->showCentered();
+    MainDialog *dlg = new MainDialog( m_pApplication, winWidget );
+    dlg->show();
 
 //    MainDialog dlg( m_pApplication );
 //    dlg.exec();
