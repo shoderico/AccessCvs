@@ -1,5 +1,6 @@
 #include "objectsetting.h"
 
+#include <QDebug>
 #include <QDir>
 
 #include <QTextCodec>
@@ -144,6 +145,29 @@ bool ObjectSetting::deleteFromProject(const QString &objectName)
         doCmd->DeleteObject( (Access::AcObjectType)m_accessObjectType, objectName );
     }
     return true;
+}
+
+bool ObjectSetting::prepareItemCollection()
+{
+    // in subclass, override this function
+    // and prepare collection object to call Count() and Item().
+    return true;
+}
+
+int ObjectSetting::itemCount()
+{
+    // in subclass, override this function
+    // and return the value of Count().
+    return 0;
+}
+
+QAxObject *ObjectSetting::itemUnsafePtr(const QVariant &index)
+{
+    // in subclass, override this function
+    // and return QAxObject pointer.
+    // this pointer must be deleted by CALLER.
+    Q_UNUSED(index)
+    return NULL;
 }
 
 void ObjectSetting::determineCodecForProject()
@@ -344,6 +368,33 @@ bool TableDefSetting::desanitizeTempDir(QAxObject *object, const QString &object
     return true;
 }
 
+bool TableDefSetting::prepareItemCollection()
+{
+    if (!m_projectSetting->isMDB())
+        return false;
+
+    ComPtr<DAO::Database> currentDb = m_projectSetting->application()->CurrentDb();
+    if (!currentDb.is())
+        return false;
+
+    m_tableDefs.set( currentDb->TableDefs() );
+    return m_tableDefs.is();
+}
+
+int TableDefSetting::itemCount()
+{
+    if (!m_tableDefs.is())
+        return 0;
+    return m_tableDefs->Count();
+}
+
+QAxObject *TableDefSetting::itemUnsafePtr(const QVariant &index)
+{
+    if (!m_tableDefs.is())
+        return 0;
+    return m_tableDefs->Item(index);
+}
+
 void TableDefSetting::determineCodecForProject()
 {
     // TableDef is saved with UTF-16LE in xml format
@@ -499,6 +550,33 @@ bool QuerySetting::desanitizeTempDir(QAxObject *object, const QString &objectNam
     return true;
 }
 
+bool QuerySetting::prepareItemCollection()
+{
+    if (!m_projectSetting->isMDB())
+        return false;
+
+    ComPtr<DAO::Database> currentDb = m_projectSetting->application()->CurrentDb();
+    if (!currentDb.is())
+        return false;
+
+    m_queryDefs.set( currentDb->QueryDefs() );
+    return m_queryDefs.is();
+}
+
+int QuerySetting::itemCount()
+{
+    if (!m_queryDefs.is())
+        return 0;
+    return m_queryDefs->Count();
+}
+
+QAxObject *QuerySetting::itemUnsafePtr(const QVariant &index)
+{
+    if (!m_queryDefs.is())
+        return 0;
+    return m_queryDefs->Item(index);
+}
+
 
 
 
@@ -539,6 +617,7 @@ ObjectItem *AccessObjectSetting::createItemFromProject(QAxObject *object, QObjec
         item->setInProject( Model::Present );
         item->setCreateDate( accessObject->DateCreated() );
         item->setUpdateDate( accessObject->DateModified() );
+        qDebug() << "AccessObjectSetting::createItemFromProject is called" << accessObject->Name();
     }
 
     DAO::Document *daoDocument = dynamic_cast<DAO::Document*>(object);
@@ -549,6 +628,7 @@ ObjectItem *AccessObjectSetting::createItemFromProject(QAxObject *object, QObjec
         item->setInProject( Model::Present );
         item->setCreateDate( daoDocument->DateCreated().toDateTime() );
         item->setUpdateDate( daoDocument->LastUpdated().toDateTime() );
+        qDebug() << "AccessObjectSetting::createItemFromProject is called" << daoDocument->Name();
     }
 
     return item;
@@ -572,6 +652,38 @@ bool AccessObjectSetting::importFromTempDirToProject(QAxObject *object, const QS
         return true;
     }
     return true;
+}
+
+bool AccessObjectSetting::prepareItemCollection()
+{
+    if (!m_projectSetting->isMDB())
+        return false;
+
+    ComPtr<DAO::Database> currentDb = m_projectSetting->application()->CurrentDb();
+    if (!currentDb.is())
+        return false;
+    m_containers.set( currentDb->Containers() );
+    m_container.set( m_containers->Item( m_containerName ) );
+    m_documents.set( m_container->Documents() );
+
+    qDebug() << "AccessObjectSetting::prepareItemCollection called" << m_containerName << "current m_documents->Count() is " << m_documents->Count();
+    return m_documents.is();
+}
+
+int AccessObjectSetting::itemCount()
+{
+    qDebug() << "AccessObjectSetting::itemCount called" << m_containerName << "current m_documents->Count() is ";
+    qDebug() << m_documents->Count();
+    if (!m_documents.is())
+        return 0;
+    return m_documents->Count();
+}
+
+QAxObject *AccessObjectSetting::itemUnsafePtr(const QVariant &index)
+{
+    if (!m_documents.is())
+        return 0;
+    return m_documents->Item(index);
 }
 
 
@@ -834,6 +946,37 @@ FormSetting::FormSetting(ProjectSetting *parent)
     m_existCheckExtension = m_designFileExtension;
 }
 
+bool FormSetting::prepareItemCollection()
+{
+    if (!m_projectSetting->isADP())
+        return AccessDesignObjectSetting::prepareItemCollection();
+
+    ComPtr<Access::CurrentProject> currentProject = m_projectSetting->application()->CurrentProject();
+    m_objects.set( currentProject->AllForms() );
+
+    return m_objects.is();
+}
+
+int FormSetting::itemCount()
+{
+    if (!m_projectSetting->isADP())
+        return AccessDesignObjectSetting::itemCount();
+
+    if (!m_objects.is())
+        return 0;
+    return m_objects->Count();
+}
+
+QAxObject *FormSetting::itemUnsafePtr(const QVariant &index)
+{
+    if (!m_projectSetting->isADP())
+        return AccessDesignObjectSetting::itemUnsafePtr(index);
+
+    if (!m_objects.is())
+        return 0;
+    return m_objects->Item(index);
+}
+
 
 //=============================================================================
 // Report
@@ -852,6 +995,37 @@ ReportSetting::ReportSetting(ProjectSetting *parent)
     m_existCheckExtension = m_designFileExtension;
 }
 
+bool ReportSetting::prepareItemCollection()
+{
+    if (!m_projectSetting->isADP())
+        return AccessDesignObjectSetting::prepareItemCollection();
+
+    ComPtr<Access::CurrentProject> currentProject = m_projectSetting->application()->CurrentProject();
+    m_objects.set( currentProject->AllReports() );
+
+    return m_objects.is();
+}
+
+int ReportSetting::itemCount()
+{
+    if (!m_projectSetting->isADP())
+        return AccessDesignObjectSetting::itemCount();
+
+    if (!m_objects.is())
+        return 0;
+    return m_objects->Count();
+}
+
+QAxObject *ReportSetting::itemUnsafePtr(const QVariant &index)
+{
+    if (!m_projectSetting->isADP())
+        return AccessDesignObjectSetting::itemUnsafePtr(index);
+
+    if (!m_objects.is())
+        return 0;
+    return m_objects->Item(index);
+}
+
 
 //=============================================================================
 // Macro
@@ -868,6 +1042,37 @@ MacroSetting::MacroSetting(ProjectSetting *parent)
     m_designFileExtension = "mcr";
     m_moduleFileExtension = "";
     m_existCheckExtension = m_designFileExtension;
+}
+
+bool MacroSetting::prepareItemCollection()
+{
+    if (!m_projectSetting->isADP())
+        return AccessDesignObjectSetting::prepareItemCollection();
+
+    ComPtr<Access::CurrentProject> currentProject = m_projectSetting->application()->CurrentProject();
+    m_objects.set( currentProject->AllMacros() );
+
+    return m_objects.is();
+}
+
+int MacroSetting::itemCount()
+{
+    if (!m_projectSetting->isADP())
+        return AccessDesignObjectSetting::itemCount();
+
+    if (!m_objects.is())
+        return 0;
+    return m_objects->Count();
+}
+
+QAxObject *MacroSetting::itemUnsafePtr(const QVariant &index)
+{
+    if (!m_projectSetting->isADP())
+        return AccessDesignObjectSetting::itemUnsafePtr(index);
+
+    if (!m_objects.is())
+        return 0;
+    return m_objects->Item(index);
 }
 
 
@@ -920,6 +1125,37 @@ bool ModuleSetting::desanitizeTempDir(QAxObject *object, const QString &objectNa
     FileUtil::deleteFile(   moduleFilePathInTempDir(objectName) );
 
     return true;
+}
+
+bool ModuleSetting::prepareItemCollection()
+{
+    if (!m_projectSetting->isADP())
+        return AccessObjectSetting::prepareItemCollection();
+
+    ComPtr<Access::CurrentProject> currentProject = m_projectSetting->application()->CurrentProject();
+    m_objects.set( currentProject->AllModules() );
+
+    return m_objects.is();
+}
+
+int ModuleSetting::itemCount()
+{
+    if (!m_projectSetting->isADP())
+        return AccessObjectSetting::itemCount();
+
+    if (!m_objects.is())
+        return 0;
+    return m_objects->Count();
+}
+
+QAxObject *ModuleSetting::itemUnsafePtr(const QVariant &index)
+{
+    if (!m_projectSetting->isADP())
+        return AccessObjectSetting::itemUnsafePtr(index);
+
+    if (!m_objects.is())
+        return 0;
+    return m_objects->Item(index);
 }
 
 void ModuleSetting::determineCodecForProject()
@@ -1106,6 +1342,31 @@ bool ReferenceSetting::desanitizeTempDir(QAxObject *object, const QString &objec
     Q_UNUSED(objectName)
     // no sanitization required
     return true;
+}
+
+bool ReferenceSetting::prepareItemCollection()
+{
+    // different from others.
+    if (m_projectSetting->isMDB() || m_projectSetting->isADP())
+        return true;
+    return false;
+}
+
+int ReferenceSetting::itemCount()
+{
+    // different from others.
+    if (m_projectSetting->isMDB() || m_projectSetting->isADP())
+        return 1;
+    return 0;
+}
+
+QAxObject *ReferenceSetting::itemUnsafePtr(const QVariant &index)
+{
+    Q_UNUSED(index)
+    // different from others.
+    if (m_projectSetting->isMDB() || m_projectSetting->isADP())
+        return m_projectSetting->application()->References();
+    return 0;
 }
 
 

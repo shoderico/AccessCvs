@@ -6,6 +6,7 @@
 #include <QFileInfo>
 
 #include "objectitem.h"
+#include "util/comptr.h"
 
 class ProjectSetting;
 class SanitizeSetting;
@@ -14,7 +15,19 @@ class CodecInfo;
 class QAxObject;
 
 
-
+namespace DAO {
+class TableDefs;
+class QueryDefs;
+class Containers;
+class Container;
+class Documents;
+}
+namespace Access {
+class AllForms;
+class AllReports;
+class AllMacros;
+class AllModules;
+}
 
 
 
@@ -75,7 +88,9 @@ public:
     virtual bool deleteFromFileSystem(const QString &objectName);
     virtual bool deleteFromProject(const QString &objectName);
 
-    virtual void determineCodecForProject();
+    virtual bool prepareItemCollection();
+    virtual int itemCount();
+    virtual QAxObject *itemUnsafePtr(const QVariant &index);
 
 protected:
     enum DirectoryType
@@ -99,6 +114,8 @@ protected:
     QString filePath(DirectoryType dirType, FileType fileType, const QString &objectName) const;
 
     void mkpathObjectPath(DirectoryType dirType);
+
+    virtual void determineCodecForProject();
 
 
 protected:
@@ -143,8 +160,13 @@ public:
     virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
     virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
     virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
+
+    virtual bool        prepareItemCollection();
+    virtual int         itemCount();
+    virtual QAxObject  *itemUnsafePtr(const QVariant &index);
 protected:
     virtual void determineCodecForProject();
+    ComPtr<DAO::TableDefs> m_tableDefs;
 };
 
 class TableDataSetting : public ObjectSetting
@@ -170,6 +192,12 @@ public:
     virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
     virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
     virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
+
+    virtual bool        prepareItemCollection();
+    virtual int         itemCount();
+    virtual QAxObject  *itemUnsafePtr(const QVariant &index);
+protected:
+    ComPtr<DAO::QueryDefs> m_queryDefs;
 };
 
 
@@ -183,6 +211,14 @@ public:
     virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
     virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
     virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
+
+    virtual bool        prepareItemCollection();
+    virtual int         itemCount();
+    virtual QAxObject  *itemUnsafePtr(const QVariant &index);
+protected:
+    ComPtr<DAO::Containers> m_containers;
+    ComPtr<DAO::Container> m_container;
+    ComPtr<DAO::Documents> m_documents;
 };
 
 
@@ -206,18 +242,33 @@ class FormSetting : public AccessDesignObjectSetting
 {
 public:
     explicit FormSetting(ProjectSetting *parent);
+    virtual bool        prepareItemCollection();
+    virtual int         itemCount();
+    virtual QAxObject  *itemUnsafePtr(const QVariant &index);
+protected:
+    ComPtr<Access::AllForms> m_objects;
 };
 
 class ReportSetting : public AccessDesignObjectSetting
 {
 public:
     explicit ReportSetting(ProjectSetting *parent);
+    virtual bool        prepareItemCollection();
+    virtual int         itemCount();
+    virtual QAxObject  *itemUnsafePtr(const QVariant &index);
+protected:
+    ComPtr<Access::AllReports> m_objects;
 };
 
 class MacroSetting : public AccessDesignObjectSetting
 {
 public:
     explicit MacroSetting(ProjectSetting *parent);
+    virtual bool        prepareItemCollection();
+    virtual int         itemCount();
+    virtual QAxObject  *itemUnsafePtr(const QVariant &index);
+protected:
+    ComPtr<Access::AllMacros> m_objects;
 };
 
 class ModuleSetting : public AccessObjectSetting
@@ -226,8 +277,13 @@ public:
     explicit ModuleSetting(ProjectSetting *parent);
     virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
     virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
+
+    virtual bool        prepareItemCollection();
+    virtual int         itemCount();
+    virtual QAxObject  *itemUnsafePtr(const QVariant &index);
 protected:
     virtual void determineCodecForProject();
+    ComPtr<Access::AllModules> m_objects;
 };
 
 
@@ -247,8 +303,13 @@ public:
     virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
     virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
     virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
+
+    virtual bool        prepareItemCollection();
+    virtual int         itemCount();
+    virtual QAxObject  *itemUnsafePtr(const QVariant &index);
 private:
     QString m_objectName;
+    // ComPtr<Access::XXX> m_objects; // no need
 };
 
 

@@ -515,8 +515,6 @@ void ObjectModel::getItems(ObjectItems *pItems, ObjectModel::ItemsType itemsType
             (*pItems)[ toBeInserted->objectType() ][ toBeInserted->name() ] = toBeInserted;
         }
     }
-
-
 }
 
 
@@ -534,142 +532,39 @@ void ObjectModel::loadItemFromProject()
     setting.initialize(m_application);
 
 
-    //------------------------------------------------------------------------------------------
-    // TableDef
-    if ( setting.isMDB() )
-    {
-        os = setting[ Model::TableDef ];
-
-        ComPtr<DAO::TableDefs> tableDefs = currentDb->TableDefs();
-        for ( int i = 0 ; i < tableDefs->Count() ; ++i )
-        {
-            ComPtr<DAO::TableDef> tableDef = tableDefs->Item(i);
-            if ( os->isTargetObject( tableDef.ptr() ) )
-            {
-                items << os->createItemFromProject(tableDef.ptr(), this);
-            }
-        }
-    }
-    //------------------------------------------------------------------------------------------
-    // TableData
-    //------------------------------------------------------------------------------------------
-    // Relation
-
-    //------------------------------------------------------------------------------------------
-    // Query
-    if ( setting.isMDB() )
-    {
-        os = setting[ Model::Query ];
-
-        ComPtr<DAO::QueryDefs> queryDefs = currentDb->QueryDefs();
-        for ( int i = 0 ; i < queryDefs->Count() ; ++i )
-        {
-            ComPtr<DAO::QueryDef> queryDef = queryDefs->Item(i);
-            if ( os->isTargetObject( queryDef.ptr() ) )
-            {
-                items << os->createItemFromProject(queryDef.ptr(), this);
-            }
-        }
-    }
-
-    //------------------------------------------------------------------------------------------
-    // Form, Report, Macro, Module
-    if ( setting.isMDB() )
     {
         QList<Model::ObjectType> objectTypes;
-        objectTypes << Model::Form
+        objectTypes << Model::TableDef
+                    << Model::Query
+                    << Model::Form
                     << Model::Report
                     << Model::Macro
                     << Model::Module
+                    << Model::Reference
+                       // TODO: TableData
+                       // TODO: Relation
                        ;
-
-        ComPtr<DAO::Containers> containers = currentDb->Containers();
 
         foreach ( Model::ObjectType objectType, objectTypes )
         {
             os = setting[ objectType ];
 
-            ComPtr<DAO::Container> container = containers->Item( os->containerName() );
-            ComPtr<DAO::Documents> documents = container->Documents();
-            for (int i = 0 ; i < documents->Count() ; ++i )
+            if (!os->prepareItemCollection())
+                continue;
+
+            qDebug() << "os->prepareItemCollection() returns true " << os->containerName() << " os->itemCount() = " << os->itemCount();
+            for (int i = 0 ; i < os->itemCount() ; ++i )
             {
-                ComPtr<DAO::Document> document = documents->Item(i);
-                if ( os->isTargetObject( document.ptr() ) )
+                qDebug() << "in loop for (int i = 0 ; i < os->itemCount() ; ++i ) " << i << os->containerName();
+                ComPtr<QAxObject> object = os->itemUnsafePtr(i);
+                if ( os->isTargetObject( object.ptr() ) )
                 {
-                    items << os->createItemFromProject(document.ptr(), this);
+                    qDebug() << "os->isTargetObject( object.ptr() ) returns true" << os->containerName();
+                    items << os->createItemFromProject(object.ptr(), this);
                 }
             }
         }
     }
-    //------------------------------------------------------------------------------------------
-    // Form
-    if ( setting.isADP() )
-    {
-        os = setting[ Model::Form ];
-        ComPtr<Access::AllForms> objects = currentProject->AllForms();
-        for ( int i = 0 ; i < objects->Count() ; ++i )
-        {
-            ComPtr<Access::AccessObject> object = objects->Item( i );
-            if ( os->isTargetObject( object.ptr() ) )
-            {
-                items << os->createItemFromProject(object.ptr(), this);
-            }
-        }
-    }
-    //------------------------------------------------------------------------------------------
-    // Report
-    if ( setting.isADP() )
-    {
-        os = setting[ Model::Report ];
-        ComPtr<Access::AllReports> objects = currentProject->AllReports();
-        for ( int i = 0 ; i < objects->Count() ; ++i )
-        {
-            ComPtr<Access::AccessObject> object = objects->Item( i );
-            if ( os->isTargetObject( object.ptr() ) )
-            {
-                items << os->createItemFromProject(object.ptr(), this);
-            }
-        }
-    }
-    //------------------------------------------------------------------------------------------
-    // Macro
-    if ( setting.isADP() )
-    {
-        os = setting[ Model::Macro ];
-        ComPtr<Access::AllMacros> objects = currentProject->AllMacros();
-        for ( int i = 0 ; i < objects->Count() ; ++i )
-        {
-            ComPtr<Access::AccessObject> object = objects->Item( i );
-            if ( os->isTargetObject( object.ptr() ) )
-            {
-                items << os->createItemFromProject(object.ptr(), this);
-            }
-        }
-    }
-    //------------------------------------------------------------------------------------------
-    // Module
-    if ( setting.isADP() )
-    {
-        os = setting[ Model::Module ];
-        ComPtr<Access::AllModules> objects = currentProject->AllModules();
-        for ( int i = 0 ; i < objects->Count() ; ++i )
-        {
-            ComPtr<Access::AccessObject> object = objects->Item( i );
-            if ( os->isTargetObject( object.ptr() ) )
-            {
-                items << os->createItemFromProject(object.ptr(), this);
-            }
-        }
-    }
-
-    //------------------------------------------------------------------------------------------
-    // Reference
-    {
-        os = setting[ Model::Reference ];
-        items << os->createItemFromProject(NULL, this);
-    }
-
-
 
     //------------------------------------------------------------------------------------------
     // reset items
@@ -718,20 +613,6 @@ void ObjectModel::loadItemFromFileSystem()
 
     QList<ObjectItem *> items;
 
-    //------------------------------------------------------------------------------------------
-    // TableDef
-    //------------------------------------------------------------------------------------------
-    // Query
-    //------------------------------------------------------------------------------------------
-    // Form
-    //------------------------------------------------------------------------------------------
-    // Report
-    //------------------------------------------------------------------------------------------
-    // Macro
-    //------------------------------------------------------------------------------------------
-    // Module
-    //------------------------------------------------------------------------------------------
-    // Reference
     {
         QList<Model::ObjectType> objectTypes;
         objectTypes << Model::TableDef
@@ -741,6 +622,8 @@ void ObjectModel::loadItemFromFileSystem()
                     << Model::Macro
                     << Model::Module
                     << Model::Reference
+                       // TODO: TableData
+                       // TODO: Relation
                        ;
 
         foreach ( Model::ObjectType objectType, objectTypes )
@@ -762,13 +645,6 @@ void ObjectModel::loadItemFromFileSystem()
         }
     }
 
-    //------------------------------------------------------------------------------------------
-    // TableData
-    //------------------------------------------------------------------------------------------
-    // Relation
-
-
-
     // update / insert items
     beginResetModel();
     {
@@ -788,18 +664,14 @@ void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
 
     QTime time;
     QTime timeTotal;
-
     timeTotal.start();
     time.start();
+    ProgressNotifier mainProg(ExportFromProjectToTempDirProcess, this);
 
     ProjectSetting setting(this);
     ObjectSetting *os;
 
     setting.initialize(m_application);
-
-
-    ProgressNotifier mainProg(ExportFromProjectToTempDirProcess, this);
-
 
     ComPtr<Access::CurrentProject> currentProject  = m_application->CurrentProject();
     ComPtr<DAO::Database> currentDb = m_application->CurrentDb();
@@ -815,79 +687,18 @@ void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
     }
 
 
-
-    //------------------------------------------------------------------------------------------
-    // TableDef
-    if ( setting.isMDB() )
-    {
-        time.start();
-
-        os = setting[ Model::TableDef ];
-        os->mkdirTempObjectPath();
-
-        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
-        QStringList objectNames = targets.keys();
-
-        int nCount = objectNames.count();
-        ProgressNotifier subProg(ExportFromProjectToTempDirProcess, nCount, this);
-
-        ComPtr<DAO::TableDefs> tableDefs = currentDb->TableDefs();
-        foreach ( QString objectName, objectNames )
-        {
-            subProg.next();
-
-            //------------------------------------------------------------------------------------------
-            // Export Local Table
-            ComPtr<DAO::TableDef> tableDef = tableDefs->Item( objectName );
-            os->exportFromProjectToTempDir(tableDef.ptr(), objectName);
-
-        }
-        qDebug() << "TableDefs : " << nCount << " : " << time.elapsed();
-    }
-
-    //------------------------------------------------------------------------------------------
-    // Query
-    if ( setting.isMDB() )
-    {
-        time.start();
-
-        os = setting[ Model::Query ];
-        os->mkdirTempObjectPath();
-
-        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
-        QStringList objectNames = targets.keys();
-
-        int nCount = objectNames.count();
-        ProgressNotifier subProg(ExportFromProjectToTempDirProcess, nCount, this);
-
-        // TODO: universal iteration
-        ComPtr<DAO::QueryDefs> queryDefs = currentDb->QueryDefs();
-
-        foreach ( QString objectName, objectNames )
-        {
-            subProg.next();
-
-            //------------------------------------------------------------------------------------------
-            // Export Query as SQL
-            ComPtr<DAO::QueryDef> queryDef = queryDefs->Item( objectName );
-            os->exportFromProjectToTempDir(queryDef.ptr(), objectName);
-        }
-        qDebug() << "Queries : " << nCount << " : " << time.elapsed();
-    }
-
-
-    //------------------------------------------------------------------------------------------
-    // Form, Report, Macro, Module
-    //------------------------------------------------------------------------------------------
-    // Reference
     if ( setting.isMDB() || setting.isADP() )
     {
         QList<Model::ObjectType> objectTypes;
-        objectTypes << Model::Form
+        objectTypes << Model::TableDef
+                    << Model::Query
+                    << Model::Form
                     << Model::Report
                     << Model::Macro
                     << Model::Module
                     << Model::Reference
+                       // TODO: TableData
+                       // TODO: Relation
                        ;
 
         foreach ( Model::ObjectType objectType, objectTypes )
@@ -896,6 +707,8 @@ void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
 
             os = setting[ objectType ];
             os->mkdirTempObjectPath();
+            if (!os->prepareItemCollection())
+                continue;
 
             QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
             QStringList objectNames = targets.keys();
@@ -906,35 +719,13 @@ void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
             foreach ( QString objectName, objectNames )
             {
                 subProg.next();
-                //------------------------------------------------------------------------------------------
-                // Export Object as Text
-                os->exportFromProjectToTempDir(NULL, objectName);
+
+                ComPtr<QAxObject> object = os->itemUnsafePtr( objectName );
+                os->exportFromProjectToTempDir(object.ptr(), objectName);
             }
             qDebug() << os->objectPathName() << " : " << nCount << " : " << time.elapsed();
         }
     }
-
-    //------------------------------------------------------------------------------------------
-    // TableData
-    if ( setting.isMDB() )
-    {
-        // TODO: implement tabledata export
-
-        // determine target table names
-        // import
-            // build select sql with order by
-            // write data as tab-delimited csv with UCS2
-        // export
-            // read one by one..
-
-    }
-    //------------------------------------------------------------------------------------------
-    // Relation
-    if ( setting.isMDB() )
-    {
-        // TODO: implement relation export
-    }
-
 
     qDebug() << "DONE : " << timeTotal.elapsed() ;
 }
@@ -953,56 +744,24 @@ void ObjectModel::importFromTempDirToProject(ObjectItems *allTargets)
     setting.initialize(m_application);
 
 
-    // TableDef
-    // TableData
-    // Relation
-    {
-        // TODO: implement import object
-    }
-    // Query
-    if (setting.isMDB())
-    {
-        os = setting[ Model::Query ];
-        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
-        QStringList objectNames = targets.keys();
-
-        int nCount = objectNames.count();
-        ProgressNotifier subProg(ImportFromTempDirToProjectProcess, nCount, this);
-
-
-        ComPtr<DAO::Database> currentDb = m_application->CurrentDb();
-        ComPtr<DAO::QueryDefs> queryDefs = currentDb->QueryDefs();
-
-        foreach (QString objectName, objectNames)
-        {
-            subProg.next();
-            ObjectItem *item = targets[ objectName ];
-
-            if (item->inProject() == Model::Present)
-            {
-                ComPtr<DAO::QueryDef> queryDef = queryDefs->Item( objectName );
-                os->importFromTempDirToProject(queryDef.ptr(), objectName);
-            }
-            else
-            {
-                os->importFromTempDirToProject(NULL, objectName);
-            }
-        }
-    }
-
-    // Form. Report, Macro, Module, Rerefence
     {
         QList<Model::ObjectType> objectTypes;
-        objectTypes << Model::Form
+        objectTypes << Model::Query
+                    << Model::Form
                     << Model::Report
                     << Model::Macro
                     << Model::Module
                     << Model::Reference
+                       // TODO: TableDef
+                       // TODO: TableData
+                       // TODO: Relation
                     ;
 
         foreach (Model::ObjectType objectType, objectTypes)
         {
             os = setting[ objectType ];
+            if (!os->prepareItemCollection())
+                continue;
 
             QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
             QStringList objectNames = targets.keys();
@@ -1013,7 +772,15 @@ void ObjectModel::importFromTempDirToProject(ObjectItems *allTargets)
             foreach (QString objectName, objectNames)
             {
                 subProg.next();
-                os->importFromTempDirToProject(NULL, objectName);
+                ObjectItem *item = targets[ objectName ];
+                if (item->inProject() == Model::Present)
+                {
+                    // FIXME: form/report/macro/module : makes error?
+                    ComPtr<QAxObject> object = os->itemUnsafePtr( objectName );
+                    os->importFromTempDirToProject(object.ptr(), objectName);
+                }
+                else
+                    os->importFromTempDirToProject(NULL, objectName);
             }
         }
     }
@@ -1040,6 +807,8 @@ void ObjectModel::copyFromTempDirToFileSystem(ObjectItems *allTargets)
                 << Model::Macro
                 << Model::Module
                 << Model::Reference
+                   // TODO: TableData
+                   // TODO: Relation
                 ;
 
     foreach (Model::ObjectType objectType, objectTypes)
@@ -1082,6 +851,8 @@ void ObjectModel::copyFromFileSystemToTempDir(ObjectItems *allTargets)
                 << Model::Macro
                 << Model::Module
                 << Model::Reference
+                   // TODO: TableData
+                   // TODO: Relation
                 ;
 
     foreach (Model::ObjectType objectType, objectTypes)
@@ -1125,6 +896,8 @@ void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
                 << Model::Macro
                 << Model::Module
                 << Model::Reference
+                   // TODO: TableData
+                   // TODO: Relation
                 ;
 
     foreach (Model::ObjectType objectType, objectTypes)
@@ -1166,6 +939,8 @@ void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
                 << Model::Macro
                 << Model::Module
                 << Model::Reference
+                   // TODO: TableData
+                   // TODO: Relation
                 ;
 
     foreach (Model::ObjectType objectType, objectTypes)
@@ -1208,6 +983,8 @@ void ObjectModel::compareTempDir(ObjectItems *allTargets)
                 << Model::Macro
                 << Model::Module
                 << Model::Reference
+                   // TODO: TableData
+                   // TODO: Relation
                 ;
 
     foreach (Model::ObjectType objectType, objectTypes)
@@ -1262,6 +1039,8 @@ void ObjectModel::deleteFromFileSystem(ObjectItems *allTargets)
                 << Model::Macro
                 << Model::Module
                 << Model::Reference
+                   // TODO: TableData
+                   // TODO: Relation
                 ;
 
     foreach (Model::ObjectType objectType, objectTypes)
@@ -1302,6 +1081,9 @@ void ObjectModel::deleteFromProject(ObjectItems *allTargets)
                 << Model::Report
                 << Model::Macro
                 << Model::Module
+              //<< Model::Reference  // no need to delete
+                   // TODO: TableData
+                   // TODO: Relation
                 ;
 
     foreach (Model::ObjectType objectType, objectTypes)
