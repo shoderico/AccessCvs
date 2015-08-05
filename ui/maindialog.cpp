@@ -13,6 +13,7 @@
 #include <QMessageBox>
 
 #include <QMetaMethod>
+#include <QApplication>
 
 using namespace Access;
 
@@ -144,6 +145,7 @@ void MainDialog::progressChange(int type, int value)
 {
     Q_UNUSED(type);
     ui->progressBar->setValue(value);
+    QApplication::processEvents();
 }
 
 void MainDialog::progressEnd(int type)

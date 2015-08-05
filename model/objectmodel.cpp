@@ -520,6 +520,7 @@ void ObjectModel::getItems(ObjectItems *pItems, ObjectModel::ItemsType itemsType
 
 void ObjectModel::loadItemFromProject()
 {
+    ProgressNotifier mainProg(LoadItemFromProjectProcess, this);
 
     QList<ObjectItem*> items;
 
@@ -552,8 +553,10 @@ void ObjectModel::loadItemFromProject()
             if (!os->prepareItemCollection())
                 continue;
 
+            ProgressNotifier subProg(LoadItemFromProjectProcess, os->itemCount(), this);
             for (int i = 0 ; i < os->itemCount() ; ++i )
             {
+                subProg.next();
                 ComPtr<QAxObject> object = os->itemUnsafePtr(i);
                 if ( os->isTargetObject( object.ptr() ) )
                 {
@@ -567,18 +570,26 @@ void ObjectModel::loadItemFromProject()
     // reset items
     beginRemoveRows( QModelIndex(), 0, m_items.count() - 1 );
     {
+        ProgressNotifier subProg(LoadItemFromProjectProcess, m_mapItems.keys().length(), this);
         qDeleteAll(m_items);
         m_items.clear();
 
         foreach (Model::ObjectType t, m_mapItems.keys() )
+        {
+            subProg.next();
             m_mapItems[t].clear();
+        }
     }
     endRemoveRows();
 
     beginInsertRows( QModelIndex(), 0, items.count() - 1);
     {
+        ProgressNotifier subProg(LoadItemFromProjectProcess, items.length(), this);
         foreach( ObjectItem *item, items)
+        {
+            subProg.next();
             addItem( item );
+        }
     }
     endInsertRows();
 }
@@ -587,12 +598,16 @@ void ObjectModel::loadItemFromFileSystem()
 {
     // load items from local file system.
 
-    ProgressNotifier mainProg(LoadFromFileSystemProcess, this);
+    ProgressNotifier mainProg(LoadItemFromFileSystemProcess, this);
 
     beginResetModel();
     {
+        ProgressNotifier subProg(LoadItemFromFileSystemProcess, m_items.length(), this);
         foreach ( ObjectItem *item, m_items )
+        {
+            subProg.next();
             item->setInFileSystem( Model::Absent );
+        }
     }
     endResetModel();
 
@@ -632,7 +647,7 @@ void ObjectModel::loadItemFromFileSystem()
             {
                 objectDir.setNameFilters( (QStringList() << ("*." + os->existCheckExtension() ) ) );
                 QFileInfoList fileInfos = objectDir.entryInfoList( QDir::Files );
-                ProgressNotifier subProg(LoadFromFileSystemProcess, fileInfos.length(), this);
+                ProgressNotifier subProg(LoadItemFromFileSystemProcess, fileInfos.length(), this);
                 foreach ( QFileInfo fileInfo, fileInfos )
                 {
                     subProg.next();
@@ -645,8 +660,12 @@ void ObjectModel::loadItemFromFileSystem()
     // update / insert items
     beginResetModel();
     {
+        ProgressNotifier subProg(LoadItemFromFileSystemProcess, items.length(), this);
         foreach ( ObjectItem *item, items )
+        {
+            subProg.next();
             addItem( item );
+        }
     }
     endResetModel();
 }

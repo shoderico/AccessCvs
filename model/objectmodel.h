@@ -118,8 +118,8 @@ public:
         ExportProcess,
         ImportProcess,
 
-        LoadFromProjectProcess,
-        LoadFromFileSystemProcess,
+        LoadItemFromProjectProcess,
+        LoadItemFromFileSystemProcess,
 
         ExportFromProjectToTempDirProcess,
         ImportFromTempDirToProjectProcess,
