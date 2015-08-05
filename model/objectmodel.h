@@ -83,8 +83,7 @@ public:
     // TODO: can be non-public ?
     void getItems(ObjectItems *pItems, ItemsTypes itemsType, bool selectedOnly = true) const;
 
-    void selectItemsForImport(bool resetSelection = true);
-    void selectItemsForExport(bool resetSelection = true);
+    void selectItemsForProcess(bool resetSelection = true);
     void selectItems(ItemsTypes itemsType, bool resetSelection = true);
 
 

@@ -489,12 +489,7 @@ void ObjectModel::getItems(ObjectItems *pItems, ObjectModel::ItemsTypes itemsTyp
     }
 }
 
-void ObjectModel::selectItemsForImport(bool resetSelection)
-{
-    selectItems( InProjectOnly | InFileSystemOnly | InBoth_Different, resetSelection );
-}
-
-void ObjectModel::selectItemsForExport(bool resetSelection)
+void ObjectModel::selectItemsForProcess(bool resetSelection)
 {
     selectItems( InProjectOnly | InFileSystemOnly | InBoth_Different, resetSelection );
 }

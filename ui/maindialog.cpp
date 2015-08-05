@@ -122,7 +122,7 @@ void MainDialog::signal(const QString &name, int argc, void *argv)
 void MainDialog::exportObjects()
 {
     m_model->refreshItems();
-    m_model->selectItemsForExport();
+    m_model->selectItemsForProcess();
     // FIXME: i don't know why but cursor stays with WaitCursor in several seconds.
     QApplication::setOverrideCursor(Qt::WaitCursor);
     QApplication::restoreOverrideCursor();
@@ -142,7 +142,7 @@ void MainDialog::executeImport()
 
 void MainDialog::selectAuto()
 {
-    m_model->selectItemsForExport();
+    m_model->selectItemsForProcess();
 }
 
 void MainDialog::selectAll(int state)
