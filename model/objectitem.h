@@ -82,6 +82,13 @@ public:
     void setUpdateDate(const QDateTime &dt) { m_updateDate = dt; }
 
     /*!
+       \brief exportDate
+       \return
+     */
+    QDateTime exportDate() const { return m_exportDate; }
+    void setExportDate(const QDateTime &dt) { m_exportDate = dt; }
+
+    /*!
        \brief isSelected
        \return
      */
@@ -136,6 +143,7 @@ protected:
     QString     m_name;
     QDateTime   m_createDate;
     QDateTime   m_updateDate;
+    QDateTime   m_exportDate;
     bool        m_isSelected;
     Model::ObjectExistence  m_inProject;
     Model::ObjectExistence  m_inFileSystem;

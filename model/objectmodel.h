@@ -41,6 +41,7 @@ public:
         DifferentColumn,
         CreateDateColumn,
         UpdateDateColumn,
+        ExportDateColumn,
         ObjectTypeColumn,
         ColumnCount
     };

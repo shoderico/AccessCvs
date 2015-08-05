@@ -50,6 +50,7 @@ QVariant ObjectModel::headerData(int section, Qt::Orientation orientation, int r
             case InFileSystemColumn: return tr("InRepository");
             case CreateDateColumn: return tr("CreateDate");
             case UpdateDateColumn: return tr("UpdateDate");
+            case ExportDateColumn: return tr("ExportDate");
             case ObjectTypeColumn: return tr("ObjectType");
             case DifferentColumn: return tr("Different");
         }
@@ -92,6 +93,7 @@ QVariant ObjectModel::data(const QModelIndex &index, int role) const
             case InFileSystemColumn:  return (int)item->inFileSystem();
             case CreateDateColumn:    return item->createDate();
             case UpdateDateColumn:    return item->updateDate();
+            case ExportDateColumn:    return item->exportDate();
             case ObjectTypeColumn:    return item->objectType();
             case DifferentColumn:    return item->isDifferent();
         default:
