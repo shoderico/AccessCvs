@@ -414,6 +414,8 @@ bool ObjectModel::executeImport()
         }
     }
 
+    m_application->RefreshDatabaseWindow();
+
     return true;
 }
 
