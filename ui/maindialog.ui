@@ -32,16 +32,9 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Select :</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QPushButton" name="selectAutoButton">
          <property name="text">
-          <string>auto</string>
+          <string>auto select</string>
          </property>
         </widget>
        </item>
@@ -70,7 +63,7 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QPushButton" name="exportButton">
+        <widget class="QPushButton" name="refreshItemsButton">
          <property name="text">
           <string>refresh</string>
          </property>
@@ -79,14 +72,14 @@
        <item>
         <widget class="QPushButton" name="executeExportButton">
          <property name="text">
-          <string>execute Export</string>
+          <string>export</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="executeImportButton">
          <property name="text">
-          <string>execute Import</string>
+          <string>import</string>
          </property>
         </widget>
        </item>

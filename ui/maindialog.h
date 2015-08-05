@@ -29,7 +29,7 @@ public slots:
     void	signal(const QString & name, int argc, void * argv);
 
 private slots:
-    void exportObjects();
+    void refreshItems();
     void executeExport();
     void executeImport();
 

@@ -41,7 +41,7 @@ MainDialog::MainDialog(IDispatch *application, QWidget *parent) :
     connect( ui->okButton,     SIGNAL(clicked(bool)), this, SLOT(accept()) );
     connect( ui->cancelButton, SIGNAL(clicked(bool)), this, SLOT(reject()) );
 
-    connect( ui->exportButton,        SIGNAL(clicked(bool)), this, SLOT(exportObjects()) );
+    connect( ui->refreshItemsButton,  SIGNAL(clicked(bool)), this, SLOT(refreshItems()) );
     connect( ui->executeExportButton, SIGNAL(clicked(bool)), this, SLOT(executeExport()) );
     connect( ui->executeImportButton, SIGNAL(clicked(bool)), this, SLOT(executeImport()) );
     connect( ui->selectAutoButton,    SIGNAL(clicked(bool)), this, SLOT(selectAuto()) );
@@ -119,7 +119,7 @@ void MainDialog::signal(const QString &name, int argc, void *argv)
     QMessageBox::information(this, "", QString("propertyChanged ") + name);
 }
 
-void MainDialog::exportObjects()
+void MainDialog::refreshItems()
 {
     m_model->refreshItems();
     m_model->selectItemsForProcess();
