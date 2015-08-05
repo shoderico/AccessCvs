@@ -9,7 +9,8 @@
 #include "ribboncallback.h"
 
 
-//class MainDialog;
+class QWinWidget;
+class MainDialog;
 
 class AddInImpl
         : public QObject
@@ -93,6 +94,8 @@ private:
     IDispatch *m_pAddInInst;
 
 //    MainDialog *m_pDlg;
+    QWinWidget *m_winWidget;
+    MainDialog *m_dlg;
 };
 
 #endif // ADDINIMPL_H

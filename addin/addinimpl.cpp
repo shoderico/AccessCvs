@@ -26,6 +26,8 @@
 
 AddInImpl::AddInImpl(QObject *parent)
     : QObject(parent)
+    , m_winWidget(0)
+    , m_dlg(0)
 {
     HRESULT hr;
     ITypeLib *pTypeLib = NULL;
@@ -176,12 +178,15 @@ HRESULT AddInImpl::OnDisconnection(ext_DisconnectMode RemoveMode, SAFEARRAY **cu
    if (RemoveMode != ext_dm_HostShutdown)
        OnBeginShutdown(custom);
 
-//   if (m_pDlg)
-//   {
-//       m_pDlg->close();
-//       delete m_pDlg;
-//       m_pDlg = 0;
-//   }
+   if (m_dlg)
+   {
+       m_dlg->close();
+       delete m_dlg;
+       m_dlg = 0;
+
+       delete m_winWidget;
+       m_winWidget = 0;
+   }
 
    // Release the pointer...
    if (NULL != m_pApplication) {
@@ -280,24 +285,20 @@ HRESULT AddInImpl::ButtonClicked(IDispatch *ribbonControl)
     //QMessageBox::information(0, QString(""), QString("ButtonClicked"));
     Q_UNUSED(ribbonControl);
 
-    Access::_Application *applicationCoClass = new Access::_Application(m_pApplication);
-    Access::Application application( applicationCoClass );
-//    QWinWidget winWidget( (HWND)application.hWndAccessApp() );
-//    winWidget.showCentered();
+    if (!m_winWidget)
+    {
 
-//    MainDialog dlg( m_pApplication, &winWidget );
-//    dlg.exec();
-
-    QWinWidget *winWidget = new QWinWidget( (HWND)application.hWndAccessApp() );
-    winWidget->showCentered();
-    MainDialog *dlg = new MainDialog( m_pApplication, winWidget );
-    dlg->show();
-
-//    MainDialog dlg( m_pApplication );
-//    dlg.exec();
-
-//    m_pDlg = new MainDialog(m_pApplication);
-//    m_pDlg->show();
+        Access::_Application *applicationCoClass = new Access::_Application(m_pApplication);
+        Access::Application application( applicationCoClass );
+        m_winWidget = new QWinWidget( (HWND)application.hWndAccessApp() );
+        m_winWidget->showCentered();
+        m_dlg = new MainDialog( m_pApplication, m_winWidget );
+        m_dlg->show();
+    }
+    else
+    {
+        m_dlg->show();
+    }
 
     return S_OK;
 }
