@@ -297,6 +297,7 @@ ObjectItem *TableDefSetting::createItemFromProject(QAxObject *object, QObject *p
         item->setInProject( Model::Present );
         item->setCreateDate( tableDef->DateCreated().toDateTime() );
         item->setUpdateDate( tableDef->LastUpdated().toDateTime() );
+        item->setExportDate( FileUtil::fileTime( filePath(TempDir, TempFile, item->name()) ) );
     }
 
     return item;
@@ -486,6 +487,7 @@ ObjectItem *QuerySetting::createItemFromProject(QAxObject *object, QObject *pare
         item->setInProject( Model::Present );
         item->setCreateDate( queryDef->DateCreated().toDateTime() );
         item->setUpdateDate( queryDef->LastUpdated().toDateTime() );
+        item->setExportDate( FileUtil::fileTime( filePath(TempDir, TempFile, item->name()) ) );
     }
 
     return item;
@@ -617,6 +619,7 @@ ObjectItem *AccessObjectSetting::createItemFromProject(QAxObject *object, QObjec
         item->setInProject( Model::Present );
         item->setCreateDate( accessObject->DateCreated() );
         item->setUpdateDate( accessObject->DateModified() );
+        item->setExportDate( FileUtil::fileTime( filePath(TempDir, TempFile, item->name()) ) );
     }
 
     DAO::Document *daoDocument = dynamic_cast<DAO::Document*>(object);
@@ -627,6 +630,7 @@ ObjectItem *AccessObjectSetting::createItemFromProject(QAxObject *object, QObjec
         item->setInProject( Model::Present );
         item->setCreateDate( daoDocument->DateCreated().toDateTime() );
         item->setUpdateDate( daoDocument->LastUpdated().toDateTime() );
+        item->setExportDate( FileUtil::fileTime( filePath(TempDir, TempFile, item->name()) ) );
     }
 
     return item;
@@ -1200,6 +1204,7 @@ ObjectItem *ReferenceSetting::createItemFromProject(QAxObject *object, QObject *
         item->setObjectType( m_objectType );
         item->setName( m_objectName );
         item->setInProject( Model::Present );
+        item->setExportDate( FileUtil::fileTime( filePath(TempDir, TempFile, item->name()) ) );
     }
 
     return item;

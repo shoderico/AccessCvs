@@ -2,6 +2,7 @@
 #define FILEUTIL_H
 
 #include <QString>
+#include <QDateTime>
 
 class CodecInfo;
 
@@ -23,6 +24,9 @@ public:
 
     static QStringList loadAsStringList(const QString &fileName, CodecInfo *codec);
     static QString     loadAsString    (const QString &fileName, CodecInfo *codec);
+
+    static QDateTime fileTime(const QString &fileName);
+    static bool setFileTime(const QString &fileName, const QDateTime &createDate, const QDateTime &updateDate);
 
 };
 

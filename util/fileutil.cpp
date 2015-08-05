@@ -2,10 +2,13 @@
 
 #include "codecinfo.h"
 
+#include <QDebug>
 #include <QFile>
 #include <QTextStream>
+#include <QFileInfo>
 
 #include <QCryptographicHash>
+#include <qt_windows.h>
 
 void FileUtil::saveToFile(const QString &contents, const QString &filePath, CodecInfo *codec)
 {
@@ -149,5 +152,85 @@ QString FileUtil::loadAsString(const QString &fileName, CodecInfo *codec)
 {
     QStringList lines = loadAsStringList(fileName, codec);
     return lines.join( codec->lineEnd() );
+}
+
+QDateTime FileUtil::fileTime(const QString &fileName)
+{
+    QFileInfo fi( fileName );
+    if (!fi.exists())
+        return QDateTime();
+
+    if ( fi.lastModified().isValid() && fi.created().isValid() )
+        return fi.lastModified() > fi.created() ? fi.lastModified() : fi.created();
+
+    if ( fi.lastModified().isValid() )
+        return fi.lastModified();
+
+    if ( fi.created().isValid() )
+        return fi.created();
+
+    return QDateTime();
+}
+
+
+namespace {
+
+// http://stackoverflow.com/questions/19704817/qdatetime-to-filetime
+// Convert a QDateTime to a FILETIME.
+FILETIME toWinFileTime(const QDateTime &dateTime)
+{
+    // Definition of FILETIME from MSDN:
+    // Contains a 64-bit value representing the number of 100-nanosecond intervals since January 1, 1601 (UTC).
+    QDateTime origin(QDate(1601, 1, 1), QTime(0, 0, 0, 0), Qt::UTC);
+    // Get offset - note we need 100-nanosecond intervals, hence we multiply by
+    // 10000.
+    qint64 _100nanosecs = 10000 * origin.msecsTo(dateTime);
+    // Pack _100nanosecs into the structure.
+    FILETIME fileTime;
+    fileTime.dwLowDateTime = _100nanosecs;
+    fileTime.dwHighDateTime = (_100nanosecs >> 32);
+    return fileTime;
+}
+
+// https://www.liveboxcloud.com/qt-and-windows-api/
+void TimetToFileTime( time_t t, LPFILETIME pft ) {
+    LONGLONG ll = Int32x32To64(t, 10000000) + 116444736000000000;
+    pft->dwLowDateTime = (DWORD) ll;
+    pft->dwHighDateTime = ll >> 32;
+}
+
+}
+
+bool FileUtil::setFileTime(const QString &fileName, const QDateTime &createDate, const QDateTime &updateDate)
+{
+
+    qint64 lastFSModifiedDate = updateDate.toTime_t();
+    qint64 FSCreationDate = createDate.toTime_t();
+
+    // https://www.liveboxcloud.com/qt-and-windows-api/
+
+    // get FILETIME structure from lastFSModifiedDate
+    FILETIME lmFileTime;
+    TimetToFileTime((time_t)lastFSModifiedDate, &lmFileTime);
+
+    // get FILETIME structure from FSCreationDate
+    FILETIME fcFileTime;
+    TimetToFileTime((time_t)FSCreationDate, &fcFileTime);
+
+    // handle to file
+    HANDLE filename = CreateFile(fileName.toStdWString().c_str(), GENERIC_READ|GENERIC_WRITE,
+                      FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
+
+    // set last modification time
+    bool setFileTimeReturnVal = SetFileTime(filename, &fcFileTime, (LPFILETIME) NULL, &lmFileTime);
+
+    if(!setFileTimeReturnVal) {
+        int err = ::GetLastError();
+        qDebug() << "Error while setting the date attributes to " << fileName << "; Error number: " << err;
+    }
+
+    CloseHandle(filename);
+
+    return setFileTimeReturnVal;
 }
 
