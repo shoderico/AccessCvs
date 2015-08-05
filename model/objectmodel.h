@@ -72,9 +72,10 @@ public:
         NoItems          = 0,
         InBoth           = 1,
         InBoth_Different = 2,
-        InProjectOnly    = 4,
-        InFileSystemOnly = 8,
-        AllItems         = 15,
+        InBoth_Same      = 4,
+        InProjectOnly    = 8,
+        InFileSystemOnly = 16,
+        AllItems         = 31,
     };
     Q_DECLARE_FLAGS(ItemsTypes, ItemsType)
     // TODO: define select-state ( selected, not-select, both)

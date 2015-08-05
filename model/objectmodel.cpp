@@ -358,6 +358,12 @@ bool ObjectModel::executeExport()
             getItems(&targets, InBoth_Different, selectedOnly);
             copyFromTempDirToFileSystem(&targets);  // InBoth_Different :       : Dirty FileSystem  : need one-more step? like confirm
         }
+        // for InBoth_Same
+        {
+            ObjectItems targets;
+            getItems(&targets, InBoth_Same, selectedOnly);
+            copyFromTempDirToFileSystem(&targets);  // InBoth_Same      :       : Dirty FileSystem  : need one-more step? like confirm
+        }
     }
 
     return true;
@@ -397,6 +403,14 @@ bool ObjectModel::executeImport()
             copyFromFileSystemToTempDir(&targets);  // InBoth_Different :       :               :
             desanitizeTempDir(&targets);            // InBoth_Different :       :               :
             importFromTempDirToProject(&targets);   // InBoth_Different : BLOCK : Dirty Project : need one-more step? like confirm
+        }
+        // for InBoth_Different
+        {
+            ObjectItems targets;
+            getItems(&targets, InBoth_Same, selectedOnly);
+            copyFromFileSystemToTempDir(&targets);  // InBoth_Same      :       :               :
+            desanitizeTempDir(&targets);            // InBoth_Same      :       :               :
+            importFromTempDirToProject(&targets);   // InBoth_Same      : BLOCK : Dirty Project : need one-more step? like confirm
         }
     }
 
@@ -446,6 +460,13 @@ void ObjectModel::getItems(ObjectItems *pItems, ObjectModel::ItemsTypes itemsTyp
             if ( item->inProject()    == Model::Present &&
                  item->inFileSystem() == Model::Present &&
                  item->isDifferent()  == Model::DifferentContents )
+                toBeInserted = item;
+        }
+        if (!toBeInserted && itemsType & InBoth_Same)
+        {
+            if ( item->inProject()    == Model::Present &&
+                 item->inFileSystem() == Model::Present &&
+                 item->isDifferent()  == Model::SameContents )
                 toBeInserted = item;
         }
         if (!toBeInserted && itemsType & InProjectOnly)
