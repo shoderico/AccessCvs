@@ -312,6 +312,7 @@ bool ObjectModel::refreshItems()
 
     // for InBoth
     {
+        // smart refresh
         assumeItemsTheSameByFileTime();
 
         ObjectItems targets;
@@ -320,6 +321,10 @@ bool ObjectModel::refreshItems()
         exportFromProjectToTempDir(&targets);   // InBoth           : BLOCK :                   :
         sanitizeTempDir(&targets);              // InBoth           :       :                   :
         compareTempDir(&targets);               // InBoth           :       :                   :
+
+        // if Different, we must rollback filetime of TempFile for smart refresh
+        rollbackFileTimeIfDifferent(&targets);
+
         //.
     }
 
@@ -543,6 +548,25 @@ void ObjectModel::assumeItemsTheSameByFileTime()
              item->updateDate().isValid() && item->exportDate().isValid() &&
              item->updateDate() <= item->exportDate() )
             item->setDifferent( Model::SameContents );
+    }
+}
+
+void ObjectModel::rollbackFileTimeIfDifferent(ObjectItems *allTargets)
+{
+    ProjectSetting setting(this);
+    ObjectSetting *os;
+    setting.initialize(m_application);
+
+    foreach ( Model::ObjectType objectType, allTargets->keys() )
+    {
+        os = setting[ objectType ];
+        foreach ( ObjectItem* item, allTargets->value( objectType ).values() )
+        {
+            if ( item->isDifferent() == Model::DifferentContents )
+            {
+                os->rollbackFileTimeTempDir(item->name(), item->exportDate());
+            }
+        }
     }
 }
 

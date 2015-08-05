@@ -88,6 +88,7 @@ public:
     void selectItems(ItemsTypes itemsType, bool resetSelection = true);
 
     void assumeItemsTheSameByFileTime();
+    void rollbackFileTimeIfDifferent(ObjectItems *allTargets);
 
 
 

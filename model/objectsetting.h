@@ -92,6 +92,8 @@ public:
     virtual int itemCount();
     virtual QAxObject *itemUnsafePtr(const QVariant &index);
 
+    void rollbackFileTimeTempDir(const QString &objectName, const QDateTime &fileTime);
+
 protected:
     enum DirectoryType
     {

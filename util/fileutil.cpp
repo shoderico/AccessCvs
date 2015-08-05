@@ -204,6 +204,9 @@ void TimetToFileTime( time_t t, LPFILETIME pft ) {
 bool FileUtil::setFileTime(const QString &fileName, const QDateTime &createDate, const QDateTime &updateDate)
 {
 
+    if ( !QFile(fileName).exists() )
+        qDebug() << "file does not exist" << fileName;
+
     qint64 lastFSModifiedDate = updateDate.toTime_t();
     qint64 FSCreationDate = createDate.toTime_t();
 
@@ -220,6 +223,12 @@ bool FileUtil::setFileTime(const QString &fileName, const QDateTime &createDate,
     // handle to file
     HANDLE filename = CreateFile(fileName.toStdWString().c_str(), GENERIC_READ|GENERIC_WRITE,
                       FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
+
+    if (filename == INVALID_HANDLE_VALUE)
+    {
+        int err = ::GetLastError();
+        qDebug() << "invalid file handle " << filename << "; Error number: " << err;
+    }
 
     // set last modification time
     bool setFileTimeReturnVal = SetFileTime(filename, &fcFileTime, (LPFILETIME) NULL, &lmFileTime);

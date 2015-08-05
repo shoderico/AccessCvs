@@ -170,6 +170,11 @@ QAxObject *ObjectSetting::itemUnsafePtr(const QVariant &index)
     return NULL;
 }
 
+void ObjectSetting::rollbackFileTimeTempDir(const QString &objectName, const QDateTime &fileTime)
+{
+    FileUtil::setFileTime( tempFilePathInTempDir(objectName), fileTime, fileTime );
+}
+
 void ObjectSetting::determineCodecForProject()
 {
     // do nothing here.
@@ -952,7 +957,7 @@ FormSetting::FormSetting(ProjectSetting *parent)
 
 bool FormSetting::prepareItemCollection()
 {
-    if (!m_projectSetting->isADP())
+    if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
         return AccessDesignObjectSetting::prepareItemCollection();
 
     ComPtr<Access::CurrentProject> currentProject = m_projectSetting->application()->CurrentProject();
@@ -963,7 +968,7 @@ bool FormSetting::prepareItemCollection()
 
 int FormSetting::itemCount()
 {
-    if (!m_projectSetting->isADP())
+    if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
         return AccessDesignObjectSetting::itemCount();
 
     if (!m_objects.is())
@@ -973,7 +978,7 @@ int FormSetting::itemCount()
 
 QAxObject *FormSetting::itemUnsafePtr(const QVariant &index)
 {
-    if (!m_projectSetting->isADP())
+    if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
         return AccessDesignObjectSetting::itemUnsafePtr(index);
 
     if (!m_objects.is())
@@ -1001,7 +1006,7 @@ ReportSetting::ReportSetting(ProjectSetting *parent)
 
 bool ReportSetting::prepareItemCollection()
 {
-    if (!m_projectSetting->isADP())
+    if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
         return AccessDesignObjectSetting::prepareItemCollection();
 
     ComPtr<Access::CurrentProject> currentProject = m_projectSetting->application()->CurrentProject();
@@ -1012,7 +1017,7 @@ bool ReportSetting::prepareItemCollection()
 
 int ReportSetting::itemCount()
 {
-    if (!m_projectSetting->isADP())
+    if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
         return AccessDesignObjectSetting::itemCount();
 
     if (!m_objects.is())
@@ -1022,7 +1027,7 @@ int ReportSetting::itemCount()
 
 QAxObject *ReportSetting::itemUnsafePtr(const QVariant &index)
 {
-    if (!m_projectSetting->isADP())
+    if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
         return AccessDesignObjectSetting::itemUnsafePtr(index);
 
     if (!m_objects.is())
@@ -1050,7 +1055,7 @@ MacroSetting::MacroSetting(ProjectSetting *parent)
 
 bool MacroSetting::prepareItemCollection()
 {
-    if (!m_projectSetting->isADP())
+    if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
         return AccessDesignObjectSetting::prepareItemCollection();
 
     ComPtr<Access::CurrentProject> currentProject = m_projectSetting->application()->CurrentProject();
@@ -1061,7 +1066,7 @@ bool MacroSetting::prepareItemCollection()
 
 int MacroSetting::itemCount()
 {
-    if (!m_projectSetting->isADP())
+    if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
         return AccessDesignObjectSetting::itemCount();
 
     if (!m_objects.is())
@@ -1071,7 +1076,7 @@ int MacroSetting::itemCount()
 
 QAxObject *MacroSetting::itemUnsafePtr(const QVariant &index)
 {
-    if (!m_projectSetting->isADP())
+    if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
         return AccessDesignObjectSetting::itemUnsafePtr(index);
 
     if (!m_objects.is())
@@ -1133,7 +1138,7 @@ bool ModuleSetting::desanitizeTempDir(QAxObject *object, const QString &objectNa
 
 bool ModuleSetting::prepareItemCollection()
 {
-    if (!m_projectSetting->isADP())
+    if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
         return AccessObjectSetting::prepareItemCollection();
 
     ComPtr<Access::CurrentProject> currentProject = m_projectSetting->application()->CurrentProject();
@@ -1144,7 +1149,7 @@ bool ModuleSetting::prepareItemCollection()
 
 int ModuleSetting::itemCount()
 {
-    if (!m_projectSetting->isADP())
+    if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
         return AccessObjectSetting::itemCount();
 
     if (!m_objects.is())
@@ -1154,7 +1159,7 @@ int ModuleSetting::itemCount()
 
 QAxObject *ModuleSetting::itemUnsafePtr(const QVariant &index)
 {
-    if (!m_projectSetting->isADP())
+    if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
         return AccessObjectSetting::itemUnsafePtr(index);
 
     if (!m_objects.is())
