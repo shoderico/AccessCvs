@@ -31,6 +31,8 @@ public:
     QModelIndex index(int row, int column, const QModelIndex &parent) const;
     QModelIndex parent(const QModelIndex &child) const;
 
+    bool setData(const QModelIndex &index, const QVariant &value, int role);
+
     enum Column
     {
         NameColumn = 0,

@@ -156,6 +156,20 @@ QModelIndex ObjectModel::parent(const QModelIndex &child) const
     return QModelIndex();
 }
 
+bool ObjectModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if (!index.isValid() || index.column() != NameColumn || index.row() < 0 || index.row() >= m_items.count())
+        return false;
+    ObjectItem *item = m_items.at(index.row());
+    if (role == Qt::CheckStateRole)
+    {
+        item->setSelected( value.toBool() );
+        emit dataChanged(index, index);
+        return true;
+    }
+    return false;
+}
+
 void ObjectModel::setApplication(Access::Application *application)
 {
     m_application = application;
