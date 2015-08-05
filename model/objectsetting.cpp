@@ -347,7 +347,7 @@ bool TableDefSetting::sanitizeTempDir(QAxObject *object, const QString &objectNa
 
     FileUtil::copyContents(   tempFilePathInTempDir(objectName), m_codecForProject,
                             designFilePathInTempDir(objectName), m_codecForCvs );
-    FileUtil::deleteFile(     tempFilePathInTempDir(objectName) );
+//    FileUtil::deleteFile(     tempFilePathInTempDir(objectName) ); // keep original files
 
     return true;
 }
@@ -363,7 +363,7 @@ bool TableDefSetting::desanitizeTempDir(QAxObject *object, const QString &object
 
     FileUtil::copyContents( designFilePathInTempDir(objectName), m_codecForCvs,
                               tempFilePathInTempDir(objectName), m_codecForProject );
-    FileUtil::deleteFile(   designFilePathInTempDir(objectName) );
+//    FileUtil::deleteFile(   designFilePathInTempDir(objectName) ); keep original files
 
     return true;
 }
@@ -759,7 +759,7 @@ bool AccessDesignObjectSetting::sanitizeTempDir(QAxObject *object, const QString
 
 
     // delete temp file
-    FileUtil::deleteFile( fileSrc.fileName() );
+//    FileUtil::deleteFile( fileSrc.fileName() ); // keep original files
 
     return true;
 }
@@ -848,8 +848,8 @@ bool AccessDesignObjectSetting::desanitizeTempDir(QAxObject *object, const QStri
 
 
     // delete files
-    FileUtil::deleteFile( fileDstDesign.fileName() );
-    FileUtil::deleteFile( fileDstModule.fileName() );
+//    FileUtil::deleteFile( fileDstDesign.fileName() ); // keep original files
+//    FileUtil::deleteFile( fileDstModule.fileName() ); // keep original files
 
     return true;
 }
@@ -1100,7 +1100,7 @@ bool ModuleSetting::sanitizeTempDir(QAxObject *object, const QString &objectName
 
     FileUtil::copyContents(   tempFilePathInTempDir(objectName), m_codecForProject,
                             moduleFilePathInTempDir(objectName), m_codecForCvs );
-    FileUtil::deleteFile(     tempFilePathInTempDir(objectName) );
+//    FileUtil::deleteFile(     tempFilePathInTempDir(objectName) ); // keep original files
 
     return true;
 }
@@ -1117,7 +1117,7 @@ bool ModuleSetting::desanitizeTempDir(QAxObject *object, const QString &objectNa
 
     FileUtil::copyContents( moduleFilePathInTempDir(objectName), m_codecForCvs,
                               tempFilePathInTempDir(objectName), m_codecForProject );
-    FileUtil::deleteFile(   moduleFilePathInTempDir(objectName) );
+//    FileUtil::deleteFile(   moduleFilePathInTempDir(objectName) ); // keep original files
 
     return true;
 }
