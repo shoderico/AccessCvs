@@ -85,8 +85,8 @@ public:
     // internal procedures
 
     // load and build-up model-item from object/file
-    void loadFromProject();                                     //                                                      : BLOCK
-    void loadFromFileSystem();                                  //                                                      :
+    void loadItemFromProject();                                 //                                                      : BLOCK
+    void loadItemFromFileSystem();                              //                                                      :
 
     // import/export object
     void exportFromProjectToTempDir(ObjectItems *allTargets);   // InBoth           , InProjectOnly ,                   : BLOCK

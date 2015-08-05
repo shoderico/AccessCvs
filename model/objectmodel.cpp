@@ -298,8 +298,8 @@ bool ObjectModel::prepareExport()
     //:determine target objects to reflect from Project to FileSytem
 
     // refresh model items
-    loadFromProject();                          //                  : BLOCK :                   :
-    loadFromFileSystem();                       //                  :       :                   :
+    loadItemFromProject();                          //                  : BLOCK :                   :
+    loadItemFromFileSystem();                       //                  :       :                   :
 
     clearTempDir();
 
@@ -371,8 +371,8 @@ bool ObjectModel::prepareImport()
     //:determine target objects to be imported
 
     // refresh model items
-    loadFromProject();                          //                  : BLOCK :               :
-    loadFromFileSystem();                       //                  :       :               :
+    loadItemFromProject();                          //                  : BLOCK :               :
+    loadItemFromFileSystem();                       //                  :       :               :
 
     clearTempDir();
 
@@ -520,7 +520,7 @@ void ObjectModel::getItems(ObjectItems *pItems, ObjectModel::ItemsType itemsType
 }
 
 
-void ObjectModel::loadFromProject()
+void ObjectModel::loadItemFromProject()
 {
 
     QList<ObjectItem*> items;
@@ -691,7 +691,7 @@ void ObjectModel::loadFromProject()
     endInsertRows();
 }
 
-void ObjectModel::loadFromFileSystem()
+void ObjectModel::loadItemFromFileSystem()
 {
     // load items from local file system.
 
