@@ -51,6 +51,7 @@ void SanitizeSetting::sanitize(QTextStream &streamSrc, QTextStream &streamDstDes
     bool getLine = true;
     bool isCodeBehind = false;
     bool isReport = false;
+    bool isReportPositionBegin = false;
 
     QString txt;
     QString sPattern;
@@ -90,6 +91,7 @@ void SanitizeSetting::sanitize(QTextStream &streamSrc, QTextStream &streamDstDes
                     break;
             }
             getLine = false;
+            if (isReport && isReportPositionBegin) { isReport = false; isReportPositionBegin = false; }
             goto end_of_while;
         }
 
@@ -118,26 +120,27 @@ void SanitizeSetting::sanitize(QTextStream &streamSrc, QTextStream &streamDstDes
 //                qDebug() << binaryStr.length(); // 3112
 //            }
 
+            if (isReport && isReportPositionBegin) { isReport = false; isReportPositionBegin = false; }
             goto end_of_while;
         }
 
         if ( txt.contains("Begin Report") )
         {
             isReport = true;
+            isReportPositionBegin = false;
             writeLine(streamDstDesign, streamDstModule, isCodeBehind, txt, codecDst->lineEnd());
             goto end_of_while;
         }
 
         if ( isReport && (
-                  txt.contains( "    Right =" ) ||
-                  txt.contains( "    Bottom =" ) ||
-                  txt.contains( "    Top =" ) ||
-                  txt.contains( "    Left =" )
+                  txt.startsWith( "    Right =" ) ||
+                  txt.startsWith( "    Bottom =" ) ||
+                  txt.startsWith( "    Top =" ) ||
+                  txt.startsWith( "    Left =" )
                   )
               )
         {
-            if ( txt.contains( "    Bottom =" ))
-                isReport = false;
+            isReportPositionBegin = true;
             goto end_of_while;
         }
 
@@ -145,6 +148,7 @@ void SanitizeSetting::sanitize(QTextStream &streamSrc, QTextStream &streamDstDes
         {
             isCodeBehind = true;
             writeLine(streamDstDesign, streamDstModule, isCodeBehind, txt, codecDst->lineEnd());
+            if (isReport && isReportPositionBegin) { isReport = false; isReportPositionBegin = false; }
             goto end_of_while;
         }
 
@@ -154,6 +158,7 @@ void SanitizeSetting::sanitize(QTextStream &streamSrc, QTextStream &streamDstDes
         }
 
         writeLine(streamDstDesign, streamDstModule, isCodeBehind, txt, codecDst->lineEnd());
+        if (isReport && isReportPositionBegin) { isReport = false; isReportPositionBegin = false; }
 
 end_of_while:
         ;
