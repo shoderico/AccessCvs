@@ -533,6 +533,8 @@ bool QuerySetting::importFromTempDirToProject(QAxObject *object, const QString &
         Q_UNUSED(queryDef)
     }
 
+    FileUtil::setFileTime( tempFilePathInTempDir(objectName), QDateTime::currentDateTime(), QDateTime::currentDateTime() );
+
     return true;
 }
 
@@ -651,6 +653,9 @@ bool AccessObjectSetting::importFromTempDirToProject(QAxObject *object, const QS
     Q_UNUSED(object)
     {
         m_projectSetting->application()->LoadFromText( (Access::AcObjectType)m_accessObjectType, objectName, tempFilePathInTempDir(objectName) );
+
+        FileUtil::setFileTime( tempFilePathInTempDir(objectName), QDateTime::currentDateTime(), QDateTime::currentDateTime() );
+
         return true;
     }
     return true;
@@ -1324,6 +1329,8 @@ bool ReferenceSetting::importFromTempDirToProject(QAxObject *object, const QStri
             }
         }
     }
+
+    FileUtil::setFileTime( tempFilePathInTempDir(objectName), QDateTime::currentDateTime(), QDateTime::currentDateTime() );
 
     return true;
 }

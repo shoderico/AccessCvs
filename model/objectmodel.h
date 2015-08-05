@@ -82,10 +82,12 @@ public:
     // TODO: define select-state ( selected, not-select, both)
     // TODO: extend getItems() to specify select state
     // TODO: can be non-public ?
-    void getItems(ObjectItems *pItems, ItemsTypes itemsType, bool selectedOnly = true) const;
+    void getItems(ObjectItems *pItems, ItemsTypes itemsType, bool selectedOnly = true, bool modifiedOnly = false) const;
 
     void selectItemsForProcess(bool resetSelection = true);
     void selectItems(ItemsTypes itemsType, bool resetSelection = true);
+
+    void assumeItemsTheSameByFileTime();
 
 
 

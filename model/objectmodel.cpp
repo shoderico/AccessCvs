@@ -298,7 +298,7 @@ bool ObjectModel::refreshItems()
     loadItemFromProject();                          //                  : BLOCK :                   :
     loadItemFromFileSystem();                       //                  :       :                   :
 
-    clearTempDir();
+//    clearTempDir(); // keep old files
 
     // for InProjectOnly
     {
@@ -312,8 +312,10 @@ bool ObjectModel::refreshItems()
 
     // for InBoth
     {
+        assumeItemsTheSameByFileTime();
+
         ObjectItems targets;
-        getItems(&targets, InBoth, false);
+        getItems(&targets, InBoth, false, true /* modifiedOnly */);
 
         exportFromProjectToTempDir(&targets);   // InBoth           : BLOCK :                   :
         sanitizeTempDir(&targets);              // InBoth           :       :                   :
@@ -445,12 +447,18 @@ bool ObjectModel::executeImport()
 
 
 
-void ObjectModel::getItems(ObjectItems *pItems, ObjectModel::ItemsTypes itemsType, bool selectedOnly) const
+void ObjectModel::getItems(ObjectItems *pItems, ObjectModel::ItemsTypes itemsType, bool selectedOnly, bool modifiedOnly) const
 {
     foreach ( ObjectItem *item, m_items )
     {
         ObjectItem *toBeInserted = NULL;
         if (selectedOnly && !item->isSelected())
+            continue;
+
+        // skip non-modified item
+        if (modifiedOnly &&
+                item->updateDate().isValid() && item->exportDate().isValid() &&
+                item->updateDate() <= item->exportDate() )
             continue;
 
         if (!toBeInserted && itemsType & InBoth)
@@ -525,6 +533,17 @@ void ObjectModel::selectItems(ObjectModel::ItemsTypes itemsType, bool resetSelec
     }
 
     emit dataChanged( createIndex(first, 0), createIndex(last, ColumnCount) );
+}
+
+void ObjectModel::assumeItemsTheSameByFileTime()
+{
+    foreach ( ObjectItem *item, m_items )
+    {
+        if ( item->inProject() && item->inFileSystem() &&
+             item->updateDate().isValid() && item->exportDate().isValid() &&
+             item->updateDate() <= item->exportDate() )
+            item->setDifferent( Model::SameContents );
+    }
 }
 
 
