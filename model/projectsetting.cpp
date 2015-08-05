@@ -12,7 +12,7 @@ ProjectSetting::ProjectSetting(QObject *parent)
     : QObject(parent)
     , m_projectType(-1)
 {
-    m_sourcePathName = "source2";
+    m_sourcePathName = "source";
     m_tempPathName   = "source_temp";
 
     m_objectSettings.insert( Model::TableDef,   new TableDefSetting (this) );
