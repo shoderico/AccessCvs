@@ -552,14 +552,11 @@ void ObjectModel::loadItemFromProject()
             if (!os->prepareItemCollection())
                 continue;
 
-            qDebug() << "os->prepareItemCollection() returns true " << os->containerName() << " os->itemCount() = " << os->itemCount();
             for (int i = 0 ; i < os->itemCount() ; ++i )
             {
-                qDebug() << "in loop for (int i = 0 ; i < os->itemCount() ; ++i ) " << i << os->containerName();
                 ComPtr<QAxObject> object = os->itemUnsafePtr(i);
                 if ( os->isTargetObject( object.ptr() ) )
                 {
-                    qDebug() << "os->isTargetObject( object.ptr() ) returns true" << os->containerName();
                     items << os->createItemFromProject(object.ptr(), this);
                 }
             }

@@ -617,7 +617,6 @@ ObjectItem *AccessObjectSetting::createItemFromProject(QAxObject *object, QObjec
         item->setInProject( Model::Present );
         item->setCreateDate( accessObject->DateCreated() );
         item->setUpdateDate( accessObject->DateModified() );
-        qDebug() << "AccessObjectSetting::createItemFromProject is called" << accessObject->Name();
     }
 
     DAO::Document *daoDocument = dynamic_cast<DAO::Document*>(object);
@@ -628,7 +627,6 @@ ObjectItem *AccessObjectSetting::createItemFromProject(QAxObject *object, QObjec
         item->setInProject( Model::Present );
         item->setCreateDate( daoDocument->DateCreated().toDateTime() );
         item->setUpdateDate( daoDocument->LastUpdated().toDateTime() );
-        qDebug() << "AccessObjectSetting::createItemFromProject is called" << daoDocument->Name();
     }
 
     return item;
@@ -666,14 +664,11 @@ bool AccessObjectSetting::prepareItemCollection()
     m_container.set( m_containers->Item( m_containerName ) );
     m_documents.set( m_container->Documents() );
 
-    qDebug() << "AccessObjectSetting::prepareItemCollection called" << m_containerName << "current m_documents->Count() is " << m_documents->Count();
     return m_documents.is();
 }
 
 int AccessObjectSetting::itemCount()
 {
-    qDebug() << "AccessObjectSetting::itemCount called" << m_containerName << "current m_documents->Count() is ";
-    qDebug() << m_documents->Count();
     if (!m_documents.is())
         return 0;
     return m_documents->Count();
