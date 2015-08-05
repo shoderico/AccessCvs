@@ -44,6 +44,8 @@ MainDialog::MainDialog(IDispatch *application, QWidget *parent) :
     connect( ui->exportButton,        SIGNAL(clicked(bool)), this, SLOT(exportObjects()) );
     connect( ui->executeExportButton, SIGNAL(clicked(bool)), this, SLOT(executeExport()) );
     connect( ui->executeImportButton, SIGNAL(clicked(bool)), this, SLOT(executeImport()) );
+    connect( ui->selectAutoButton,    SIGNAL(clicked(bool)), this, SLOT(selectAuto()) );
+    connect( ui->selectAllcheckBox,   SIGNAL(stateChanged(int)), this, SLOT(selectAll(int)) );
 
     connect( m_model, SIGNAL(progressStart(int,int)), this, SLOT(progressStart(int,int)) );
     connect( m_model, SIGNAL(progressChange(int,int)), this, SLOT(progressChange(int,int)) );
@@ -120,6 +122,7 @@ void MainDialog::signal(const QString &name, int argc, void *argv)
 void MainDialog::exportObjects()
 {
     m_model->refreshItems();
+    m_model->selectItemsForExport();
     // FIXME: i don't know why but cursor stays with WaitCursor in several seconds.
     QApplication::setOverrideCursor(Qt::WaitCursor);
     QApplication::restoreOverrideCursor();
@@ -135,6 +138,19 @@ void MainDialog::executeImport()
 {
     m_model->executeImport();
     QMessageBox::information(0,"","done");
+}
+
+void MainDialog::selectAuto()
+{
+    m_model->selectItemsForExport();
+}
+
+void MainDialog::selectAll(int state)
+{
+    if (state == Qt::Checked)
+        m_model->selectItems( ObjectModel::AllItems, true );
+    else if (state == Qt::Unchecked)
+        m_model->selectItems( ObjectModel::NoItems, true );
 }
 
 void MainDialog::progressStart(int type, int count)

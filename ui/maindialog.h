@@ -33,6 +33,9 @@ private slots:
     void executeExport();
     void executeImport();
 
+    void selectAuto();
+    void selectAll(int state);
+
     void progressStart(int type, int count);
     void progressChange(int type, int value);
     void progressEnd(int type);
