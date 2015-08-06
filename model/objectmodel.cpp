@@ -613,7 +613,6 @@ void ObjectModel::selectItems(ObjectModel::ItemsTypes itemsType, bool selected, 
 
 void ObjectModel::selectItemsByObjectType(SelectObjectTypes objectTypes, bool selected, bool resetSelection)
 {
-    // FIXME: implement here
     int first = m_items.count();
     int last = 0;
     if (resetSelection)
