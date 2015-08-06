@@ -33,10 +33,13 @@ MainDialog::MainDialog(IDispatch *application, QWidget *parent) :
     ui->treeView->setItemDelegateForColumn( ObjectModel::InProjectColumn,     new CheckBoxItemDelegete() );
     ui->treeView->setItemDelegateForColumn( ObjectModel::InFileSystemColumn,  new CheckBoxItemDelegete() );
     ui->treeView->setItemDelegateForColumn( ObjectModel::DifferentColumn,     new CheckBoxItemDelegete() );
-    ui->treeView->setColumnWidth(ObjectModel::InProjectColumn,    24);
-    ui->treeView->setColumnWidth(ObjectModel::InFileSystemColumn, 24);
-    ui->treeView->setColumnWidth(ObjectModel::DifferentColumn,    24);
+    ui->treeView->setColumnWidth(ObjectModel::InProjectColumn,    40);
+    ui->treeView->setColumnWidth(ObjectModel::InFileSystemColumn, 40);
+    ui->treeView->setColumnWidth(ObjectModel::DifferentColumn,    40);
     ui->treeView->setColumnWidth(ObjectModel::NameColumn, 200);
+    ui->treeView->setColumnWidth(ObjectModel::CreateDateColumn, 150);
+    ui->treeView->setColumnWidth(ObjectModel::UpdateDateColumn, 150);
+    ui->treeView->setColumnWidth(ObjectModel::ExportDateColumn, 150);
 
     connect( ui->okButton,     SIGNAL(clicked(bool)), this, SLOT(accept()) );
     connect( ui->cancelButton, SIGNAL(clicked(bool)), this, SLOT(reject()) );
