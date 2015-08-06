@@ -344,8 +344,25 @@ bool TableDefSetting::importFromTempDirToProject(QAxObject *object, const QStrin
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
-    // TODO: import tabledef
-    return true;
+
+    if (object)
+    {
+        // table is already exists. so we need to delete first
+        ComPtr<Access::DoCmd> doCmd = m_projectSetting->application()->DoCmd();
+        doCmd->DeleteObject( (Access::AcObjectType)m_accessObjectType, objectName );
+    }
+
+    {
+        // very slow but very accurate.
+        m_projectSetting->application()
+            ->ImportXML(
+                    tempFilePathInTempDir(objectName)
+                    ,Access::acStructureOnly
+                    );
+
+        return true;
+    }
+    return false;
 }
 
 bool TableDefSetting::sanitizeTempDir(QAxObject *object, const QString &objectName)
