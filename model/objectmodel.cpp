@@ -479,8 +479,9 @@ bool ObjectModel::executeImport()
 
 void ObjectModel::getItems(ObjectItems *pItems, ObjectModel::ItemsTypes itemsType, bool selectedOnly, bool modifiedOnly) const
 {
-    foreach ( ObjectItem *item, m_items )
+    for ( QList<ObjectItem*>::const_iterator it = m_items.begin() ; it != m_items.end() ; ++it )
     {
+        ObjectItem *item = (*it);
         ObjectItem *toBeInserted = NULL;
         if (selectedOnly && !item->isSelected())
             continue;
@@ -542,21 +543,23 @@ void ObjectModel::selectItems(ObjectModel::ItemsTypes itemsType, bool resetSelec
     int last = 0;
     if (resetSelection)
     {
-        foreach ( ObjectItem *item, m_items )
-            item->setSelected(false);
+        for (QList<ObjectItem*>::iterator it = m_items.begin() ; it != m_items.end() ; ++it )
+            (*it)->setSelected(false);
+
         first = 0;
         last = m_items.length() - 1;
     }
 
     ObjectItems targets;
     getItems(&targets, itemsType, false);
-    foreach ( Model::ObjectType objectType, targets.keys() )
+    foreach (const Model::ObjectType &objectType, targets.keys() )
     {
-        foreach ( ObjectItem *item, targets[ objectType].values() )
+        QList<ObjectItem*> items = targets[ objectType ].values();
+        for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
-            item->setSelected( true );
+            (*it)->setSelected( true );
 
-            int row = m_items.indexOf(item);
+            int row = m_items.indexOf( (*it) );
             if (first > row) first = row;
             if (last  < row) last  = row;
         }
@@ -582,14 +585,15 @@ void ObjectModel::rollbackFileTimeIfDifferent(ObjectItems *allTargets)
     ObjectSetting *os;
     setting.initialize(m_application);
 
-    foreach ( Model::ObjectType objectType, allTargets->keys() )
+    foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
         os = setting[ objectType ];
-        foreach ( ObjectItem* item, allTargets->value( objectType ).values() )
+        QList<ObjectItem*> items = allTargets->value( objectType ).values();
+        for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
-            if ( item->isDifferent() == Model::DifferentContents )
+            if ( (*it)->isDifferent() == Model::DifferentContents )
             {
-                os->rollbackFileTimeTempDir(item->name(), item->exportDate());
+                os->rollbackFileTimeTempDir( (*it)->name(), (*it)->exportDate() );
             }
         }
     }
@@ -597,13 +601,14 @@ void ObjectModel::rollbackFileTimeIfDifferent(ObjectItems *allTargets)
 
 void ObjectModel::updateExportDateIfSame(ObjectItems *allTargets, const QDateTime &exportDate)
 {
-    foreach ( Model::ObjectType objectType, allTargets->keys() )
+    foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
-        foreach ( ObjectItem* item, allTargets->value( objectType ).values() )
+        QList<ObjectItem*> items = allTargets->value( objectType ).values();
+        for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
-            if ( item->isDifferent() == Model::SameContents )
+            if ( (*it)->isDifferent() == Model::SameContents )
             {
-                item->setExportDate(exportDate);
+                (*it)->setExportDate(exportDate);
             }
         }
     }
@@ -611,11 +616,12 @@ void ObjectModel::updateExportDateIfSame(ObjectItems *allTargets, const QDateTim
 
 void ObjectModel::updateExportDate(ObjectItems *allTargets, const QDateTime &exportDate)
 {
-    foreach ( Model::ObjectType objectType, allTargets->keys() )
+    foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
-        foreach ( ObjectItem* item, allTargets->value( objectType ).values() )
+        QList<ObjectItem*> items = allTargets->value( objectType ).values();
+        for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
-            item->setExportDate(exportDate);
+            (*it)->setExportDate(exportDate);
         }
     }
 }
@@ -626,12 +632,13 @@ void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTi
     ObjectSetting *os;
     setting.initialize(m_application);
 
-    foreach ( Model::ObjectType objectType, allTargets->keys() )
+    foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
         os = setting[ objectType ];
-        foreach ( ObjectItem* item, allTargets->value( objectType ).values() )
+        QList<ObjectItem*> items = allTargets->value( objectType ).values();
+        for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
-            os->rollbackFileTimeTempDir( item->name(), fileTime );
+            os->rollbackFileTimeTempDir( (*it)->name(), fileTime );
         }
     }
 }
@@ -644,7 +651,7 @@ void ObjectModel::loadItemFromProject(QList<ObjectItem*> *items)
     ObjectSetting *os;
     setting.initialize(m_application);
 
-    foreach ( Model::ObjectType objectType, setting.objectTypes() )
+    foreach (const Model::ObjectType &objectType, setting.objectTypes() )
     {
         os = setting[ objectType ];
 
@@ -675,7 +682,7 @@ void ObjectModel::loadItemFromFileSystem(QList<ObjectItem*> *items)
     ObjectSetting *os;
     setting.initialize(m_application);
 
-    foreach ( Model::ObjectType objectType, setting.objectTypes() )
+    foreach (const Model::ObjectType &objectType, setting.objectTypes() )
     {
         os = setting[ objectType ];
 
@@ -685,10 +692,11 @@ void ObjectModel::loadItemFromFileSystem(QList<ObjectItem*> *items)
             objectDir.setNameFilters( (QStringList() << ("*." + os->existCheckExtension() ) ) );
             QFileInfoList fileInfos = objectDir.entryInfoList( QDir::Files );
             ProgressNotifier subProg(LoadItemFromFileSystemProcess, fileInfos.length(), this);
-            foreach ( QFileInfo fileInfo, fileInfos )
+
+            for (QFileInfoList::iterator it = fileInfos.begin(); it != fileInfos.end(); ++it )
             {
                 subProg.next();
-                items->append( os->createItemFromFileSystem(fileInfo, this) );
+                items->append( os->createItemFromFileSystem( (*it), this) );
             }
         }
     }
@@ -842,19 +850,7 @@ void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
 
     if ( setting.isMDB() || setting.isADP() )
     {
-        QList<Model::ObjectType> objectTypes;
-        objectTypes << Model::TableDef
-                    << Model::Query
-                    << Model::Form
-                    << Model::Report
-                    << Model::Macro
-                    << Model::Module
-                    << Model::Reference
-                       // TODO: TableData
-                       // TODO: Relation
-                       ;
-
-        foreach ( Model::ObjectType objectType, objectTypes )
+        foreach ( const Model::ObjectType &objectType, setting.objectTypes() )
         {
             time.start();
 
@@ -869,12 +865,12 @@ void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
             int nCount = objectNames.count();
             ProgressNotifier subProg(ExportFromProjectToTempDirProcess, nCount, this);
 
-            foreach ( QString objectName, objectNames )
+            for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
             {
                 subProg.next();
 
-                ComPtr<QAxObject> object = os->itemUnsafePtr( objectName );
-                os->exportFromProjectToTempDir(object.ptr(), objectName);
+                ComPtr<QAxObject> object = os->itemUnsafePtr( (*it) );
+                os->exportFromProjectToTempDir(object.ptr(), (*it) );
             }
             qDebug() << os->objectPathName() << " : " << nCount << " : " << time.elapsed();
         }
@@ -898,19 +894,7 @@ void ObjectModel::importFromTempDirToProject(ObjectItems *allTargets)
 
 
     {
-        QList<Model::ObjectType> objectTypes;
-        objectTypes << Model::Query
-                    << Model::Form
-                    << Model::Report
-                    << Model::Macro
-                    << Model::Module
-                    << Model::Reference
-                       // TODO: TableDef
-                       // TODO: TableData
-                       // TODO: Relation
-                    ;
-
-        foreach (Model::ObjectType objectType, objectTypes)
+        foreach (const Model::ObjectType &objectType, setting.objectTypes())
         {
             os = setting[ objectType ];
             if (!os->prepareItemCollection())
@@ -922,18 +906,18 @@ void ObjectModel::importFromTempDirToProject(ObjectItems *allTargets)
             int nCount = objectNames.count();
             ProgressNotifier subProg(ImportFromTempDirToProjectProcess, nCount, this);
 
-            foreach (QString objectName, objectNames)
+            for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
             {
                 subProg.next();
-                ObjectItem *item = targets[ objectName ];
+                ObjectItem *item = targets[ (*it) ];
                 if (item->inProject() == Model::Present)
                 {
                     // FIXME: form/report/macro/module : makes error?
-                    ComPtr<QAxObject> object = os->itemUnsafePtr( objectName );
-                    os->importFromTempDirToProject(object.ptr(), objectName);
+                    ComPtr<QAxObject> object = os->itemUnsafePtr( (*it) );
+                    os->importFromTempDirToProject(object.ptr(), (*it));
                 }
                 else
-                    os->importFromTempDirToProject(NULL, objectName);
+                    os->importFromTempDirToProject( NULL, (*it) );
             }
         }
     }
@@ -952,19 +936,7 @@ void ObjectModel::copyFromTempDirToFileSystem(ObjectItems *allTargets)
 
     setting.initialize(m_application);
 
-    QList<Model::ObjectType> objectTypes;
-    objectTypes << Model::TableDef
-                << Model::Query
-                << Model::Form
-                << Model::Report
-                << Model::Macro
-                << Model::Module
-                << Model::Reference
-                   // TODO: TableData
-                   // TODO: Relation
-                ;
-
-    foreach (Model::ObjectType objectType, objectTypes)
+    foreach (const Model::ObjectType &objectType, setting.objectTypes())
     {
         os = setting[ objectType ];
         os->mkdirSourceObjectPath();
@@ -975,10 +947,10 @@ void ObjectModel::copyFromTempDirToFileSystem(ObjectItems *allTargets)
         int nCount = objectNames.count();
         ProgressNotifier subProg(CopyFromTempDirToFileSystemProcess, nCount, this);
 
-        foreach (QString objectName, objectNames)
+        for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
-            os->copyFromTempDirToFileSystem(objectName);
+            os->copyFromTempDirToFileSystem( (*it) );
         }
     }
 }
@@ -996,19 +968,7 @@ void ObjectModel::copyFromFileSystemToTempDir(ObjectItems *allTargets)
 
     setting.initialize(m_application);
 
-    QList<Model::ObjectType> objectTypes;
-    objectTypes << Model::TableDef
-                << Model::Query
-                << Model::Form
-                << Model::Report
-                << Model::Macro
-                << Model::Module
-                << Model::Reference
-                   // TODO: TableData
-                   // TODO: Relation
-                ;
-
-    foreach (Model::ObjectType objectType, objectTypes)
+    foreach (const Model::ObjectType &objectType, setting.objectTypes())
     {
         os = setting[ objectType ];
 
@@ -1018,10 +978,10 @@ void ObjectModel::copyFromFileSystemToTempDir(ObjectItems *allTargets)
         int nCount = objectNames.count();
         ProgressNotifier subProg(CopyFromFileSystemToTempDirProcess, nCount, this);
 
-        foreach (QString objectName, objectNames)
+        for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
-            os->copyFromFileSystemToTempDir(objectName);
+            os->copyFromFileSystemToTempDir( (*it) );
         }
     }
 
@@ -1040,20 +1000,7 @@ void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
 
     setting.initialize(m_application);
 
-    QList<Model::ObjectType> objectTypes;
-    objectTypes
-                << Model::TableDef
-                << Model::Query
-                << Model::Form
-                << Model::Report
-                << Model::Macro
-                << Model::Module
-                << Model::Reference
-                   // TODO: TableData
-                   // TODO: Relation
-                ;
-
-    foreach (Model::ObjectType objectType, objectTypes)
+    foreach (const Model::ObjectType &objectType, setting.objectTypes())
     {
         os = setting[ objectType ];
 
@@ -1063,10 +1010,10 @@ void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
         int nCount = objectNames.count();
         ProgressNotifier subProg(SanitizeTempDirProcess, nCount, this);
 
-        foreach (QString objectName, objectNames)
+        for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
-            os->sanitizeTempDir(NULL, objectName);
+            os->sanitizeTempDir(NULL, (*it) );
         }
     }
 }
@@ -1084,19 +1031,7 @@ void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
 
     setting.initialize(m_application);
 
-    QList<Model::ObjectType> objectTypes;
-    objectTypes << Model::TableDef
-                << Model::Query
-                << Model::Form
-                << Model::Report
-                << Model::Macro
-                << Model::Module
-                << Model::Reference
-                   // TODO: TableData
-                   // TODO: Relation
-                ;
-
-    foreach (Model::ObjectType objectType, objectTypes)
+    foreach (const Model::ObjectType &objectType, setting.objectTypes())
     {
         os = setting[ objectType ];
 
@@ -1106,10 +1041,10 @@ void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
         int nCount = objectNames.count();
         ProgressNotifier subProg(DesanitizeTempDirProcess, nCount, this);
 
-        foreach (QString objectName, objectNames)
+        for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
-            os->desanitizeTempDir(NULL, objectName);
+            os->desanitizeTempDir(NULL, (*it) );
         }
     }
 
@@ -1128,19 +1063,7 @@ void ObjectModel::compareTempDir(ObjectItems *allTargets)
 
     setting.initialize(m_application);
 
-    QList<Model::ObjectType> objectTypes;
-    objectTypes << Model::TableDef
-                << Model::Query
-                << Model::Form
-                << Model::Report
-                << Model::Macro
-                << Model::Module
-                << Model::Reference
-                   // TODO: TableData
-                   // TODO: Relation
-                ;
-
-    foreach (Model::ObjectType objectType, objectTypes)
+    foreach (const Model::ObjectType &objectType, setting.objectTypes())
     {
         os = setting[ objectType ];
 
@@ -1150,13 +1073,13 @@ void ObjectModel::compareTempDir(ObjectItems *allTargets)
         int nCount = objectNames.count();
         ProgressNotifier subProg(CompareTempDirProcess, nCount, this);
 
-        foreach (QString objectName, objectNames)
+        for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
             bool isDifferent = false;
-            os->compareTempDir(objectName, &isDifferent);
+            os->compareTempDir( (*it) , &isDifferent);
 
-            ObjectItem *item = targets[ objectName ];
+            ObjectItem *item = targets[ (*it)];
             if (isDifferent == true && item->isDifferent() != Model::DifferentContents )
                 item->setDifferent( Model::DifferentContents );
             else if (isDifferent == false && item->isDifferent() != Model::SameContents )
@@ -1184,19 +1107,7 @@ void ObjectModel::deleteFromFileSystem(ObjectItems *allTargets)
 
     setting.initialize(m_application);
 
-    QList<Model::ObjectType> objectTypes;
-    objectTypes << Model::TableDef
-                << Model::Query
-                << Model::Form
-                << Model::Report
-                << Model::Macro
-                << Model::Module
-                << Model::Reference
-                   // TODO: TableData
-                   // TODO: Relation
-                ;
-
-    foreach (Model::ObjectType objectType, objectTypes)
+    foreach (const Model::ObjectType &objectType, setting.objectTypes())
     {
         os = setting[ objectType ];
 
@@ -1206,10 +1117,10 @@ void ObjectModel::deleteFromFileSystem(ObjectItems *allTargets)
         int nCount = objectNames.count();
         ProgressNotifier subProg(DeleteFromFileSystemProcess, nCount, this);
 
-        foreach (QString objectName, objectNames)
+        for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
-            os->deleteFromFileSystem(objectName);
+            os->deleteFromFileSystem( (*it) );
         }
     }
 }
@@ -1227,19 +1138,7 @@ void ObjectModel::deleteFromProject(ObjectItems *allTargets)
 
     setting.initialize(m_application);
 
-    QList<Model::ObjectType> objectTypes;
-    objectTypes << Model::TableDef
-                << Model::Query
-                << Model::Form
-                << Model::Report
-                << Model::Macro
-                << Model::Module
-              //<< Model::Reference  // no need to delete
-                   // TODO: TableData
-                   // TODO: Relation
-                ;
-
-    foreach (Model::ObjectType objectType, objectTypes)
+    foreach (const Model::ObjectType &objectType, setting.objectTypes())
     {
         os = setting[ objectType ];
 
@@ -1249,10 +1148,10 @@ void ObjectModel::deleteFromProject(ObjectItems *allTargets)
         int nCount = objectNames.count();
         ProgressNotifier subProg(DeleteFromProjectProcess, nCount, this);
 
-        foreach (QString objectName, objectNames)
+        for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
-            os->deleteFromProject(objectName);
+            os->deleteFromProject( (*it) );
         }
     }
 }
