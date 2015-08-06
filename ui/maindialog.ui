@@ -63,6 +63,13 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
+        <widget class="QPushButton" name="clearCacheButton">
+         <property name="text">
+          <string>clear cache</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="refreshItemsButton">
          <property name="text">
           <string>refresh</string>

@@ -288,6 +288,15 @@ void ObjectModel::prepareMerge()
     //:and now we are in access problem
 }
 
+bool ObjectModel::clearItemsCache()
+{
+    ObjectItems targets;
+    getItems(&targets, AllItems, true /*selectedOnly*/, false /* modifiedOnly */);
+    deleteFromTempDir(&targets);
+    updateExportDate(&targets, QDateTime());
+    return true;
+}
+
 bool ObjectModel::refreshItems()
 {
     //-------------------------------------------------------------------------------------------
@@ -570,12 +579,14 @@ void ObjectModel::selectItems(ObjectModel::ItemsTypes itemsType, bool resetSelec
 
 void ObjectModel::assumeItemsTheSameByFileTime()
 {
-    foreach ( ObjectItem *item, m_items )
+    for (QList<ObjectItem*>::iterator it = m_items.begin() ; it != m_items.end() ; ++it )
     {
-        if ( item->inProject() && item->inFileSystem() &&
-             item->updateDate().isValid() && item->exportDate().isValid() &&
-             item->updateDate() <= item->exportDate() )
-            item->setDifferent( Model::SameContents );
+        if ( (*it)->inProject() && (*it)->inFileSystem() &&
+             (*it)->updateDate().isValid() && (*it)->exportDate().isValid() &&
+             (*it)->updateDate() <= (*it)->exportDate() )
+        {
+            (*it)->setDifferent( Model::SameContents );
+        }
     }
 }
 
@@ -823,15 +834,9 @@ void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
     //      for objects existing in ProjectOnly
     // without sanitizing and any extra processes.
 
-    QTime time;
-    QTime timeTotal;
-    timeTotal.start();
-    time.start();
     ProgressNotifier mainProg(ExportFromProjectToTempDirProcess, this);
-
     ProjectSetting setting(this);
     ObjectSetting *os;
-
     setting.initialize(m_application);
 
     ComPtr<Access::CurrentProject> currentProject  = m_application->CurrentProject();
@@ -847,93 +852,72 @@ void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
         return;
     }
 
-
-    if ( setting.isMDB() || setting.isADP() )
+    if ( !setting.isMDB() && !setting.isADP() )
     {
-        foreach ( const Model::ObjectType &objectType, setting.objectTypes() )
-        {
-            time.start();
-
-            os = setting[ objectType ];
-            os->mkdirTempObjectPath();
-            if (!os->prepareItemCollection())
-                continue;
-
-            QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
-            QStringList objectNames = targets.keys();
-
-            int nCount = objectNames.count();
-            ProgressNotifier subProg(ExportFromProjectToTempDirProcess, nCount, this);
-
-            for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
-            {
-                subProg.next();
-
-                ComPtr<QAxObject> object = os->itemUnsafePtr( (*it) );
-                os->exportFromProjectToTempDir(object.ptr(), (*it) );
-            }
-            qDebug() << os->objectPathName() << " : " << nCount << " : " << time.elapsed();
-        }
+        qDebug() << "unknown project type";
+        return;
     }
 
-    qDebug() << "DONE : " << timeTotal.elapsed() ;
+    foreach ( const Model::ObjectType &objectType, setting.objectTypes() )
+    {
+        os = setting[ objectType ];
+        os->mkdirTempObjectPath();
+
+        if (!os->prepareItemCollection())
+            continue;
+
+        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
+        QStringList objectNames = targets.keys();
+        ProgressNotifier subProg(ExportFromProjectToTempDirProcess, objectNames.count(), this);
+
+        for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
+        {
+            subProg.next();
+            ComPtr<QAxObject> object = os->itemUnsafePtr( (*it) );
+            os->exportFromProjectToTempDir(object.ptr(), (*it) );
+        }
+    }
 }
 
 void ObjectModel::importFromTempDirToProject(ObjectItems *allTargets)
 {
-    QTime time;
-    QTime timeTotal;
-    timeTotal.start();
-    time.start();
     ProgressNotifier mainProg(ImportFromTempDirToProjectProcess, this);
-
     ProjectSetting setting(this);
     ObjectSetting *os;
-
     setting.initialize(m_application);
 
-
+    foreach (const Model::ObjectType &objectType, setting.objectTypes())
     {
-        foreach (const Model::ObjectType &objectType, setting.objectTypes())
+        os = setting[ objectType ];
+
+        if (!os->prepareItemCollection())
+            continue;
+
+        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
+        QStringList objectNames = targets.keys();
+        ProgressNotifier subProg(ImportFromTempDirToProjectProcess, objectNames.count(), this);
+
+        for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
-            os = setting[ objectType ];
-            if (!os->prepareItemCollection())
-                continue;
-
-            QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
-            QStringList objectNames = targets.keys();
-
-            int nCount = objectNames.count();
-            ProgressNotifier subProg(ImportFromTempDirToProjectProcess, nCount, this);
-
-            for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
+            subProg.next();
+            ObjectItem *item = targets[ (*it) ];
+            if (item->inProject() == Model::Present)
             {
-                subProg.next();
-                ObjectItem *item = targets[ (*it) ];
-                if (item->inProject() == Model::Present)
-                {
-                    // FIXME: form/report/macro/module : makes error?
-                    ComPtr<QAxObject> object = os->itemUnsafePtr( (*it) );
-                    os->importFromTempDirToProject(object.ptr(), (*it));
-                }
-                else
-                    os->importFromTempDirToProject( NULL, (*it) );
+                // FIXME: form/report/macro/module : makes error?
+                ComPtr<QAxObject> object = os->itemUnsafePtr( (*it) );
+                os->importFromTempDirToProject(object.ptr(), (*it));
             }
+            else
+                os->importFromTempDirToProject( NULL, (*it) );
         }
     }
 }
 
 void ObjectModel::copyFromTempDirToFileSystem(ObjectItems *allTargets)
 {
-    QTime time;
-    QTime timeTotal;
-    timeTotal.start();
-    time.start();
     ProgressNotifier mainProg(CopyFromTempDirToFileSystemProcess, this);
-
     ProjectSetting setting(this);
     ObjectSetting *os;
-
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
@@ -943,9 +927,7 @@ void ObjectModel::copyFromTempDirToFileSystem(ObjectItems *allTargets)
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
-
-        int nCount = objectNames.count();
-        ProgressNotifier subProg(CopyFromTempDirToFileSystemProcess, nCount, this);
+        ProgressNotifier subProg(CopyFromTempDirToFileSystemProcess, objectNames.count(), this);
 
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
@@ -957,15 +939,9 @@ void ObjectModel::copyFromTempDirToFileSystem(ObjectItems *allTargets)
 
 void ObjectModel::copyFromFileSystemToTempDir(ObjectItems *allTargets)
 {
-    QTime time;
-    QTime timeTotal;
-    timeTotal.start();
-    time.start();
     ProgressNotifier mainProg(CopyFromFileSystemToTempDirProcess, this);
-
     ProjectSetting setting(this);
     ObjectSetting *os;
-
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
@@ -974,9 +950,7 @@ void ObjectModel::copyFromFileSystemToTempDir(ObjectItems *allTargets)
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
-
-        int nCount = objectNames.count();
-        ProgressNotifier subProg(CopyFromFileSystemToTempDirProcess, nCount, this);
+        ProgressNotifier subProg(CopyFromFileSystemToTempDirProcess, objectNames.count(), this);
 
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
@@ -989,15 +963,9 @@ void ObjectModel::copyFromFileSystemToTempDir(ObjectItems *allTargets)
 
 void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
 {
-    QTime time;
-    QTime timeTotal;
-    timeTotal.start();
-    time.start();
     ProgressNotifier mainProg(SanitizeTempDirProcess, this);
-
     ProjectSetting setting(this);
     ObjectSetting *os;
-
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
@@ -1006,9 +974,7 @@ void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
-
-        int nCount = objectNames.count();
-        ProgressNotifier subProg(SanitizeTempDirProcess, nCount, this);
+        ProgressNotifier subProg(SanitizeTempDirProcess, objectNames.count(), this);
 
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
@@ -1020,15 +986,9 @@ void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
 
 void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
 {
-    QTime time;
-    QTime timeTotal;
-    timeTotal.start();
-    time.start();
     ProgressNotifier mainProg(DesanitizeTempDirProcess, this);
-
     ProjectSetting setting(this);
     ObjectSetting *os;
-
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
@@ -1037,9 +997,7 @@ void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
-
-        int nCount = objectNames.count();
-        ProgressNotifier subProg(DesanitizeTempDirProcess, nCount, this);
+        ProgressNotifier subProg(DesanitizeTempDirProcess, objectNames.count(), this);
 
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
@@ -1052,15 +1010,9 @@ void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
 
 void ObjectModel::compareTempDir(ObjectItems *allTargets)
 {
-    QTime time;
-    QTime timeTotal;
-    timeTotal.start();
-    time.start();
     ProgressNotifier mainProg(CompareTempDirProcess, this);
-
     ProjectSetting setting(this);
     ObjectSetting *os;
-
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
@@ -1069,42 +1021,36 @@ void ObjectModel::compareTempDir(ObjectItems *allTargets)
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
+        ProgressNotifier subProg(CompareTempDirProcess, objectNames.count(), this);
 
-        int nCount = objectNames.count();
-        ProgressNotifier subProg(CompareTempDirProcess, nCount, this);
-
+        bool isDifferent = false;
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
-            bool isDifferent = false;
+            isDifferent = false;
             os->compareTempDir( (*it) , &isDifferent);
 
-            ObjectItem *item = targets[ (*it)];
+            ObjectItem *item = targets[ (*it) ];
             if (isDifferent == true && item->isDifferent() != Model::DifferentContents )
+            {
                 item->setDifferent( Model::DifferentContents );
+            }
             else if (isDifferent == false && item->isDifferent() != Model::SameContents )
+            {
                 item->setDifferent( Model::SameContents );
-
+            }
         }
     }
 
-
     // update items
     emit dataChanged( createIndex(0, DifferentColumn), createIndex( m_items.count()-1, DifferentColumn ) );
-
 }
 
 void ObjectModel::deleteFromFileSystem(ObjectItems *allTargets)
 {
-    QTime time;
-    QTime timeTotal;
-    timeTotal.start();
-    time.start();
     ProgressNotifier mainProg(DeleteFromFileSystemProcess, this);
-
     ProjectSetting setting(this);
     ObjectSetting *os;
-
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
@@ -1113,9 +1059,7 @@ void ObjectModel::deleteFromFileSystem(ObjectItems *allTargets)
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
-
-        int nCount = objectNames.count();
-        ProgressNotifier subProg(DeleteFromFileSystemProcess, nCount, this);
+        ProgressNotifier subProg(DeleteFromFileSystemProcess, objectNames.count(), this);
 
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
@@ -1127,15 +1071,9 @@ void ObjectModel::deleteFromFileSystem(ObjectItems *allTargets)
 
 void ObjectModel::deleteFromProject(ObjectItems *allTargets)
 {
-    QTime time;
-    QTime timeTotal;
-    timeTotal.start();
-    time.start();
     ProgressNotifier mainProg(DeleteFromProjectProcess, this);
-
     ProjectSetting setting(this);
     ObjectSetting *os;
-
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
@@ -1144,14 +1082,35 @@ void ObjectModel::deleteFromProject(ObjectItems *allTargets)
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
-
-        int nCount = objectNames.count();
-        ProgressNotifier subProg(DeleteFromProjectProcess, nCount, this);
+        ProgressNotifier subProg(DeleteFromProjectProcess, objectNames.count(), this);
 
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
             os->deleteFromProject( (*it) );
+        }
+    }
+}
+
+void ObjectModel::deleteFromTempDir(ObjectItems *allTargets)
+{
+    ProgressNotifier mainProg(DeleteFromTempDirProcess, this);
+    ProjectSetting setting(this);
+    ObjectSetting *os;
+    setting.initialize(m_application);
+
+    foreach (const Model::ObjectType &objectType, setting.objectTypes())
+    {
+        os = setting[ objectType ];
+
+        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
+        QStringList objectNames = targets.keys();
+        ProgressNotifier subProg(DeleteFromTempDirProcess, objectNames.count(), this);
+
+        for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
+        {
+            subProg.next();
+            os->deleteTempFileFromTempDir( (*it) );
         }
     }
 }

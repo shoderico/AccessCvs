@@ -42,6 +42,7 @@ MainDialog::MainDialog(IDispatch *application, QWidget *parent) :
     connect( ui->cancelButton, SIGNAL(clicked(bool)), this, SLOT(reject()) );
 
     connect( ui->refreshItemsButton,  SIGNAL(clicked(bool)), this, SLOT(refreshItems()) );
+    connect( ui->clearCacheButton, SIGNAL(clicked(bool)), this, SLOT(clearCache()) );
     connect( ui->executeExportButton, SIGNAL(clicked(bool)), this, SLOT(executeExport()) );
     connect( ui->executeImportButton, SIGNAL(clicked(bool)), this, SLOT(executeImport()) );
     connect( ui->selectAutoButton,    SIGNAL(clicked(bool)), this, SLOT(selectAuto()) );
@@ -116,7 +117,12 @@ void MainDialog::propertyChanged(const QString &name)
 void MainDialog::signal(const QString &name, int argc, void *argv)
 {
     Q_UNUSED(argc) Q_UNUSED(argv)
-    QMessageBox::information(this, "", QString("propertyChanged ") + name);
+            QMessageBox::information(this, "", QString("propertyChanged ") + name);
+}
+
+void MainDialog::clearCache()
+{
+    m_model->clearItemsCache();
 }
 
 void MainDialog::refreshItems()

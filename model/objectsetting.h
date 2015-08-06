@@ -94,6 +94,8 @@ public:
 
     void rollbackFileTimeTempDir(const QString &objectName, const QDateTime &fileTime);
 
+    bool deleteTempFileFromTempDir(const QString &objectName);
+
 protected:
     enum DirectoryType
     {
@@ -106,7 +108,7 @@ protected:
         DesignFile,
         ModuleFile
     };
-    bool deleteFromTempDir(const QString &objectName);
+    bool deleteCvsFileFromTempDir(const QString &objectName);
     bool copyFile(DirectoryType dirTypeSrc, DirectoryType dirTypeDst, FileType fileType, const QString &objectName);
     bool deleteFile(DirectoryType dirType, FileType fileType, const QString &objectName);
 

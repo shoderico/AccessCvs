@@ -100,7 +100,7 @@ bool ObjectSetting::copyFromTempDirToFileSystem(const QString &objectName)
 
 bool ObjectSetting::copyFromFileSystemToTempDir(const QString &objectName)
 {
-    deleteFromTempDir(objectName);
+    deleteCvsFileFromTempDir(objectName);
     copyFile(SourceDir, TempDir, DesignFile, objectName);
     copyFile(SourceDir, TempDir, ModuleFile, objectName);
     return true;
@@ -181,11 +181,17 @@ void ObjectSetting::determineCodecForProject()
     // if m_codecForProject is requred, override this function in subclass
 }
 
-bool ObjectSetting::deleteFromTempDir(const QString &objectName)
+bool ObjectSetting::deleteCvsFileFromTempDir(const QString &objectName)
 {
     deleteFile(TempDir, DesignFile, objectName);
     deleteFile(TempDir, ModuleFile, objectName);
 
+    return true;
+}
+
+bool ObjectSetting::deleteTempFileFromTempDir(const QString &objectName)
+{
+    deleteFile(TempDir, TempFile, objectName);
     return true;
 }
 

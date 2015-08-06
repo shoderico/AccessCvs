@@ -58,6 +58,7 @@ public:
     void prepareCommit();
     void prepareMerge();
 
+    bool clearItemsCache();
 
     bool refreshItems();
 
@@ -122,7 +123,7 @@ public:
     void deleteFromFileSystem(ObjectItems *allTargets);         //                  ,               , InFileSystemOnly  :       : Dirty FileSytem
     void deleteFromProject(ObjectItems *allTargets);            //                  , InProjectOnly ,                   : BLOCK : Dirty Project
 
-
+    void deleteFromTempDir(ObjectItems *allTargets);
 
     //----------------------------------------------------------------------------------------------------------------------
     // progress notification
@@ -147,7 +148,9 @@ public:
         CompareTempDirProcess,
 
         DeleteFromFileSystemProcess,
-        DeleteFromProjectProcess
+        DeleteFromProjectProcess,
+
+        DeleteFromTempDirProcess,
     };
 signals:
     void progressStart(int type, int count);
