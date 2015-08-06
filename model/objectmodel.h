@@ -99,8 +99,9 @@ public:
     // internal procedures
 
     // load and build-up model-item from object/file
-    void loadItemFromProject();                                 //                                                      : BLOCK
-    void loadItemFromFileSystem();                              //                                                      :
+    void loadItemFromProject(QList<ObjectItem*> *items);        //                                                      : BLOCK
+    void loadItemFromFileSystem(QList<ObjectItem*> *items);     //                                                      :
+    void reloadAndMergeItems();
 
     // import/export object
     void exportFromProjectToTempDir(ObjectItems *allTargets);   // InBoth           , InProjectOnly ,                   : BLOCK
@@ -161,6 +162,7 @@ private:
 
     void addItem( ObjectItem* item);
     void clearTempDir();
+    void mergeItemProperties(ObjectItem* itemSrc, ObjectItem* itemDst);
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(ObjectModel::ItemsTypes)

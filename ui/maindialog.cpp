@@ -122,7 +122,7 @@ void MainDialog::signal(const QString &name, int argc, void *argv)
 void MainDialog::refreshItems()
 {
     m_model->refreshItems();
-    m_model->selectItemsForProcess();
+    m_model->selectItemsForProcess(false);
     // FIXME: i don't know why but cursor stays with WaitCursor in several seconds.
     QApplication::setOverrideCursor(Qt::WaitCursor);
     QApplication::restoreOverrideCursor();

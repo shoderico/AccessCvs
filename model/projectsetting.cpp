@@ -78,6 +78,11 @@ Access::Application *ProjectSetting::application() const
     return m_application;
 }
 
+QList<Model::ObjectType> ProjectSetting::objectTypes() const
+{
+    return m_objectSettings.keys();
+}
+
 void ProjectSetting::exception(int code, const QString &source, const QString &desc, const QString &help)
 {
     // whatever connect() succeed, never called exception().

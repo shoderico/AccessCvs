@@ -295,8 +295,9 @@ bool ObjectModel::refreshItems()
     //:determine target objects to reflect from Project to FileSytem
 
     // refresh model items
-    loadItemFromProject();                          //                  : BLOCK :                   :
-    loadItemFromFileSystem();                       //                  :       :                   :
+    reloadAndMergeItems();                          //
+//    loadItemFromProject();                          //                  : BLOCK :                   :
+//    loadItemFromFileSystem();                       //                  :       :                   :
 
 //    clearTempDir(); // keep old files
 
@@ -636,157 +637,175 @@ void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTi
 }
 
 
-void ObjectModel::loadItemFromProject()
+void ObjectModel::loadItemFromProject(QList<ObjectItem*> *items)
 {
     ProgressNotifier mainProg(LoadItemFromProjectProcess, this);
-
-    QList<ObjectItem*> items;
-
-    ComPtr<DAO::Database> currentDb = m_application->CurrentDb();
-    ComPtr<Access::CurrentProject> currentProject = m_application->CurrentProject();
-
     ProjectSetting setting(this);
     ObjectSetting *os;
-
     setting.initialize(m_application);
 
-
+    foreach ( Model::ObjectType objectType, setting.objectTypes() )
     {
-        QList<Model::ObjectType> objectTypes;
-        objectTypes << Model::TableDef
-                    << Model::Query
-                    << Model::Form
-                    << Model::Report
-                    << Model::Macro
-                    << Model::Module
-                    << Model::Reference
-                       // TODO: TableData
-                       // TODO: Relation
-                       ;
+        os = setting[ objectType ];
 
-        foreach ( Model::ObjectType objectType, objectTypes )
+        if ( !os->prepareItemCollection() )
+            continue;
+
+        ProgressNotifier subProg(LoadItemFromProjectProcess, os->itemCount(), this);
+        for ( int i = 0 ; i < os->itemCount() ; ++i )
         {
-            os = setting[ objectType ];
-
-            if (!os->prepareItemCollection())
-                continue;
-
-            ProgressNotifier subProg(LoadItemFromProjectProcess, os->itemCount(), this);
-            for (int i = 0 ; i < os->itemCount() ; ++i )
+            subProg.next();
+            ComPtr<QAxObject> object = os->itemUnsafePtr(i);
+            if ( os->isTargetObject( object.ptr() ) )
             {
-                subProg.next();
-                ComPtr<QAxObject> object = os->itemUnsafePtr(i);
-                if ( os->isTargetObject( object.ptr() ) )
-                {
-                    items << os->createItemFromProject(object.ptr(), this);
-                }
+                items->append( os->createItemFromProject(object.ptr(), this) );
             }
         }
     }
 
-    //------------------------------------------------------------------------------------------
-    // reset items
-    beginRemoveRows( QModelIndex(), 0, m_items.count() - 1 );
-    {
-        ProgressNotifier subProg(LoadItemFromProjectProcess, m_mapItems.keys().length(), this);
-        qDeleteAll(m_items);
-        m_items.clear();
-
-        foreach (Model::ObjectType t, m_mapItems.keys() )
-        {
-            subProg.next();
-            m_mapItems[t].clear();
-        }
-    }
-    endRemoveRows();
-
-    beginInsertRows( QModelIndex(), 0, items.count() - 1);
-    {
-        ProgressNotifier subProg(LoadItemFromProjectProcess, items.length(), this);
-        foreach( ObjectItem *item, items)
-        {
-            subProg.next();
-            addItem( item );
-        }
-    }
-    endInsertRows();
 }
 
-void ObjectModel::loadItemFromFileSystem()
+
+void ObjectModel::loadItemFromFileSystem(QList<ObjectItem*> *items)
 {
     // load items from local file system.
 
     ProgressNotifier mainProg(LoadItemFromFileSystemProcess, this);
-
-    beginResetModel();
-    {
-        ProgressNotifier subProg(LoadItemFromFileSystemProcess, m_items.length(), this);
-        foreach ( ObjectItem *item, m_items )
-        {
-            subProg.next();
-            item->setInFileSystem( Model::Absent );
-        }
-    }
-    endResetModel();
-
-    ComPtr<Access::CurrentProject> currentProject = m_application->CurrentProject();
-    if (!currentProject.is())
-        return;
-
     ProjectSetting setting(this);
     ObjectSetting *os;
     setting.initialize(m_application);
 
-    QDir sourceDir( setting.sourcePath() );
-    if (!sourceDir.exists())
-        return;
-
-    QList<ObjectItem *> items;
-
+    foreach ( Model::ObjectType objectType, setting.objectTypes() )
     {
-        QList<Model::ObjectType> objectTypes;
-        objectTypes << Model::TableDef
-                    << Model::Query
-                    << Model::Form
-                    << Model::Report
-                    << Model::Macro
-                    << Model::Module
-                    << Model::Reference
-                       // TODO: TableData
-                       // TODO: Relation
-                       ;
+        os = setting[ objectType ];
 
-        foreach ( Model::ObjectType objectType, objectTypes )
+        QDir objectDir( os->sourceObjectPath() );
+        if (objectDir.exists())
         {
-            os = setting[ objectType ];
-
-            QDir objectDir( os->sourceObjectPath() );
-            if (objectDir.exists())
+            objectDir.setNameFilters( (QStringList() << ("*." + os->existCheckExtension() ) ) );
+            QFileInfoList fileInfos = objectDir.entryInfoList( QDir::Files );
+            ProgressNotifier subProg(LoadItemFromFileSystemProcess, fileInfos.length(), this);
+            foreach ( QFileInfo fileInfo, fileInfos )
             {
-                objectDir.setNameFilters( (QStringList() << ("*." + os->existCheckExtension() ) ) );
-                QFileInfoList fileInfos = objectDir.entryInfoList( QDir::Files );
-                ProgressNotifier subProg(LoadItemFromFileSystemProcess, fileInfos.length(), this);
-                foreach ( QFileInfo fileInfo, fileInfos )
-                {
-                    subProg.next();
-                    items << os->createItemFromFileSystem(fileInfo, this);
-                }
+                subProg.next();
+                items->append( os->createItemFromFileSystem(fileInfo, this) );
             }
         }
     }
+}
 
-    // update / insert items
-    beginResetModel();
+void ObjectModel::reloadAndMergeItems()
+{
+    // loading items more smart
+
+    QList<ObjectItem*> itemsFromProject;
+    QList<ObjectItem*> itemsFromFileSystem;
+
+    loadItemFromProject( &itemsFromProject );
+    loadItemFromFileSystem( &itemsFromFileSystem );
+
+
+    // we need to do here for ..
+    //  * delete item if not exist in both
+    //  * add item if not exist in m_items/m_mapItems
+    //  * update values
+
+
+    // first of all, we merge both items into one
+    QList<ObjectItem*> items;
+    ObjectItems mapItems;
+
+    //
+    for ( QList<ObjectItem*>::iterator it = itemsFromProject.begin(); it != itemsFromProject.end(); ++it )
     {
-        ProgressNotifier subProg(LoadItemFromFileSystemProcess, items.length(), this);
-        foreach ( ObjectItem *item, items )
+        ObjectItem *item = (*it);
+        items << item;
+        mapItems[ item->objectType() ].insert( item->name(), item );
+        item->setInFileSystem( Model::Absent );
+    }
+    for ( QList<ObjectItem*>::iterator it = itemsFromFileSystem.begin(); it != itemsFromFileSystem.end(); ++it )
+    {
+        if ( mapItems[ (*it)->objectType() ].contains( (*it)->name() ) )
         {
-            subProg.next();
-            addItem( item );
+            // exist. merge property
+            mergeItemProperties( (*it), mapItems[ (*it)->objectType() ].value( (*it)->name() ) );
+        }
+        else
+        {
+            items << (*it);
+            mapItems[ (*it)->objectType() ].insert( (*it)->name(), (*it) );
         }
     }
+
+
+    beginResetModel();
+
+    // delete local-item from member  if not exist in new-items
+    for ( QList<ObjectItem*>::iterator it = m_items.begin(); it != m_items.end(); ++it )
+    {
+        if ( !mapItems[ (*it)->objectType() ].contains( (*it)->name() ) )
+        {
+            ObjectItem *item = (*it);
+            m_mapItems[ (*it)->objectType() ].remove( (*it)->name() );
+            it = m_items.erase( it );
+            --it; // back one
+            delete item;
+        }
+    }
+    // okey until here
+
+    // add new-item to member  if not exist in member
+    for ( QList<ObjectItem*>::iterator it = items.begin(); it != items.end(); ++it )
+    {
+        if ( !m_mapItems[ (*it)->objectType() ].contains( (*it)->name() ) )
+        {
+            ObjectItem *item = new ObjectItem( (*it) , this);
+            m_mapItems[ (*it)->objectType() ].insert( (*it)->name(), item );
+            m_items.append( item );
+        }
+    }
+
+    // and now, we merge  from new-item to local-item
+    for ( QList<ObjectItem*>::iterator it = items.begin(); it != items.end(); ++it )
+    {
+        if ( m_mapItems[ (*it)->objectType() ].contains( (*it)->name() ) )
+        {
+            ObjectItem *item = m_mapItems[ (*it)->objectType() ].value( (*it)->name() );
+
+            //  * update values
+            //      * must keep
+            //          * selected state
+            //      * must update
+            //          * createDate
+            //          * updateDate
+            //          * exportDate
+            //          * inProject
+            //          * inFileSystem
+            //          * isDifferent ???
+            //     * no need to update
+            //          * name
+            //          * objectType
+            //          * gitStatusInIndex (for now)
+            //          * gitStatusInWorkTree (for now)
+
+            item->setCreateDate( (*it)->createDate() );
+            item->setUpdateDate( (*it)->updateDate() );
+            item->setExportDate( (*it)->exportDate() );
+            item->setInProject( (*it)->inProject() );
+            item->setInFileSystem( (*it)->inFileSystem() );
+            item->setDifferent( (*it)->isDifferent() );
+        }
+    }
+
     endResetModel();
+
+    // and delete local-items
+    qDeleteAll( items.begin(), items.end() );
+    items.clear();
+
 }
+
+
 
 
 void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
@@ -1302,5 +1321,27 @@ void ObjectModel::clearTempDir()
         tempDir.removeRecursively();
         tempDir.mkpath(".");
     }
+}
+
+void ObjectModel::mergeItemProperties(ObjectItem *itemSrc, ObjectItem *itemDst)
+{
+    itemDst->setInProject(
+                (itemDst->inProject() == Model::Present || itemSrc->inProject() == Model::Present) ? Model::Present :
+                (itemDst->inProject() == Model::Absent  || itemSrc->inProject() == Model::Absent ) ? Model::Absent  :
+                                                                                                     Model::OE_Unchecked );
+
+    itemDst->setInFileSystem(
+                (itemDst->inFileSystem() == Model::Present || itemSrc->inFileSystem() == Model::Present) ? Model::Present :
+                (itemDst->inFileSystem() == Model::Absent  || itemSrc->inFileSystem() == Model::Absent ) ? Model::Absent  :
+                                                                                                           Model::OE_Unchecked );
+
+    itemDst->setCreateDate(      itemSrc->createDate().isValid() ? itemSrc->createDate()
+                             : ( itemDst->createDate().isValid() ? itemDst->createDate()
+                             :   QDateTime() ) );
+
+    itemDst->setUpdateDate(      itemSrc->updateDate().isValid() ? itemSrc->updateDate()
+                             : ( itemDst->updateDate().isValid() ? itemDst->updateDate()
+                             :   QDateTime() ) );
+
 }
 

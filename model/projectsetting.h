@@ -33,6 +33,8 @@ public:
 
     Access::Application *application() const;
 
+    QList<Model::ObjectType> objectTypes() const;
+
 public slots:
     void exception(int code, const QString & source, const QString & desc, const QString & help);
 

@@ -59,6 +59,7 @@ class ObjectItem : public QObject
     Q_OBJECT
 public:
     ObjectItem(QObject *parent = 0);
+    ObjectItem(ObjectItem *object, QObject *parent);
 
     /*!
        \brief name
