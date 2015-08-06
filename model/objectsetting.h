@@ -204,6 +204,14 @@ protected:
     ComPtr<DAO::QueryDefs> m_queryDefs;
 };
 
+class QueryAsObjectSetting : public QuerySetting
+{
+public:
+    explicit QueryAsObjectSetting(ProjectSetting *parent);
+    virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
+    virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
+};
+
 
 
 

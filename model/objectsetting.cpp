@@ -592,6 +592,44 @@ QAxObject *QuerySetting::itemUnsafePtr(const QVariant &index)
 
 
 
+//=============================================================================
+// QueryAsObjectSetting
+// NOTE: this class is export/import by SaveAsText/LoadFromText.
+//       this class is implemented to solve the problem that
+//       "join-on criterias are always different between import and export".
+//       for example,
+//           if   import as 'SELECT ... FROM A INNER JOIN B ON ( A.x = B.x ) AND (A.y = B.y)' ... statement(N)
+//           then export as 'SELECT ... FROM A INNER JOIN B ON ( A.y = B.y ) AND (A.x = B.x)' ... statement(M)
+//               ( swapped the criterias after ON )
+//           and then import as (M) again, then export as (N)...
+//        this problem cannot be solved simply.
+//        we set it as Known Issue.
+//
+QueryAsObjectSetting::QueryAsObjectSetting(ProjectSetting *parent)
+    : QuerySetting(parent)
+{
+}
+
+bool QueryAsObjectSetting::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
+{
+    Q_UNUSED(object)
+    {
+        m_projectSetting->application()->SaveAsText( (Access::AcObjectType)m_accessObjectType, objectName, tempFilePathInTempDir(objectName) );
+        return true;
+    }
+}
+
+bool QueryAsObjectSetting::importFromTempDirToProject(QAxObject *object, const QString &objectName)
+{
+    Q_UNUSED(object)
+    {
+        m_projectSetting->application()->LoadFromText( (Access::AcObjectType)m_accessObjectType, objectName, tempFilePathInTempDir(objectName) );
+
+        return true;
+    }
+    return true;
+}
+
 
 //=============================================================================
 // AccessObject
