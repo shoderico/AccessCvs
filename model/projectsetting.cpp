@@ -18,7 +18,7 @@ ProjectSetting::ProjectSetting(QObject *parent)
     m_objectSettings.insert( Model::TableDef,   new TableDefSetting (this) );
 //  m_objectSettings.insert( Model::TableData,  new TableDataSetting(this) );
 //  m_objectSettings.insert( Model::Relation,   new RelationSetting (this) );
-    m_objectSettings.insert( Model::Query,      new QuerySetting    (this) );
+    m_objectSettings.insert( Model::Query,      new QueryAsSqlSetting    (this) );
 //  m_objectSettings.insert( Model::Query,      new QueryObjectSetting(this) );
     m_objectSettings.insert( Model::Form,       new FormSetting     (this) );
     m_objectSettings.insert( Model::Report,     new ReportSetting   (this) );

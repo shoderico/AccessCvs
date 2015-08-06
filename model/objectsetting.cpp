@@ -460,9 +460,9 @@ RelationSetting::RelationSetting(ProjectSetting *parent)
 
 
 //=============================================================================
-// Query
+// QueryAsSqlSetting
 
-QuerySetting::QuerySetting(ProjectSetting *parent)
+QueryAsSqlSetting::QueryAsSqlSetting(ProjectSetting *parent)
     : ObjectSetting(parent)
 {
     m_objectType          = Model::Query;
@@ -476,7 +476,7 @@ QuerySetting::QuerySetting(ProjectSetting *parent)
     m_existCheckExtension = m_tempFileExtension;
 }
 
-bool QuerySetting::isTargetObject(QAxObject *object) const
+bool QueryAsSqlSetting::isTargetObject(QAxObject *object) const
 {
     DAO::QueryDef *queryDef = dynamic_cast<DAO::QueryDef*>(object);
     if (queryDef)
@@ -486,7 +486,7 @@ bool QuerySetting::isTargetObject(QAxObject *object) const
     return false;
 }
 
-ObjectItem *QuerySetting::createItemFromProject(QAxObject *object, QObject *parent)
+ObjectItem *QueryAsSqlSetting::createItemFromProject(QAxObject *object, QObject *parent)
 {
     ObjectItem *item = new ObjectItem(parent);
 
@@ -504,7 +504,7 @@ ObjectItem *QuerySetting::createItemFromProject(QAxObject *object, QObject *pare
     return item;
 }
 
-bool QuerySetting::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
+bool QueryAsSqlSetting::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
 {
     DAO::QueryDef *queryDef = dynamic_cast<DAO::QueryDef*>(object);
     if (queryDef)
@@ -517,7 +517,7 @@ bool QuerySetting::exportFromProjectToTempDir(QAxObject *object, const QString &
     return false;
 }
 
-bool QuerySetting::importFromTempDirToProject(QAxObject *object, const QString &objectName)
+bool QueryAsSqlSetting::importFromTempDirToProject(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
@@ -547,7 +547,7 @@ bool QuerySetting::importFromTempDirToProject(QAxObject *object, const QString &
     return true;
 }
 
-bool QuerySetting::sanitizeTempDir(QAxObject *object, const QString &objectName)
+bool QueryAsSqlSetting::sanitizeTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
@@ -555,7 +555,7 @@ bool QuerySetting::sanitizeTempDir(QAxObject *object, const QString &objectName)
     return true;
 }
 
-bool QuerySetting::desanitizeTempDir(QAxObject *object, const QString &objectName)
+bool QueryAsSqlSetting::desanitizeTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
@@ -563,7 +563,7 @@ bool QuerySetting::desanitizeTempDir(QAxObject *object, const QString &objectNam
     return true;
 }
 
-bool QuerySetting::prepareItemCollection()
+bool QueryAsSqlSetting::prepareItemCollection()
 {
     if (!m_projectSetting->isMDB())
         return false;
@@ -576,14 +576,14 @@ bool QuerySetting::prepareItemCollection()
     return m_queryDefs.is();
 }
 
-int QuerySetting::itemCount()
+int QueryAsSqlSetting::itemCount()
 {
     if (!m_queryDefs.is())
         return 0;
     return m_queryDefs->Count();
 }
 
-QAxObject *QuerySetting::itemUnsafePtr(const QVariant &index)
+QAxObject *QueryAsSqlSetting::itemUnsafePtr(const QVariant &index)
 {
     if (!m_queryDefs.is())
         return 0;
@@ -606,7 +606,7 @@ QAxObject *QuerySetting::itemUnsafePtr(const QVariant &index)
 //        we set it as Known Issue.
 //
 QueryAsObjectSetting::QueryAsObjectSetting(ProjectSetting *parent)
-    : QuerySetting(parent)
+    : QueryAsSqlSetting(parent)
 {
 }
 

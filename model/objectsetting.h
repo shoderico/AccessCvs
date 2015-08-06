@@ -186,10 +186,10 @@ public:
 };
 
 
-class QuerySetting : public ObjectSetting
+class QueryAsSqlSetting : public ObjectSetting
 {
 public:
-    explicit QuerySetting(ProjectSetting *parent);
+    explicit QueryAsSqlSetting(ProjectSetting *parent);
     virtual bool        isTargetObject(QAxObject *object) const;
     virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
     virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
@@ -204,7 +204,7 @@ protected:
     ComPtr<DAO::QueryDefs> m_queryDefs;
 };
 
-class QueryAsObjectSetting : public QuerySetting
+class QueryAsObjectSetting : public QueryAsSqlSetting
 {
 public:
     explicit QueryAsObjectSetting(ProjectSetting *parent);
