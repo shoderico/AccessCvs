@@ -357,7 +357,7 @@ bool ObjectModel::executeExport()
     // for InProjectOnly
     {
         ObjectItems targets;
-        getItems(&targets, InProjectOnly, selectedOnly);
+        getItems(&targets, InProjectOnly, selectedOnly, false/*modifiedOnly*/);
         exportFromProjectToTempDir(&targets);       // InProjectOnly    : BLOCK :                   :
         sanitizeTempDir(&targets);                  // InProjectOnly    :       :                   :
         copyFromTempDirToFileSystem(&targets);      // InProjectOnly    :       : Dirty FileSystem  : need one-more step? like confirm
@@ -369,7 +369,7 @@ bool ObjectModel::executeExport()
     // for InFileSytemOnly
     {
         ObjectItems targets;
-        getItems(&targets, InFileSystemOnly, selectedOnly);
+        getItems(&targets, InFileSystemOnly, selectedOnly, false/*modifiedOnly*/);
         deleteFromFileSystem(&targets);             // InFileSystemOnly :       : Dirty FileSystem  : need one-more step? like confirm
     }
 
@@ -378,7 +378,7 @@ bool ObjectModel::executeExport()
         // for InBoth_Different
         {
             ObjectItems targets;
-            getItems(&targets, InBoth_Different, selectedOnly);
+            getItems(&targets, InBoth_Different, selectedOnly, false/*modifiedOnly*/);
             copyFromTempDirToFileSystem(&targets);  // InBoth_Different :       : Dirty FileSystem  : need one-more step? like confirm
 
             QDateTime currentTime = QDateTime::currentDateTime();
@@ -388,7 +388,7 @@ bool ObjectModel::executeExport()
         // for InBoth_Same
         {
             ObjectItems targets;
-            getItems(&targets, InBoth_Same, selectedOnly);
+            getItems(&targets, InBoth_Same, selectedOnly, false/*modifiedOnly*/);
             copyFromTempDirToFileSystem(&targets);  // InBoth_Same      :       : Dirty FileSystem  : need one-more step? like confirm
 
             QDateTime currentTime = QDateTime::currentDateTime();
@@ -412,14 +412,14 @@ bool ObjectModel::executeImport()
     // for InProjectOnly
     {
         ObjectItems targets;
-        getItems(&targets, InProjectOnly, selectedOnly);
+        getItems(&targets, InProjectOnly, selectedOnly, false/*modifiedOnly*/);
         deleteFromProject(&targets);                // InProjectOnly    : BLOCK : Dirty Project : need one-more step? like confirm
     }
 
     // for InFileSytemOnly
     {
         ObjectItems targets;
-        getItems(&targets, InFileSystemOnly, selectedOnly);
+        getItems(&targets, InFileSystemOnly, selectedOnly, false/*modifiedOnly*/);
         copyFromFileSystemToTempDir(&targets);      // InFileSytemOnly  :       :               :
         desanitizeTempDir(&targets);                // InFileSytemOnly  :       :               :
         importFromTempDirToProject(&targets);       // InFileSystemOnly : BLOCK : Dirty Project : need one-more step? like confirm
@@ -434,7 +434,7 @@ bool ObjectModel::executeImport()
         // for InBoth_Different
         {
             ObjectItems targets;
-            getItems(&targets, InBoth_Different, selectedOnly);
+            getItems(&targets, InBoth_Different, selectedOnly, false/*modifiedOnly*/);
             copyFromFileSystemToTempDir(&targets);  // InBoth_Different :       :               :
             desanitizeTempDir(&targets);            // InBoth_Different :       :               :
             importFromTempDirToProject(&targets);   // InBoth_Different : BLOCK : Dirty Project : need one-more step? like confirm
@@ -446,7 +446,7 @@ bool ObjectModel::executeImport()
         // for InBoth_Different
         {
             ObjectItems targets;
-            getItems(&targets, InBoth_Same, selectedOnly);
+            getItems(&targets, InBoth_Same, selectedOnly, false/*modifiedOnly*/);
             copyFromFileSystemToTempDir(&targets);  // InBoth_Same      :       :               :
             desanitizeTempDir(&targets);            // InBoth_Same      :       :               :
             importFromTempDirToProject(&targets);   // InBoth_Same      : BLOCK : Dirty Project : need one-more step? like confirm
@@ -488,18 +488,52 @@ bool ObjectModel::executeImport()
 
 void ObjectModel::getItems(ObjectItems *pItems, ObjectModel::ItemsTypes itemsType, bool selectedOnly, bool modifiedOnly) const
 {
+    getItems( pItems, itemsType, ObjectModel::AllObjectTypes, selectedOnly, modifiedOnly);
+}
+
+void ObjectModel::getItems(ObjectItems *pItems, ItemsTypes itemsType, SelectObjectTypes objectTypes, bool selectedOnly, bool modifiedOnly) const
+{
     for ( QList<ObjectItem*>::const_iterator it = m_items.begin() ; it != m_items.end() ; ++it )
     {
         ObjectItem *item = (*it);
         ObjectItem *toBeInserted = NULL;
-        if (selectedOnly && !item->isSelected())
+
+        // skip non-selected item
+        if (selectedOnly &&
+                !item->isSelected() // not-selected
+                )
             continue;
 
         // skip non-modified item
         if (modifiedOnly &&
                 item->updateDate().isValid() && item->exportDate().isValid() &&
-                item->updateDate() <= item->exportDate() )
+                item->updateDate() <= item->exportDate() // not-modified
+                )
             continue;
+
+        // skip non-target object type
+        switch (item->objectType())
+        {
+            case Model::TableDef:   if ( !(objectTypes & ObjectModel::TableObjectType    ) ) continue; break;
+            case Model::Query:      if ( !(objectTypes & ObjectModel::QueryObjectType    ) ) continue; break;
+            case Model::Form:       if ( !(objectTypes & ObjectModel::FormObjectType     ) ) continue; break;
+            case Model::Report:     if ( !(objectTypes & ObjectModel::ReportObjectType   ) ) continue; break;
+            case Model::Macro:      if ( !(objectTypes & ObjectModel::MacroObjectType    ) ) continue; break;
+            case Model::Module:     if ( !(objectTypes & ObjectModel::ModuleObjectType   ) ) continue; break;
+            case Model::Reference:  if ( !(objectTypes & ObjectModel::ReferenceObjectType) ) continue; break;
+            default: break;
+        }
+        /*
+        if ( ( (objectTypes & ObjectModel::TableObjectType)     && item->objectType() == Model::TableDef  ) ||
+             ( (objectTypes & ObjectModel::QueryObjectType)     && item->objectType() == Model::Query     ) ||
+             ( (objectTypes & ObjectModel::FormObjectType)      && item->objectType() == Model::Form      ) ||
+             ( (objectTypes & ObjectModel::ReportObjectType)    && item->objectType() == Model::Report    ) ||
+             ( (objectTypes & ObjectModel::MacroObjectType)     && item->objectType() == Model::Macro     ) ||
+             ( (objectTypes & ObjectModel::ModuleObjectType)    && item->objectType() == Model::Module    ) ||
+             ( (objectTypes & ObjectModel::ReferenceObjectType) && item->objectType() == Model::Reference ) )
+        {
+        }
+        */
 
         if (!toBeInserted && itemsType & InBoth)
         {
@@ -541,32 +575,64 @@ void ObjectModel::getItems(ObjectItems *pItems, ObjectModel::ItemsTypes itemsTyp
     }
 }
 
-void ObjectModel::selectItemsForProcess(bool resetSelection)
+void ObjectModel::selectItemsForProcess(bool selected, bool resetSelection)
 {
-    selectItems( InProjectOnly | InFileSystemOnly | InBoth_Different, resetSelection );
+    selectItems( InProjectOnly | InFileSystemOnly | InBoth_Different, selected, resetSelection );
 }
 
-void ObjectModel::selectItems(ObjectModel::ItemsTypes itemsType, bool resetSelection)
+void ObjectModel::selectItems(ObjectModel::ItemsTypes itemsType, bool selected, bool resetSelection)
 {
     int first = m_items.count();
     int last = 0;
     if (resetSelection)
     {
         for (QList<ObjectItem*>::iterator it = m_items.begin() ; it != m_items.end() ; ++it )
-            (*it)->setSelected(false);
+            (*it)->setSelected( false );
 
         first = 0;
         last = m_items.length() - 1;
     }
 
     ObjectItems targets;
-    getItems(&targets, itemsType, false);
+    getItems(&targets, itemsType, false/*selectedOnly*/, false/*modifiedOnly*/);
     foreach (const Model::ObjectType &objectType, targets.keys() )
     {
         QList<ObjectItem*> items = targets[ objectType ].values();
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
-            (*it)->setSelected( true );
+            (*it)->setSelected( selected );
+
+            int row = m_items.indexOf( (*it) );
+            if (first > row) first = row;
+            if (last  < row) last  = row;
+        }
+    }
+
+    emit dataChanged( createIndex(first, 0), createIndex(last, ColumnCount) );
+}
+
+void ObjectModel::selectItemsByObjectType(SelectObjectTypes objectTypes, bool selected, bool resetSelection)
+{
+    // FIXME: implement here
+    int first = m_items.count();
+    int last = 0;
+    if (resetSelection)
+    {
+        for (QList<ObjectItem*>::iterator it = m_items.begin() ; it != m_items.end() ; ++it )
+            (*it)->setSelected( false );
+
+        first = 0;
+        last = m_items.length() - 1;
+    }
+
+    ObjectItems targets;
+    getItems(&targets, ObjectModel::AllItems, objectTypes, false/*selectedOnly*/, false/*modifiedOnly*/);
+    foreach (const Model::ObjectType &objectType, targets.keys() )
+    {
+        QList<ObjectItem*> items = targets[ objectType ].values();
+        for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
+        {
+            (*it)->setSelected( selected );
 
             int row = m_items.indexOf( (*it) );
             if (first > row) first = row;

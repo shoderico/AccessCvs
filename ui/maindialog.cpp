@@ -46,7 +46,15 @@ MainDialog::MainDialog(IDispatch *application, QWidget *parent) :
     connect( ui->executeExportButton, SIGNAL(clicked(bool)), this, SLOT(executeExport()) );
     connect( ui->executeImportButton, SIGNAL(clicked(bool)), this, SLOT(executeImport()) );
     connect( ui->selectAutoButton,    SIGNAL(clicked(bool)), this, SLOT(selectAuto()) );
-    connect( ui->selectAllcheckBox,   SIGNAL(stateChanged(int)), this, SLOT(selectAll(int)) );
+
+    connect( ui->selectAllCheckBox,         SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
+    connect( ui->selectTableCheckBox,       SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
+    connect( ui->selectQueryCheckBox,       SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
+    connect( ui->selectFormCheckBox,        SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
+    connect( ui->selectReportCheckBox,      SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
+    connect( ui->selectMacroCheckBox,       SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
+    connect( ui->selectModuleCheckBox,      SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
+    connect( ui->selectReferenceCheckBox,   SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
 
     connect( m_model, SIGNAL(progressStart(int,int)), this, SLOT(progressStart(int,int)) );
     connect( m_model, SIGNAL(progressChange(int,int)), this, SLOT(progressChange(int,int)) );
@@ -128,7 +136,7 @@ void MainDialog::clearCache()
 void MainDialog::refreshItems()
 {
     m_model->refreshItems();
-    m_model->selectItemsForProcess(false);
+    m_model->selectItemsForProcess( true, false );
     // FIXME: i don't know why but cursor stays with WaitCursor in several seconds.
     QApplication::setOverrideCursor(Qt::WaitCursor);
     QApplication::restoreOverrideCursor();
@@ -148,15 +156,57 @@ void MainDialog::executeImport()
 
 void MainDialog::selectAuto()
 {
-    m_model->selectItemsForProcess();
+    m_model->selectItemsForProcess( true, true );
 }
 
-void MainDialog::selectAll(int state)
+void MainDialog::selectCheckStateChanged(int state)
 {
-    if (state == Qt::Checked)
-        m_model->selectItems( ObjectModel::AllItems, true );
-    else if (state == Qt::Unchecked)
-        m_model->selectItems( ObjectModel::NoItems, true );
+    QCheckBox *checkBox = qobject_cast<QCheckBox*>(sender());
+    if (!checkBox)
+        return;
+
+    bool selected = (state == Qt::Checked);
+
+    if (checkBox == ui->selectAllCheckBox)
+    {
+        m_model->selectItems( ObjectModel::AllItems, selected , true );
+
+        ui->selectTableCheckBox->setChecked( selected );
+        ui->selectQueryCheckBox->setChecked( selected );
+        ui->selectFormCheckBox->setChecked( selected );
+        ui->selectReportCheckBox->setChecked( selected );
+        ui->selectMacroCheckBox->setChecked( selected );
+        ui->selectModuleCheckBox->setChecked( selected );
+        ui->selectReferenceCheckBox->setChecked( selected );
+    }
+    else if (checkBox == ui->selectTableCheckBox)
+    {
+        m_model->selectItemsByObjectType( ObjectModel::TableObjectType, selected, false );
+    }
+    else if (checkBox == ui->selectQueryCheckBox)
+    {
+        m_model->selectItemsByObjectType( ObjectModel::QueryObjectType, selected, false );
+    }
+    else if (checkBox == ui->selectFormCheckBox)
+    {
+        m_model->selectItemsByObjectType( ObjectModel::FormObjectType, selected, false );
+    }
+    else if (checkBox == ui->selectReportCheckBox)
+    {
+        m_model->selectItemsByObjectType( ObjectModel::ReportObjectType, selected, false );
+    }
+    else if (checkBox == ui->selectMacroCheckBox)
+    {
+        m_model->selectItemsByObjectType( ObjectModel::MacroObjectType, selected, false );
+    }
+    else if (checkBox == ui->selectModuleCheckBox)
+    {
+        m_model->selectItemsByObjectType( ObjectModel::ModuleObjectType, selected, false );
+    }
+    else if (checkBox == ui->selectReferenceCheckBox)
+    {
+        m_model->selectItemsByObjectType( ObjectModel::ReferenceObjectType, selected, false );
+    }
 }
 
 void MainDialog::progressStart(int type, int count)

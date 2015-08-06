@@ -71,7 +71,7 @@ public:
     // items getter
     enum ItemsType
     {
-        NoItems          = 0,
+      //NoItems          = 0,
         InBoth           = 1,
         InBoth_Different = 2,
         InBoth_Same      = 4,
@@ -80,13 +80,26 @@ public:
         AllItems         = 31,
     };
     Q_DECLARE_FLAGS(ItemsTypes, ItemsType)
-    // TODO: define select-state ( selected, not-select, both)
-    // TODO: extend getItems() to specify select state
-    // TODO: can be non-public ?
-    void getItems(ObjectItems *pItems, ItemsTypes itemsType, bool selectedOnly = true, bool modifiedOnly = false) const;
+    enum SelectObjectType
+    {
+      //NoObjectTypes = 0,
+        TableObjectType = 1,
+        QueryObjectType = 2,
+        FormObjectType = 4,
+        ReportObjectType = 8,
+        MacroObjectType = 16,
+        ModuleObjectType = 32,
+        ReferenceObjectType = 64,
+        AllObjectTypes      = 127,
+    };
+    Q_DECLARE_FLAGS(SelectObjectTypes, SelectObjectType)
 
-    void selectItemsForProcess(bool resetSelection = true);
-    void selectItems(ItemsTypes itemsType, bool resetSelection = true);
+    void getItems(ObjectItems *pItems, ItemsTypes itemsType, bool selectedOnly /*= true*/, bool modifiedOnly /*= false*/) const;
+    void getItems(ObjectItems *pItems, ItemsTypes itemsType, SelectObjectTypes objectTypes, bool selectedOnly /*= true*/, bool modifiedOnly /*= false*/) const;
+
+    void selectItemsForProcess(bool selected, bool resetSelection /*= true*/);
+    void selectItems(ItemsTypes itemsType, bool selected, bool resetSelection /*= true*/);
+    void selectItemsByObjectType(SelectObjectTypes objectTypes, bool selected, bool resetSelection /*= true*/);
 
     void assumeItemsTheSameByFileTime();
     void rollbackFileTimeIfDifferent(ObjectItems *allTargets);
@@ -169,5 +182,6 @@ private:
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(ObjectModel::ItemsTypes)
+Q_DECLARE_OPERATORS_FOR_FLAGS(ObjectModel::SelectObjectTypes)
 
 #endif // OBJECTMODEL_H
