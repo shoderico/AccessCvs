@@ -89,6 +89,8 @@ public:
 
     void assumeItemsTheSameByFileTime();
     void rollbackFileTimeIfDifferent(ObjectItems *allTargets);
+    void updateExportDateIfSame(ObjectItems *allTargets, const QDateTime &exportDate);
+    void updateExportDate(ObjectItems *allTargets, const QDateTime &exportDate);
     void updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTime &fileTime);
 
 
