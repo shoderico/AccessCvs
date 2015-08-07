@@ -685,7 +685,7 @@ void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTi
             if ( !( (*it)->isDifferent() == Model::SameContents      && (differenceTypes & SameContentsType      ) ) )  continue;
             if ( !( (*it)->isDifferent() == Model::DifferentContents && (differenceTypes & DifferentContentsTypes) ) )  continue;
 
-            os->rollbackFileTimeTempDir( (*it)->name(), fileTime );
+            os->updateFileTimeInTempDir( (*it)->name(), fileTime );
         }
     }
 }
@@ -705,7 +705,7 @@ void ObjectModel::updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, c
             if ( !( (*it)->isDifferent() == Model::SameContents      && (differenceTypes & SameContentsType      ) ) )  continue;
             if ( !( (*it)->isDifferent() == Model::DifferentContents && (differenceTypes & DifferentContentsTypes) ) )  continue;
 
-            os->rollbackFileTimeTempDir( (*it)->name(), (*it)->exportDate() );
+            os->updateFileTimeInTempDir( (*it)->name(), (*it)->exportDate() );
         }
     }
 }

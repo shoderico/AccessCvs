@@ -92,7 +92,7 @@ public:
     virtual int itemCount();
     virtual QAxObject *itemUnsafePtr(const QVariant &index);
 
-    void rollbackFileTimeTempDir(const QString &objectName, const QDateTime &fileTime);
+    void updateFileTimeInTempDir(const QString &objectName, const QDateTime &fileTime);
 
     bool deleteTempFileFromTempDir(const QString &objectName);
 

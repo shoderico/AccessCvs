@@ -170,7 +170,7 @@ QAxObject *ObjectSetting::itemUnsafePtr(const QVariant &index)
     return NULL;
 }
 
-void ObjectSetting::rollbackFileTimeTempDir(const QString &objectName, const QDateTime &fileTime)
+void ObjectSetting::updateFileTimeInTempDir(const QString &objectName, const QDateTime &fileTime)
 {
     FileUtil::setFileTime( tempFilePathInTempDir(objectName), fileTime, fileTime );
 }
