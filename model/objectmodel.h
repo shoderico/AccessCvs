@@ -107,11 +107,11 @@ public:
     void getItems(ObjectItems *pItems, ItemsTypes itemsType, SelectObjectTypes objectTypes, bool selectedOnly /*= true*/, bool modifiedOnly /*= false*/) const;
 
     void selectItemsForProcess(bool selected, bool resetSelection /*= true*/);
-    void selectItems(ItemsTypes itemsType, bool selected, bool resetSelection /*= true*/);
-    void selectItemsByObjectType(SelectObjectTypes objectTypes, bool selected, bool resetSelection /*= true*/);
+    void selectItems(ItemsTypes itemsType, bool selected, bool resetSelection /*= true*/);                                          /*FIXME: require updates*/
+    void selectItemsByObjectType(SelectObjectTypes objectTypes, bool selected, bool resetSelection /*= true*/);                     /*FIXME: require updates*/
 
-    void assumeItemsTheSameByFileTime();
-    void updateItemsExportDate(ObjectItems *allTargets, const QDateTime &exportDate, const ObjectDifferenceTypes differenceTypes);
+    void assumeItemsTheSameByFileTime();                                                                                            /*FIXME: require updates*/
+    void updateItemsExportDate(ObjectItems *allTargets, const QDateTime &exportDate, const ObjectDifferenceTypes differenceTypes);  /*FIXME: require updates*/
     void updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, const ObjectDifferenceTypes differenceTypes);
     void updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTime &fileTime, const ObjectDifferenceTypes differenceTypes);
 
@@ -123,7 +123,7 @@ public:
     // load and build-up model-item from object/file
     void loadItemFromProject(QList<ObjectItem*> *items);        //                                                      : BLOCK
     void loadItemFromFileSystem(QList<ObjectItem*> *items);     //                                                      :
-    void reloadAndMergeItems();
+    void reloadAndMergeItems();                         /*FIXME:require updates*/
 
     // import/export object
     void exportFromProjectToTempDir(ObjectItems *allTargets);   // InBoth           , InProjectOnly ,                   : BLOCK
@@ -138,13 +138,13 @@ public:
     void desanitizeTempDir(ObjectItems *allTargets);            // InBoth_DiffOnly  ,               , InFileSystemOnly  :
 
     // compare files and update model-item status
-    void compareTempDir(ObjectItems *allTargets);               // InBoth           ,               ,                   :
+    void compareTempDir(ObjectItems *allTargets);       /* FIXME:require updates*/              // InBoth           ,               ,                   :
 
     // delete object/file
-    void deleteFromFileSystem(ObjectItems *allTargets);         //                  ,               , InFileSystemOnly  :       : Dirty FileSytem
-    void deleteFromProject(ObjectItems *allTargets);            //                  , InProjectOnly ,                   : BLOCK : Dirty Project
+    void deleteFromFileSystem(ObjectItems *allTargets); /*FIXME: some after work to prevent refresh*/         //                  ,               , InFileSystemOnly  :       : Dirty FileSytem
+    void deleteFromProject(ObjectItems *allTargets);    /*FIXME: some after work to prevent refresh*/             //                  , InProjectOnly ,                   : BLOCK : Dirty Project
 
-    void deleteFromTempDir(ObjectItems *allTargets);
+    void deleteFromTempDir(ObjectItems *allTargets);    /*FIXME: require updates*/
 
     //----------------------------------------------------------------------------------------------------------------------
     // progress notification
@@ -184,8 +184,8 @@ private:
     ObjectItems m_mapItems;
     Access::Application *m_application;
 
-    void addItem( ObjectItem* item);
-    void clearTempDir();
+    void addItem( ObjectItem* item);    /*FIXME: unused*/
+    void clearTempDir();                /*FIXME: unused*/
     void mergeItemProperties(ObjectItem* itemSrc, ObjectItem* itemDst);
 };
 
