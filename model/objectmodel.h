@@ -80,6 +80,7 @@ public:
         AllItems         = 31,
     };
     Q_DECLARE_FLAGS(ItemsTypes, ItemsType)
+
     enum SelectObjectType
     {
       //NoObjectTypes = 0,
@@ -94,6 +95,14 @@ public:
     };
     Q_DECLARE_FLAGS(SelectObjectTypes, SelectObjectType)
 
+    enum ObjectDifferenceType
+    {
+        SameContentsType = 1,
+        DifferentContentsTypes = 2,
+        AllDifferenceTypes = 3,
+    };
+    Q_DECLARE_FLAGS(ObjectDifferenceTypes, ObjectDifferenceType)
+
     void getItems(ObjectItems *pItems, ItemsTypes itemsType, bool selectedOnly /*= true*/, bool modifiedOnly /*= false*/) const;
     void getItems(ObjectItems *pItems, ItemsTypes itemsType, SelectObjectTypes objectTypes, bool selectedOnly /*= true*/, bool modifiedOnly /*= false*/) const;
 
@@ -102,10 +111,9 @@ public:
     void selectItemsByObjectType(SelectObjectTypes objectTypes, bool selected, bool resetSelection /*= true*/);
 
     void assumeItemsTheSameByFileTime();
-    void rollbackFileTimeIfDifferent(ObjectItems *allTargets);
-    void updateExportDateIfSame(ObjectItems *allTargets, const QDateTime &exportDate);
-    void updateExportDate(ObjectItems *allTargets, const QDateTime &exportDate);
-    void updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTime &fileTime);
+    void updateItemsExportDate(ObjectItems *allTargets, const QDateTime &exportDate, const ObjectDifferenceTypes differenceTypes);
+    void updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, const ObjectDifferenceTypes differenceTypes);
+    void updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTime &fileTime, const ObjectDifferenceTypes differenceTypes);
 
 
 
@@ -183,5 +191,6 @@ private:
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(ObjectModel::ItemsTypes)
 Q_DECLARE_OPERATORS_FOR_FLAGS(ObjectModel::SelectObjectTypes)
+Q_DECLARE_OPERATORS_FOR_FLAGS(ObjectModel::ObjectDifferenceTypes)
 
 #endif // OBJECTMODEL_H
