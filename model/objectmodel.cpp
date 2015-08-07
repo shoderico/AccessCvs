@@ -707,8 +707,10 @@ void ObjectModel::selectItemsByObjectType(SelectObjectTypes objectTypes, bool se
 void ObjectModel::assumeItemsTheSameByFileTime()
 {
     /*FIXME: require updates*/
+    ProgressNotifier mainProg(AssumeItemsTheSameByFileTimeProcess, this);
     for (QList<ObjectItem*>::iterator it = m_items.begin() ; it != m_items.end() ; ++it )
     {
+        mainProg.next();
         if ( (*it)->inProject() && (*it)->inFileSystem() &&
              (*it)->updateDate().isValid() && (*it)->exportDate().isValid() &&
              (*it)->updateDate() <= (*it)->exportDate() )
@@ -721,11 +723,14 @@ void ObjectModel::assumeItemsTheSameByFileTime()
 void ObjectModel::updateItemsExportDate(ObjectItems *allTargets, const QDateTime &exportDate, const ObjectDifferenceTypes differenceTypes)
 {
     /*FIXME: require updates*/
+    ProgressNotifier mainProg(UpdateItemsExportDateProcess, this);
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
+        ProgressNotifier subProg(UpdateItemsExportDateProcess, items.count(), this);
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
+            subProg.next();
             if ( !( (*it)->isDifferent() == Model::SameContents      && (differenceTypes & SameContentsType      ) ) )  continue;
             if ( !( (*it)->isDifferent() == Model::DifferentContents && (differenceTypes & DifferentContentsTypes) ) )  continue;
 
@@ -736,6 +741,7 @@ void ObjectModel::updateItemsExportDate(ObjectItems *allTargets, const QDateTime
 
 void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTime &fileTime, const ObjectDifferenceTypes differenceTypes)
 {
+    ProgressNotifier mainProg(UpdateFileTimeInTempDirProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
     setting.initialize(m_application);
@@ -744,8 +750,10 @@ void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTi
     {
         os = setting[ objectType ];
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
+        ProgressNotifier subProg(UpdateFileTimeInTempDirProcess, items.count(), this);
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
+            subProg.next();
             if ( !( (*it)->isDifferent() == Model::SameContents      && (differenceTypes & SameContentsType      ) ) )  continue;
             if ( !( (*it)->isDifferent() == Model::DifferentContents && (differenceTypes & DifferentContentsTypes) ) )  continue;
 
@@ -756,6 +764,7 @@ void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTi
 
 void ObjectModel::updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, const ObjectDifferenceTypes differenceTypes)
 {
+    ProgressNotifier mainProg(UpdateFileTimeInTempDirByExportDateProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
     setting.initialize(m_application);
@@ -764,8 +773,10 @@ void ObjectModel::updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, c
     {
         os = setting[ objectType ];
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
+        ProgressNotifier subProg(UpdateFileTimeInTempDirByExportDateProcess, items.count(), this);
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
+            subProg.next();
             if ( !( (*it)->isDifferent() == Model::SameContents      && (differenceTypes & SameContentsType      ) ) )  continue;
             if ( !( (*it)->isDifferent() == Model::DifferentContents && (differenceTypes & DifferentContentsTypes) ) )  continue;
 

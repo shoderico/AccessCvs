@@ -174,6 +174,11 @@ public:
         DeleteFromProjectProcess,
 
         DeleteFromTempDirProcess,
+
+        AssumeItemsTheSameByFileTimeProcess,
+        UpdateFileTimeInTempDirByExportDateProcess,
+        UpdateItemsExportDateProcess,
+        UpdateFileTimeInTempDirProcess,
     };
 signals:
     void progressStart(int type, int count);
