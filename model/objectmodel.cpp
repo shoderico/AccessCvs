@@ -783,6 +783,7 @@ void ObjectModel::updateItemsDifference(ObjectItems *allTargets, Model::ObjectDi
 
 void ObjectModel::updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets)
 {
+    /* FIXME: require updates*/
     ProgressNotifier mainProg(UpdateItemsCreateUpdateDateFromProjectProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -791,12 +792,20 @@ void ObjectModel::updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
         os = setting[ objectType ];
+        if (!os->prepareItemCollection())
+            continue;
+
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
         ProgressNotifier subProg(UpdateItemsCreateUpdateDateFromProjectProcess, items.count(), this);
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
             subProg.next();
-            // FIXME: implement updatting
+
+            ComPtr<QAxObject> object = os->itemUnsafePtr( (*it)->name() );
+            ObjectItem *item = os->createItemFromProject( object.ptr(), 0 );
+            (*it)->setCreateDate( item->createDate() );
+            (*it)->setUpdateDate( item->updateDate() );
+            delete item;
         }
     }
 }
@@ -826,20 +835,20 @@ void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTi
 
 void ObjectModel::deleteItems(ObjectItems *allTargets)
 {
+    /* FIXME: require updates */
     ProgressNotifier mainProg(DeleteItemsProcess, this);
-    ProjectSetting setting(this);
-    ObjectSetting *os;
-    setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
-        os = setting[ objectType ];
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
         ProgressNotifier subProg(DeleteItemsProcess, items.count(), this);
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
             subProg.next();
-            // FIXME: delete model item here.
+
+            m_mapItems[ objectType ].remove( (*it)->name() );
+            m_items.removeAll( (*it) );
+            delete (*it);
         }
     }
 }
