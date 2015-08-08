@@ -360,6 +360,21 @@ bool ObjectModel::executeExport()
     bool selectedOnly = true;
 
     /* FIXME: implement tabledata */
+    // strategry
+    //  * use QSettings to save/load settings
+    //  * root owner of QSettings is ProjectSetting
+    //  * each ObjectSetting has own setting-group i.e. 'Table'.
+    //  * TableSetting saves/loads table names to store/restore table data
+    //  * In UI, table-data checkbox represents to be store data or not.
+    //      * these are saved into QSettings.
+    //  * QSettings contents must be editable by user ( must be text format ).
+    //  * QSettings file must be handled properly by CVS.
+    //  * ObjectItem has a property for table-data handling, boolen value.
+    //      * Table-specific property.
+    //  * Save timing
+    //      * setData()
+    //  * Load timing
+    //      * reloadAndMerge...()
 
     // for InProjectOnly
     {
