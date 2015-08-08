@@ -52,7 +52,8 @@ SOURCES += \
     model/sanitizesetting.cpp \
     addin/comutil.cpp \
     addin/logfile.cpp \
-    util/progressnotifier.cpp
+    util/progressnotifier.cpp \
+    util/datachangedhelper.cpp
 
 HEADERS +=\
     addin/msaddndr.h \
@@ -82,7 +83,8 @@ HEADERS +=\
     model/sanitizesetting.h \
     addin/comutil.h \
     addin/logfile.h \
-    util/progressnotifier.h
+    util/progressnotifier.h \
+    util/datachangedhelper.h
 
 DISTFILES += \
     addin/addin.def \

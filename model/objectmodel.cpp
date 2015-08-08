@@ -9,6 +9,7 @@
 #include "officelib/officelib.h"
 #include "util/comptr.h"
 #include "util/progressnotifier.h"
+#include "util/datachangedhelper.h"
 
 #include "projectsetting.h"
 #include "objectsetting.h"
@@ -297,6 +298,7 @@ bool ObjectModel::clearItemsCache()
 
     // smart-refresh : post-process
     updateItemsExportDate(&targets, QDateTime(), AllDifferenceTypes);
+    updateItemsDifference(&targets, Model::Unchecked_OD);
 
     return true;
 }
@@ -356,6 +358,8 @@ bool ObjectModel::executeExport()
         return false;
 
     bool selectedOnly = true;
+
+    /* FIXME: implement tabledata */
 
     // for InProjectOnly
     {
@@ -639,16 +643,13 @@ void ObjectModel::selectItemsForProcess(bool selected, bool resetSelection)
 
 void ObjectModel::selectItems(ObjectModel::ItemsTypes itemsType, bool selected, bool resetSelection)
 {
-    /*FIXME: require updates*/
-    int first = m_items.count();
-    int last = 0;
+    DataChangedHelper helper( m_items.count() );
     if (resetSelection)
     {
         for (QList<ObjectItem*>::iterator it = m_items.begin() ; it != m_items.end() ; ++it )
             (*it)->setSelected( false );
 
-        first = 0;
-        last = m_items.length() - 1;
+        helper.changedAll();
     }
 
     ObjectItems targets;
@@ -660,27 +661,23 @@ void ObjectModel::selectItems(ObjectModel::ItemsTypes itemsType, bool selected, 
         {
             (*it)->setSelected( selected );
 
-            int row = m_items.indexOf( (*it) );
-            if (first > row) first = row;
-            if (last  < row) last  = row;
+            helper.changed( m_items.indexOf( (*it) ) );
         }
     }
 
-    emit dataChanged( createIndex(first, 0), createIndex(last, ColumnCount) );
+    if (helper.isChanged())
+        emit dataChanged( createIndex(helper.first(), NameColumn), createIndex(helper.last(), NameColumn) );
 }
 
 void ObjectModel::selectItemsByObjectType(SelectObjectTypes objectTypes, bool selected, bool resetSelection)
 {
-    /*FIXME: require updates*/
-    int first = m_items.count();
-    int last = 0;
+    DataChangedHelper helper( m_items.count() );
     if (resetSelection)
     {
         for (QList<ObjectItem*>::iterator it = m_items.begin() ; it != m_items.end() ; ++it )
             (*it)->setSelected( false );
 
-        first = 0;
-        last = m_items.length() - 1;
+        helper.changedAll();
     }
 
     ObjectItems targets;
@@ -692,18 +689,17 @@ void ObjectModel::selectItemsByObjectType(SelectObjectTypes objectTypes, bool se
         {
             (*it)->setSelected( selected );
 
-            int row = m_items.indexOf( (*it) );
-            if (first > row) first = row;
-            if (last  < row) last  = row;
+            helper.changed( m_items.indexOf( (*it) ) );
         }
     }
 
-    emit dataChanged( createIndex(first, 0), createIndex(last, ColumnCount) );
+    if (helper.isChanged())
+        emit dataChanged( createIndex(helper.first(), NameColumn), createIndex(helper.last(), NameColumn) );
 }
 
 void ObjectModel::assumeItemsTheSameByFileTime()
 {
-    /*FIXME: require updates*/
+    DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(AssumeItemsTheSameByFileTimeProcess, this);
     for (QList<ObjectItem*>::iterator it = m_items.begin() ; it != m_items.end() ; ++it )
     {
@@ -713,13 +709,16 @@ void ObjectModel::assumeItemsTheSameByFileTime()
              (*it)->updateDate() <= (*it)->exportDate() )
         {
             (*it)->setDifferent( Model::SameContents );
+            helper.changed( m_items.indexOf( (*it) ) );
         }
     }
+    if (helper.isChanged())
+        emit dataChanged( createIndex(helper.first(), DifferentColumn), createIndex(helper.last(), DifferentColumn) );
 }
 
 void ObjectModel::updateItemsExportDate(ObjectItems *allTargets, const QDateTime &exportDate, const ObjectDifferenceTypes differenceTypes)
 {
-    /*FIXME: require updates*/
+    DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(UpdateItemsExportDateProcess, this);
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
@@ -728,16 +727,24 @@ void ObjectModel::updateItemsExportDate(ObjectItems *allTargets, const QDateTime
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
             subProg.next();
-            if ( !( (*it)->isDifferent() == Model::SameContents      && (differenceTypes & SameContentsType      ) ) )  continue;
-            if ( !( (*it)->isDifferent() == Model::DifferentContents && (differenceTypes & DifferentContentsTypes) ) )  continue;
+            switch( (*it)->isDifferent() )
+            {
+                case Model::SameContents:       if (!(differenceTypes & SameContentsType      )) continue; break;
+                case Model::DifferentContents:  if (!(differenceTypes & DifferentContentsTypes)) continue; break;
+                default: break;
+            }
 
             (*it)->setExportDate(exportDate);
+            helper.changed( m_items.indexOf( (*it) ) );
         }
     }
+    if (helper.isChanged())
+        emit dataChanged( createIndex(helper.first(), ExportDateColumn), createIndex(helper.last(), ExportDateColumn) );
 }
 
 void ObjectModel::updateItemsInProject(ObjectItems *allTargets, Model::ObjectExistence existence)
 {
+    DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(UpdateItemsInProjectProcess, this);
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
@@ -747,12 +754,16 @@ void ObjectModel::updateItemsInProject(ObjectItems *allTargets, Model::ObjectExi
         {
             subProg.next();
             (*it)->setInProject(existence);
+            helper.changed( m_items.indexOf( (*it) ) );
         }
     }
+    if (helper.isChanged())
+        emit dataChanged( createIndex(helper.first(), InProjectColumn), createIndex(helper.last(), InProjectColumn) );
 }
 
 void ObjectModel::updateItemsInFileSystem(ObjectItems *allTargets, Model::ObjectExistence existence)
 {
+    DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(UpdateItemsInFileSystemProcess, this);
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
@@ -762,12 +773,16 @@ void ObjectModel::updateItemsInFileSystem(ObjectItems *allTargets, Model::Object
         {
             subProg.next();
             (*it)->setInFileSystem(existence);
+            helper.changed( m_items.indexOf( (*it) ) );
         }
     }
+    if (helper.isChanged())
+        emit dataChanged( createIndex(helper.first(), InFileSystemColumn), createIndex(helper.last(), InFileSystemColumn) );
 }
 
 void ObjectModel::updateItemsDifference(ObjectItems *allTargets, Model::ObjectDifference difference)
 {
+    DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(UpdateItemsDifferenceProcess, this);
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
@@ -777,13 +792,16 @@ void ObjectModel::updateItemsDifference(ObjectItems *allTargets, Model::ObjectDi
         {
             subProg.next();
             (*it)->setDifferent(difference);
+            helper.changed( m_items.indexOf( (*it) ) );
         }
     }
+    if (helper.isChanged())
+        emit dataChanged( createIndex(helper.first(), DifferentColumn), createIndex(helper.last(), DifferentColumn) );
 }
 
 void ObjectModel::updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets)
 {
-    /* FIXME: require updates*/
+    DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(UpdateItemsCreateUpdateDateFromProjectProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -806,7 +824,13 @@ void ObjectModel::updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets
             (*it)->setCreateDate( item->createDate() );
             (*it)->setUpdateDate( item->updateDate() );
             delete item;
+            helper.changed( m_items.indexOf( (*it) ) );
         }
+    }
+    if (helper.isChanged())
+    {
+        emit dataChanged( createIndex(helper.first(), CreateDateColumn), createIndex(helper.last(), CreateDateColumn) );
+        emit dataChanged( createIndex(helper.first(), UpdateDateColumn), createIndex(helper.last(), UpdateDateColumn) );
     }
 }
 
@@ -825,8 +849,12 @@ void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTi
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
             subProg.next();
-            if ( !( (*it)->isDifferent() == Model::SameContents      && (differenceTypes & SameContentsType      ) ) )  continue;
-            if ( !( (*it)->isDifferent() == Model::DifferentContents && (differenceTypes & DifferentContentsTypes) ) )  continue;
+            switch( (*it)->isDifferent() )
+            {
+                case Model::SameContents:       if (!(differenceTypes & SameContentsType      )) continue; break;
+                case Model::DifferentContents:  if (!(differenceTypes & DifferentContentsTypes)) continue; break;
+                default: break;
+            }
 
             os->updateFileTimeInTempDir( (*it)->name(), fileTime );
         }
@@ -868,8 +896,12 @@ void ObjectModel::updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, c
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
             subProg.next();
-            if ( !( (*it)->isDifferent() == Model::SameContents      && (differenceTypes & SameContentsType      ) ) )  continue;
-            if ( !( (*it)->isDifferent() == Model::DifferentContents && (differenceTypes & DifferentContentsTypes) ) )  continue;
+            switch( (*it)->isDifferent() )
+            {
+                case Model::SameContents:       if (!(differenceTypes & SameContentsType      )) continue; break;
+                case Model::DifferentContents:  if (!(differenceTypes & DifferentContentsTypes)) continue; break;
+                default: break;
+            }
 
             os->updateFileTimeInTempDir( (*it)->name(), (*it)->exportDate() );
         }
@@ -937,7 +969,6 @@ void ObjectModel::loadItemFromFileSystem(QList<ObjectItem*> *items)
 
 void ObjectModel::reloadAndMergeItems()
 {
-    /*FIXME:require updates*/
     // loading items more smart
 
     QList<ObjectItem*> itemsFromProject;
@@ -980,6 +1011,7 @@ void ObjectModel::reloadAndMergeItems()
     }
 
 
+    /*FIXME:require updates more smartly */
     beginResetModel();
 
     // delete local-item from member  if not exist in new-items
@@ -1213,7 +1245,7 @@ void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
 
 void ObjectModel::compareTempDir(ObjectItems *allTargets)
 {
-    /* FIXME:require updates*/
+    DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(CompareTempDirProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1243,11 +1275,13 @@ void ObjectModel::compareTempDir(ObjectItems *allTargets)
             {
                 item->setDifferent( Model::SameContents );
             }
+            helper.changed( m_items.indexOf( item ) );
         }
     }
 
     // update items
-    emit dataChanged( createIndex(0, DifferentColumn), createIndex( m_items.count()-1, DifferentColumn ) );
+    if (helper.isChanged())
+        emit dataChanged( createIndex(helper.first(), DifferentColumn), createIndex( helper.last(), DifferentColumn ) );
 }
 
 void ObjectModel::deleteFromFileSystem(ObjectItems *allTargets)
@@ -1298,7 +1332,6 @@ void ObjectModel::deleteFromProject(ObjectItems *allTargets)
 
 void ObjectModel::deleteFromTempDir(ObjectItems *allTargets)
 {
-    /*FIXME: require updates*/
     ProgressNotifier mainProg(DeleteFromTempDirProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
