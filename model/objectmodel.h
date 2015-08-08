@@ -114,8 +114,16 @@ public:
 
     void assumeItemsTheSameByFileTime();
     void updateItemsExportDate(ObjectItems *allTargets, const QDateTime &exportDate, const ObjectDifferenceTypes differenceTypes);
+    void updateItemsInProject(ObjectItems *allTargets, Model::ObjectExistence existence);
+    void updateItemsInFileSystem(ObjectItems *allTargets, Model::ObjectExistence existence);
+    void updateItemsDifference(ObjectItems *allTargets, Model::ObjectDifference difference);
+    void updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets);
+
+
     void updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, const ObjectDifferenceTypes differenceTypes);
     void updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTime &fileTime, const ObjectDifferenceTypes differenceTypes);
+
+    void deleteItems(ObjectItems *allTargets);
 
 
 
@@ -179,6 +187,12 @@ public:
         UpdateFileTimeInTempDirByExportDateProcess,
         UpdateItemsExportDateProcess,
         UpdateFileTimeInTempDirProcess,
+
+        UpdateItemsInProjectProcess,
+        UpdateItemsInFileSystemProcess,
+        UpdateItemsDifferenceProcess,
+        DeleteItemsProcess,
+        UpdateItemsCreateUpdateDateFromProjectProcess,
     };
 signals:
     void progressStart(int type, int count);

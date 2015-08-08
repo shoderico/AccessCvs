@@ -369,9 +369,9 @@ bool ObjectModel::executeExport()
 
             // smart-refresh : post-process
             QDateTime currentTime = QDateTime::currentDateTime();
-            updateItemsExportDate(&targets, currentTime, AllDifferenceTypes);           // for smart-refresh, update exportDate
-            // FIXME: set inFileSystem flag to Present
-            // FIXME: set isDifferent  flag to SameContents
+            updateItemsExportDate(&targets, currentTime, AllDifferenceTypes);   // set exportDate
+            updateItemsInFileSystem(&targets, Model::Present);                  // set inFileSystem flag to Present
+            updateItemsDifference(&targets, Model::SameContents);               // set isDifferent  flag to SameContents
         }
     }
 
@@ -384,7 +384,7 @@ bool ObjectModel::executeExport()
             deleteFromFileSystem(&targets);                                             // InFileSystemOnly :       : Dirty FileSystem  : need one-more step? like confirm
 
             // smart-refresh : post-process
-            // FIXME: delete item from model
+            deleteItems(&targets); // delete item from model
         }
     }
 
@@ -401,7 +401,7 @@ bool ObjectModel::executeExport()
             QDateTime currentTime = QDateTime::currentDateTime();
             updateFileTimeInTempDir(&targets, currentTime, AllDifferenceTypes);     // for smart-refresh, we need to update filetime which rollbacked in smart-refresh process
             updateItemsExportDate  (&targets, currentTime, AllDifferenceTypes);     // for smart-refresh, update exportDate too.
-            // FIXME: set isDifferent flag to SameContents
+            updateItemsDifference(&targets, Model::SameContents);                   // set isDifferent flag to SameContents
         }
 
         // for InBoth_Same
@@ -413,8 +413,8 @@ bool ObjectModel::executeExport()
 
             // smart-refresh : post-process
             QDateTime currentTime = QDateTime::currentDateTime();
-            updateFileTimeInTempDir(&targets, currentTime, AllDifferenceTypes);     // for smart-refresh, we need to update filetime which rollbacked in smart-refresh process
-            updateItemsExportDate  (&targets, currentTime, AllDifferenceTypes);     // for smart-refresh, update exportDate too.
+            updateFileTimeInTempDir(&targets, currentTime, AllDifferenceTypes);     // we need to update filetime which rollbacked in smart-refresh process
+            updateItemsExportDate  (&targets, currentTime, AllDifferenceTypes);     // update exportDate too.
         }
     }
 
@@ -442,7 +442,7 @@ bool ObjectModel::executeImport()
             deleteFromProject(&targets);                // InProjectOnly    : BLOCK : Dirty Project : need one-more step? like confirm
 
             // smart-refresh : post-process
-            // FIXME: delete item from model
+            deleteItems(&targets);                                                  // delete item from model
         }
     }
 
@@ -460,10 +460,9 @@ bool ObjectModel::executeImport()
             QDateTime currentTime = QDateTime::currentDateTime();
             updateFileTimeInTempDir(&targets, currentTime, AllDifferenceTypes);     // for smart refresh, update filetime of TempFile if imported
             updateItemsExportDate  (&targets, currentTime, AllDifferenceTypes);     // for smart-refresh, update exportDate too.
-            // FIXME: set inProject   flag to Present
-            // FIXME: set isDifferent flag to SameContents
-            // FIMXE: set createDate from Access Object
-            // FIMXE: set updateDate from Access Object
+            updateItemsInProject(&targets, Model::Present);                         // set inProject   flag to Present
+            updateItemsDifference(&targets, Model::SameContents);                   // set isDifferent flag to SameContents
+            updateItemsCreateUpdateDateFromProject(&targets);                       // set create/updateDate from Access Object
         }
     }
 
@@ -482,9 +481,8 @@ bool ObjectModel::executeImport()
             QDateTime currentTime = QDateTime::currentDateTime();
             updateFileTimeInTempDir(&targets, currentTime, AllDifferenceTypes);     // for smart refresh, update filetime of TempFile if imported
             updateItemsExportDate  (&targets, currentTime, AllDifferenceTypes);     // for smart-refresh, update exportDate too.
-            // FIXME: set isDifferent flag to SameContents
-            // FIMXE: set createDate from Access Object
-            // FIMXE: set updateDate from Access Object
+            updateItemsDifference(&targets, Model::SameContents);                   // set isDifferent flag to SameContents
+            updateItemsCreateUpdateDateFromProject(&targets);                       // set create/updateDate from Access Object
         }
         // for InBoth_Same
         {
@@ -499,8 +497,7 @@ bool ObjectModel::executeImport()
             QDateTime currentTime = QDateTime::currentDateTime();
             updateFileTimeInTempDir(&targets, currentTime, AllDifferenceTypes);     // for smart refresh, update filetime of TempFile if imported
             updateItemsExportDate  (&targets, currentTime, AllDifferenceTypes);     // for smart-refresh, update exportDate too.
-            // FIMXE: set createDate from Access Object
-            // FIMXE: set updateDate from Access Object
+            updateItemsCreateUpdateDateFromProject(&targets);                       // set create/updateDate from Access Object
         }
     }
 
@@ -739,6 +736,71 @@ void ObjectModel::updateItemsExportDate(ObjectItems *allTargets, const QDateTime
     }
 }
 
+void ObjectModel::updateItemsInProject(ObjectItems *allTargets, Model::ObjectExistence existence)
+{
+    ProgressNotifier mainProg(UpdateItemsInProjectProcess, this);
+    foreach (const Model::ObjectType &objectType, allTargets->keys() )
+    {
+        QList<ObjectItem*> items = allTargets->value( objectType ).values();
+        ProgressNotifier subProg(UpdateItemsInProjectProcess, items.count(), this);
+        for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
+        {
+            subProg.next();
+            (*it)->setInProject(existence);
+        }
+    }
+}
+
+void ObjectModel::updateItemsInFileSystem(ObjectItems *allTargets, Model::ObjectExistence existence)
+{
+    ProgressNotifier mainProg(UpdateItemsInFileSystemProcess, this);
+    foreach (const Model::ObjectType &objectType, allTargets->keys() )
+    {
+        QList<ObjectItem*> items = allTargets->value( objectType ).values();
+        ProgressNotifier subProg(UpdateItemsInFileSystemProcess, items.count(), this);
+        for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
+        {
+            subProg.next();
+            (*it)->setInFileSystem(existence);
+        }
+    }
+}
+
+void ObjectModel::updateItemsDifference(ObjectItems *allTargets, Model::ObjectDifference difference)
+{
+    ProgressNotifier mainProg(UpdateItemsDifferenceProcess, this);
+    foreach (const Model::ObjectType &objectType, allTargets->keys() )
+    {
+        QList<ObjectItem*> items = allTargets->value( objectType ).values();
+        ProgressNotifier subProg(UpdateItemsDifferenceProcess, items.count(), this);
+        for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
+        {
+            subProg.next();
+            (*it)->setDifferent(difference);
+        }
+    }
+}
+
+void ObjectModel::updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets)
+{
+    ProgressNotifier mainProg(UpdateItemsCreateUpdateDateFromProjectProcess, this);
+    ProjectSetting setting(this);
+    ObjectSetting *os;
+    setting.initialize(m_application);
+
+    foreach (const Model::ObjectType &objectType, allTargets->keys() )
+    {
+        os = setting[ objectType ];
+        QList<ObjectItem*> items = allTargets->value( objectType ).values();
+        ProgressNotifier subProg(UpdateItemsCreateUpdateDateFromProjectProcess, items.count(), this);
+        for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
+        {
+            subProg.next();
+            // FIXME: implement updatting
+        }
+    }
+}
+
 void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTime &fileTime, const ObjectDifferenceTypes differenceTypes)
 {
     ProgressNotifier mainProg(UpdateFileTimeInTempDirProcess, this);
@@ -758,6 +820,26 @@ void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTi
             if ( !( (*it)->isDifferent() == Model::DifferentContents && (differenceTypes & DifferentContentsTypes) ) )  continue;
 
             os->updateFileTimeInTempDir( (*it)->name(), fileTime );
+        }
+    }
+}
+
+void ObjectModel::deleteItems(ObjectItems *allTargets)
+{
+    ProgressNotifier mainProg(DeleteItemsProcess, this);
+    ProjectSetting setting(this);
+    ObjectSetting *os;
+    setting.initialize(m_application);
+
+    foreach (const Model::ObjectType &objectType, allTargets->keys() )
+    {
+        os = setting[ objectType ];
+        QList<ObjectItem*> items = allTargets->value( objectType ).values();
+        ProgressNotifier subProg(DeleteItemsProcess, items.count(), this);
+        for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
+        {
+            subProg.next();
+            // FIXME: delete model item here.
         }
     }
 }
