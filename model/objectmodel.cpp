@@ -54,6 +54,7 @@ QVariant ObjectModel::headerData(int section, Qt::Orientation orientation, int r
             case ExportDateColumn: return tr("ExportDate");
             case ObjectTypeColumn: return tr("ObjectType");
             case DifferentColumn: return tr("Different");
+            case HasDataColumn: return tr("HasData");
         }
     }
 
@@ -97,6 +98,7 @@ QVariant ObjectModel::data(const QModelIndex &index, int role) const
             case ExportDateColumn:    return item->exportDate();
             case ObjectTypeColumn:    return item->objectType();
             case DifferentColumn:    return item->isDifferent();
+            case HasDataColumn:       return item->hasData();
         default:
             break;
         }
@@ -137,6 +139,7 @@ QVariant ObjectModel::data(const QModelIndex &index, int role) const
         case NameColumn: return static_cast<int>(item->isSelected() ? Qt::Checked : Qt::Unchecked);
         //case InProject: return static_cast<int>(item->inProject() ? Qt::Checked : Qt::Unchecked);
         //case InRepository: return static_cast<int>(item->inRepository() ? Qt::Checked : Qt::Unchecked);
+            case HasDataColumn: return static_cast<int>(item->hasData() ? Qt::Checked : Qt::Unchecked);
         }
     }
 
@@ -161,14 +164,30 @@ QModelIndex ObjectModel::parent(const QModelIndex &child) const
 
 bool ObjectModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (!index.isValid() || index.column() != NameColumn || index.row() < 0 || index.row() >= m_items.count())
+    if (!index.isValid() || index.row() < 0 || index.row() >= m_items.count())
         return false;
-    ObjectItem *item = m_items.at(index.row());
+
     if (role == Qt::CheckStateRole)
     {
-        item->setSelected( value.toBool() );
-        emit dataChanged(index, index);
-        return true;
+        ObjectItem *item = m_items.at(index.row());
+        switch (index.column()) {
+            case NameColumn:
+            {
+                item->setSelected( value.toBool() );
+                emit dataChanged(index, index);
+                return true;
+            }
+                break;
+            case HasDataColumn:
+            {
+                item->setHasData( value.toBool() );
+                emit dataChanged(index, index);
+                return true;
+            }
+                break;
+            default:
+                return false;
+        }
     }
     return false;
 }

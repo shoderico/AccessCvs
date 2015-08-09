@@ -117,6 +117,13 @@ public:
     Model::ObjectDifference isDifferent() const { return m_isDifferent; }
     void setDifferent(const Model::ObjectDifference different) { m_isDifferent = different; }
 
+    /*!
+       \brief hasData
+       \return
+     */
+    bool hasData() const { return m_hasData; }
+    void setHasData(bool has) { m_hasData = has; }
+
 
     /*!
        \brief objectType
@@ -146,6 +153,7 @@ protected:
     QDateTime   m_updateDate;
     QDateTime   m_exportDate;
     bool        m_isSelected;
+    bool        m_hasData;
     Model::ObjectExistence  m_inProject;
     Model::ObjectExistence  m_inFileSystem;
     Model::ObjectDifference m_isDifferent;

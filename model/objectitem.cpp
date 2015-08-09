@@ -3,6 +3,7 @@
 ObjectItem::ObjectItem(QObject *parent)
     : QObject(parent)
     , m_isSelected(false)
+    , m_hasData(false)
     , m_inProject(Model::OE_Unchecked)
     , m_inFileSystem(Model::OE_Unchecked)
     , m_isDifferent(Model::OD_Unchecked)
@@ -23,6 +24,7 @@ ObjectItem::ObjectItem(ObjectItem *object, QObject *parent)
     this->m_updateDate = object->m_updateDate;
     this->m_exportDate = object->m_exportDate;
     this->m_isSelected = object->m_isSelected;
+    this->m_hasData = object->m_hasData;
     this->m_inProject = object->m_inProject;
     this->m_inFileSystem = object->m_inFileSystem;
     this->m_isDifferent = object->m_isDifferent;

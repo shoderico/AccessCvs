@@ -39,6 +39,7 @@ public:
         InProjectColumn,
         InFileSystemColumn,
         DifferentColumn,
+        HasDataColumn,
         CreateDateColumn,
         UpdateDateColumn,
         ExportDateColumn,
