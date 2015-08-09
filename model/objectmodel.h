@@ -112,11 +112,11 @@ public:
     void selectItems(ItemsTypes itemsType, bool selected, bool resetSelection /*= true*/);
     void selectItemsByObjectType(SelectObjectTypes objectTypes, bool selected, bool resetSelection /*= true*/);
 
-    void assumeItemsTheSameByFileTime();
     void updateItemsExportDate(ObjectItems *allTargets, const QDateTime &exportDate, const ObjectDifferenceTypes differenceTypes);
     void updateItemsInProject(ObjectItems *allTargets, Model::ObjectExistence existence);
     void updateItemsInFileSystem(ObjectItems *allTargets, Model::ObjectExistence existence);
     void updateItemsDifference(ObjectItems *allTargets, Model::ObjectDifference difference);
+    void updateItemsDifferenceByFileTime(ObjectItems *allTargets);
     void updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets);
 
 
@@ -183,7 +183,7 @@ public:
 
         DeleteFromTempDirProcess,
 
-        AssumeItemsTheSameByFileTimeProcess,
+        UpdateItemsDifferenceByFileTimeProcess,
         UpdateFileTimeInTempDirByExportDateProcess,
         UpdateItemsExportDateProcess,
         UpdateFileTimeInTempDirProcess,

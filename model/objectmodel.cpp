@@ -324,11 +324,12 @@ bool ObjectModel::refreshItems()
 
     // for InBoth
     {
-        // smart-refresh : pre-process
-        assumeItemsTheSameByFileTime();                                                     // for smart refresh, we assume the contents are the same if item's updateDate <= filetime of TempFile
 
         ObjectItems targets;
         getItems(&targets, InBoth, false/*selectedOnly*/, true/*modifiedOnly*/);
+
+        // smart-refresh : pre-process
+        updateItemsDifferenceByFileTime(&targets);                                          // for smart refresh, we assume the contents are the same if item's updateDate <= filetime of TempFile
 
         exportFromProjectToTempDir(&targets);   // InBoth           : BLOCK :                   :
         sanitizeTempDir(&targets);              // InBoth           :       :                   :
@@ -712,25 +713,6 @@ void ObjectModel::selectItemsByObjectType(SelectObjectTypes objectTypes, bool se
         emit dataChanged( createIndex(helper.first(), NameColumn), createIndex(helper.last(), NameColumn) );
 }
 
-void ObjectModel::assumeItemsTheSameByFileTime()
-{
-    DataChangedHelper helper( m_items.count() );
-    ProgressNotifier mainProg(AssumeItemsTheSameByFileTimeProcess, this);
-    for (QList<ObjectItem*>::iterator it = m_items.begin() ; it != m_items.end() ; ++it )
-    {
-        mainProg.next();
-        if ( (*it)->inProject() && (*it)->inFileSystem() &&
-             (*it)->updateDate().isValid() && (*it)->exportDate().isValid() &&
-             (*it)->updateDate() <= (*it)->exportDate() )
-        {
-            (*it)->setDifferent( Model::SameContents );
-            helper.changed( m_items.indexOf( (*it) ) );
-        }
-    }
-    if (helper.isChanged())
-        emit dataChanged( createIndex(helper.first(), DifferentColumn), createIndex(helper.last(), DifferentColumn) );
-}
-
 void ObjectModel::updateItemsExportDate(ObjectItems *allTargets, const QDateTime &exportDate, const ObjectDifferenceTypes differenceTypes)
 {
     DataChangedHelper helper( m_items.count() );
@@ -808,6 +790,30 @@ void ObjectModel::updateItemsDifference(ObjectItems *allTargets, Model::ObjectDi
             subProg.next();
             (*it)->setDifferent(difference);
             helper.changed( m_items.indexOf( (*it) ) );
+        }
+    }
+    if (helper.isChanged())
+        emit dataChanged( createIndex(helper.first(), DifferentColumn), createIndex(helper.last(), DifferentColumn) );
+}
+
+void ObjectModel::updateItemsDifferenceByFileTime(ObjectItems *allTargets)
+{
+    DataChangedHelper helper( m_items.count() );
+    ProgressNotifier mainProg(UpdateItemsDifferenceByFileTimeProcess, this);
+    foreach (const Model::ObjectType &objectType, allTargets->keys() )
+    {
+        QList<ObjectItem*> items = allTargets->value( objectType ).values();
+        ProgressNotifier subProg(UpdateItemsDifferenceByFileTimeProcess, items.count(), this);
+        for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
+        {
+            subProg.next();
+            if ( (*it)->inProject() && (*it)->inFileSystem() &&
+                 (*it)->updateDate().isValid() && (*it)->exportDate().isValid() &&
+                 (*it)->updateDate() <= (*it)->exportDate() )
+            {
+                (*it)->setDifferent( Model::SameContents );
+                helper.changed( m_items.indexOf( (*it) ) );
+            }
         }
     }
     if (helper.isChanged())
