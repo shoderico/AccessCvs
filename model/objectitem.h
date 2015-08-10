@@ -36,20 +36,27 @@ enum GitStatus
     Ignored
 };
 
+enum ObjectCheckState
+{
+    State_NoChange = 0,
+    State_On = 1,
+    State_Off = 2,
+};
+
 enum ObjectExistence
 {
-    OE_Unchecked = 0,
-    Unchecked_OE = 0,
-    Present = 1,
-    Absent  = 2
+    OE_Unchecked = ObjectCheckState::State_NoChange,
+    Unchecked_OE = ObjectCheckState::State_NoChange,
+    Present = ObjectCheckState::State_On,
+    Absent  = ObjectCheckState::State_Off,
 };
 
 enum ObjectDifference
 {
-    OD_Unchecked = 0,
-    Unchecked_OD = 0,
-    DifferentContents = 1,
-    SameContents = 2
+    OD_Unchecked = ObjectCheckState::State_NoChange,
+    Unchecked_OD = ObjectCheckState::State_NoChange,
+    DifferentContents = ObjectCheckState::State_On,
+    SameContents = ObjectCheckState::State_Off,
 };
 
 }
