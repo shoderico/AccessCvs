@@ -6,7 +6,7 @@
 #include "model/objectmodel.h"
 #include "model/objectitem.h"
 
-#include "view/checkboxitemdelegete.h"
+#include "view/checkboxitemdelegate.h"
 
 #include "util/comptr.h"
 
@@ -30,9 +30,9 @@ MainDialog::MainDialog(IDispatch *application, QWidget *parent) :
 
     ui->treeView->setModel(m_model);
     ui->treeView->setIndentation(0);
-    ui->treeView->setItemDelegateForColumn( ObjectModel::InProjectColumn,     new CheckBoxItemDelegete() );
-    ui->treeView->setItemDelegateForColumn( ObjectModel::InFileSystemColumn,  new CheckBoxItemDelegete() );
-    ui->treeView->setItemDelegateForColumn( ObjectModel::DifferentColumn,     new CheckBoxItemDelegete() );
+    ui->treeView->setItemDelegateForColumn( ObjectModel::InProjectColumn,     new CheckBoxItemDelegate() );
+    ui->treeView->setItemDelegateForColumn( ObjectModel::InFileSystemColumn,  new CheckBoxItemDelegate() );
+    ui->treeView->setItemDelegateForColumn( ObjectModel::DifferentColumn,     new CheckBoxItemDelegate() );
     ui->treeView->setColumnWidth(ObjectModel::InProjectColumn,    40);
     ui->treeView->setColumnWidth(ObjectModel::InFileSystemColumn, 40);
     ui->treeView->setColumnWidth(ObjectModel::DifferentColumn,    40);

@@ -41,7 +41,6 @@ SOURCES += \
     officelib/vbide.cpp \
     model/objectitem.cpp \
     model/objectmodel.cpp \
-    view/checkboxitemdelegete.cpp \
     util/comptr.cpp \
     util/getcomobject.cpp \
     model/objectsetting.cpp \
@@ -53,7 +52,8 @@ SOURCES += \
     addin/comutil.cpp \
     addin/logfile.cpp \
     util/progressnotifier.cpp \
-    util/datachangedhelper.cpp
+    util/datachangedhelper.cpp \
+    view/checkboxitemdelegate.cpp
 
 HEADERS +=\
     addin/msaddndr.h \
@@ -70,7 +70,6 @@ HEADERS +=\
     officelib/vbide.h \
     model/objectitem.h \
     model/objectmodel.h \
-    view/checkboxitemdelegete.h \
     util/comptr.h \
     officelib/officelib.h \
     util/getcomobject.h \
@@ -84,7 +83,8 @@ HEADERS +=\
     addin/comutil.h \
     addin/logfile.h \
     util/progressnotifier.h \
-    util/datachangedhelper.h
+    util/datachangedhelper.h \
+    view/checkboxitemdelegate.h
 
 DISTFILES += \
     addin/addin.def \

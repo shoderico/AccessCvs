@@ -1,17 +1,17 @@
-#include "checkboxitemdelegete.h"
+#include "checkboxitemdelegate.h"
 
 #include <QPainter>
 #include <QApplication>
 
 #include "model/objectitem.h"
 
-CheckBoxItemDelegete::CheckBoxItemDelegete(QObject *parent)
+CheckBoxItemDelegate::CheckBoxItemDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
 {
 
 }
 
-void CheckBoxItemDelegete::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void CheckBoxItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QStyleOptionViewItemV4 opt = option;
     initStyleOption(&opt, index);
