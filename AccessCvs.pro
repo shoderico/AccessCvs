@@ -53,7 +53,8 @@ SOURCES += \
     addin/logfile.cpp \
     util/progressnotifier.cpp \
     util/datachangedhelper.cpp \
-    view/checkboxitemdelegate.cpp
+    view/checkboxitemdelegate.cpp \
+    view/boolcheckboxitemdelegate.cpp
 
 HEADERS +=\
     addin/msaddndr.h \
@@ -84,7 +85,8 @@ HEADERS +=\
     addin/logfile.h \
     util/progressnotifier.h \
     util/datachangedhelper.h \
-    view/checkboxitemdelegate.h
+    view/checkboxitemdelegate.h \
+    view/boolcheckboxitemdelegate.h
 
 DISTFILES += \
     addin/addin.def \

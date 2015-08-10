@@ -139,7 +139,6 @@ QVariant ObjectModel::data(const QModelIndex &index, int role) const
         case NameColumn: return static_cast<int>(item->isSelected() ? Qt::Checked : Qt::Unchecked);
         //case InProject: return static_cast<int>(item->inProject() ? Qt::Checked : Qt::Unchecked);
         //case InRepository: return static_cast<int>(item->inRepository() ? Qt::Checked : Qt::Unchecked);
-            case HasDataColumn: return static_cast<int>(item->hasData() ? Qt::Checked : Qt::Unchecked);
         }
     }
 

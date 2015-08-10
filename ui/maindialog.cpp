@@ -7,6 +7,7 @@
 #include "model/objectitem.h"
 
 #include "view/checkboxitemdelegate.h"
+#include "view/boolcheckboxitemdelegate.h"
 
 #include "util/comptr.h"
 
@@ -33,6 +34,7 @@ MainDialog::MainDialog(IDispatch *application, QWidget *parent) :
     ui->treeView->setItemDelegateForColumn( ObjectModel::InProjectColumn,     new CheckBoxItemDelegate() );
     ui->treeView->setItemDelegateForColumn( ObjectModel::InFileSystemColumn,  new CheckBoxItemDelegate() );
     ui->treeView->setItemDelegateForColumn( ObjectModel::DifferentColumn,     new CheckBoxItemDelegate() );
+    ui->treeView->setItemDelegateForColumn( ObjectModel::HasDataColumn,       new BoolCheckBoxItemDelegate() );
     ui->treeView->setColumnWidth(ObjectModel::InProjectColumn,    40);
     ui->treeView->setColumnWidth(ObjectModel::InFileSystemColumn, 40);
     ui->treeView->setColumnWidth(ObjectModel::DifferentColumn,    40);
