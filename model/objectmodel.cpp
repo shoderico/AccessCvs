@@ -188,9 +188,13 @@ bool ObjectModel::setData(const QModelIndex &index, const QVariant &value, int r
                 emit dataChanged( createIndex(index.row(), DifferentColumn),  createIndex(index.row(), DifferentColumn) );
                 emit dataChanged( createIndex(index.row(), ExportDateColumn), createIndex(index.row(), ExportDateColumn) );
 
-                // FIXME: if hasData = true and exported into TempDir,
-                // and then change hasData to false and Refresh,
+                // Export dataFile into TempDir with hasData = true,
+                // and then change hasData to false and do Refresh,
                 // the item is always DifferentContents because *.dat file in TempDir but not in SourceDir.
+                // so, we have to clear TempDir if hasData is changed.
+                ObjectItems target;
+                target[ item->objectType() ].insert( item->name(), item );
+                deleteFromTempDir( &target );
 
                 // save settings
                 saveSettigs();
@@ -1426,7 +1430,7 @@ void ObjectModel::deleteFromTempDir(ObjectItems *allTargets)
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
-            os->deleteTempFileFromTempDir( (*it) );
+            os->deleteFromTempDir( (*it) );
         }
     }
 }

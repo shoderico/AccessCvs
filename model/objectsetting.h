@@ -88,14 +88,13 @@ public:
 
     virtual bool deleteFromFileSystem(const QString &objectName);
     virtual bool deleteFromProject(const QString &objectName);
+    virtual bool deleteFromTempDir(const QString &objectName);
 
     virtual bool prepareItemCollection();
     virtual int itemCount();
     virtual QAxObject *itemUnsafePtr(const QVariant &index);
 
     void updateFileTimeInTempDir(const QString &objectName, const QDateTime &fileTime);
-
-    bool deleteTempFileFromTempDir(const QString &objectName);
 
     virtual void loadSettings(QSettings *settings) { Q_UNUSED(settings) }
     virtual void saveSettings(QSettings *settings) { Q_UNUSED(settings) }
@@ -115,6 +114,10 @@ protected:
         DataFile
     };
     bool deleteCvsFileFromTempDir(const QString &objectName);
+    bool deleteTempFileFromTempDir(const QString &objectName);
+    bool deleteAllFileFromTempDir(const QString &objectName);
+    bool deleteAllFileFromSourceDir(const QString &objectName);
+
     bool copyFile(DirectoryType dirTypeSrc, DirectoryType dirTypeDst, FileType fileType, const QString &objectName);
     bool deleteFile(DirectoryType dirType, FileType fileType, const QString &objectName);
 

@@ -93,7 +93,7 @@ ObjectItem *ObjectSetting::createItemFromFileSystem(QFileInfo &fileInfo, QObject
 
 bool ObjectSetting::copyFromTempDirToFileSystem(const QString &objectName)
 {
-    deleteFromFileSystem(objectName);
+    deleteAllFileFromSourceDir(objectName);
     copyFile(TempDir, SourceDir, DesignFile, objectName);
     copyFile(TempDir, SourceDir, ModuleFile, objectName);
     copyFile(TempDir, SourceDir, DataFile,   objectName);
@@ -102,7 +102,7 @@ bool ObjectSetting::copyFromTempDirToFileSystem(const QString &objectName)
 
 bool ObjectSetting::copyFromFileSystemToTempDir(const QString &objectName)
 {
-    deleteCvsFileFromTempDir(objectName);
+    deleteAllFileFromTempDir(objectName);
     copyFile(SourceDir, TempDir, DesignFile, objectName);
     copyFile(SourceDir, TempDir, ModuleFile, objectName);
     copyFile(SourceDir, TempDir, DataFile,   objectName);
@@ -139,10 +139,7 @@ bool ObjectSetting::compareTempDir(const QString &objectName, bool *pisDifferent
 
 bool ObjectSetting::deleteFromFileSystem(const QString &objectName)
 {
-    deleteFile(SourceDir, DesignFile, objectName);
-    deleteFile(SourceDir, ModuleFile, objectName);
-    deleteFile(SourceDir, DataFile,   objectName);
-
+    deleteAllFileFromSourceDir(objectName);
     return true;
 }
 
@@ -154,6 +151,12 @@ bool ObjectSetting::deleteFromProject(const QString &objectName)
         ComPtr<Access::DoCmd> doCmd = m_projectSetting->application()->DoCmd();
         doCmd->DeleteObject( (Access::AcObjectType)m_accessObjectType, objectName );
     }
+    return true;
+}
+
+bool ObjectSetting::deleteFromTempDir(const QString &objectName)
+{
+    deleteAllFileFromTempDir(objectName);
     return true;
 }
 
@@ -197,7 +200,6 @@ bool ObjectSetting::deleteCvsFileFromTempDir(const QString &objectName)
     deleteFile(TempDir, DesignFile, objectName);
     deleteFile(TempDir, ModuleFile, objectName);
     deleteFile(TempDir, DataFile,   objectName);
-
     return true;
 }
 
@@ -205,6 +207,21 @@ bool ObjectSetting::deleteTempFileFromTempDir(const QString &objectName)
 {
     deleteFile(TempDir, TempFile,     objectName);
     deleteFile(TempDir, DataTempFile, objectName);
+    return true;
+}
+
+bool ObjectSetting::deleteAllFileFromTempDir(const QString &objectName)
+{
+    deleteTempFileFromTempDir(objectName);
+    deleteCvsFileFromTempDir(objectName);
+    return true;
+}
+
+bool ObjectSetting::deleteAllFileFromSourceDir(const QString &objectName)
+{
+    deleteFile(SourceDir, DesignFile, objectName);
+    deleteFile(SourceDir, ModuleFile, objectName);
+    deleteFile(SourceDir, DataFile,   objectName);
     return true;
 }
 
@@ -335,7 +352,8 @@ ObjectItem *TableDefSetting::createItemFromProject(QAxObject *object, QObject *p
 
 bool TableDefSetting::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
 {
-    Q_UNUSED(objectName)
+    deleteAllFileFromTempDir(objectName);
+
     DAO::TableDef *tableDef = dynamic_cast<DAO::TableDef*>(object);
     if (tableDef)
     {
@@ -626,6 +644,8 @@ ObjectItem *QueryAsSqlSetting::createItemFromProject(QAxObject *object, QObject 
 
 bool QueryAsSqlSetting::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
 {
+    deleteAllFileFromTempDir(objectName);
+
     DAO::QueryDef *queryDef = dynamic_cast<DAO::QueryDef*>(object);
     if (queryDef)
     {
@@ -732,6 +752,8 @@ QueryAsObjectSetting::QueryAsObjectSetting(ProjectSetting *parent)
 
 bool QueryAsObjectSetting::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
 {
+    deleteAllFileFromTempDir(objectName);
+
     Q_UNUSED(object)
     {
         m_projectSetting->application()->SaveAsText( (Access::AcObjectType)m_accessObjectType, objectName, filePath(TempDir, TempFile, objectName) );
@@ -807,6 +829,8 @@ ObjectItem *AccessObjectSetting::createItemFromProject(QAxObject *object, QObjec
 
 bool AccessObjectSetting::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
 {
+    deleteAllFileFromTempDir(objectName);
+
     Q_UNUSED(object)
     {
         m_projectSetting->application()->SaveAsText( (Access::AcObjectType)m_accessObjectType, objectName, filePath(TempDir, TempFile, objectName) );
@@ -1383,7 +1407,8 @@ ObjectItem *ReferenceSetting::createItemFromProject(QAxObject *object, QObject *
 bool ReferenceSetting::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
-    Q_UNUSED(objectName)
+
+    deleteAllFileFromTempDir(objectName);
 
     ComPtr<Access::References> references = m_projectSetting->application()->References();
     int nCount = references->Count();
