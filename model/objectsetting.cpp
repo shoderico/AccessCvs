@@ -28,10 +28,10 @@ ObjectSetting::ObjectSetting(ProjectSetting *parent)
     m_codecForCvs->setLineEnd("\r\n");
 }
 
-QString ObjectSetting::tempFilePathInTempDir(const QString &objectName)
-{
-    return filePath(TempDir, TempFile, objectName);
-}
+//QString ObjectSetting::tempFilePathInTempDir(const QString &objectName)
+//{
+//    return filePath(TempDir, TempFile, objectName);
+//}
 
 QString ObjectSetting::designFilePathInTempDir(const QString &objectName)
 {
@@ -173,7 +173,7 @@ QAxObject *ObjectSetting::itemUnsafePtr(const QVariant &index)
 
 void ObjectSetting::updateFileTimeInTempDir(const QString &objectName, const QDateTime &fileTime)
 {
-    FileUtil::setFileTime( tempFilePathInTempDir(objectName), fileTime, fileTime );
+    FileUtil::setFileTime( filePath(TempDir, TempFile, objectName), fileTime, fileTime );
 }
 
 void ObjectSetting::determineCodecForProject()
@@ -328,7 +328,7 @@ bool TableDefSetting::exportFromProjectToTempDir(QAxObject *object, const QStrin
                     Access::acExportTable
                     ,objectName
                     ,QString() // DataTarget
-                    ,tempFilePathInTempDir(objectName) // SchemaTarget
+                    ,filePath(TempDir, TempFile, objectName) // SchemaTarget
                     ,QString() //PresentationTarget
                     ,QString() //ImageTarget
                     ,Access::acUTF16 //Encoding
@@ -358,7 +358,7 @@ bool TableDefSetting::importFromTempDirToProject(QAxObject *object, const QStrin
         // very slow but very accurate.
         m_projectSetting->application()
             ->ImportXML(
-                    tempFilePathInTempDir(objectName)
+                    filePath(TempDir, TempFile, objectName)
                     ,Access::acStructureOnly
                     );
 
@@ -376,7 +376,7 @@ bool TableDefSetting::sanitizeTempDir(QAxObject *object, const QString &objectNa
     // codec
     determineCodecForProject();
 
-    FileUtil::copyContents(   tempFilePathInTempDir(objectName), m_codecForProject,
+    FileUtil::copyContents(   filePath(TempDir, TempFile, objectName), m_codecForProject,
                             designFilePathInTempDir(objectName), m_codecForCvs );
 //    FileUtil::deleteFile(     tempFilePathInTempDir(objectName) ); // keep original files
 
@@ -393,7 +393,7 @@ bool TableDefSetting::desanitizeTempDir(QAxObject *object, const QString &object
     determineCodecForProject();
 
     FileUtil::copyContents( designFilePathInTempDir(objectName), m_codecForCvs,
-                              tempFilePathInTempDir(objectName), m_codecForProject );
+                              filePath(TempDir, TempFile, objectName), m_codecForProject );
 //    FileUtil::deleteFile(   designFilePathInTempDir(objectName) ); keep original files
 
     return true;
@@ -573,7 +573,7 @@ bool QueryAsSqlSetting::exportFromProjectToTempDir(QAxObject *object, const QStr
     if (queryDef)
     {
         QString sql = queryDef->SQL();
-        FileUtil::saveToFile( sql, tempFilePathInTempDir(objectName), m_codecForCvs );
+        FileUtil::saveToFile( sql, filePath(TempDir, TempFile, objectName), m_codecForCvs );
 
         return true;
     }
@@ -587,7 +587,7 @@ bool QueryAsSqlSetting::importFromTempDirToProject(QAxObject *object, const QStr
 
     bool inProject = (object != NULL);
 
-    QString sql = FileUtil::loadAsString( tempFilePathInTempDir(objectName), m_codecForCvs );
+    QString sql = FileUtil::loadAsString( filePath(TempDir, TempFile, objectName), m_codecForCvs );
 
     if ( inProject )
     {
@@ -677,7 +677,7 @@ bool QueryAsObjectSetting::exportFromProjectToTempDir(QAxObject *object, const Q
 {
     Q_UNUSED(object)
     {
-        m_projectSetting->application()->SaveAsText( (Access::AcObjectType)m_accessObjectType, objectName, tempFilePathInTempDir(objectName) );
+        m_projectSetting->application()->SaveAsText( (Access::AcObjectType)m_accessObjectType, objectName, filePath(TempDir, TempFile, objectName) );
         return true;
     }
 }
@@ -686,7 +686,7 @@ bool QueryAsObjectSetting::importFromTempDirToProject(QAxObject *object, const Q
 {
     Q_UNUSED(object)
     {
-        m_projectSetting->application()->LoadFromText( (Access::AcObjectType)m_accessObjectType, objectName, tempFilePathInTempDir(objectName) );
+        m_projectSetting->application()->LoadFromText( (Access::AcObjectType)m_accessObjectType, objectName, filePath(TempDir, TempFile, objectName) );
 
         return true;
     }
@@ -752,7 +752,7 @@ bool AccessObjectSetting::exportFromProjectToTempDir(QAxObject *object, const QS
 {
     Q_UNUSED(object)
     {
-        m_projectSetting->application()->SaveAsText( (Access::AcObjectType)m_accessObjectType, objectName, tempFilePathInTempDir(objectName) );
+        m_projectSetting->application()->SaveAsText( (Access::AcObjectType)m_accessObjectType, objectName, filePath(TempDir, TempFile, objectName) );
         return true;
     }
     return false;
@@ -762,7 +762,7 @@ bool AccessObjectSetting::importFromTempDirToProject(QAxObject *object, const QS
 {
     Q_UNUSED(object)
     {
-        m_projectSetting->application()->LoadFromText( (Access::AcObjectType)m_accessObjectType, objectName, tempFilePathInTempDir(objectName) );
+        m_projectSetting->application()->LoadFromText( (Access::AcObjectType)m_accessObjectType, objectName, filePath(TempDir, TempFile, objectName) );
 
         return true;
     }
@@ -819,7 +819,7 @@ bool AccessDesignObjectSetting::sanitizeTempDir(QAxObject *object, const QString
     bool hasModule = !m_moduleFileExtension.isEmpty();
 
     // prepare files
-    QFile fileSrc      ( tempFilePathInTempDir  (objectName) );
+    QFile fileSrc      ( filePath(TempDir, TempFile, objectName) );
     QFile fileDstDesign( designFilePathInTempDir(objectName) );
     QFile fileDstModule;
     if (hasModule)
@@ -896,7 +896,7 @@ bool AccessDesignObjectSetting::desanitizeTempDir(QAxObject *object, const QStri
     bool hasModule = !m_moduleFileExtension.isEmpty();
 
     // prepare files
-    QFile fileSrc      ( tempFilePathInTempDir  (objectName) );
+    QFile fileSrc      ( filePath(TempDir, TempFile, objectName) );
     QFile fileDstDesign( designFilePathInTempDir(objectName) );
     QFile fileDstModule;
     if (hasModule)
@@ -986,7 +986,7 @@ void AccessDesignObjectSetting::determineCodecForProject()
             // In this way, we have to export at least one object from project.
 
             QString objectName = "????";
-            QFile fileCodec ( tempFilePathInTempDir(objectName) );
+            QFile fileCodec ( filePath(TempDir, TempFile, objectName) );
             fileCodec.open( QIODevice::ReadOnly );
             QByteArray header = fileCodec.read( 2 );
             fileCodec.close();
@@ -1215,7 +1215,7 @@ bool ModuleSetting::sanitizeTempDir(QAxObject *object, const QString &objectName
     // codec
     determineCodecForProject();
 
-    FileUtil::copyContents(   tempFilePathInTempDir(objectName), m_codecForProject,
+    FileUtil::copyContents(   filePath(TempDir, TempFile, objectName), m_codecForProject,
                             moduleFilePathInTempDir(objectName), m_codecForCvs );
 //    FileUtil::deleteFile(     tempFilePathInTempDir(objectName) ); // keep original files
 
@@ -1233,7 +1233,7 @@ bool ModuleSetting::desanitizeTempDir(QAxObject *object, const QString &objectNa
     determineCodecForProject();
 
     FileUtil::copyContents( moduleFilePathInTempDir(objectName), m_codecForCvs,
-                              tempFilePathInTempDir(objectName), m_codecForProject );
+                              filePath(TempDir, TempFile, objectName), m_codecForProject );
 //    FileUtil::deleteFile(   moduleFilePathInTempDir(objectName) ); // keep original files
 
     return true;
@@ -1379,7 +1379,7 @@ bool ReferenceSetting::exportFromProjectToTempDir(QAxObject *object, const QStri
         referenceLines << referenceLine;
     }
     // write contents to file
-    FileUtil::saveToFile(referenceLines.join( m_codecForCvs->lineEnd() ), tempFilePathInTempDir(m_objectName), m_codecForCvs );
+    FileUtil::saveToFile(referenceLines.join( m_codecForCvs->lineEnd() ), filePath(TempDir, TempFile, m_objectName), m_codecForCvs );
 
     return true;
 }
@@ -1408,7 +1408,7 @@ bool ReferenceSetting::importFromTempDirToProject(QAxObject *object, const QStri
 
     // add references
     {
-        QStringList referenceLines = FileUtil::loadAsStringList( tempFilePathInTempDir(m_objectName), m_codecForCvs );
+        QStringList referenceLines = FileUtil::loadAsStringList( filePath(TempDir, TempFile, m_objectName), m_codecForCvs );
         int nCount = referenceLines.count();
         for ( int i = 0 ; i < nCount ; ++i )
         {

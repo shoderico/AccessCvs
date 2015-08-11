@@ -42,29 +42,29 @@ public:
     virtual bool isTargetObject(QAxObject *object) const = 0;
 
     Model::ObjectType objectType() const { return m_objectType; }
-    int accessObjectType() const { return m_accessObjectType; }
+//    int accessObjectType() const { return m_accessObjectType; } // unused
 
-    QString objectPathName() const { return m_objectPathName; }
-    QString containerName() const { return m_containerName; }
+//    QString objectPathName() const { return m_objectPathName; } // unused
+//    QString containerName() const { return m_containerName; } // unused
 
-    QString tempFileExtension()   const { return m_tempFileExtension; }
-    QString designFileExtension() const { return m_designFileExtension; }
-    QString moduleFileExtension() const { return m_moduleFileExtension; }
+//    QString tempFileExtension()   const { return m_tempFileExtension; } // unused
+//    QString designFileExtension() const { return m_designFileExtension; } // unused
+//    QString moduleFileExtension() const { return m_moduleFileExtension; } // unused
     QString existCheckExtension() const { return m_existCheckExtension; }
 
 public:
     // file path
-    QString tempFilePathInTempDir  (const QString &objectName);
-    QString designFilePathInTempDir(const QString &objectName);
-    QString moduleFilePathInTempDir(const QString &objectName);
+//    QString tempFilePathInTempDir  (const QString &objectName); // ObjectSettings only    // unused
+    QString designFilePathInTempDir(const QString &objectName); // ObjectSettings only
+    QString moduleFilePathInTempDir(const QString &objectName); // ObjectSettings only
 
-    QString tempFilePathInSourceDir  (const QString &objectName);
-    QString designFilePathInSourceDir(const QString &objectName);
-    QString moduleFilePathInSourceDir(const QString &objectName);
+    QString tempFilePathInSourceDir  (const QString &objectName); // ObjectSettings only
+    QString designFilePathInSourceDir(const QString &objectName); // ObjectSettings only
+    QString moduleFilePathInSourceDir(const QString &objectName); // ObjectSettings only
 
     // object path
     QString sourceObjectPath() const;
-    QString tempObjectPath() const;
+    QString tempObjectPath() const; // ObjectSettings only
 
     // object path
     void mkdirSourceObjectPath();
