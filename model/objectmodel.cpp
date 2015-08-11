@@ -181,6 +181,18 @@ bool ObjectModel::setData(const QModelIndex &index, const QVariant &value, int r
             {
                 item->setHasData( value.toBool() );
                 emit dataChanged(index, index);
+
+                // reset exportDate, difference
+                item->setDifferent( Model::Unchecked_OD );
+                item->setExportDate( QDateTime() );
+                emit dataChanged( createIndex(index.row(), DifferentColumn),  createIndex(index.row(), DifferentColumn) );
+                emit dataChanged( createIndex(index.row(), ExportDateColumn), createIndex(index.row(), ExportDateColumn) );
+
+                // FIXME: if hasData = true and exported into TempDir,
+                // and then change hasData to false and Refresh,
+                // the item is always DifferentContents because *.dat file in TempDir but not in SourceDir.
+
+                // save settings
                 saveSettigs();
                 return true;
             }
@@ -368,11 +380,14 @@ bool ObjectModel::refreshItems()
     // for InBoth
     {
 
-        ObjectItems targets;
-        getItems(&targets, InBoth, false/*selectedOnly*/, true/*modifiedOnly*/);
+        ObjectItems targetsAll;
+        getItems(&targetsAll, InBoth, false/*selectedOnly*/, false/*modifiedOnly*/);
 
         // smart-refresh : pre-process
-        updateItemsDifferenceByFileTime(&targets);                                          // for smart refresh, we assume the contents are the same if item's updateDate <= filetime of TempFile
+        updateItemsDifferenceByFileTime(&targetsAll);                                          // for smart refresh, we assume the contents are the same if item's updateDate <= filetime of TempFile
+
+        ObjectItems targets;
+        getItems(&targets, InBoth, false/*selectedOnly*/, true/*modifiedOnly*/);
 
         exportFromProjectToTempDir(&targets);   // InBoth           : BLOCK :                   :
         sanitizeTempDir(&targets);              // InBoth           :       :                   :
@@ -950,7 +965,19 @@ void ObjectModel::updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, c
                 default: break;
             }
 
-            os->updateFileTimeInTempDir( (*it)->name(), (*it)->exportDate() );
+            if ( (*it)->exportDate().isValid() )
+                os->updateFileTimeInTempDir( (*it)->name(), (*it)->exportDate() );
+            else
+            {
+                // treat as 1 sec. old from udpateDate
+                QDateTime exportDate = (*it)->updateDate().addSecs(-1);
+                os->updateFileTimeInTempDir( (*it)->name(), exportDate );
+                (*it)->setExportDate( exportDate );
+
+                int row = m_items.indexOf( (*it) );
+                emit dataChanged( createIndex(row, ExportDateColumn), createIndex(row, ExportDateColumn) );
+
+            }
         }
     }
 }
