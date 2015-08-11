@@ -55,7 +55,7 @@ public:
 public:
     // file path
 //    QString tempFilePathInTempDir  (const QString &objectName); // ObjectSettings only    // unused
-    QString designFilePathInTempDir(const QString &objectName); // ObjectSettings only
+//    QString designFilePathInTempDir(const QString &objectName); // ObjectSettings only    // unused
     QString moduleFilePathInTempDir(const QString &objectName); // ObjectSettings only
 
     QString tempFilePathInSourceDir  (const QString &objectName); // ObjectSettings only
