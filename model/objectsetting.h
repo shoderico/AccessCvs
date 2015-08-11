@@ -13,6 +13,7 @@ class SanitizeSetting;
 class CodecInfo;
 
 class QAxObject;
+class QSettings;
 
 
 namespace DAO {
@@ -96,6 +97,9 @@ public:
 
     bool deleteTempFileFromTempDir(const QString &objectName);
 
+    virtual void loadSettings(QSettings *settings) { Q_UNUSED(settings) }
+    virtual void saveSettings(QSettings *settings) { Q_UNUSED(settings) }
+
 protected:
     enum DirectoryType
     {
@@ -168,9 +172,15 @@ public:
     virtual bool        prepareItemCollection();
     virtual int         itemCount();
     virtual QAxObject  *itemUnsafePtr(const QVariant &index);
+
+    virtual void loadSettings(QSettings *settings);
+    virtual void saveSettings(QSettings *settings);
+
+    void setTableDataTargets(QStringList *newTargets);
 protected:
     virtual void determineCodecForProject();
     ComPtr<DAO::TableDefs> m_tableDefs;
+    QStringList m_tableDataTargets;
 };
 
 class TableDataSetting : public ObjectSetting

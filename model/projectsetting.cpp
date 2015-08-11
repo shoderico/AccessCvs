@@ -1,6 +1,7 @@
 #include "projectsetting.h"
 
 #include <QDebug>
+#include <QSettings>
 
 #include "officelib/officelib.h"
 #include "util/comptr.h"
@@ -45,8 +46,8 @@ void ProjectSetting::initialize(Access::Application *application)
     {
         m_projectPath = currentProject->Path();
         m_projectType = currentProject->ProjectType();
+        loadSettings();
     }
-
 }
 
 bool ProjectSetting::isMDB() const
@@ -82,6 +83,52 @@ Access::Application *ProjectSetting::application() const
 QList<Model::ObjectType> ProjectSetting::objectTypes() const
 {
     return m_objectSettings.keys();
+}
+
+void ProjectSetting::loadSettings()
+{
+    // FIXME: load settings
+
+    /* FIXME: implement tabledata */
+    // strategry
+    //  * use QSettings to save/load settings
+    //  * root owner of QSettings is ProjectSetting
+    //  * each ObjectSetting has own setting-group i.e. 'Table'.
+    //  * TableSetting saves/loads table names to store/restore table data
+    //  * In UI, table-data checkbox represents to be store data or not.
+    //      * these are saved into QSettings.
+    //  * QSettings contents must be editable by user ( must be text format ).
+    //  * QSettings file must be handled properly by CVS.
+    //  * ObjectItem has a property for table-data handling, boolen value.
+    //      * Table-specific property.
+    //  * Save timing
+    //      * setData()
+    //  * Load timing
+    //      * reloadAndMerge...()
+
+    QString iniFilename = m_projectPath + "\\.accesscvs";
+    QSettings settings(iniFilename, QSettings::IniFormat, this);
+    settings.setIniCodec( "UTF-8" );
+
+    foreach ( Model::ObjectType objectType, m_objectSettings.keys() )
+    {
+        m_objectSettings[ objectType ]->loadSettings( &settings );
+    }
+}
+
+
+void ProjectSetting::saveSettings()
+{
+    // FIXME: save settings
+
+    QString iniFilename = m_projectPath + "\\.accesscvs";
+    QSettings settings(iniFilename, QSettings::IniFormat, this);
+    settings.setIniCodec( "UTF-8" );
+
+    foreach ( Model::ObjectType objectType, m_objectSettings.keys() )
+    {
+        m_objectSettings[ objectType ]->saveSettings( &settings );
+    }
 }
 
 void ProjectSetting::exception(int code, const QString &source, const QString &desc, const QString &help)

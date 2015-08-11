@@ -35,6 +35,9 @@ public:
 
     QList<Model::ObjectType> objectTypes() const;
 
+    void loadSettings();
+    void saveSettings();
+
 public slots:
     void exception(int code, const QString & source, const QString & desc, const QString & help);
 

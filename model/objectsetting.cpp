@@ -6,6 +6,7 @@
 #include <QTextCodec>
 #include <QFile>
 #include <QTextStream>
+#include <QSettings>
 
 #include "officelib/officelib.h"
 
@@ -309,6 +310,7 @@ ObjectItem *TableDefSetting::createItemFromProject(QAxObject *object, QObject *p
         item->setCreateDate( tableDef->DateCreated().toDateTime() );
         item->setUpdateDate( tableDef->LastUpdated().toDateTime() );
         item->setExportDate( FileUtil::fileTime( filePath(TempDir, TempFile, item->name()) ) );
+        item->setHasData( m_tableDataTargets.contains( item->name() ) );
     }
 
     return item;
@@ -422,6 +424,50 @@ QAxObject *TableDefSetting::itemUnsafePtr(const QVariant &index)
     if (!m_tableDefs.is())
         return 0;
     return m_tableDefs->Item(index);
+}
+
+void TableDefSetting::loadSettings(QSettings *settings)
+{
+    // FIXME: load settings
+    settings->beginGroup("TableDef");
+    {
+        m_tableDataTargets.clear();
+        int size = settings->beginReadArray("TableData");
+        for ( int i = 0 ; i < size ; ++i )
+        {
+            settings->setArrayIndex(i);
+            QVariant tableName = settings->value("TableName");
+            if (tableName.isValid())
+                m_tableDataTargets.append( tableName.toString() );
+        }
+        settings->endArray();
+    }
+    settings->endGroup();
+}
+
+void TableDefSetting::saveSettings(QSettings *settings)
+{
+    // FIXME: save settings
+    settings->beginGroup("TableDef");
+    {
+        settings->beginWriteArray("TableData");
+        int i = 0;
+        for ( QStringList::iterator it = m_tableDataTargets.begin() ; it != m_tableDataTargets.end() ; ++it )
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("TableName", (*it) );
+            ++i;
+        }
+        settings->endArray();
+    }
+    settings->endGroup();
+}
+
+void TableDefSetting::setTableDataTargets(QStringList *newTargets)
+{
+    m_tableDataTargets.clear();
+    for ( QStringList::iterator it = newTargets->begin() ; it != newTargets->end() ; ++it )
+        m_tableDataTargets.append( (*it) );
 }
 
 void TableDefSetting::determineCodecForProject()

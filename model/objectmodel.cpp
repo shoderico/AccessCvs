@@ -181,6 +181,7 @@ bool ObjectModel::setData(const QModelIndex &index, const QVariant &value, int r
             {
                 item->setHasData( value.toBool() );
                 emit dataChanged(index, index);
+                saveSettigs();
                 return true;
             }
                 break;
@@ -189,6 +190,30 @@ bool ObjectModel::setData(const QModelIndex &index, const QVariant &value, int r
         }
     }
     return false;
+}
+
+void ObjectModel::saveSettigs()
+{
+    // FIXME: save settings
+    ProjectSetting setting(this);
+    ObjectSetting *os;
+    setting.initialize(m_application);
+
+    {
+        QStringList tableDataTargets;
+        QList<ObjectItem*> items = m_mapItems[ Model::TableDef ].values();
+        for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it  )
+        {
+            if ( (*it)->hasData() )
+                tableDataTargets.append( (*it)->name() );
+        }
+
+        os = setting[ Model::TableDef ];
+        TableDefSetting *tableDataSetting = static_cast<TableDefSetting*>(os);
+        tableDataSetting->setTableDataTargets( &tableDataTargets );
+    }
+
+    setting.saveSettings();
 }
 
 void ObjectModel::setApplication(Access::Application *application)
@@ -377,23 +402,6 @@ bool ObjectModel::executeExport()
         return false;
 
     bool selectedOnly = true;
-
-    /* FIXME: implement tabledata */
-    // strategry
-    //  * use QSettings to save/load settings
-    //  * root owner of QSettings is ProjectSetting
-    //  * each ObjectSetting has own setting-group i.e. 'Table'.
-    //  * TableSetting saves/loads table names to store/restore table data
-    //  * In UI, table-data checkbox represents to be store data or not.
-    //      * these are saved into QSettings.
-    //  * QSettings contents must be editable by user ( must be text format ).
-    //  * QSettings file must be handled properly by CVS.
-    //  * ObjectItem has a property for table-data handling, boolen value.
-    //      * Table-specific property.
-    //  * Save timing
-    //      * setData()
-    //  * Load timing
-    //      * reloadAndMerge...()
 
     // for InProjectOnly
     {
@@ -1106,6 +1114,7 @@ void ObjectModel::reloadAndMergeItems()
             item->setInProject( (*it)->inProject() );
             item->setInFileSystem( (*it)->inFileSystem() );
             item->setDifferent( (*it)->isDifferent() );
+            item->setHasData( (*it)->hasData() );
         }
     }
 
@@ -1479,6 +1488,8 @@ void ObjectModel::mergeItemProperties(ObjectItem *itemSrc, ObjectItem *itemDst)
     itemDst->setUpdateDate(      itemSrc->updateDate().isValid() ? itemSrc->updateDate()
                              : ( itemDst->updateDate().isValid() ? itemDst->updateDate()
                              :   QDateTime() ) );
+
+    itemDst->setHasData(    itemSrc->hasData() || itemDst->hasData() ? true : false );
 
 }
 
