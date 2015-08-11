@@ -110,7 +110,9 @@ protected:
     {
         TempFile,
         DesignFile,
-        ModuleFile
+        ModuleFile,
+        DataTempFile,
+        DataFile
     };
     bool deleteCvsFileFromTempDir(const QString &objectName);
     bool copyFile(DirectoryType dirTypeSrc, DirectoryType dirTypeDst, FileType fileType, const QString &objectName);
@@ -136,6 +138,8 @@ protected:
     QString m_designFileExtension;
     QString m_moduleFileExtension;
     QString m_existCheckExtension;
+    QString m_dataTempFileExtension;
+    QString m_dataFileExtension;
 
     ProjectSetting *m_projectSetting;
 

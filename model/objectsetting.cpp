@@ -96,6 +96,7 @@ bool ObjectSetting::copyFromTempDirToFileSystem(const QString &objectName)
     deleteFromFileSystem(objectName);
     copyFile(TempDir, SourceDir, DesignFile, objectName);
     copyFile(TempDir, SourceDir, ModuleFile, objectName);
+    copyFile(TempDir, SourceDir, DataFile,   objectName);
     return true;
 }
 
@@ -104,6 +105,7 @@ bool ObjectSetting::copyFromFileSystemToTempDir(const QString &objectName)
     deleteCvsFileFromTempDir(objectName);
     copyFile(SourceDir, TempDir, DesignFile, objectName);
     copyFile(SourceDir, TempDir, ModuleFile, objectName);
+    copyFile(SourceDir, TempDir, DataFile,   objectName);
     return true;
 }
 
@@ -123,6 +125,12 @@ bool ObjectSetting::compareTempDir(const QString &objectName, bool *pisDifferent
         isSame = FileUtil::compare( filePath(TempDir,   ModuleFile, objectName),
                                     filePath(SourceDir, ModuleFile, objectName) );
     }
+    // data
+    if (isSame && !m_dataFileExtension.isEmpty())
+    {
+        isSame = FileUtil::compare( filePath(TempDir,   DataFile, objectName),
+                                    filePath(SourceDir, DataFile, objectName) );
+    }
 
     *pisDifferent = !isSame;
 
@@ -133,6 +141,7 @@ bool ObjectSetting::deleteFromFileSystem(const QString &objectName)
 {
     deleteFile(SourceDir, DesignFile, objectName);
     deleteFile(SourceDir, ModuleFile, objectName);
+    deleteFile(SourceDir, DataFile,   objectName);
 
     return true;
 }
@@ -173,7 +182,8 @@ QAxObject *ObjectSetting::itemUnsafePtr(const QVariant &index)
 
 void ObjectSetting::updateFileTimeInTempDir(const QString &objectName, const QDateTime &fileTime)
 {
-    FileUtil::setFileTime( filePath(TempDir, TempFile, objectName), fileTime, fileTime );
+    FileUtil::setFileTime( filePath(TempDir, TempFile,     objectName), fileTime, fileTime );
+    FileUtil::setFileTime( filePath(TempDir, DataTempFile, objectName), fileTime, fileTime );
 }
 
 void ObjectSetting::determineCodecForProject()
@@ -186,13 +196,15 @@ bool ObjectSetting::deleteCvsFileFromTempDir(const QString &objectName)
 {
     deleteFile(TempDir, DesignFile, objectName);
     deleteFile(TempDir, ModuleFile, objectName);
+    deleteFile(TempDir, DataFile,   objectName);
 
     return true;
 }
 
 bool ObjectSetting::deleteTempFileFromTempDir(const QString &objectName)
 {
-    deleteFile(TempDir, TempFile, objectName);
+    deleteFile(TempDir, TempFile,     objectName);
+    deleteFile(TempDir, DataTempFile, objectName);
     return true;
 }
 
@@ -254,6 +266,8 @@ QString ObjectSetting::fileExtension(ObjectSetting::FileType fileType) const
         case TempFile:      return m_tempFileExtension;
         case DesignFile:    return m_designFileExtension;
         case ModuleFile:    return m_moduleFileExtension;
+        case DataTempFile:  return m_dataTempFileExtension;
+        case DataFile:      return m_dataFileExtension;
     }
     return QString();
 }
