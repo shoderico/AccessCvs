@@ -1062,7 +1062,7 @@ void ObjectModel::reloadAndMergeItems()
     QList<ObjectItem*> items;
     ObjectItems mapItems;
 
-    //
+    // merged from Project
     for ( QList<ObjectItem*>::iterator it = itemsFromProject.begin(); it != itemsFromProject.end(); ++it )
     {
         ObjectItem *item = (*it);
@@ -1070,15 +1070,17 @@ void ObjectModel::reloadAndMergeItems()
         mapItems[ item->objectType() ].insert( item->name(), item );
         item->setInFileSystem( Model::Absent );
     }
+    // merged from FileSystem
     for ( QList<ObjectItem*>::iterator it = itemsFromFileSystem.begin(); it != itemsFromFileSystem.end(); ++it )
     {
         if ( mapItems[ (*it)->objectType() ].contains( (*it)->name() ) )
         {
-            // exist. merge property
+            // merge properties
             mergeItemProperties( (*it), mapItems[ (*it)->objectType() ].value( (*it)->name() ) );
         }
         else
         {
+            // insert new
             items << (*it);
             mapItems[ (*it)->objectType() ].insert( (*it)->name(), (*it) );
         }
@@ -1129,6 +1131,7 @@ void ObjectModel::reloadAndMergeItems()
             //          * inProject
             //          * inFileSystem
             //          * isDifferent ???
+            //          * hasData
             //     * no need to update
             //          * name
             //          * objectType
@@ -1498,6 +1501,9 @@ void ObjectModel::clearTempDir()
 
 void ObjectModel::mergeItemProperties(ObjectItem *itemSrc, ObjectItem *itemDst)
 {
+    // itemSrc : item created from FileSystem
+    // itemDst : item created from Project
+
     itemDst->setInProject(
                 (itemDst->inProject() == Model::Present || itemSrc->inProject() == Model::Present) ? Model::Present :
                 (itemDst->inProject() == Model::Absent  || itemSrc->inProject() == Model::Absent ) ? Model::Absent  :
