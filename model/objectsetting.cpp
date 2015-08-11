@@ -38,10 +38,10 @@ ObjectSetting::ObjectSetting(ProjectSetting *parent)
 //    return filePath(TempDir, DesignFile, objectName);
 //}
 
-QString ObjectSetting::moduleFilePathInTempDir(const QString &objectName)
-{
-    return filePath(TempDir, ModuleFile, objectName);
-}
+//QString ObjectSetting::moduleFilePathInTempDir(const QString &objectName)
+//{
+//    return filePath(TempDir, ModuleFile, objectName);
+//}
 
 QString ObjectSetting::tempFilePathInSourceDir(const QString &objectName)
 {
@@ -120,7 +120,7 @@ bool ObjectSetting::compareTempDir(const QString &objectName, bool *pisDifferent
     // module
     if (isSame && !m_moduleFileExtension.isEmpty())
     {
-        isSame = FileUtil::compare( moduleFilePathInTempDir(objectName),
+        isSame = FileUtil::compare( filePath(TempDir, ModuleFile, objectName),
                                     moduleFilePathInSourceDir(objectName) );
     }
 
@@ -823,7 +823,7 @@ bool AccessDesignObjectSetting::sanitizeTempDir(QAxObject *object, const QString
     QFile fileDstDesign( filePath(TempDir, DesignFile, objectName) );
     QFile fileDstModule;
     if (hasModule)
-        fileDstModule.setFileName( moduleFilePathInTempDir(objectName) );
+        fileDstModule.setFileName( filePath(TempDir, ModuleFile, objectName) );
 
     // delete existing files
     FileUtil::deleteFile( fileDstDesign.fileName() );
@@ -901,7 +901,7 @@ bool AccessDesignObjectSetting::desanitizeTempDir(QAxObject *object, const QStri
     QFile fileDstModule;
     if (hasModule)
     {
-        fileDstModule.setFileName( moduleFilePathInTempDir(objectName) );
+        fileDstModule.setFileName( filePath(TempDir, ModuleFile, objectName) );
 
         // treat as no-module if module file is absent
         if (!fileDstModule.exists())
@@ -1215,8 +1215,8 @@ bool ModuleSetting::sanitizeTempDir(QAxObject *object, const QString &objectName
     // codec
     determineCodecForProject();
 
-    FileUtil::copyContents(   filePath(TempDir, TempFile, objectName), m_codecForProject,
-                            moduleFilePathInTempDir(objectName), m_codecForCvs );
+    FileUtil::copyContents( filePath(TempDir, TempFile,   objectName), m_codecForProject,
+                            filePath(TempDir, ModuleFile, objectName), m_codecForCvs );
 //    FileUtil::deleteFile(     tempFilePathInTempDir(objectName) ); // keep original files
 
     return true;
@@ -1232,8 +1232,8 @@ bool ModuleSetting::desanitizeTempDir(QAxObject *object, const QString &objectNa
     // codec
     determineCodecForProject();
 
-    FileUtil::copyContents( moduleFilePathInTempDir(objectName), m_codecForCvs,
-                              filePath(TempDir, TempFile, objectName), m_codecForProject );
+    FileUtil::copyContents( filePath(TempDir, ModuleFile, objectName), m_codecForCvs,
+                            filePath(TempDir, TempFile,   objectName), m_codecForProject );
 //    FileUtil::deleteFile(   moduleFilePathInTempDir(objectName) ); // keep original files
 
     return true;
