@@ -60,7 +60,7 @@ public:
 
 //    QString tempFilePathInSourceDir  (const QString &objectName); // ObjectSettings only  // unused
 //    QString designFilePathInSourceDir(const QString &objectName); // ObjectSettings only  // unused
-    QString moduleFilePathInSourceDir(const QString &objectName); // ObjectSettings only
+//    QString moduleFilePathInSourceDir(const QString &objectName); // ObjectSettings only  // unused
 
     // object path
     QString sourceObjectPath() const;
