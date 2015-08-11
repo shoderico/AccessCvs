@@ -43,10 +43,10 @@ ObjectSetting::ObjectSetting(ProjectSetting *parent)
 //    return filePath(TempDir, ModuleFile, objectName);
 //}
 
-QString ObjectSetting::tempFilePathInSourceDir(const QString &objectName)
-{
-    return filePath(SourceDir, TempFile, objectName);
-}
+//QString ObjectSetting::tempFilePathInSourceDir(const QString &objectName)
+//{
+//    return filePath(SourceDir, TempFile, objectName);
+//}
 
 QString ObjectSetting::designFilePathInSourceDir(const QString &objectName)
 {
