@@ -299,6 +299,9 @@ TableDefSetting::TableDefSetting(ProjectSetting *parent)
     m_designFileExtension = "xml";
     m_moduleFileExtension = "";
     m_existCheckExtension = m_designFileExtension;
+
+    m_dataTempFileExtension = "dattmp";
+    m_dataFileExtension     = "dat";
 }
 
 bool TableDefSetting::isTargetObject(QAxObject *object) const
@@ -351,6 +354,21 @@ bool TableDefSetting::exportFromProjectToTempDir(QAxObject *object, const QStrin
                     ,QVariant()//AdditionalData
                     );
 
+        // table-data
+        if ( m_tableDataTargets.contains( objectName ) )
+        {
+            m_projectSetting->application()
+                ->ExportXML(
+                        Access::acExportTable
+                        ,objectName
+                        ,filePath(TempDir, DataTempFile, objectName) // DataTarget
+                        ,QString() // SchemaTarget
+                        ,QString() // PresentationTarget
+                        ,QString() // ImageTarget
+                        ,Access::acUTF16 // Encoding
+                        );
+        }
+
         return true;
     }
     return false;
@@ -376,6 +394,16 @@ bool TableDefSetting::importFromTempDirToProject(QAxObject *object, const QStrin
                     ,Access::acStructureOnly
                     );
 
+        // table-data
+        if ( m_tableDataTargets.contains(objectName) && QDir( filePath(TempDir, DataTempFile, objectName) ).exists() )
+        {
+            m_projectSetting->application()
+                ->ImportXML(
+                        filePath(TempDir, DataTempFile, objectName)
+                        ,Access::acAppendData
+                        );
+        }
+
         return true;
     }
     return false;
@@ -394,6 +422,14 @@ bool TableDefSetting::sanitizeTempDir(QAxObject *object, const QString &objectNa
                             filePath(TempDir, DesignFile, objectName), m_codecForCvs );
 //    FileUtil::deleteFile(     tempFilePathInTempDir(objectName) ); // keep original files
 
+    // sanitize data-file
+    if ( m_tableDataTargets.contains(objectName) )
+    {
+        FileUtil::copyContents( filePath(TempDir, DataTempFile, objectName), m_codecForProject,
+                                filePath(TempDir, DataFile,     objectName), m_codecForCvs );
+        // FIXME: we must remove  generated="2015-08-11T22:12:17"
+    }
+
     return true;
 }
 
@@ -409,6 +445,13 @@ bool TableDefSetting::desanitizeTempDir(QAxObject *object, const QString &object
     FileUtil::copyContents( filePath(TempDir, DesignFile, objectName), m_codecForCvs,
                             filePath(TempDir, TempFile,   objectName), m_codecForProject );
 //    FileUtil::deleteFile(   designFilePathInTempDir(objectName) ); keep original files
+
+    // de-sanitize data-file : just convert codec.
+    if ( m_tableDataTargets.contains(objectName) )
+    {
+        FileUtil::copyContents( filePath(TempDir, DataFile,     objectName), m_codecForCvs,
+                                filePath(TempDir, DataTempFile, objectName), m_codecForProject );
+    }
 
     return true;
 }
