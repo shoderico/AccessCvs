@@ -48,10 +48,10 @@ ObjectSetting::ObjectSetting(ProjectSetting *parent)
 //    return filePath(SourceDir, TempFile, objectName);
 //}
 
-QString ObjectSetting::designFilePathInSourceDir(const QString &objectName)
-{
-    return filePath(SourceDir, DesignFile, objectName);
-}
+//QString ObjectSetting::designFilePathInSourceDir(const QString &objectName)
+//{
+//    return filePath(SourceDir, DesignFile, objectName);
+//}
 
 QString ObjectSetting::moduleFilePathInSourceDir(const QString &objectName)
 {
@@ -114,8 +114,8 @@ bool ObjectSetting::compareTempDir(const QString &objectName, bool *pisDifferent
     // design
     if (isSame && !m_designFileExtension.isEmpty())
     {
-        isSame = FileUtil::compare( filePath(TempDir, DesignFile, objectName),
-                                    designFilePathInSourceDir(objectName) );
+        isSame = FileUtil::compare( filePath(TempDir,   DesignFile, objectName),
+                                    filePath(SourceDir, DesignFile, objectName) );
     }
     // module
     if (isSame && !m_moduleFileExtension.isEmpty())
