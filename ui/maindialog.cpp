@@ -141,7 +141,7 @@ void MainDialog::clearCache()
 void MainDialog::refreshItems()
 {
     m_model->refreshItems();
-    m_model->selectItemsForProcess( true, false );
+//    m_model->selectItemsForProcess( true, false );
     // FIXME: i don't know why but cursor stays with WaitCursor in several seconds.
     QApplication::setOverrideCursor(Qt::WaitCursor);
     QApplication::restoreOverrideCursor();
