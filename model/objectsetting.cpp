@@ -1280,7 +1280,45 @@ bool ReportSetting::importFromTempDirToProject(QAxObject *object, const QString 
     if ( !AccessDesignObjectSetting::importFromTempDirToProject(object, objectName) )
         return false;
 
-    // FIXME: restore report properties
+    // if report-prop-file doesn't exist, return true (it's normal)
+    if ( !QFile( filePath( TempDir, ReportPropFile, objectName ) ).exists() )
+        return true;
+
+    // open report-prop-file
+    QSettings settings( filePath( TempDir, ReportPropFile, objectName ), QSettings::IniFormat, this );
+    settings.setIniCodec( m_codecForCvs->codec() );
+
+    // PrtDevMode
+    settings.beginGroup("PrtDevMode");
+    {
+        // open target report in design view
+        ComPtr<Access::DoCmd> doCmd = m_projectSetting->application()->DoCmd();
+        doCmd->OpenReport( objectName, Access::acViewDesign );
+        ComPtr<Access::Reports> reports = m_projectSetting->application()->Reports();
+        ComPtr<Access::Report> report = reports->Item( objectName );
+
+        // retreive PrtDevMode
+        QByteArray prtDevModeDataSrc = report->PrtDevMode().toByteArray();
+
+        // consturct new PrtDevMode
+        DEVMODEA dm;
+        mempcpy( &dm, (const void*)prtDevModeDataSrc.constData(), sizeof(dm) );
+        dm.dmOrientation = settings.value("dmOrientation", DMORIENT_PORTRAIT).toInt();
+        dm.dmPaperSize   = settings.value("dmPaperSize",   DMPAPER_A4).toInt();
+        dm.dmPaperLength = settings.value("dmPaperLength", 0).toInt(); // FIXME: need meaningful default value
+        dm.dmPaperWidth  = settings.value("dmPaperWidth",  0).toInt(); // FIXME: need meaningful default value
+        dm.dmScale       = settings.value("dmScale",       100).toInt();
+        dm.dmColor       = settings.value("dmColor",       DMCOLOR_COLOR).toInt();
+
+        QByteArray prtDevModeDataDst( (const char *)&dm, sizeof(dm) );
+
+        // set new PrtDevMode to report
+        report->SetPrtDevMode( prtDevModeDataDst );
+
+        // save report
+        doCmd->Close( Access::acReport, objectName, Access::acSaveYes );
+    }
+    settings.endGroup();
 
     return true;
 }
@@ -1291,26 +1329,29 @@ bool ReportSetting::afterSanitizeTempDir(QAxObject *object, const QString &objec
 
     // report properties
 
-    QByteArray dataString = m_sanitizer->blockData( "PrtDevMode" );
-
     FileUtil::deleteFile( filePath( TempDir, ReportPropFile, objectName ) );
 
+    // open report-prop-file
     QSettings settings( filePath( TempDir, ReportPropFile, objectName ), QSettings::IniFormat, this );
     settings.setIniCodec( m_codecForCvs->codec() );
+
+    // PrtDevMode
     settings.beginGroup("PrtDevMode");
-
-    if ( dataString.size() > 0 )
     {
-        const void *pDataString = (const void*)dataString.constData();
-        const DEVMODEA *pdm = static_cast<const DEVMODEA*>(pDataString);
+        QByteArray prtDevModeData = m_sanitizer->blockData( "PrtDevMode" );
+        if ( prtDevModeData.size() > 0 )
+        {
+            const void *pprtDevModeData = (const void*)prtDevModeData.constData();
+            const DEVMODEA *pdm = static_cast<const DEVMODEA*>(pprtDevModeData);
 
-        settings.setValue( "dmOrientation", pdm->dmOrientation );
-        settings.setValue( "dmPaperSize",   pdm->dmPaperSize );
-        settings.setValue( "dmPaperLength", pdm->dmPaperLength );
-        settings.setValue( "dmPaperWidth",  pdm->dmPaperWidth );
-        settings.setValue( "dmScale",       pdm->dmScale );
-        settings.setValue( "dmColor",       pdm->dmColor );
+            settings.setValue( "dmOrientation", pdm->dmOrientation );
+            settings.setValue( "dmPaperSize",   pdm->dmPaperSize );
+            settings.setValue( "dmPaperLength", pdm->dmPaperLength );
+            settings.setValue( "dmPaperWidth",  pdm->dmPaperWidth );
+            settings.setValue( "dmScale",       pdm->dmScale );
+            settings.setValue( "dmColor",       pdm->dmColor );
 
+        }
     }
     settings.endGroup();
 
