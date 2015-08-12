@@ -16,6 +16,8 @@
 
 #include "projectsetting.h"
 #include "sanitizesetting.h"
+#include "tabledefsanitizesetting.h"
+#include "tabledatasanitizesetting.h"
 
 ObjectSetting::ObjectSetting(ProjectSetting *parent)
     : QObject(parent)
@@ -306,6 +308,8 @@ void ObjectSetting::mkpathObjectPath(ObjectSetting::DirectoryType dirType)
 
 TableDefSetting::TableDefSetting(ProjectSetting *parent)
     : ObjectSetting(parent)
+    , m_tableDefSanitizer(new TableDefSanitizeSetting(this))
+    , m_tableDataSanitizer(new TableDataSanitizeSetting(this))
 {
     m_objectType          = Model::TableDef;
     m_accessObjectType    = Access::acTable;
@@ -357,21 +361,22 @@ bool TableDefSetting::exportFromProjectToTempDir(QAxObject *object, const QStrin
     DAO::TableDef *tableDef = dynamic_cast<DAO::TableDef*>(object);
     if (tableDef)
     {
-        // this makes force termination...
-        m_projectSetting->application()
-            ->ExportXML(
-                    Access::acExportTable
-                    ,objectName
-                    ,QString() // DataTarget
-                    ,filePath(TempDir, TempFile, objectName) // SchemaTarget
-                    ,QString() //PresentationTarget
-                    ,QString() //ImageTarget
-                    ,Access::acUTF16 //Encoding
-                    ,Access::acExportAllTableAndFieldProperties //OtherFlags
-                    ,QString() //WhereCondition
-                    ,QVariant()//AdditionalData
-                    );
-
+        // table-def
+        {
+            m_projectSetting->application()
+                ->ExportXML(
+                        Access::acExportTable
+                        ,objectName
+                        ,QString() // DataTarget
+                        ,filePath(TempDir, TempFile, objectName) // SchemaTarget
+                        ,QString() //PresentationTarget
+                        ,QString() //ImageTarget
+                        ,Access::acUTF8 //Encoding
+                        ,Access::acExportAllTableAndFieldProperties //OtherFlags
+                        ,QString() //WhereCondition
+                        ,QVariant()//AdditionalData
+                        );
+        }
         // table-data
         if ( m_tableDataTargets.contains( objectName ) )
         {
@@ -383,7 +388,7 @@ bool TableDefSetting::exportFromProjectToTempDir(QAxObject *object, const QStrin
                         ,QString() // SchemaTarget
                         ,QString() // PresentationTarget
                         ,QString() // ImageTarget
-                        ,Access::acUTF16 // Encoding
+                        ,Access::acUTF8 // Encoding
                         );
         }
 
@@ -405,15 +410,17 @@ bool TableDefSetting::importFromTempDirToProject(QAxObject *object, const QStrin
     }
 
     {
-        // very slow but very accurate.
-        m_projectSetting->application()
-            ->ImportXML(
-                    filePath(TempDir, TempFile, objectName)
-                    ,Access::acStructureOnly
-                    );
-
+        // table-def
+        {
+            // very slow but very accurate.
+            m_projectSetting->application()
+                ->ImportXML(
+                        filePath(TempDir, TempFile, objectName)
+                        ,Access::acStructureOnly
+                        );
+        }
         // table-data
-        if ( m_tableDataTargets.contains(objectName) && QDir( filePath(TempDir, DataTempFile, objectName) ).exists() )
+        if ( m_tableDataTargets.contains(objectName) && QFile( filePath(TempDir, DataTempFile, objectName) ).exists() )
         {
             m_projectSetting->application()
                 ->ImportXML(
@@ -431,21 +438,81 @@ bool TableDefSetting::sanitizeTempDir(QAxObject *object, const QString &objectNa
 {
     Q_UNUSED(object)
 
-    // we have to convert ONLY codec.
-
     // codec
     determineCodecForProject();
 
-    FileUtil::copyContents( filePath(TempDir, TempFile,   objectName), m_codecForProject,
-                            filePath(TempDir, DesignFile, objectName), m_codecForCvs );
-//    FileUtil::deleteFile(     tempFilePathInTempDir(objectName) ); // keep original files
+    // sanitize table-def
+    {
+        QFile fileSrc( filePath(TempDir, TempFile,   objectName) );
+        QFile fileDst( filePath(TempDir, DesignFile, objectName) );
 
-    // sanitize data-file
+        // delete existing file
+        FileUtil::deleteFile( fileDst.fileName() );
+
+        // open files
+        if ( !fileSrc.open( QIODevice::ReadOnly) )
+        {
+            return false;
+        }
+        if ( !fileDst.open(QIODevice::WriteOnly) )
+        {
+            fileSrc.close();
+            return false;
+        }
+
+        // open streams
+        QTextStream streamSrc( &fileSrc );
+        streamSrc.setCodec(m_codecForProject->codec());
+        // bom resolved automatically
+
+        QTextStream streamDst( &fileDst );
+        streamDst.setCodec(m_codecForCvs->codec());
+        streamDst.setGenerateByteOrderMark(m_codecForCvs->bom());
+
+        // sanitize table-def
+        m_tableDefSanitizer->sanitize( streamSrc, streamDst, m_codecForCvs );
+
+        // close files
+        fileSrc.close();
+        fileDst.close();
+
+    }
+
+    // sanitize table-data
     if ( m_tableDataTargets.contains(objectName) )
     {
-        FileUtil::copyContents( filePath(TempDir, DataTempFile, objectName), m_codecForProject,
-                                filePath(TempDir, DataFile,     objectName), m_codecForCvs );
-        // FIXME: we must remove  generated="2015-08-11T22:12:17"
+        QFile fileSrc( filePath(TempDir, DataTempFile, objectName) );
+        QFile fileDst( filePath(TempDir, DataFile,     objectName) );
+
+        // delete existing file
+        FileUtil::deleteFile( fileDst.fileName() );
+
+        // open files
+        if ( !fileSrc.open( QIODevice::ReadOnly) )
+        {
+            return false;
+        }
+        if ( !fileDst.open(QIODevice::WriteOnly) )
+        {
+            fileSrc.close();
+            return false;
+        }
+
+        // open streams
+        QTextStream streamSrc( &fileSrc );
+        streamSrc.setCodec(m_codecForProject->codec());
+        // bom resolved automatically
+
+        QTextStream streamDst( &fileDst );
+        streamDst.setCodec(m_codecForCvs->codec());
+        streamDst.setGenerateByteOrderMark(m_codecForCvs->bom());
+
+        // sanitize table-data
+        m_tableDataSanitizer->sanitize( streamSrc, streamDst, m_codecForCvs );
+
+        // close files
+        fileSrc.close();
+        fileDst.close();
     }
 
     return true;
@@ -547,13 +614,11 @@ void TableDefSetting::setTableDataTargets(QStringList *newTargets)
 
 void TableDefSetting::determineCodecForProject()
 {
-    // TableDef is saved with UTF-16LE in xml format
-    // so we have to convert ONLY codec.
     if (!m_codecForProject)
     {
         m_codecForProject = new CodecInfo(this);
-        m_codecForProject->setCodec( QTextCodec::codecForName("UTF-16LE") );
-        m_codecForProject->setBom( true );
+        m_codecForProject->setCodec( QTextCodec::codecForName("UTF-8") );
+        m_codecForProject->setBom( false );
         m_codecForProject->setLineEnd("\r\n");
     }
 }

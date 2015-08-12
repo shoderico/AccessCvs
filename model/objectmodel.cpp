@@ -533,6 +533,21 @@ bool ObjectModel::executeImport()
 
     // for InBoth
     {
+        // for InBoth_Same : must be first
+        {
+            ObjectItems targets;
+            getItems(&targets, InBoth_Same, selectedOnly, false/*modifiedOnly*/);
+
+            copyFromFileSystemToTempDir(&targets);  // InBoth_Same      :       :               :
+            desanitizeTempDir(&targets);            // InBoth_Same      :       :               :
+            importFromTempDirToProject(&targets);   // InBoth_Same      : BLOCK : Dirty Project : need one-more step? like confirm
+
+            // smart-refresh : post-process
+            QDateTime currentTime = QDateTime::currentDateTime();
+            updateFileTimeInTempDir(&targets, currentTime, AllDifferenceTypes);     // for smart refresh, update filetime of TempFile if imported
+            updateItemsExportDate  (&targets, currentTime, AllDifferenceTypes);     // for smart-refresh, update exportDate too.
+            updateItemsCreateUpdateDateFromProject(&targets);                       // set create/updateDate from Access Object
+        }
         // for InBoth_Different
         {
             ObjectItems targets;
@@ -547,21 +562,6 @@ bool ObjectModel::executeImport()
             updateFileTimeInTempDir(&targets, currentTime, AllDifferenceTypes);     // for smart refresh, update filetime of TempFile if imported
             updateItemsExportDate  (&targets, currentTime, AllDifferenceTypes);     // for smart-refresh, update exportDate too.
             updateItemsDifference(&targets, Model::SameContents);                   // set isDifferent flag to SameContents
-            updateItemsCreateUpdateDateFromProject(&targets);                       // set create/updateDate from Access Object
-        }
-        // for InBoth_Same
-        {
-            ObjectItems targets;
-            getItems(&targets, InBoth_Same, selectedOnly, false/*modifiedOnly*/);
-
-            copyFromFileSystemToTempDir(&targets);  // InBoth_Same      :       :               :
-            desanitizeTempDir(&targets);            // InBoth_Same      :       :               :
-            importFromTempDirToProject(&targets);   // InBoth_Same      : BLOCK : Dirty Project : need one-more step? like confirm
-
-            // smart-refresh : post-process
-            QDateTime currentTime = QDateTime::currentDateTime();
-            updateFileTimeInTempDir(&targets, currentTime, AllDifferenceTypes);     // for smart refresh, update filetime of TempFile if imported
-            updateItemsExportDate  (&targets, currentTime, AllDifferenceTypes);     // for smart-refresh, update exportDate too.
             updateItemsCreateUpdateDateFromProject(&targets);                       // set create/updateDate from Access Object
         }
     }

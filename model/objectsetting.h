@@ -10,6 +10,8 @@
 
 class ProjectSetting;
 class SanitizeSetting;
+class TableDefSanitizeSetting;
+class TableDataSanitizeSetting;
 class CodecInfo;
 
 class QAxObject;
@@ -188,6 +190,8 @@ protected:
     virtual void determineCodecForProject();
     ComPtr<DAO::TableDefs> m_tableDefs;
     QStringList m_tableDataTargets;
+    TableDefSanitizeSetting *m_tableDefSanitizer;
+    TableDataSanitizeSetting *m_tableDataSanitizer;
 };
 
 class TableDataSetting : public ObjectSetting

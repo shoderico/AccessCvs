@@ -54,7 +54,9 @@ SOURCES += \
     util/progressnotifier.cpp \
     util/datachangedhelper.cpp \
     view/checkboxitemdelegate.cpp \
-    view/boolcheckboxitemdelegate.cpp
+    view/boolcheckboxitemdelegate.cpp \
+    model/tabledatasanitizesetting.cpp \
+    model/tabledefsanitizesetting.cpp
 
 HEADERS +=\
     addin/msaddndr.h \
@@ -86,7 +88,9 @@ HEADERS +=\
     util/progressnotifier.h \
     util/datachangedhelper.h \
     view/checkboxitemdelegate.h \
-    view/boolcheckboxitemdelegate.h
+    view/boolcheckboxitemdelegate.h \
+    model/tabledatasanitizesetting.h \
+    model/tabledefsanitizesetting.h
 
 DISTFILES += \
     addin/addin.def \
