@@ -7,6 +7,8 @@
 #include "objectitem.h"
 //#include "util/comptr.h"
 
+class QSettings;
+
 class ObjectSetting;
 //#include "objectsetting.h"
 
@@ -42,6 +44,10 @@ public slots:
     void exception(int code, const QString & source, const QString & desc, const QString & help);
 
 private:
+    QSettings *createSettings();
+    QString settingsFilePath() const;
+
+private:
     QMap<Model::ObjectType, ObjectSetting*> m_objectSettings;
     Access::Application *m_application;
     int m_projectType;
@@ -49,6 +55,8 @@ private:
 
     QString m_sourcePathName;
     QString m_tempPathName;
+
+    QString m_settingsFileName;
 };
 
 #endif // PROJECTSETTING_H

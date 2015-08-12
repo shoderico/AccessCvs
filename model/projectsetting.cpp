@@ -2,9 +2,11 @@
 
 #include <QDebug>
 #include <QSettings>
+#include <QDir>
 
 #include "officelib/officelib.h"
 #include "util/comptr.h"
+#include "util/fileutil.h"
 
 #include "objectsetting.h"
 
@@ -15,6 +17,8 @@ ProjectSetting::ProjectSetting(QObject *parent)
 {
     m_sourcePathName = "source";
     m_tempPathName   = "source_temp";
+
+    m_settingsFileName = "project.settings";
 
     m_objectSettings.insert( Model::TableDef,   new TableDefSetting (this) );
 //  m_objectSettings.insert( Model::TableData,  new TableDataSetting(this) );
@@ -87,29 +91,24 @@ QList<Model::ObjectType> ProjectSetting::objectTypes() const
 
 void ProjectSetting::loadSettings()
 {
-    // FIXME: settings' property (i.e. fileName, codec etc) must be as class level
-    QString iniFilename = m_projectPath + "\\.accesscvs";
-    QSettings settings(iniFilename, QSettings::IniFormat, this);
-    settings.setIniCodec( "UTF-8" );
-
+    QSettings *settings = createSettings();
     foreach ( Model::ObjectType objectType, m_objectSettings.keys() )
     {
-        m_objectSettings[ objectType ]->loadSettings( &settings );
+        m_objectSettings[ objectType ]->loadSettings( settings );
     }
+    delete settings;
 }
 
 
 void ProjectSetting::saveSettings()
 {
-    // FIXME: settings' property (i.e. fileName, codec etc) must be as class level
-    QString iniFilename = m_projectPath + "\\.accesscvs";
-    QSettings settings(iniFilename, QSettings::IniFormat, this);
-    settings.setIniCodec( "UTF-8" );
-
+    FileUtil::deleteFile( settingsFilePath() );
+    QSettings *settings = createSettings();
     foreach ( Model::ObjectType objectType, m_objectSettings.keys() )
     {
-        m_objectSettings[ objectType ]->saveSettings( &settings );
+        m_objectSettings[ objectType ]->saveSettings( settings );
     }
+    delete settings;
 }
 
 void ProjectSetting::exception(int code, const QString &source, const QString &desc, const QString &help)
@@ -117,5 +116,18 @@ void ProjectSetting::exception(int code, const QString &source, const QString &d
     // whatever connect() succeed, never called exception().
     //connect( application, SIGNAL(exception(int,QString,QString,QString)), this, SLOT(exception(int,QString,QString,QString)) );
     qDebug() << code << source << desc << help;
+}
+
+QSettings *ProjectSetting::createSettings()
+{
+    QDir(sourcePath()).mkpath(".");
+    QSettings *settings = new QSettings( settingsFilePath(), QSettings::IniFormat, this);
+    settings->setIniCodec( "UTF-8" );
+    return settings;
+}
+
+QString ProjectSetting::settingsFilePath() const
+{
+    return sourcePath() + "\\" + m_settingsFileName;
 }
 
