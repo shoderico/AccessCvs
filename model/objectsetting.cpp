@@ -1275,6 +1275,16 @@ QAxObject *ReportSetting::itemUnsafePtr(const QVariant &index)
     return m_objects->Item(index);
 }
 
+bool ReportSetting::importFromTempDirToProject(QAxObject *object, const QString &objectName)
+{
+    if ( !AccessDesignObjectSetting::importFromTempDirToProject(object, objectName) )
+        return false;
+
+    // FIXME: restore report properties
+
+    return true;
+}
+
 bool ReportSetting::afterSanitizeTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object);
