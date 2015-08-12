@@ -36,10 +36,10 @@ public:
     enum Column
     {
         NameColumn = 0,
+        HasDataColumn,
         InProjectColumn,
         InFileSystemColumn,
         DifferentColumn,
-        HasDataColumn,
         CreateDateColumn,
         UpdateDateColumn,
         ExportDateColumn,
