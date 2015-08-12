@@ -929,7 +929,6 @@ void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTi
 
 void ObjectModel::deleteItems(ObjectItems *allTargets)
 {
-    /* FIXME: require updates */
     ProgressNotifier mainProg(DeleteItemsProcess, this);
 
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
@@ -940,9 +939,12 @@ void ObjectModel::deleteItems(ObjectItems *allTargets)
         {
             subProg.next();
 
+            int row = m_items.indexOf( (*it) );
+            beginRemoveRows( QModelIndex(), row, row );
             m_mapItems[ objectType ].remove( (*it)->name() );
             m_items.removeAll( (*it) );
             delete (*it);
+            endRemoveRows();
         }
     }
 }
