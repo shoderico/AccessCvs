@@ -235,8 +235,10 @@ public:
     explicit AccessDesignObjectSetting(ProjectSetting *parent);
     virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
     virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
+
 protected:
     virtual void determineCodecForProject();
+    virtual bool afterSanitizeTempDir(QAxObject* object, const QString &objectName);
     SanitizeSetting *m_sanitizer;
 };
 

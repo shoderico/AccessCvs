@@ -991,7 +991,8 @@ bool AccessDesignObjectSetting::sanitizeTempDir(QAxObject *object, const QString
     m_sanitizer->sanitize( streamSrc, streamDstDesign, streamDstModule, m_codecForCvs );
 
 
-    // TODO: add post process for subclasses.
+    // post process for subclasses.
+    afterSanitizeTempDir(object, objectName);
 
 
     // close files
@@ -1162,6 +1163,13 @@ void AccessDesignObjectSetting::determineCodecForProject()
 
         m_codecForProject->setLineEnd( "\r\n" );
     }
+}
+
+bool AccessDesignObjectSetting::afterSanitizeTempDir(QAxObject *object, const QString &objectName)
+{
+    Q_UNUSED(object)
+    Q_UNUSED(objectName)
+    return true;
 }
 
 
