@@ -13,7 +13,7 @@ class SanitizeSetting : public QObject
 public:
     explicit SanitizeSetting(QObject *parent = 0);
 
-    void sanitize(QTextStream &stSrc, QTextStream &stOutDesign, QTextStream &stOutModule, CodecInfo *codecDst);
+    void sanitize(QTextStream &streamSrc, QTextStream &streamDstDesign, QTextStream &streamDstModule, CodecInfo *codecDst);
 
 private:
     QRegularExpression reBlock;
