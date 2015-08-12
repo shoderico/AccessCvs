@@ -1,5 +1,6 @@
 #include "sanitizesetting.h"
 
+#include <QDebug>
 #include <QRegularExpression>
 
 #include "util/codecinfo.h"
@@ -124,8 +125,8 @@ void SanitizeSetting::sanitize(QTextStream &streamSrc, QTextStream &streamDstDes
             m_blockData[ elementName ] = binaryStr;
 //            if ( elementName == "PrtDevMode" )
 //            {
-////                //qDebug() << binaryStr;
-//                qDebug() << binaryStr.length(); // 3112
+//                qDebug() << "PrtDevMode" << binaryStr.length(); // 3112
+//                qDebug() << binaryStr;
 //            }
 
             if (isReport && isReportPositionBegin) { isReport = false; isReportPositionBegin = false; }
@@ -172,5 +173,16 @@ end_of_while:
         ;
     }
 
+}
+
+QByteArray SanitizeSetting::blockData(const QString &elementName)
+{
+    QByteArray data;
+    if ( m_blockData.contains(elementName) )
+    {
+        QString dataStr = m_blockData[ elementName ];
+        data = QByteArray::fromHex( dataStr.toLatin1() );
+    }
+    return data;
 }
 

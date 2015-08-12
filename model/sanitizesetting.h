@@ -16,6 +16,7 @@ public:
     ~SanitizeSetting();
 
     void sanitize(QTextStream &streamSrc, QTextStream &streamDstDesign, QTextStream &streamDstModule, CodecInfo *codecDst);
+    QByteArray blockData( const QString &elementName);
 
 private:
     QRegularExpression *m_reBlock;
