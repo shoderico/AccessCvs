@@ -16,7 +16,7 @@ ProjectSetting::ProjectSetting(QObject *parent)
     , m_projectType(-1)
 {
     m_sourcePathName = "source";
-    m_tempPathName   = "source_temp";
+    m_tempPathName   = ".accesscvs";
 
     m_settingsFileName = "project.settings";
 
