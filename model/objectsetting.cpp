@@ -301,7 +301,8 @@ bool TableDefSetting::isTargetObject(QAxObject *object) const
     DAO::TableDef *tableDef = dynamic_cast<DAO::TableDef*>(object);
     if (tableDef)
     {
-        return !tableDef->Name().startsWith("MSys") && tableDef->Connect().isEmpty();
+        QString name = tableDef->Name();
+        return !name.startsWith("MSys") && !name.startsWith("~") && tableDef->Connect().isEmpty();
     }
     return false;
 }
