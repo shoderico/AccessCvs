@@ -1069,10 +1069,11 @@ void ObjectModel::reloadAndMergeItems()
     // merged from Project
     for ( QList<ObjectItem*>::iterator it = itemsFromProject.begin(); it != itemsFromProject.end(); ++it )
     {
-        ObjectItem *item = (*it);
-        items << item;
-        mapItems[ item->objectType() ].insert( item->name(), item );
-        item->setInFileSystem( Model::Absent );
+        // assume in project but NOT in fileSytem. merged later.
+        (*it)->setInFileSystem( Model::Absent );
+
+        items << (*it);
+        mapItems[ (*it)->objectType() ].insert( (*it)->name(), (*it) );
     }
     // merged from FileSystem
     for ( QList<ObjectItem*>::iterator it = itemsFromFileSystem.begin(); it != itemsFromFileSystem.end(); ++it )
@@ -1085,6 +1086,10 @@ void ObjectModel::reloadAndMergeItems()
         else
         {
             // insert new
+
+            // in fileSystem but NOT in project
+            (*it)->setInProject( Model::Absent );
+
             items << (*it);
             mapItems[ (*it)->objectType() ].insert( (*it)->name(), (*it) );
         }
