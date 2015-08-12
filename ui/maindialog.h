@@ -13,6 +13,7 @@ class Application;
 }
 
 class ObjectModel;
+class ObjectProxyModel;
 
 class IDispatch;
 
@@ -45,6 +46,7 @@ private:
     Ui::MainDialog *ui;
     Access::Application *m_application;
     ObjectModel *m_model;
+    ObjectProxyModel *m_proxyModel;
 };
 
 #endif // MAINDIALOG_H

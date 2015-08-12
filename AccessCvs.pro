@@ -56,7 +56,8 @@ SOURCES += \
     view/checkboxitemdelegate.cpp \
     view/boolcheckboxitemdelegate.cpp \
     model/tabledatasanitizesetting.cpp \
-    model/tabledefsanitizesetting.cpp
+    model/tabledefsanitizesetting.cpp \
+    model/objectproxymodel.cpp
 
 HEADERS +=\
     addin/msaddndr.h \
@@ -90,7 +91,8 @@ HEADERS +=\
     view/checkboxitemdelegate.h \
     view/boolcheckboxitemdelegate.h \
     model/tabledatasanitizesetting.h \
-    model/tabledefsanitizesetting.h
+    model/tabledefsanitizesetting.h \
+    model/objectproxymodel.h
 
 DISTFILES += \
     addin/addin.def \

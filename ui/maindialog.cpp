@@ -5,6 +5,7 @@
 
 #include "model/objectmodel.h"
 #include "model/objectitem.h"
+#include "model/objectproxymodel.h"
 
 #include "view/checkboxitemdelegate.h"
 #include "view/boolcheckboxitemdelegate.h"
@@ -28,8 +29,10 @@ MainDialog::MainDialog(IDispatch *application, QWidget *parent) :
 
 
     m_model = new ObjectModel(this);
+    m_proxyModel = new ObjectProxyModel(this);
+    m_proxyModel->setSourceModel(m_model);
 
-    ui->treeView->setModel(m_model);
+    ui->treeView->setModel(m_proxyModel);
     ui->treeView->setIndentation(0);
     ui->treeView->setItemDelegateForColumn( ObjectModel::InProjectColumn,     new CheckBoxItemDelegate() );
     ui->treeView->setItemDelegateForColumn( ObjectModel::InFileSystemColumn,  new CheckBoxItemDelegate() );
@@ -42,6 +45,9 @@ MainDialog::MainDialog(IDispatch *application, QWidget *parent) :
     ui->treeView->setColumnWidth(ObjectModel::CreateDateColumn, 150);
     ui->treeView->setColumnWidth(ObjectModel::UpdateDateColumn, 150);
     ui->treeView->setColumnWidth(ObjectModel::ExportDateColumn, 150);
+
+    ui->treeView->setSortingEnabled(true);
+    ui->treeView->sortByColumn(ObjectModel::NameColumn, Qt::AscendingOrder);
 
     connect( ui->okButton,     SIGNAL(clicked(bool)), this, SLOT(accept()) );
     connect( ui->cancelButton, SIGNAL(clicked(bool)), this, SLOT(reject()) );
