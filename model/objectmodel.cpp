@@ -210,7 +210,7 @@ bool ObjectModel::setData(const QModelIndex &index, const QVariant &value, int r
 
 void ObjectModel::saveSettigs()
 {
-    // FIXME: save settings
+    // save settings
     ProjectSetting setting(this);
     ObjectSetting *os;
     setting.initialize(m_application);
@@ -1091,7 +1091,7 @@ void ObjectModel::reloadAndMergeItems()
     }
 
 
-    /*FIXME:require updates more smartly */
+    // TODO: require updates more smartly
     beginResetModel();
 
     // delete local-item from member  if not exist in new-items
@@ -1220,7 +1220,6 @@ void ObjectModel::importFromTempDirToProject(ObjectItems *allTargets)
             ObjectItem *item = targets[ (*it) ];
             if (item->inProject() == Model::Present)
             {
-                // FIXME: form/report/macro/module : makes error?
                 ComPtr<QAxObject> object = os->itemUnsafePtr( (*it) );
                 os->importFromTempDirToProject(object.ptr(), (*it));
             }
@@ -1436,72 +1435,6 @@ void ObjectModel::deleteFromTempDir(ObjectItems *allTargets)
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void ObjectModel::addItem(ObjectItem *item)
-{
-    /*FIXME: unused*/
-
-    if ( m_mapItems[ item->objectType() ].contains( item->name() ) )
-    {
-        // already exists.
-        // so we must merge.
-        ObjectItem *itemInList = m_mapItems[ item->objectType() ].value( item->name() );
-
-        //TODO: object existent merge logic must be function.
-
-        itemInList->setInProject(
-                    (itemInList->inProject() == Model::Present || item->inProject() == Model::Present) ? Model::Present :
-                    (itemInList->inProject() == Model::Absent  || item->inProject() == Model::Absent ) ? Model::Absent  :
-                                                                                                         Model::OE_Unchecked );
-        itemInList->setInFileSystem(
-                    (itemInList->inFileSystem() == Model::Present || item->inFileSystem() == Model::Present) ? Model::Present :
-                    (itemInList->inFileSystem() == Model::Absent  || item->inFileSystem() == Model::Absent ) ? Model::Absent  :
-                                                                                                               Model::OE_Unchecked );
-
-        itemInList->setCreateDate(   item      ->createDate().isValid() ? item      ->createDate()
-                                 : ( itemInList->createDate().isValid() ? itemInList->createDate()
-                                 : QDateTime() ) );
-        itemInList->setUpdateDate(   item      ->updateDate().isValid() ? item      ->updateDate()
-                                 : ( itemInList->updateDate().isValid() ? itemInList->updateDate()
-                                 : QDateTime() ) );
-        // and delete 'item' object.
-        delete item;
-    }
-    else
-    {
-        m_items << item;
-        m_mapItems[ item->objectType() ].insert( item->name(), item );
-    }
-}
-
-void ObjectModel::clearTempDir()
-{
-    /*FIXME: unused*/
-    ProjectSetting setting(this);
-    setting.initialize(m_application);
-
-    QDir tempDir( setting.tempPath() );
-    if (tempDir.exists())
-    {
-        tempDir.removeRecursively();
-        tempDir.mkpath(".");
-    }
-}
 
 void ObjectModel::mergeItemProperties(ObjectItem *itemSrc, ObjectItem *itemDst)
 {

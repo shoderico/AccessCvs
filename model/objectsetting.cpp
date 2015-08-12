@@ -30,35 +30,6 @@ ObjectSetting::ObjectSetting(ProjectSetting *parent)
     m_codecForCvs->setLineEnd("\r\n");
 }
 
-//QString ObjectSetting::tempFilePathInTempDir(const QString &objectName)
-//{
-//    return filePath(TempDir, TempFile, objectName);
-//}
-
-//QString ObjectSetting::designFilePathInTempDir(const QString &objectName)
-//{
-//    return filePath(TempDir, DesignFile, objectName);
-//}
-
-//QString ObjectSetting::moduleFilePathInTempDir(const QString &objectName)
-//{
-//    return filePath(TempDir, ModuleFile, objectName);
-//}
-
-//QString ObjectSetting::tempFilePathInSourceDir(const QString &objectName)
-//{
-//    return filePath(SourceDir, TempFile, objectName);
-//}
-
-//QString ObjectSetting::designFilePathInSourceDir(const QString &objectName)
-//{
-//    return filePath(SourceDir, DesignFile, objectName);
-//}
-
-//QString ObjectSetting::moduleFilePathInSourceDir(const QString &objectName)
-//{
-//    return filePath(SourceDir, ModuleFile, objectName);
-//}
 
 QString ObjectSetting::sourceObjectPath() const
 {
@@ -399,9 +370,6 @@ bool TableDefSetting::exportFromProjectToTempDir(QAxObject *object, const QStrin
 
 bool TableDefSetting::importFromTempDirToProject(QAxObject *object, const QString &objectName)
 {
-    Q_UNUSED(object)
-    Q_UNUSED(objectName)
-
     if (object)
     {
         // table is already exists. so we need to delete first
@@ -570,7 +538,7 @@ QAxObject *TableDefSetting::itemUnsafePtr(const QVariant &index)
 
 void TableDefSetting::loadSettings(QSettings *settings)
 {
-    // FIXME: load settings
+    // FIXME: groupName, keyName must be class level
     settings->beginGroup("TableDef");
     {
         m_tableDataTargets.clear();
@@ -589,7 +557,7 @@ void TableDefSetting::loadSettings(QSettings *settings)
 
 void TableDefSetting::saveSettings(QSettings *settings)
 {
-    // FIXME: save settings
+    // FIXME: groupName, keyName must be class level
     settings->beginGroup("TableDef");
     {
         settings->beginWriteArray("TableData");
@@ -1119,8 +1087,6 @@ bool AccessDesignObjectSetting::desanitizeTempDir(QAxObject *object, const QStri
 
 void AccessDesignObjectSetting::determineCodecForProject()
 {
-
-
     if (!m_codecForProject)
     {
         bool isUcs2 = true;

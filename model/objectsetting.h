@@ -40,30 +40,13 @@ class ObjectSetting : public QObject
 public:
     explicit ObjectSetting(ProjectSetting *parent = 0);
 
-
     virtual bool isTargetObject(QAxObject *object) const = 0;
 
     Model::ObjectType objectType() const { return m_objectType; }
-//    int accessObjectType() const { return m_accessObjectType; } // unused
 
-//    QString objectPathName() const { return m_objectPathName; } // unused
-//    QString containerName() const { return m_containerName; } // unused
-
-//    QString tempFileExtension()   const { return m_tempFileExtension; } // unused
-//    QString designFileExtension() const { return m_designFileExtension; } // unused
-//    QString moduleFileExtension() const { return m_moduleFileExtension; } // unused
     QString existCheckExtension() const { return m_existCheckExtension; }
 
 public:
-    // file path
-//    QString tempFilePathInTempDir  (const QString &objectName); // ObjectSettings only    // unused
-//    QString designFilePathInTempDir(const QString &objectName); // ObjectSettings only    // unused
-//    QString moduleFilePathInTempDir(const QString &objectName); // ObjectSettings only    // unused
-
-//    QString tempFilePathInSourceDir  (const QString &objectName); // ObjectSettings only  // unused
-//    QString designFilePathInSourceDir(const QString &objectName); // ObjectSettings only  // unused
-//    QString moduleFilePathInSourceDir(const QString &objectName); // ObjectSettings only  // unused
-
     // object path
     QString sourceObjectPath() const;
     QString tempObjectPath() const; // ObjectSettings only
@@ -152,19 +135,6 @@ protected:
     CodecInfo *m_codecForProject;
 };
 
-/*
-    ObjectSetting
-        TableDefSetting
-        TableDataSetting
-        RelationSetting
-        QuerySetting
-        FormSetting
-        ReportSetting
-        MacroSetting
-        ModuleSetting
-        ReferenceSetting
-
-*/
 
 
 class TableDefSetting : public ObjectSetting

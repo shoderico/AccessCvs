@@ -208,8 +208,6 @@ private:
     ObjectItems m_mapItems;
     Access::Application *m_application;
 
-    void addItem( ObjectItem* item);
-    void clearTempDir();
     void mergeItemProperties(ObjectItem* itemSrc, ObjectItem* itemDst);
 };
 

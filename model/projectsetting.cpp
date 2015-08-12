@@ -87,25 +87,7 @@ QList<Model::ObjectType> ProjectSetting::objectTypes() const
 
 void ProjectSetting::loadSettings()
 {
-    // FIXME: load settings
-
-    /* FIXME: implement tabledata */
-    // strategry
-    //  * use QSettings to save/load settings
-    //  * root owner of QSettings is ProjectSetting
-    //  * each ObjectSetting has own setting-group i.e. 'Table'.
-    //  * TableSetting saves/loads table names to store/restore table data
-    //  * In UI, table-data checkbox represents to be store data or not.
-    //      * these are saved into QSettings.
-    //  * QSettings contents must be editable by user ( must be text format ).
-    //  * QSettings file must be handled properly by CVS.
-    //  * ObjectItem has a property for table-data handling, boolen value.
-    //      * Table-specific property.
-    //  * Save timing
-    //      * setData()
-    //  * Load timing
-    //      * reloadAndMerge...()
-
+    // FIXME: settings' property (i.e. fileName, codec etc) must be as class level
     QString iniFilename = m_projectPath + "\\.accesscvs";
     QSettings settings(iniFilename, QSettings::IniFormat, this);
     settings.setIniCodec( "UTF-8" );
@@ -119,8 +101,7 @@ void ProjectSetting::loadSettings()
 
 void ProjectSetting::saveSettings()
 {
-    // FIXME: save settings
-
+    // FIXME: settings' property (i.e. fileName, codec etc) must be as class level
     QString iniFilename = m_projectPath + "\\.accesscvs";
     QSettings settings(iniFilename, QSettings::IniFormat, this);
     settings.setIniCodec( "UTF-8" );

@@ -17,7 +17,7 @@ ObjectItem::ObjectItem(QObject *parent)
 ObjectItem::ObjectItem(ObjectItem *object, QObject *parent)
     : QObject(parent)
 {
-    // FIXME: copy member
+    // copy member
     this->m_name = object->m_name;
 
     this->m_createDate = object->m_createDate;
