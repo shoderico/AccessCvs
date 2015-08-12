@@ -70,6 +70,7 @@ bool ObjectSetting::copyFromTempDirToFileSystem(const QString &objectName)
     copyFile(TempDir, SourceDir, DesignFile, objectName);
     copyFile(TempDir, SourceDir, ModuleFile, objectName);
     copyFile(TempDir, SourceDir, DataFile,   objectName);
+    copyFile(TempDir, SourceDir, ReportPropFile, objectName);
     return true;
 }
 
@@ -79,6 +80,7 @@ bool ObjectSetting::copyFromFileSystemToTempDir(const QString &objectName)
     copyFile(SourceDir, TempDir, DesignFile, objectName);
     copyFile(SourceDir, TempDir, ModuleFile, objectName);
     copyFile(SourceDir, TempDir, DataFile,   objectName);
+    copyFile(SourceDir, TempDir, ReportPropFile, objectName);
     return true;
 }
 
@@ -103,6 +105,12 @@ bool ObjectSetting::compareTempDir(const QString &objectName, bool *pisDifferent
     {
         isSame = FileUtil::compare( filePath(TempDir,   DataFile, objectName),
                                     filePath(SourceDir, DataFile, objectName) );
+    }
+    // report-prop
+    if (isSame && !m_reportPropFileExtension.isEmpty())
+    {
+        isSame = FileUtil::compare( filePath(TempDir,   ReportPropFile, objectName),
+                                    filePath(SourceDir, ReportPropFile, objectName) );
     }
 
     *pisDifferent = !isSame;
@@ -173,6 +181,7 @@ bool ObjectSetting::deleteCvsFileFromTempDir(const QString &objectName)
     deleteFile(TempDir, DesignFile, objectName);
     deleteFile(TempDir, ModuleFile, objectName);
     deleteFile(TempDir, DataFile,   objectName);
+    deleteFile(TempDir, ReportPropFile, objectName);
     return true;
 }
 
@@ -195,6 +204,7 @@ bool ObjectSetting::deleteAllFileFromSourceDir(const QString &objectName)
     deleteFile(SourceDir, DesignFile, objectName);
     deleteFile(SourceDir, ModuleFile, objectName);
     deleteFile(SourceDir, DataFile,   objectName);
+    deleteFile(SourceDir, ReportPropFile, objectName);
     return true;
 }
 
@@ -258,6 +268,7 @@ QString ObjectSetting::fileExtension(ObjectSetting::FileType fileType) const
         case ModuleFile:    return m_moduleFileExtension;
         case DataTempFile:  return m_dataTempFileExtension;
         case DataFile:      return m_dataFileExtension;
+        case ReportPropFile: return m_reportPropFileExtension;
     }
     return QString();
 }
@@ -1218,6 +1229,8 @@ ReportSetting::ReportSetting(ProjectSetting *parent)
     m_designFileExtension = "rpt";
     m_moduleFileExtension = "bas";
     m_existCheckExtension = m_designFileExtension;
+
+    m_reportPropFileExtension = "rpp";
 }
 
 bool ReportSetting::prepareItemCollection()

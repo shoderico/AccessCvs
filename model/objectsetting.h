@@ -96,7 +96,8 @@ protected:
         DesignFile,
         ModuleFile,
         DataTempFile,
-        DataFile
+        DataFile,
+        ReportPropFile,
     };
     bool deleteCvsFileFromTempDir(const QString &objectName);
     bool deleteTempFileFromTempDir(const QString &objectName);
@@ -128,6 +129,7 @@ protected:
     QString m_existCheckExtension;
     QString m_dataTempFileExtension;
     QString m_dataFileExtension;
+    QString m_reportPropFileExtension;
 
     ProjectSetting *m_projectSetting;
 
