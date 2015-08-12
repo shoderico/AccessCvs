@@ -1552,55 +1552,35 @@ bool ReferenceSetting::exportFromProjectToTempDir(QAxObject *object, const QStri
     ComPtr<Access::References> references = m_projectSetting->application()->References();
     int nCount = references->Count();
 
-    //------------------------------------------------------------------------------------------
-    // Export References as Text
-    QStringList referenceLines;
+    QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
+    settings.setIniCodec( m_codecForCvs->codec() );
+
+    settings.beginWriteArray("Reference");
     for ( int i = 1 ; i <= nCount ; ++i )
     {
-        QString referenceLine = "";
-        QStringList refParts;
-
         ComPtr<Access::Reference> reference = references->Item( i );
 
-        bool refBuiltIn = reference->BuiltIn();
-        QString refName = reference->Name();
-        QString refGuid = reference->Guid();
+        settings.setArrayIndex( i-1 );
 
-//        int  refKind = reference->Kind();
-/*    enum vbext_RefKind {
-        vbext_rk_TypeLib        = 0,
-        vbext_rk_Project        = 1
-    };
-*/
-//        bool refBroken = reference->IsBroken();
+        QString name     = reference->Name();
+        bool    builtIn  = reference->BuiltIn();
+        QString guid     = reference->Guid();
+        int     major    = reference->Major();
+        int     minor    = reference->Minor();
+        QString fullPath = reference->FullPath();
 
-        refParts << refName;    //[0]
-        refParts << (refBuiltIn ? QString("1") : QString("0"));   //[1]
+        if ( !guid.isEmpty() )
+            fullPath = "";
 
-        if ( refGuid.length() > 0 )
-        {
-            QString refMajor = QString().setNum( reference->Major() );
-            QString refMinor = QString().setNum( reference->Minor() );
-            refParts << refGuid;    //[2]
-            refParts << refMajor;   //[3]
-            refParts << refMinor;   //[4]
-            refParts << "";         //[5]
-        }
-        else
-        {
-            // references of types mdb,accdb,mde etc don't have a GUID
-            QString fullPath = reference->FullPath();
-            refParts << "";         //[2]
-            refParts << "";         //[3]
-            refParts << "";         //[4]
-            refParts << fullPath;   //[5]
-        }
+        settings.setValue( "BuiltIn",  builtIn );
+        settings.setValue( "Name",     name );
+        settings.setValue( "Guid",     guid );
+        settings.setValue( "Major",    major );
+        settings.setValue( "Minor",    minor );
+        settings.setValue( "FullPath", fullPath );
 
-        referenceLine = refParts.join(',');
-        referenceLines << referenceLine;
     }
-    // write contents to file
-    FileUtil::saveToFile(referenceLines.join( m_codecForCvs->lineEnd() ), filePath(TempDir, TempFile, m_objectName), m_codecForCvs );
+    settings.endArray();
 
     return true;
 }
@@ -1609,6 +1589,9 @@ bool ReferenceSetting::importFromTempDirToProject(QAxObject *object, const QStri
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
+
+    if ( !QFile( filePath(TempDir, TempFile, m_objectName) ).exists())
+        return true;
 
     ComPtr<Access::References> references = m_projectSetting->application()->References();
 
@@ -1627,37 +1610,39 @@ bool ReferenceSetting::importFromTempDirToProject(QAxObject *object, const QStri
         }
     }
 
-    // add references
-    {
-        QStringList referenceLines = FileUtil::loadAsStringList( filePath(TempDir, TempFile, m_objectName), m_codecForCvs );
-        int nCount = referenceLines.count();
-        for ( int i = 0 ; i < nCount ; ++i )
-        {
-            QString referenceLine = referenceLines[ i ];
-            QStringList refParts = referenceLine.split(',');
 
-            QString refName     =   refParts[ 0 ];
-            bool    refBuiltIn  = ( refParts[ 1 ] == "1" );
-            QString refGUID     =   refParts[ 2 ];
-            int     refMajor    =   refParts[ 3 ].toInt();
-            int     refMinor    =   refParts[ 4 ].toInt();
-            QString refFullPath =   refParts[ 5 ];
-            if ( !refBuiltIn )
+    QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
+    settings.setIniCodec( m_codecForCvs->codec() );
+
+    // add references
+    int nCount = settings.beginReadArray("Reference");
+    for ( int i = 1 ; i <= nCount ; ++i )
+    {
+        settings.setArrayIndex( i-1 );
+
+        QString name     = settings.value("Name").toString();   Q_UNUSED(name)
+        bool    builtIn  = settings.value("BuiltIn").toBool();
+        QString guid     = settings.value("Guid").toString();
+        int     major    = settings.value("Major").toInt();
+        int     minor    = settings.value("Minor").toInt();
+        QString fullPath = settings.value("FullPath").toString();
+
+        if ( !builtIn )
+        {
+            if ( !guid.isEmpty() )
             {
-                if ( !refGUID.isEmpty() )
-                {
-                    ComPtr<Access::Reference> reference = references->AddFromGuid(refGUID, refMajor, refMinor);
-                    Q_UNUSED(reference)
-                    // NOTE: error 32813 may occur : The reference is already present in the access project
-                }
-                else
-                {
-                    ComPtr<Access::Reference> reference = references->AddFromFile(refFullPath);
-                    Q_UNUSED(reference)
-                }
+                ComPtr<Access::Reference> reference = references->AddFromGuid(guid, major, minor);
+                Q_UNUSED(reference)
+                // NOTE: error 32813 may occur : The reference is already present in the access project
+            }
+            else
+            {
+                ComPtr<Access::Reference> reference = references->AddFromFile(fullPath);
+                Q_UNUSED(reference)
             }
         }
     }
+    settings.endArray();
 
     return true;
 }
