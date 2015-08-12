@@ -21,23 +21,35 @@ SanitizeSetting::SanitizeSetting(QObject *parent) : QObject(parent)
     m_reBlock = new QRegularExpression();
     m_reBlock->setPattern(sPattern);
 
-    // line
+    // single-line
     sPattern = "^\\s*(?:";
     sPattern += "Checksum =";
-    sPattern += "|BaseInfo|NoSaveCTIWhenDisabled =1";
+    sPattern += "|NoSaveCTIWhenDisabled =1";
     sPattern += "|dbByte \"PublishToWeb\" =\"1\"";
     sPattern += "|PublishOption =1";
     sPattern += "|OverlapFlags =";
+    sPattern += "|LayoutCachedLeft =";
+    sPattern += "|LayoutCachedTop =";
+    sPattern += "|LayoutCachedWidth =";
+    sPattern += "|LayoutCachedHeight =";
     sPattern += ")";
-    m_reLine = new QRegularExpression();
-    m_reLine->setPattern(sPattern);
+    m_reSingleLine = new QRegularExpression();
+    m_reSingleLine->setPattern(sPattern);
+
+    // multi-line
+    sPattern = "^\\s*(?:";
+    sPattern += "BaseInfo";
+    sPattern += ")";
+    m_reMultiLine = new QRegularExpression();
+    m_reMultiLine->setPattern(sPattern);
 
 }
 
 SanitizeSetting::~SanitizeSetting()
 {
     delete m_reBlock;
-    delete m_reLine;
+    delete m_reSingleLine;
+    delete m_reMultiLine;
 }
 
 namespace
@@ -75,29 +87,47 @@ void SanitizeSetting::sanitize(QTextStream &streamSrc, QTextStream &streamDstDes
         else
             getLine = true;
 
-        QRegularExpressionMatch matchesLine;
+        QRegularExpressionMatch matchesSingleLine;
+        QRegularExpressionMatch matchesMultiLine;
         QRegularExpressionMatch matchesBlock;
 
 
-        // Line
-        matchesLine = m_reLine->match(txt);
-        if ( matchesLine.hasMatch() )
+        // SingleLine
+        matchesSingleLine = m_reSingleLine->match(txt);
+        if ( matchesSingleLine.hasMatch() )
         {
-            QRegularExpression reIndent;
-            reIndent.setPattern("^(\\s+)\\S");
-            QRegularExpressionMatch matches = reIndent.match(txt);
+            if (isReport && isReportPositionBegin) { isReport = false; isReportPositionBegin = false; }
+            goto end_of_while;
+        }
+
+        // MultiLine
+        matchesMultiLine = m_reMultiLine->match(txt);
+        if ( matchesMultiLine.hasMatch() )
+        {
+            QRegularExpression reIndentSame;
+            QRegularExpression reIndentLess;
+            reIndentSame.setPattern("^(\\s+)\\S");
+            QRegularExpressionMatch matches = reIndentSame.match(txt);
 
             if ( !matches.hasMatch() )
-                sPattern = "^";
+            {
+                sPattern = "^\\S";
+                reIndentSame.setPattern(sPattern);
+                reIndentLess.setPattern(sPattern);
+            }
             else
-                sPattern = "^" + matches.captured(1);
-            sPattern += "\\S";
-            reIndent.setPattern(sPattern);
+            {
+                sPattern = "^" + matches.captured(1) + "\\S";
+                reIndentSame.setPattern(sPattern);
+
+                sPattern = "^" + matches.captured(1).left( matches.captured(1).length() - 4 ) + "\\S";
+                reIndentLess.setPattern(sPattern);
+            }
 
             while ( !streamSrc.atEnd() )
             {
                 txt = streamSrc.readLine();
-                if (reIndent.match(txt).hasMatch())
+                if (reIndentSame.match(txt).hasMatch() || reIndentLess.match(txt).hasMatch())
                     break;
             }
             getLine = false;

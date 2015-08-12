@@ -20,7 +20,8 @@ public:
 
 private:
     QRegularExpression *m_reBlock;
-    QRegularExpression *m_reLine;
+    QRegularExpression *m_reSingleLine;
+    QRegularExpression *m_reMultiLine;
 
     QMap<QString, QString> m_blockData;
 };
