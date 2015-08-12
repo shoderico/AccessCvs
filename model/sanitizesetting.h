@@ -2,8 +2,9 @@
 #define SANITIZESETTING_H
 
 #include <QObject>
-#include <QRegularExpression>
 #include <QTextStream>
+
+class QRegularExpression;
 
 class CodecInfo;
 
@@ -12,12 +13,13 @@ class SanitizeSetting : public QObject
     Q_OBJECT
 public:
     explicit SanitizeSetting(QObject *parent = 0);
+    ~SanitizeSetting();
 
     void sanitize(QTextStream &streamSrc, QTextStream &streamDstDesign, QTextStream &streamDstModule, CodecInfo *codecDst);
 
 private:
-    QRegularExpression reBlock;
-    QRegularExpression reLine;
+    QRegularExpression *m_reBlock;
+    QRegularExpression *m_reLine;
 
     QMap<QString, QString> m_blockData;
 };

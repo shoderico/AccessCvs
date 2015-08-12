@@ -1,6 +1,6 @@
 #include "sanitizesetting.h"
 
-#include <QTextStream>
+#include <QRegularExpression>
 
 #include "util/codecinfo.h"
 
@@ -17,7 +17,8 @@ SanitizeSetting::SanitizeSetting(QObject *parent) : QObject(parent)
     sPattern += "|GUID|\"GUID\"|NameMap|dbLongBinary \"DOL\"";
     sPattern += ")";
     sPattern += " = Begin";
-    reBlock.setPattern(sPattern);
+    m_reBlock = new QRegularExpression();
+    m_reBlock->setPattern(sPattern);
 
     // line
     sPattern = "^\\s*(?:";
@@ -26,8 +27,15 @@ SanitizeSetting::SanitizeSetting(QObject *parent) : QObject(parent)
     sPattern += "|dbByte \"PublishToWeb\" =\"1\"";
     sPattern += "|PublishOption =1";
     sPattern += ")";
-    reLine.setPattern(sPattern);
+    m_reLine = new QRegularExpression();
+    m_reLine->setPattern(sPattern);
 
+}
+
+SanitizeSetting::~SanitizeSetting()
+{
+    delete m_reBlock;
+    delete m_reLine;
 }
 
 namespace
@@ -70,7 +78,7 @@ void SanitizeSetting::sanitize(QTextStream &streamSrc, QTextStream &streamDstDes
 
 
         // Line
-        matchesLine = reLine.match(txt);
+        matchesLine = m_reLine->match(txt);
         if ( matchesLine.hasMatch() )
         {
             QRegularExpression reIndent;
@@ -96,7 +104,7 @@ void SanitizeSetting::sanitize(QTextStream &streamSrc, QTextStream &streamDstDes
         }
 
         // Block
-        matchesBlock = reBlock.match(txt);
+        matchesBlock = m_reBlock->match(txt);
         if ( matchesBlock.hasMatch() )
         {
             QString elementName = matchesBlock.captured(1);
