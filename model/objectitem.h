@@ -154,6 +154,9 @@ public:
     void setGitStatusInWorkTree(const Model::GitStatus status) { m_gitStatusInWorkTree = status; }
 
 
+public:
+    bool isModified() const;
+
 protected:
     QString     m_name;
     QDateTime   m_createDate;

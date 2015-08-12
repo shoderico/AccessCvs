@@ -657,8 +657,7 @@ void ObjectModel::getItems(ObjectItems *pItems, ItemsTypes itemsType, SelectObje
 
         // skip non-modified item
         if (modifiedOnly &&
-                item->updateDate().isValid() && item->exportDate().isValid() &&
-                item->updateDate() <= item->exportDate() // not-modified
+                !item->isModified() // not-modified
                 )
             continue;
 
@@ -870,9 +869,7 @@ void ObjectModel::updateItemsDifferenceByFileTime(ObjectItems *allTargets)
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
             subProg.next();
-            if ( (*it)->inProject() && (*it)->inFileSystem() &&
-                 (*it)->updateDate().isValid() && (*it)->exportDate().isValid() &&
-                 (*it)->updateDate() <= (*it)->exportDate() )
+            if ( !(*it)->isModified() )
             {
                 (*it)->setDifferent( Model::SameContents );
                 helper.changed( m_items.indexOf( (*it) ) );

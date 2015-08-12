@@ -33,3 +33,10 @@ ObjectItem::ObjectItem(ObjectItem *object, QObject *parent)
     this->m_gitStatusInWorkTree = object->m_gitStatusInWorkTree;
 
 }
+
+bool ObjectItem::isModified() const
+{
+    return !( inProject() && inFileSystem() &&
+              updateDate().isValid() && exportDate().isValid() &&
+              updateDate() <= exportDate() );
+}
