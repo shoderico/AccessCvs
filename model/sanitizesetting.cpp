@@ -27,6 +27,7 @@ SanitizeSetting::SanitizeSetting(QObject *parent) : QObject(parent)
     sPattern += "|BaseInfo|NoSaveCTIWhenDisabled =1";
     sPattern += "|dbByte \"PublishToWeb\" =\"1\"";
     sPattern += "|PublishOption =1";
+    sPattern += "|OverlapFlags =";
     sPattern += ")";
     m_reLine = new QRegularExpression();
     m_reLine->setPattern(sPattern);
