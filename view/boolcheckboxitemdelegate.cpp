@@ -4,6 +4,8 @@
 #include <QApplication>
 #include <QKeyEvent>
 
+#include "model/objectmodel.h"
+
 BoolCheckBoxItemDelegate::BoolCheckBoxItemDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
 {
@@ -18,6 +20,12 @@ void BoolCheckBoxItemDelegate::paint(QPainter *painter, const QStyleOptionViewIt
     opt.text = "";
     QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
     style->drawControl(QStyle::CE_ItemViewItem, &opt, painter, opt.widget);
+
+    // table only
+    const QModelIndex index_type = index.model()->index( index.row(), ObjectModel::ObjectTypeColumn );
+    int objectType = index.model()->data(index_type).toInt();
+    if (objectType != Model::TableDef)
+        return;
 
     bool data = index.model()->data(index, Qt::DisplayRole).toBool();
     QStyleOptionButton checkboxstyle;
@@ -37,6 +45,12 @@ bool BoolCheckBoxItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *mo
 {
     Q_ASSERT(event);
     Q_ASSERT(model);
+
+    // table only
+    QModelIndex index_type = model->index( index.row(), ObjectModel::ObjectTypeColumn );
+    int objectType = model->data(index_type).toInt();
+    if (objectType != Model::TableDef)
+        return false;
 
     // make sure that the item is checkable
     Qt::ItemFlags flags = model->flags(index);
