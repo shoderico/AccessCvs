@@ -67,6 +67,21 @@ MainDialog::MainDialog(IDispatch *application, QWidget *parent) :
     connect( ui->selectModuleCheckBox,      SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
     connect( ui->selectReferenceCheckBox,   SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
 
+
+    connect( ui->showSelectedOnlyCheckBox, SIGNAL(stateChanged(int)), this, SLOT(showSelectedOnly(int)) );
+
+    connect( ui->showAllCheckBox,         SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
+    connect( ui->showTableCheckBox,       SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
+    connect( ui->showQueryCheckBox,       SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
+    connect( ui->showFormCheckBox,        SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
+    connect( ui->showReportCheckBox,      SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
+    connect( ui->showMacroCheckBox,       SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
+    connect( ui->showModuleCheckBox,      SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
+    connect( ui->showReferenceCheckBox,   SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
+
+
+
+
     connect( m_model, SIGNAL(progressStart(int,int)), this, SLOT(progressStart(int,int)) );
     connect( m_model, SIGNAL(progressChange(int,int)), this, SLOT(progressChange(int,int)) );
     connect( m_model, SIGNAL(progressEnd(int)), this, SLOT(progressEnd(int)) );
@@ -218,6 +233,44 @@ void MainDialog::selectCheckStateChanged(int state)
     {
         m_model->selectItemsByObjectType( ObjectModel::ReferenceObjectType, selected, false );
     }
+}
+
+void MainDialog::showCheckStateChanged(int state)
+{
+    QCheckBox *checkBox = qobject_cast<QCheckBox*>(sender());
+    if (!checkBox)
+        return;
+    bool selected = (state == Qt::Checked);
+
+    if (checkBox == ui->showAllCheckBox)
+    {
+        ui->showTableCheckBox->setChecked( selected );
+        ui->showQueryCheckBox->setChecked( selected );
+        ui->showFormCheckBox->setChecked( selected );
+        ui->showReportCheckBox->setChecked( selected );
+        ui->showMacroCheckBox->setChecked( selected );
+        ui->showModuleCheckBox->setChecked( selected );
+        ui->showReferenceCheckBox->setChecked( selected );
+    }
+
+    int objectTypes = 0;
+
+    if (ui->showTableCheckBox->checkState() == Qt::Checked)     objectTypes |= ObjectModel::TableObjectType;
+    if (ui->showQueryCheckBox->checkState() == Qt::Checked)     objectTypes |= ObjectModel::QueryObjectType;
+    if (ui->showFormCheckBox->checkState() == Qt::Checked)      objectTypes |= ObjectModel::FormObjectType;
+    if (ui->showReportCheckBox->checkState() == Qt::Checked)    objectTypes |= ObjectModel::ReportObjectType;
+    if (ui->showMacroCheckBox->checkState() == Qt::Checked)     objectTypes |= ObjectModel::MacroObjectType;
+    if (ui->showModuleCheckBox->checkState() == Qt::Checked)    objectTypes |= ObjectModel::ModuleObjectType;
+    if (ui->showReferenceCheckBox->checkState() == Qt::Checked) objectTypes |= ObjectModel::ReferenceObjectType;
+
+    m_proxyModel->setFilterShowObjectType( objectTypes );
+}
+
+void MainDialog::showSelectedOnly(int state)
+{
+    bool selected = (state == Qt::Checked);
+
+    m_proxyModel->setFilterShowSelectedOnly( selected );
 }
 
 void MainDialog::progressStart(int type, int count)

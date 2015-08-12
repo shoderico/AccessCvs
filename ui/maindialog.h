@@ -37,6 +37,8 @@ private slots:
 
     void selectAuto();
     void selectCheckStateChanged(int state);
+    void showCheckStateChanged(int state);
+    void showSelectedOnly(int state);
 
     void progressStart(int type, int count);
     void progressChange(int type, int value);
