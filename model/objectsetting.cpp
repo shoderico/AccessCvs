@@ -19,6 +19,9 @@
 #include "tabledefsanitizesetting.h"
 #include "tabledatasanitizesetting.h"
 
+#include <windows.h>
+#include <wingdi.h>
+
 ObjectSetting::ObjectSetting(ProjectSetting *parent)
     : QObject(parent)
     , m_projectSetting(parent)
@@ -1270,6 +1273,38 @@ QAxObject *ReportSetting::itemUnsafePtr(const QVariant &index)
     if (!m_objects.is())
         return 0;
     return m_objects->Item(index);
+}
+
+bool ReportSetting::afterSanitizeTempDir(QAxObject *object, const QString &objectName)
+{
+    Q_UNUSED(object);
+
+    // report properties
+
+    QByteArray dataString = m_sanitizer->blockData( "PrtDevMode" );
+
+    FileUtil::deleteFile( filePath( TempDir, ReportPropFile, objectName ) );
+
+    QSettings settings( filePath( TempDir, ReportPropFile, objectName ), QSettings::IniFormat, this );
+    settings.setIniCodec( m_codecForCvs->codec() );
+    settings.beginGroup("PrtDevMode");
+
+    if ( dataString.size() > 0 )
+    {
+        const void *pDataString = (const void*)dataString.constData();
+        const DEVMODEA *pdm = static_cast<const DEVMODEA*>(pDataString);
+
+        settings.setValue( "dmOrientation", pdm->dmOrientation );
+        settings.setValue( "dmPaperSize",   pdm->dmPaperSize );
+        settings.setValue( "dmPaperLength", pdm->dmPaperLength );
+        settings.setValue( "dmPaperWidth",  pdm->dmPaperWidth );
+        settings.setValue( "dmScale",       pdm->dmScale );
+        settings.setValue( "dmColor",       pdm->dmColor );
+
+    }
+    settings.endGroup();
+
+    return true;
 }
 
 

@@ -264,6 +264,7 @@ public:
     virtual int         itemCount();
     virtual QAxObject  *itemUnsafePtr(const QVariant &index);
 protected:
+    virtual bool afterSanitizeTempDir(QAxObject *object, const QString &objectName);
     ComPtr<Access::AllReports> m_objects;
 };
 
