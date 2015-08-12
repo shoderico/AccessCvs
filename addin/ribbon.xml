@@ -2,12 +2,12 @@
     <ribbon>
         <tabs>
             <tab id="CustomTab"
-                 label="Custom Tab">
+                 label="AccessCvs">
                 <group id="CustomGroup"
-                    label="Custom Group">
+                    label="Standard">
                     <button id="CustomButton"
                        size="large"
-                       label="Click me!"
+                       label="Manual"
                        onAction="ButtonClicked"
                        getImage="GetButtonImage"
                        />
