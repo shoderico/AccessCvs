@@ -133,7 +133,7 @@ void SanitizeSetting::sanitize(QTextStream &streamSrc, QTextStream &streamDstDes
             goto end_of_while;
         }
 
-        if ( txt.contains("Begin Report") )
+        if ( txt.contains("Begin Report") || txt.contains("Begin Form") )
         {
             isReport = true;
             isReportPositionBegin = false;
