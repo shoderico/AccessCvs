@@ -6,5 +6,6 @@
         <file>images/script.png</file>
         <file>images/table.png</file>
         <file>images/table_multiple.png</file>
+        <file>images/page_link.png</file>
     </qresource>
 </RCC>

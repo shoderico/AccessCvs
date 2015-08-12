@@ -125,6 +125,7 @@ QVariant ObjectModel::data(const QModelIndex &index, int role) const
             case Model::Report:     return QIcon( ":ui/images/report.png" );
             case Model::Macro:      return QIcon( ":ui/images/script.png" );
             case Model::Module:     return QIcon( ":ui/images/page.png" );
+            case Model::Reference:  return QIcon( ":ui/images/page_link.png" );
 
         default:
             break;
