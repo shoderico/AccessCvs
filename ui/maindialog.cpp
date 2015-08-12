@@ -27,6 +27,8 @@ MainDialog::MainDialog(IDispatch *application, QWidget *parent) :
 {
     ui->setupUi(this);
 
+    // FIXME: one-click action for auto-export, auto-import in Ribbon
+
 
     m_model = new ObjectModel(this);
     m_proxyModel = new ObjectProxyModel(this);
