@@ -79,7 +79,7 @@ void FileUtil::deleteFile(const QString &filePath)
         file.remove();
 }
 
-bool FileUtil::compare(const QString &filePathA, const QString &filePathB)
+bool FileUtil::compare(const QString &filePathA, const QString &filePathB, const bool isSameIfBothNonExist)
 {
     bool isSame = true; // default is same
 
@@ -87,17 +87,25 @@ bool FileUtil::compare(const QString &filePathA, const QString &filePathB)
     QFile fileB( filePathB );
 
     if (isSame && fileA.exists() != fileB.exists())
+    {
+        // one exists and other doesn't exists
         isSame = false;
+    }
 
-    if (isSame && fileA.exists())
+    if (isSame && fileA.exists() && fileB.exists())
     {
         // both exists
         isSame = FileUtil::compare( &fileA, &fileB );
     }
-    else if (isSame && !fileA.exists())
+    else if (isSame && !fileA.exists() && !fileB.exists())
     {
         // both NON-exists
-        // TODO: what to do ?
+        // caller calls this method only when correspongind extension is set.
+        // so the case when both NON-exists must be treat as DIFFERENT.
+        // BUT for optional files such as table-data, report-prop,
+        // both-Non-Exists is as SAME.
+        // so it must be specified by argument.
+        isSame = isSameIfBothNonExist;
     }
 
     return isSame;

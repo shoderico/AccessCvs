@@ -17,7 +17,7 @@ public:
     static void copyContents(const QString &filePathSrc, CodecInfo *codecSrc, const QString &filePathDst, CodecInfo *codecDst);
     static void deleteFile(const QString &filePath);
 
-    static bool compare(const QString &filePathA, const QString &filePathB);
+    static bool compare(const QString &filePathA, const QString &filePathB, const bool isSameIfBothNonExist);
     static bool compare(QFile *fileA, QFile *fileB);
 
     static QByteArray fileSignature(const QString &filePath);

@@ -389,10 +389,11 @@ bool ObjectModel::refreshItems()
         getItems(&targetsAll, InBoth, false/*selectedOnly*/, false/*modifiedOnly*/);
 
         // smart-refresh : pre-process
-        updateItemsDifferenceByFileTime(&targetsAll);                                          // for smart refresh, we assume the contents are the same if item's updateDate <= filetime of TempFile
+//        updateItemsDifferenceByFileTime(&targetsAll);                                       // for smart refresh, we assume the contents are the same if item's updateDate <= filetime of TempFile
+        updateItemsDifferenceAsIs(&targetsAll);                                             // for smart refresh, we set item to be SameContents if TempDir and SourceDir are exactly the same
 
         ObjectItems targets;
-        getItems(&targets, InBoth, false/*selectedOnly*/, true/*modifiedOnly*/);
+        getItems(&targets, InBoth_NotSame, false/*selectedOnly*/, false/*modifiedOnly*/);
 
         exportFromProjectToTempDir(&targets);   // InBoth           : BLOCK :                   :
         sanitizeTempDir(&targets);              // InBoth           :       :                   :
@@ -694,6 +695,13 @@ void ObjectModel::getItems(ObjectItems *pItems, ItemsTypes itemsType, SelectObje
                  item->isDifferent()  == Model::SameContents )
                 toBeInserted = item;
         }
+        if (!toBeInserted && itemsType & InBoth_NotSame)
+        {
+            if ( item->inProject()    == Model::Present &&
+                 item->inFileSystem() == Model::Present &&
+                 item->isDifferent()  != Model::SameContents )
+                toBeInserted = item;
+        }
         if (!toBeInserted && itemsType & InProjectOnly)
         {
             if ( item->inProject()    == Model::Present &&
@@ -870,6 +878,37 @@ void ObjectModel::updateItemsDifferenceByFileTime(ObjectItems *allTargets)
         {
             subProg.next();
             if ( !(*it)->isModified() )
+            {
+                (*it)->setDifferent( Model::SameContents );
+                helper.changed( m_items.indexOf( (*it) ) );
+            }
+        }
+    }
+    if (helper.isChanged())
+        emit dataChanged( createIndex(helper.first(), DifferentColumn), createIndex(helper.last(), DifferentColumn) );
+}
+
+void ObjectModel::updateItemsDifferenceAsIs(ObjectItems *allTargets)
+{
+    DataChangedHelper helper( m_items.count() );
+    ProgressNotifier mainProg(UpdateItemsDifferenceAsIsProcess, this);
+    ProjectSetting setting(this);
+    ObjectSetting *os;
+    setting.initialize(m_application);
+
+    foreach (const Model::ObjectType &objectType, allTargets->keys() )
+    {
+        os = setting[ objectType ];
+
+        QList<ObjectItem*> items = allTargets->value( objectType ).values();
+        ProgressNotifier subProg(UpdateItemsDifferenceAsIsProcess, items.count(), this);
+        for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
+        {
+            subProg.next();
+
+            bool isDifferent;
+            os->compareTempDir( (*it)->name(), &isDifferent );
+            if ( !isDifferent )
             {
                 (*it)->setDifferent( Model::SameContents );
                 helper.changed( m_items.indexOf( (*it) ) );

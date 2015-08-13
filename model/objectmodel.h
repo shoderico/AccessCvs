@@ -80,9 +80,10 @@ public:
         InBoth           = 1,
         InBoth_Different = 2,
         InBoth_Same      = 4,
-        InProjectOnly    = 8,
-        InFileSystemOnly = 16,
-        AllItems         = 31,
+        InBoth_NotSame   = 8,
+        InProjectOnly    = 16,
+        InFileSystemOnly = 32,
+        AllItems         = 63,
     };
     Q_DECLARE_FLAGS(ItemsTypes, ItemsType)
 
@@ -120,6 +121,7 @@ public:
     void updateItemsInFileSystem(ObjectItems *allTargets, Model::ObjectExistence existence);
     void updateItemsDifference(ObjectItems *allTargets, Model::ObjectDifference difference);
     void updateItemsDifferenceByFileTime(ObjectItems *allTargets);
+    void updateItemsDifferenceAsIs(ObjectItems *allTargets);
     void updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets);
 
 
@@ -194,6 +196,7 @@ public:
         UpdateItemsInProjectProcess,
         UpdateItemsInFileSystemProcess,
         UpdateItemsDifferenceProcess,
+        UpdateItemsDifferenceAsIsProcess,
         DeleteItemsProcess,
         UpdateItemsCreateUpdateDateFromProjectProcess,
     };

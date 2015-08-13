@@ -95,25 +95,29 @@ bool ObjectSetting::compareTempDir(const QString &objectName, bool *pisDifferent
     if (isSame && !m_designFileExtension.isEmpty())
     {
         isSame = FileUtil::compare( filePath(TempDir,   DesignFile, objectName),
-                                    filePath(SourceDir, DesignFile, objectName) );
+                                    filePath(SourceDir, DesignFile, objectName), false/*isSameIfBothNonExist*/ );
     }
     // module
     if (isSame && !m_moduleFileExtension.isEmpty())
     {
         isSame = FileUtil::compare( filePath(TempDir,   ModuleFile, objectName),
-                                    filePath(SourceDir, ModuleFile, objectName) );
+                                    filePath(SourceDir, ModuleFile, objectName), false/*isSameIfBothNonExist*/ );
     }
     // data
     if (isSame && !m_dataFileExtension.isEmpty())
     {
+        // We specify isSameIfBothNonExist is true.
+        // This looks like wrong because isSameIfBothNonExist value must be determined by hasData.
+        // but when hasData() is changed, we clear all files in TempDir. Therefore treat as Not-Same.
+
         isSame = FileUtil::compare( filePath(TempDir,   DataFile, objectName),
-                                    filePath(SourceDir, DataFile, objectName) );
+                                    filePath(SourceDir, DataFile, objectName), true/*isSameIfBothNonExist*/ );
     }
     // report-prop
     if (isSame && !m_reportPropFileExtension.isEmpty())
     {
         isSame = FileUtil::compare( filePath(TempDir,   ReportPropFile, objectName),
-                                    filePath(SourceDir, ReportPropFile, objectName) );
+                                    filePath(SourceDir, ReportPropFile, objectName), false/*isSameIfBothNonExist*/ );
     }
 
     *pisDifferent = !isSame;
@@ -1291,32 +1295,37 @@ bool ReportSetting::importFromTempDirToProject(QAxObject *object, const QString 
     // PrtDevMode
     settings.beginGroup("PrtDevMode");
     {
-        // open target report in design view
-        ComPtr<Access::DoCmd> doCmd = m_projectSetting->application()->DoCmd();
-        doCmd->OpenReport( objectName, Access::acViewDesign );
-        ComPtr<Access::Reports> reports = m_projectSetting->application()->Reports();
-        ComPtr<Access::Report> report = reports->Item( objectName );
+        bool hasPrtDevMode = settings.value("hasPrtDevMode", false).toBool();
 
-        // retreive PrtDevMode
-        QByteArray prtDevModeDataSrc = report->PrtDevMode().toByteArray();
+        if ( hasPrtDevMode )
+        {
+            // open target report in design view
+            ComPtr<Access::DoCmd> doCmd = m_projectSetting->application()->DoCmd();
+            doCmd->OpenReport( objectName, Access::acViewDesign );
+            ComPtr<Access::Reports> reports = m_projectSetting->application()->Reports();
+            ComPtr<Access::Report> report = reports->Item( objectName );
 
-        // consturct new PrtDevMode
-        DEVMODEA dm;
-        mempcpy( &dm, (const void*)prtDevModeDataSrc.constData(), sizeof(dm) );
-        dm.dmOrientation = settings.value("dmOrientation", DMORIENT_PORTRAIT).toInt();
-        dm.dmPaperSize   = settings.value("dmPaperSize",   DMPAPER_A4).toInt();
-        dm.dmPaperLength = settings.value("dmPaperLength", 0).toInt(); // FIXME: need meaningful default value
-        dm.dmPaperWidth  = settings.value("dmPaperWidth",  0).toInt(); // FIXME: need meaningful default value
-        dm.dmScale       = settings.value("dmScale",       100).toInt();
-        dm.dmColor       = settings.value("dmColor",       DMCOLOR_COLOR).toInt();
+            // retreive PrtDevMode
+            QByteArray prtDevModeDataSrc = report->PrtDevMode().toByteArray();
 
-        QByteArray prtDevModeDataDst( (const char *)&dm, sizeof(dm) );
+            // consturct new PrtDevMode
+            DEVMODEA dm;
+            mempcpy( &dm, (const void*)prtDevModeDataSrc.constData(), sizeof(dm) );
+            dm.dmOrientation = settings.value("dmOrientation", DMORIENT_PORTRAIT).toInt();
+            dm.dmPaperSize   = settings.value("dmPaperSize",   DMPAPER_A4).toInt();
+            dm.dmPaperLength = settings.value("dmPaperLength", 0).toInt(); // FIXME: need meaningful default value
+            dm.dmPaperWidth  = settings.value("dmPaperWidth",  0).toInt(); // FIXME: need meaningful default value
+            dm.dmScale       = settings.value("dmScale",       100).toInt();
+            dm.dmColor       = settings.value("dmColor",       DMCOLOR_COLOR).toInt();
 
-        // set new PrtDevMode to report
-        report->SetPrtDevMode( prtDevModeDataDst );
+            QByteArray prtDevModeDataDst( (const char *)&dm, sizeof(dm) );
 
-        // save report
-        doCmd->Close( Access::acReport, objectName, Access::acSaveYes );
+            // set new PrtDevMode to report
+            report->SetPrtDevMode( prtDevModeDataDst );
+
+            // save report
+            doCmd->Close( Access::acReport, objectName, Access::acSaveYes );
+        }
     }
     settings.endGroup();
 
@@ -1344,6 +1353,7 @@ bool ReportSetting::afterSanitizeTempDir(QAxObject *object, const QString &objec
             const void *pprtDevModeData = (const void*)prtDevModeData.constData();
             const DEVMODEA *pdm = static_cast<const DEVMODEA*>(pprtDevModeData);
 
+            settings.setValue( "hasPrtDevMode", true );
             settings.setValue( "dmOrientation", pdm->dmOrientation );
             settings.setValue( "dmPaperSize",   pdm->dmPaperSize );
             settings.setValue( "dmPaperLength", pdm->dmPaperLength );
@@ -1351,6 +1361,10 @@ bool ReportSetting::afterSanitizeTempDir(QAxObject *object, const QString &objec
             settings.setValue( "dmScale",       pdm->dmScale );
             settings.setValue( "dmColor",       pdm->dmColor );
 
+        }
+        else
+        {
+            settings.setValue( "hasPrtDevMode", false );
         }
     }
     settings.endGroup();
