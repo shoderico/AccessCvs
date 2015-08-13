@@ -26,6 +26,13 @@ include(../QtSolutions/qtwinmigrate/src/qtwinmigrate.pri)
 DEFINES += ACCESSCVS_LIBRARY
 DEFINES += QT_MESSAGELOGCONTEXT
 
+# dynamic link
+LIBS        += -L$$PWD/../LibQGit2/install/lib/ -lqgit2.dll
+LIBS        += -L$$PWD/../LibQGit2/install/lib/ -lgit2.dll
+INCLUDEPATH +=   $$PWD/../LibQGit2/install/include
+DEPENDPATH  +=   $$PWD/../LibQGit2/install/include
+
+
 SOURCES += \
     addin/msaddndr_i.c \
     addin/addinmain.cpp \

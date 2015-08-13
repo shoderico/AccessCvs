@@ -1,8 +1,10 @@
 #include "gitmanager.h"
 
 #include "model/projectsetting.h"
-#include <QMessageBox>
+#include "qgit2.h"
 
+#include <QMessageBox>
+#include <QPointer>
 #include <QDir>
 
 
@@ -28,7 +30,25 @@ void GitManager::init()
         return;
     }
 
-    // FIXME: git init setting.projectPath()
+    // git init setting.projectPath()
+    QString repoPath = setting.projectPath();
+    QPointer<LibQGit2::Repository> repo;
+    repo = new LibQGit2::Repository();
+    bool succeed = false;
+    try
+    {
+        repo->init(repoPath, false);
+        succeed = true;
+    }
+    catch (const LibQGit2::Exception& ex)
+    {
+        QMessageBox::warning(0, tr(""), ex.what());
+    }
+
+    if (succeed)
+    {
+        QMessageBox::information(0, tr(""), tr("git init succeed!"));
+    }
 }
 
 void GitManager::gitIgnore()
