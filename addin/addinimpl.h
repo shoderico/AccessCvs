@@ -91,8 +91,8 @@ public:
 private:
     ITypeInfo *m_pTypeInfo;
 
-    IDispatch *m_pApplication;
-    IDispatch *m_pAddInInst;
+    IDispatch *m_applicationIDisp;
+    IDispatch *m_addInInstIDisp;
 
 //    MainDialog *m_pDlg;
     QWinWidget *m_winWidget;

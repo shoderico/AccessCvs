@@ -141,13 +141,13 @@ HRESULT AddInImpl::OnConnection(IDispatch *Application, ext_ConnectMode ConnectM
     if ( !Application )
         return E_POINTER;
 
-    m_pApplication = Application;
-    m_pApplication->AddRef();
+    m_applicationIDisp = Application;
+    m_applicationIDisp->AddRef();
 
-    m_pAddInInst = AddInInst;
-    m_pAddInInst->AddRef();
+    m_addInInstIDisp = AddInInst;
+    m_addInInstIDisp->AddRef();
 
-    m_gitManager = new GitManager(m_pApplication, this);
+    m_gitManager = new GitManager(m_applicationIDisp, this);
 
     // If we are connecting during startup, we should wait for OnStartupComplete
     // before modifying the user-interface and prompting the user. Otherwise, we
@@ -192,13 +192,13 @@ HRESULT AddInImpl::OnDisconnection(ext_DisconnectMode RemoveMode, SAFEARRAY **cu
    }
 
    // Release the pointer...
-   if (NULL != m_pApplication) {
-      m_pApplication->Release();
-      m_pApplication = NULL;
+   if (NULL != m_applicationIDisp) {
+      m_applicationIDisp->Release();
+      m_applicationIDisp = NULL;
    }
-   if (NULL != m_pAddInInst) {
-      m_pAddInInst->Release();
-      m_pAddInInst = NULL;
+   if (NULL != m_addInInstIDisp) {
+      m_addInInstIDisp->Release();
+      m_addInInstIDisp = NULL;
    }
 
     return S_OK;
@@ -304,11 +304,11 @@ HRESULT AddInImpl::ButtonClicked(IDispatch *ribbonControl)
     {
         if (!m_winWidget)
         {
-            Access::_Application *applicationCoClass = new Access::_Application(m_pApplication);
+            Access::_Application *applicationCoClass = new Access::_Application(m_applicationIDisp);
             Access::Application application( applicationCoClass );
             m_winWidget = new QWinWidget( (HWND)application.hWndAccessApp() );
             m_winWidget->showCentered();
-            m_dlg = new MainDialog( m_pApplication, m_winWidget );
+            m_dlg = new MainDialog( m_applicationIDisp, m_winWidget );
             m_dlg->show();
         }
         else
