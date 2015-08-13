@@ -307,6 +307,7 @@ HRESULT AddInImpl::GetButtonImage(IDispatch *ribbonControl, IPictureDisp **pictu
 {
     HRESULT hr;
 
+    // Query interface for IRibbonControl
     IRibbonControl *rc = NULL;
     hr = ribbonControl->QueryInterface(IID_IRibbonControl, (void**)&rc);
     if ( FAILED(hr) || !rc )
@@ -314,21 +315,23 @@ HRESULT AddInImpl::GetButtonImage(IDispatch *ribbonControl, IPictureDisp **pictu
         qCritical() << "IRibbonControl QueryInterface is failed ";
         return hr;
     }
+
+    // retreive control-id
     BSTR bstrControlId = NULL;
     rc->get_Id( &bstrControlId );
     QString controlId = QString::fromWCharArray( bstrControlId );
     ::SysFreeString( bstrControlId );
     rc->Release();
-    //QMessageBox::information(0, QString(""), controlId);
 
+    // determine icon image path
     QString imagePath = ":/addin/";
-    if ( controlId == "CustomButton")
+    if ( controlId == "StandardManualButton")
         imagePath += "button.png";
 
+    // load icon picture
     IPictureDisp  *pd = ComUtil::loadPicture(imagePath);
     if ( pd )
         *picture = pd;
-
 
    return S_OK;
 }

@@ -1,11 +1,11 @@
 <customUI xmlns="http://schemas.microsoft.com/office/2006/01/customui">
     <ribbon>
         <tabs>
-            <tab id="CustomTab"
+            <tab id="AccessCvs"
                  label="AccessCvs">
                 <group id="CustomGroup"
                     label="Standard">
-                    <button id="CustomButton"
+                    <button id="StandardManualButton"
                        size="large"
                        label="Manual"
                        onAction="ButtonClicked"
