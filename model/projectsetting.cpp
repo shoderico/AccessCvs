@@ -64,6 +64,11 @@ bool ProjectSetting::isADP() const
     return (m_projectType == Access::acADP);
 }
 
+bool ProjectSetting::isProjectOpened() const
+{
+    return (isMDB() || isADP());
+}
+
 QString ProjectSetting::sourcePath() const
 {
     return m_projectPath + "\\" + m_sourcePathName;
@@ -72,6 +77,11 @@ QString ProjectSetting::sourcePath() const
 QString ProjectSetting::tempPath() const
 {
     return m_projectPath + "\\" + m_tempPathName;
+}
+
+QString ProjectSetting::projectPath() const
+{
+    return m_projectPath;
 }
 
 ObjectSetting *ProjectSetting::operator[](Model::ObjectType objectType)
