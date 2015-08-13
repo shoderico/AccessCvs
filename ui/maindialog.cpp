@@ -89,6 +89,16 @@ MainDialog::MainDialog(IDispatch *application, QWidget *parent) :
     connect( m_model, SIGNAL(progressChange(int,int)), this, SLOT(progressChange(int,int)) );
     connect( m_model, SIGNAL(progressEnd(int)), this, SLOT(progressEnd(int)) );
 
+    // default value
+    ui->showAllCheckBox->setChecked(true);
+    ui->showTableCheckBox->setChecked(true);
+    ui->showQueryCheckBox->setChecked(true);
+    ui->showFormCheckBox->setChecked(true);
+    ui->showReportCheckBox->setChecked(true);
+    ui->showMacroCheckBox->setChecked(true);
+    ui->showModuleCheckBox->setChecked(true);
+    ui->showReferenceCheckBox->setChecked(true);
+
 
     ui->progressBar->reset();
 
