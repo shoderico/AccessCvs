@@ -13,6 +13,10 @@ class QWinWidget;
 class MainDialog;
 class GitManager;
 
+namespace Access {
+class Application;
+} // namespace Access
+
 class AddInImpl
         : public QObject
         , public QAxAggregated
@@ -93,6 +97,8 @@ private:
 
     IDispatch *m_applicationIDisp;
     IDispatch *m_addInInstIDisp;
+
+    Access::Application *m_application;
 
 //    MainDialog *m_pDlg;
     QWinWidget *m_winWidget;

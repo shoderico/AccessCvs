@@ -15,11 +15,7 @@
 #include "git/gitmanager.h"
 
 
-#include "officelib/dao.h"
-#include "officelib/adodb.h"
-#include "officelib/office.h"
-#include "officelib/vbide.h"
-#include "officelib/access.h"
+#include "officelib/officelib.h"
 
 //#include <comdef.h>
 //_COM_SMARTPTR_TYPEDEF(ITypeInfo, __uuidof(ITypeInfo));
@@ -27,6 +23,9 @@
 
 AddInImpl::AddInImpl(QObject *parent)
     : QObject(parent)
+    , m_applicationIDisp(0)
+    , m_addInInstIDisp(0)
+    , m_application(0)
     , m_winWidget(0)
     , m_dlg(0)
     , m_gitManager(0)
@@ -147,6 +146,9 @@ HRESULT AddInImpl::OnConnection(IDispatch *Application, ext_ConnectMode ConnectM
     m_addInInstIDisp = AddInInst;
     m_addInInstIDisp->AddRef();
 
+    Access::_Application *_application = new Access::_Application(m_applicationIDisp/*, this*/);
+    m_application = new Access::Application(_application);
+
     m_gitManager = new GitManager(m_applicationIDisp, this);
 
     // If we are connecting during startup, we should wait for OnStartupComplete
@@ -189,6 +191,12 @@ HRESULT AddInImpl::OnDisconnection(ext_DisconnectMode RemoveMode, SAFEARRAY **cu
    {
        delete m_gitManager;
        m_gitManager = 0;
+   }
+
+   if (m_application)
+   {
+       delete m_application;
+       m_application = NULL;
    }
 
    // Release the pointer...
@@ -304,11 +312,9 @@ HRESULT AddInImpl::ButtonClicked(IDispatch *ribbonControl)
     {
         if (!m_winWidget)
         {
-            Access::_Application *applicationCoClass = new Access::_Application(m_applicationIDisp);
-            Access::Application application( applicationCoClass );
-            m_winWidget = new QWinWidget( (HWND)application.hWndAccessApp() );
+            m_winWidget = new QWinWidget( (HWND)m_application->hWndAccessApp() );
             m_winWidget->showCentered();
-            m_dlg = new MainDialog( m_applicationIDisp, m_winWidget );
+            m_dlg = new MainDialog( m_application, m_winWidget );
             m_dlg->show();
         }
         else

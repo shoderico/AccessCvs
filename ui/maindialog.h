@@ -22,7 +22,7 @@ class MainDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit MainDialog(IDispatch *application,  QWidget *parent = 0);
+    explicit MainDialog(Access::Application *application,  QWidget *parent = 0);
     ~MainDialog();
 public slots:
     void exception(int code, const QString & source, const QString & desc, const QString & help);

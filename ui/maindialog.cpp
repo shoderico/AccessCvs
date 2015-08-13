@@ -19,11 +19,11 @@
 
 using namespace Access;
 
-MainDialog::MainDialog(IDispatch *application, QWidget *parent) :
+MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::MainDialog)
 //  , m_pApplication( new Application(application, parent) )
-  , m_application(0)
+  , m_application(application)
 {
     ui->setupUi(this);
 
@@ -102,9 +102,6 @@ MainDialog::MainDialog(IDispatch *application, QWidget *parent) :
 
     ui->progressBar->reset();
 
-    Access::_Application *_application = new Access::_Application(application/*, this*/);
-    m_application = new Access::Application(_application);
-
 
     bool c;
     c = connect( m_application, SIGNAL(exception(int,QString,QString,QString)), this, SLOT(exception(int,QString,QString,QString)) );
@@ -147,7 +144,6 @@ MainDialog::~MainDialog()
         disconnect( m_application, SIGNAL(exception(int,QString,QString,QString)), this, SLOT(exception(int,QString,QString,QString)) );
         disconnect( m_application, SIGNAL(propertyChanged(QString)), this, SLOT(propertyChanged(QString)) );
         disconnect( m_application, SIGNAL(signal(QString,int,void*)), this, SLOT(signal(QString,int,void*)) );
-        delete m_application;
     }
 }
 
