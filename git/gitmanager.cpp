@@ -6,6 +6,9 @@
 #include <QMessageBox>
 #include <QPointer>
 #include <QDir>
+#include <QFile>
+#include <QTextStream>
+#include <QTextCodec>
 
 
 GitManager::GitManager(Access::Application *application, QObject *parent)
@@ -53,6 +56,37 @@ void GitManager::init()
 
 void GitManager::gitIgnore()
 {
+    // create .gitignore
 
+    ProjectSetting setting(this);
+    setting.initialize(m_application);
+    if (!setting.isProjectOpened())
+    {
+        QMessageBox::information(0, tr(""), tr("no project is opened!"));
+        return;
+    }
+
+    QFile file( setting.projectPath() + "\\.gitignore" );
+    if (file.exists())
+    {
+
+    }
+    else
+    {
+        file.open( QIODevice::WriteOnly );
+        QTextStream stream( &file );
+        stream.setCodec( QTextCodec::codecForName("UTF-8") );
+        stream.setGenerateByteOrderMark( false );
+
+        stream << ".accesscvs" << "\r\n";
+        stream << "*.mdb" << "\r\n";
+        stream << "*.ldb" << "\r\n";
+        stream << "*.accdb" << "\r\n";
+        stream << "*.accdb" << "\r\n";
+        stream << "*.adp" << "\r\n";
+
+        file.close();
+        QMessageBox::information(0, tr(""), tr(".gitignore created succeessfully!"));
+    }
 }
 
