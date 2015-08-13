@@ -1530,7 +1530,7 @@ ReferenceSetting::ReferenceSetting(ProjectSetting *parent)
     m_objectPathName      = "";
     m_containerName       = "";
 
-    m_tempFileExtension   = "csv";
+    m_tempFileExtension   = "ref";
     m_designFileExtension = m_tempFileExtension;
     m_moduleFileExtension = "";
     m_existCheckExtension = m_tempFileExtension;
