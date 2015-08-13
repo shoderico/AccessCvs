@@ -1,9 +1,8 @@
 #include "gitmanager.h"
 
-GitManager::GitManager(IDispatch *application, QObject *parent)
+GitManager::GitManager(Access::Application *application, QObject *parent)
     : QObject(parent)
-    , m_applicationIDisp(application)
-    , m_addInInstIDisp(0)
+    , m_application(application)
 {
 }
 
