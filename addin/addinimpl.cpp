@@ -74,8 +74,6 @@ long AddInImpl::queryInterface(const QUuid &iid, void **iface)
 // IDispatch
 HRESULT AddInImpl::GetTypeInfoCount(UINT *pctinfo)
 {
-    //QMessageBox::information(0, QString(""), QString("GetTypeInfoCount"));
-
     if ( pctinfo == NULL )
         return E_INVALIDARG;
 
@@ -85,7 +83,6 @@ HRESULT AddInImpl::GetTypeInfoCount(UINT *pctinfo)
 
 HRESULT AddInImpl::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo)
 {
-    //QMessageBox::information(0, QString(""), QString("GetTypeInfo"));
     Q_UNUSED(lcid); //Q_UNUSED(iTInfo);  Q_UNUSED(ppTInfo);
 
     if ( ppTInfo == NULL )
@@ -103,7 +100,6 @@ HRESULT AddInImpl::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo)
 
 HRESULT AddInImpl::GetIDsOfNames(const IID &riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId)
 {
-    //QMessageBox::information(0, QString(""), QString("GetIDsOfNames"));
     Q_UNUSED(riid); Q_UNUSED(lcid); // Q_UNUSED(rgszNames); Q_UNUSED(cNames); Q_UNUSED(lcid); Q_UNUSED(rgDispId);
 
     return m_pTypeInfo->GetIDsOfNames(rgszNames, cNames, rgDispId);
@@ -111,7 +107,6 @@ HRESULT AddInImpl::GetIDsOfNames(const IID &riid, LPOLESTR *rgszNames, UINT cNam
 
 HRESULT AddInImpl::Invoke(DISPID dispIdMember, const IID &riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
 {
-    //QMessageBox::information(0, QString(""), QString("Invoke"));
     Q_UNUSED(riid); Q_UNUSED(lcid); //Q_UNUSED(dispIdMember); Q_UNUSED(wFlags); Q_UNUSED(pDispParams); Q_UNUSED(pVarResult); Q_UNUSED(pExcepInfo); Q_UNUSED(puArgErr);
 
     return m_pTypeInfo->Invoke( static_cast<IRibbonCallback*>(this), dispIdMember, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr);
@@ -139,7 +134,6 @@ HRESULT AddInImpl::Invoke(DISPID dispIdMember, const IID &riid, LCID lcid, WORD 
  ******************************************************************/
 HRESULT AddInImpl::OnConnection(IDispatch *Application, ext_ConnectMode ConnectMode, IDispatch *AddInInst, SAFEARRAY **custom)
 {
-    //QMessageBox::information(0, QString(""), QString("OnConnection"));
     Q_UNUSED(Application); Q_UNUSED(ConnectMode); Q_UNUSED(AddInInst); Q_UNUSED(custom);
 
     if ( !Application )
@@ -170,7 +164,6 @@ HRESULT AddInImpl::OnConnection(IDispatch *Application, ext_ConnectMode ConnectM
  ******************************************************************/
 HRESULT AddInImpl::OnDisconnection(ext_DisconnectMode RemoveMode, SAFEARRAY **custom)
 {
-    //QMessageBox::information(0, QString(""), QString("OnDisconnection"));
     Q_UNUSED(RemoveMode); Q_UNUSED(custom);
 
     // If this is not because of host shutdown, make sure we have cleaned
@@ -226,7 +219,6 @@ HRESULT AddInImpl::OnAddInsUpdate(SAFEARRAY **custom)
  ******************************************************************/
 HRESULT AddInImpl::OnStartupComplete(SAFEARRAY **custom)
 {
-    //QMessageBox::information(0, QString(""), QString("OnStartupComplete"));
     Q_UNUSED(custom);
     return S_OK;
 }
@@ -239,7 +231,6 @@ HRESULT AddInImpl::OnStartupComplete(SAFEARRAY **custom)
  ******************************************************************/
 HRESULT AddInImpl::OnBeginShutdown(SAFEARRAY **custom)
 {
-    //QMessageBox::information(0, QString(""), QString("OnBeginShutdown"));
     Q_UNUSED(custom);
     return S_OK;
 }
@@ -254,7 +245,6 @@ HRESULT AddInImpl::OnBeginShutdown(SAFEARRAY **custom)
 // IRibbonExtensibility
 HRESULT AddInImpl::GetCustomUI(BSTR RibbonID, BSTR *RibbonXml)
 {
-    //QMessageBox::information(0, QString(""), QString("GetCustomUI"));
     Q_UNUSED(RibbonID);
 
     if (!RibbonXml)
@@ -282,7 +272,6 @@ HRESULT AddInImpl::GetCustomUI(BSTR RibbonID, BSTR *RibbonXml)
 // IRibbonCallback
 HRESULT AddInImpl::ButtonClicked(IDispatch *ribbonControl)
 {
-    //QMessageBox::information(0, QString(""), QString("ButtonClicked"));
     Q_UNUSED(ribbonControl);
 
     if (!m_winWidget)
