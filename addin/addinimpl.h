@@ -11,6 +11,7 @@
 
 class QWinWidget;
 class MainDialog;
+class GitManager;
 
 class AddInImpl
         : public QObject
@@ -96,6 +97,8 @@ private:
 //    MainDialog *m_pDlg;
     QWinWidget *m_winWidget;
     MainDialog *m_dlg;
+
+    GitManager *m_gitManager;
 };
 
 #endif // ADDINIMPL_H

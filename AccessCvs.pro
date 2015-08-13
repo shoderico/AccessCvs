@@ -57,7 +57,8 @@ SOURCES += \
     view/boolcheckboxitemdelegate.cpp \
     model/tabledatasanitizesetting.cpp \
     model/tabledefsanitizesetting.cpp \
-    model/objectproxymodel.cpp
+    model/objectproxymodel.cpp \
+    git/gitmanager.cpp
 
 HEADERS +=\
     addin/msaddndr.h \
@@ -92,7 +93,8 @@ HEADERS +=\
     view/boolcheckboxitemdelegate.h \
     model/tabledatasanitizesetting.h \
     model/tabledefsanitizesetting.h \
-    model/objectproxymodel.h
+    model/objectproxymodel.h \
+    git/gitmanager.h
 
 DISTFILES += \
     addin/addin.def \

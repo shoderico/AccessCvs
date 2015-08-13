@@ -3,7 +3,7 @@
         <tabs>
             <tab id="AccessCvs"
                  label="AccessCvs">
-                <group id="CustomGroup"
+                <group id="StandardGroup"
                     label="Standard">
                     <button id="StandardManualButton"
                        size="large"
@@ -11,6 +11,21 @@
                        onAction="ButtonClicked"
                        getImage="GetButtonImage"
                        />
+                </group>
+                <group id="GitGroup"
+                    label="Git">
+                    <button id="GitInitButton"
+                       size="normal"
+                       label="Init"
+                       onAction="ButtonClicked"
+                       getImage="GetButtonImage"
+                       />
+                   <button id="GitIgnoreButton"
+                      size="normal"
+                      label="GitIgnore"
+                      onAction="ButtonClicked"
+                      getImage="GetButtonImage"
+                      />
                 </group>
             </tab>
         </tabs>

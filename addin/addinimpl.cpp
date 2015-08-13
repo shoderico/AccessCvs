@@ -12,6 +12,7 @@
 
 #include "comutil.h"
 #include "ui/maindialog.h"
+#include "git/gitmanager.h"
 
 
 #include "officelib/dao.h"
@@ -28,6 +29,7 @@ AddInImpl::AddInImpl(QObject *parent)
     : QObject(parent)
     , m_winWidget(0)
     , m_dlg(0)
+    , m_gitManager(0)
 {
     HRESULT hr;
     ITypeLib *pTypeLib = NULL;
@@ -145,6 +147,8 @@ HRESULT AddInImpl::OnConnection(IDispatch *Application, ext_ConnectMode ConnectM
     m_pAddInInst = AddInInst;
     m_pAddInInst->AddRef();
 
+    m_gitManager = new GitManager(m_pApplication, this);
+
     // If we are connecting during startup, we should wait for OnStartupComplete
     // before modifying the user-interface and prompting the user. Otherwise, we
     // can call OnStartupComplete to do the work now...
@@ -179,6 +183,12 @@ HRESULT AddInImpl::OnDisconnection(ext_DisconnectMode RemoveMode, SAFEARRAY **cu
 
        delete m_winWidget;
        m_winWidget = 0;
+   }
+
+   if (m_gitManager)
+   {
+       delete m_gitManager;
+       m_gitManager = 0;
    }
 
    // Release the pointer...
@@ -272,21 +282,47 @@ HRESULT AddInImpl::GetCustomUI(BSTR RibbonID, BSTR *RibbonXml)
 // IRibbonCallback
 HRESULT AddInImpl::ButtonClicked(IDispatch *ribbonControl)
 {
-    Q_UNUSED(ribbonControl);
+    HRESULT hr;
 
-    if (!m_winWidget)
+    // Query interface for IRibbonControl
+    IRibbonControl *rc = NULL;
+    hr = ribbonControl->QueryInterface(IID_IRibbonControl, (void**)&rc);
+    if ( FAILED(hr) || !rc )
     {
-
-        Access::_Application *applicationCoClass = new Access::_Application(m_pApplication);
-        Access::Application application( applicationCoClass );
-        m_winWidget = new QWinWidget( (HWND)application.hWndAccessApp() );
-        m_winWidget->showCentered();
-        m_dlg = new MainDialog( m_pApplication, m_winWidget );
-        m_dlg->show();
+        qCritical() << "IRibbonControl QueryInterface is failed ";
+        return hr;
     }
-    else
+
+    // retreive control-id
+    BSTR bstrControlId = NULL;
+    rc->get_Id( &bstrControlId );
+    QString controlId = QString::fromWCharArray( bstrControlId );
+    ::SysFreeString( bstrControlId );
+    rc->Release();
+
+    if (controlId == "StandardManualButton")
     {
-        m_dlg->show();
+        if (!m_winWidget)
+        {
+            Access::_Application *applicationCoClass = new Access::_Application(m_pApplication);
+            Access::Application application( applicationCoClass );
+            m_winWidget = new QWinWidget( (HWND)application.hWndAccessApp() );
+            m_winWidget->showCentered();
+            m_dlg = new MainDialog( m_pApplication, m_winWidget );
+            m_dlg->show();
+        }
+        else
+        {
+            m_dlg->show();
+        }
+    }
+    else if (controlId == "GitInitButton")
+    {
+        m_gitManager->init();
+    }
+    else if (controlId == "GitIgnoreButton")
+    {
+        m_gitManager->gitIgnore();
     }
 
     return S_OK;
