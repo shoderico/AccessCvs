@@ -7,5 +7,9 @@
         <file>images/table.png</file>
         <file>images/table_multiple.png</file>
         <file>images/page_link.png</file>
+        <file>images/manual.png</file>
+        <file>images/setting.png</file>
+        <file>images/export.png</file>
+        <file>images/import.png</file>
     </qresource>
 </RCC>

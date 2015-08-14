@@ -322,6 +322,14 @@ HRESULT AddInImpl::ButtonClicked(IDispatch *ribbonControl)
             m_dlg->show();
         }
     }
+    else if (controlId == "StandardExportButton")
+    {
+
+    }
+    else if (controlId == "StandardImportButton")
+    {
+
+    }
     else if (controlId == "GitInitButton")
         m_gitManager->init();
     else if (controlId == "GitIgnoreButton")
@@ -355,9 +363,13 @@ HRESULT AddInImpl::GetButtonImage(IDispatch *ribbonControl, IPictureDisp **pictu
     rc->Release();
 
     // determine icon image path
-    QString imagePath = ":/addin/";
+    QString imagePath = ":/ui/images/";
     if ( controlId == "StandardManualButton")
-        imagePath += "button.png";
+        imagePath += "manual.png";
+    else if ( controlId == "StandardExportButton")
+        imagePath += "export.png";
+    else if ( controlId == "StandardImportButton")
+        imagePath += "import.png";
 
     // load icon picture
     IPictureDisp  *pd = ComUtil::loadPicture(imagePath);
