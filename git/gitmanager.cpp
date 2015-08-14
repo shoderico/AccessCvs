@@ -20,22 +20,12 @@ GitManager::GitManager(Access::Application *application, QObject *parent)
 
 void GitManager::init()
 {
-    ProjectSetting setting(this);
-    setting.initialize(m_application);
-    if (!setting.isProjectOpened())
-    {
-        QMessageBox::information(0, tr(""), tr("no project is opened!"));
-        return;
-    }
-
-    if ( QDir( setting.projectPath() + "\\.git" ).exists() )
-    {
-        QMessageBox::information(0, tr(""), tr("already initialized!"));
-        return;
-    }
+    QScopedPointer<ProjectSetting> setting( createSetting() );
+    if (!checkProjectOpened( setting.data() )) return;
+    if (!checkRepositoryNotInitialized( setting.data() )) return;
 
     // git init setting.projectPath()
-    QString repoPath = setting.projectPath();
+    QString repoPath = setting->projectPath();
     QPointer<LibQGit2::Repository> repo;
     repo = new LibQGit2::Repository();
     bool succeed = false;
@@ -67,15 +57,10 @@ void GitManager::gitIgnore()
     toBeIgnored << "*.laccdb";
     toBeIgnored << "*.adp";
 
-    ProjectSetting setting(this);
-    setting.initialize(m_application);
-    if (!setting.isProjectOpened())
-    {
-        QMessageBox::information(0, tr(""), tr("no project is opened!"));
-        return;
-    }
+    QScopedPointer<ProjectSetting> setting( createSetting() );
+    if (!checkProjectOpened( setting.data() )) return;
 
-    QFile file( setting.projectPath() + "\\.gitignore" );
+    QFile file( setting->projectPath() + "\\.gitignore" );
     if (file.exists())
     {
         file.open( QIODevice::ReadOnly );
@@ -128,23 +113,13 @@ bool GitManager::isSupportedSsh() const
 
 void GitManager::manageRemotes()
 {
-    ProjectSetting setting(this);
-    setting.initialize(m_application);
-    if (!setting.isProjectOpened())
-    {
-        QMessageBox::information(0, tr(""), tr("no project is opened!"));
-        return;
-    }
-
-    if ( !QDir( setting.projectPath() + "\\.git" ).exists() )
-    {
-        QMessageBox::information(0, tr(""), tr("project has not been initialized yet! git init first."));
-        return;
-    }
+    QScopedPointer<ProjectSetting> setting( createSetting() );
+    if (!checkProjectOpened(setting.data())) return;
+    if (!checkRepositoryInitialized(setting.data())) return;
 
     QPointer<LibQGit2::Repository> repo;
     repo = new LibQGit2::Repository();
-    repo->open( setting.projectPath() );
+    repo->open( setting->projectPath() );
 
     git_strarray remotes;
     if (0 > git_remote_list( &remotes,   repo->data() ) )
@@ -158,5 +133,42 @@ void GitManager::manageRemotes()
     QMessageBox::information(0, "", tr("remote count = %1\n%2").arg(list.count()).arg( list.join( "\n" ) ) );
 
     delete repo;
+}
+
+bool GitManager::checkProjectOpened(const ProjectSetting *setting)
+{
+    if (!setting->isProjectOpened())
+    {
+        QMessageBox::information(0, tr(""), tr("no project is opened!"));
+        return false;
+    }
+    return true;
+}
+
+bool GitManager::checkRepositoryInitialized(const ProjectSetting *setting)
+{
+    if ( !QDir( setting->projectPath() + "\\.git" ).exists() )
+    {
+        QMessageBox::information(0, tr(""), tr("project has not been initialized yet! git init first."));
+        return false;
+    }
+    return true;
+}
+
+bool GitManager::checkRepositoryNotInitialized(const ProjectSetting *setting)
+{
+    if ( QDir( setting->projectPath() + "\\.git" ).exists() )
+    {
+        QMessageBox::information(0, tr(""), tr("already initialized!"));
+        return false;
+    }
+    return true;
+}
+
+ProjectSetting *GitManager::createSetting()
+{
+    ProjectSetting *setting = new ProjectSetting(this);
+    setting->initialize(m_application);
+    return setting;
 }
 

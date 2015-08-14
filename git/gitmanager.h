@@ -8,6 +8,8 @@ namespace Access {
 class Application;
 } // namespace Access
 
+class ProjectSetting;
+
 class GitManager : public QObject
 {
     Q_OBJECT
@@ -20,8 +22,15 @@ public:
 
     void manageRemotes();
 
+    bool checkProjectOpened(const ProjectSetting *setting);
+    bool checkRepositoryInitialized(const ProjectSetting *setting);
+    bool checkRepositoryNotInitialized(const ProjectSetting *setting);
+
 signals:
 public slots:
+
+private:
+    ProjectSetting *createSetting();
 
 private:
     Access::Application *m_application;
