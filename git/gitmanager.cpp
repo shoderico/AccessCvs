@@ -1,6 +1,7 @@
 #include "gitmanager.h"
 
 #include "model/projectsetting.h"
+#include "util/fileutil.h"
 #include "qgit2.h"
 
 #include <QMessageBox>
@@ -56,7 +57,15 @@ void GitManager::init()
 
 void GitManager::gitIgnore()
 {
-    // create .gitignore
+    // create or update .gitignore
+
+    QStringList toBeIgnored;
+    toBeIgnored << ".accesscvs";
+    toBeIgnored << "*.mdb";
+    toBeIgnored << "*.ldb";
+    toBeIgnored << "*.accdb";
+    toBeIgnored << "*.laccdb";
+    toBeIgnored << "*.adp";
 
     ProjectSetting setting(this);
     setting.initialize(m_application);
@@ -69,7 +78,33 @@ void GitManager::gitIgnore()
     QFile file( setting.projectPath() + "\\.gitignore" );
     if (file.exists())
     {
+        file.open( QIODevice::ReadOnly );
+        QTextStream stream( &file );
+        QTextCodec *codec = stream.codec();
+        bool bom = stream.generateByteOrderMark();
+        QString allContents = stream.readAll();
+        file.close();
 
+        QString endOfLine = "\n";
+        if ( allContents.contains("\r\n") )
+            endOfLine = "\r\n";
+        QStringList contents = allContents.split( endOfLine );
+
+        foreach (const QString &ignore, toBeIgnored )
+        {
+            if ( !contents.contains( ignore ))
+                contents.append( ignore );
+        }
+
+        QFile fileDst( file.fileName() );
+        fileDst.open( QIODevice::WriteOnly );
+        QTextStream streamDst( &fileDst );
+        streamDst.setCodec( codec );
+        streamDst.setGenerateByteOrderMark( bom );
+
+        streamDst << contents.join( endOfLine );
+        fileDst.close();
+        QMessageBox::information(0, tr(""), tr(".gitignore updated succeessfully!"));
     }
     else
     {
@@ -78,12 +113,8 @@ void GitManager::gitIgnore()
         stream.setCodec( QTextCodec::codecForName("UTF-8") );
         stream.setGenerateByteOrderMark( false );
 
-        stream << ".accesscvs" << "\r\n";
-        stream << "*.mdb" << "\r\n";
-        stream << "*.ldb" << "\r\n";
-        stream << "*.accdb" << "\r\n";
-        stream << "*.accdb" << "\r\n";
-        stream << "*.adp" << "\r\n";
+        foreach( const QString &ignore, toBeIgnored )
+            stream << ignore << "\r\n";
 
         file.close();
         QMessageBox::information(0, tr(""), tr(".gitignore created succeessfully!"));

@@ -16,6 +16,7 @@ public:
 
     void init();
     void gitIgnore();
+    bool isSupportedSsh() const;
 
 signals:
 public slots:
