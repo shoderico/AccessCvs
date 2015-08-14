@@ -22,7 +22,6 @@ using namespace Access;
 MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::MainDialog)
-//  , m_pApplication( new Application(application, parent) )
   , m_application(application)
 {
     ui->setupUi(this);
@@ -111,29 +110,7 @@ MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
     c = connect( m_application, SIGNAL(signal(QString,int,void*)), this, SLOT(signal(QString,int,void*)) );
     if (!c) QMessageBox::information(this, "", "connect signal failed");
 
-
-
     m_model->setApplication(m_application);
-//    m_model->loadFromProject();
-//    m_model->loadFromFileSystem();
-
-//    m_application->OpenAccessProject("C:\\test.mdb"); // Access dialog is shwon
-    const QMetaObject *metaObject = m_application->metaObject();
-    QStringList methods;
-    for(int i = metaObject->methodOffset(); i < metaObject->methodCount(); ++i)
-        methods << QString::fromLatin1(metaObject->method(i).methodSignature());
-
-//    QMessageBox::information(this, "", methods.join("\n"));
-
-//    m_model->exportToTempDir();
-
-
-//    ComPtr<Access::CurrentProject> currentProject = m_pApplication->CurrentProject();
-
-//    Access::CurrentProject* currentProject = m_pApplication->CurrentProject();
-//    currentProject->clear();
-//    delete currentProject;
-
 }
 
 MainDialog::~MainDialog()
@@ -160,7 +137,7 @@ void MainDialog::propertyChanged(const QString &name)
 void MainDialog::signal(const QString &name, int argc, void *argv)
 {
     Q_UNUSED(argc) Q_UNUSED(argv)
-            QMessageBox::information(this, "", QString("propertyChanged ") + name);
+    QMessageBox::information(this, "", QString("propertyChanged ") + name);
 }
 
 void MainDialog::clearCache()

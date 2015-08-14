@@ -15,7 +15,6 @@ class Application;
 class ObjectModel;
 class ObjectProxyModel;
 
-class IDispatch;
 
 class MainDialog : public QDialog
 {
