@@ -21,6 +21,7 @@ public:
     bool isSupportedSsh() const;
 
     void manageRemotes();
+    void pull();
 
     bool checkProjectOpened(const ProjectSetting *setting);
     bool checkRepositoryInitialized(const ProjectSetting *setting);

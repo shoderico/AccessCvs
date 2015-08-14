@@ -32,6 +32,12 @@
                      onAction="ButtonClicked"
                      getImage="GetButtonImage"
                      />
+                 <button id="GitPullButton"
+                    size="normal"
+                    label="Pull"
+                    onAction="ButtonClicked"
+                    getImage="GetButtonImage"
+                    />
                 </group>
             </tab>
         </tabs>

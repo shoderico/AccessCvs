@@ -323,17 +323,13 @@ HRESULT AddInImpl::ButtonClicked(IDispatch *ribbonControl)
         }
     }
     else if (controlId == "GitInitButton")
-    {
         m_gitManager->init();
-    }
     else if (controlId == "GitIgnoreButton")
-    {
         m_gitManager->gitIgnore();
-    }
     else if (controlId == "GitManageRemotesButton")
-    {
         m_gitManager->manageRemotes();
-    }
+    else if (controlId == "GitPullButton")
+        m_gitManager->pull();
 
     return S_OK;
 }

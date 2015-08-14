@@ -10,6 +10,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QTextCodec>
+#include <QRegularExpression>
 
 
 GitManager::GitManager(Access::Application *application, QObject *parent)
@@ -133,6 +134,127 @@ void GitManager::manageRemotes()
     QMessageBox::information(0, "", tr("remote count = %1\n%2").arg(list.count()).arg( list.join( "\n" ) ) );
 
     delete repo;
+}
+int cred_acquire_cb(git_cred **out,
+        const char * url,
+        const char * username_from_url,
+        unsigned int allowed_types,
+        void *payload)
+{
+    Q_UNUSED(url)
+    Q_UNUSED(username_from_url)
+    Q_UNUSED(allowed_types)
+    Q_UNUSED(payload)
+
+    char username[128] = {0};
+    char password[128] = {0};
+
+    return git_cred_userpass_plaintext_new(out, username, password);
+}
+
+void GitManager::pull()
+{
+    if (!isSupportedSsh())
+    {
+        QMessageBox::information(0, "", tr("ssh is NOT supported"));
+        return;
+    }
+
+    QScopedPointer<ProjectSetting> setting( createSetting() );
+    if (!checkProjectOpened(setting.data())) return;
+    if (!checkRepositoryInitialized(setting.data())) return;
+
+    QScopedPointer<LibQGit2::Repository> repo( new LibQGit2::Repository() );
+    repo->open( setting->projectPath() );
+
+    LibQGit2::Reference headRef = repo->head();
+    LibQGit2::Reference head = headRef.resolve();
+    QString headFullName = head.name();
+
+    git_reference *upstream = NULL;
+    git_branch_upstream( &upstream, headRef.data() );
+
+    QString upstreamFullName = git_reference_name( upstream );
+
+    git_reference_free(upstream);
+
+    // headName     = refs/heads/           feature/***
+    // upstreamName = refs/remotes/ origin/ feature/***
+
+    QMessageBox::information(0, "", QString("headFullName name = %1, upstreamFullName = %2").arg( headFullName ).arg( upstreamFullName ) );
+
+    QString headName = headFullName.replace( QRegularExpression("^refs/heads/"), QString() );
+    QString upstreamName = upstreamFullName.replace( QRegularExpression("^refs/remotes/"), QString() ).replace( QRegularExpression("/"+headName+"$"), QString() );
+
+    QMessageBox::information(0, "", QString("headName name = %1, upstreamName = %2").arg( headName ).arg( upstreamName ) );
+
+//    QString remote;
+//    QString head;
+//    LibQGit2::Signature signature;
+//    QString message;
+//    repo->fetch( remote, head, signature, message );
+
+    QString privateKeyPath = "C:\\Users\\shoichiro\\.ssh\\id_rsa";
+    QString publicKeyPath  = "C:\\Users\\shoichiro\\.ssh\\id_rsa.pub";
+
+    git_remote *remote;
+    git_remote_lookup( &remote, repo->data(), "origin" );
+    QString remoteUrl = git_remote_url( remote );
+    QMessageBox::information(0,"",remoteUrl);
+
+
+    LibQGit2::Signature signature;
+    //LibQGit2::Credentials;
+//    LibQGit2::Remote rem;
+
+    git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
+    callbacks.credentials = cred_acquire_cb;
+    git_remote_set_callbacks( remote, &callbacks );
+    const git_transfer_progress *stats = git_remote_stats(remote);
+    git_remote_connect(remote, GIT_DIRECTION_FETCH);
+    git_remote_download(remote, NULL);
+
+    if (stats->local_objects > 0)
+    {
+
+    }
+    else
+    {
+
+    }
+    git_remote_disconnect(remote);
+    git_remote_free(remote);
+
+
+    bool succeed = false;
+    try
+    {
+        //repo->setRemoteCredentials(upstreamName, LibQGit2::Credentials::ssh(privateKeyPath, publicKeyPath, "git"));
+        repo->fetch(upstreamName, headName);
+        succeed = true;
+    }
+    catch (const LibQGit2::Exception& ex)
+    {
+        QMessageBox::warning(0, tr(""), ex.what());
+    }
+
+    if (!succeed) return;
+
+    QMessageBox::information(0, "", tr("fetch succeed!") );
+//    LibQGit2::OId headOId = head.target();
+//    LibQGit2::Tree headTree = repo->lookupTree( &headOId );
+
+//    git_branch_upstream( &upstream, headRef.data() );
+
+//    LibQGit2::Reference upstreamRef( upstream );
+//    LibQGit2::OId upstreamOId = upstreamRef.target();
+//    LibQGit2::Tree upstreamTree = repo->lookupTree( &upstreamOId );
+
+//    LibQGit2::Index index = repo->mergeTrees( &headTree, &upstreamTree);
+//    if (index.hasConflicts())
+//        ;
+
+
 }
 
 bool GitManager::checkProjectOpened(const ProjectSetting *setting)
