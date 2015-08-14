@@ -18,6 +18,8 @@ public:
     void gitIgnore();
     bool isSupportedSsh() const;
 
+    void manageRemotes();
+
 signals:
 public slots:
 

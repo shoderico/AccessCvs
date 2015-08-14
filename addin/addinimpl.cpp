@@ -330,6 +330,10 @@ HRESULT AddInImpl::ButtonClicked(IDispatch *ribbonControl)
     {
         m_gitManager->gitIgnore();
     }
+    else if (controlId == "GitManageRemotesButton")
+    {
+        m_gitManager->manageRemotes();
+    }
 
     return S_OK;
 }

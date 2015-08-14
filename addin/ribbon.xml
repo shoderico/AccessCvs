@@ -26,6 +26,12 @@
                       onAction="ButtonClicked"
                       getImage="GetButtonImage"
                       />
+                  <button id="GitManageRemotesButton"
+                     size="normal"
+                     label="Manage Remotes"
+                     onAction="ButtonClicked"
+                     getImage="GetButtonImage"
+                     />
                 </group>
             </tab>
         </tabs>

@@ -126,3 +126,37 @@ bool GitManager::isSupportedSsh() const
     return (git_libgit2_features() & GIT_FEATURE_SSH);
 }
 
+void GitManager::manageRemotes()
+{
+    ProjectSetting setting(this);
+    setting.initialize(m_application);
+    if (!setting.isProjectOpened())
+    {
+        QMessageBox::information(0, tr(""), tr("no project is opened!"));
+        return;
+    }
+
+    if ( !QDir( setting.projectPath() + "\\.git" ).exists() )
+    {
+        QMessageBox::information(0, tr(""), tr("project has not been initialized yet! git init first."));
+        return;
+    }
+
+    QPointer<LibQGit2::Repository> repo;
+    repo = new LibQGit2::Repository();
+    repo->open( setting.projectPath() );
+
+    git_strarray remotes;
+    if (0 > git_remote_list( &remotes,   repo->data() ) )
+        QMessageBox::information(0,tr(""), tr("git_remote_list failed"));
+
+    QStringList list;
+    for (size_t i = 0 ; i < remotes.count ; ++i)
+        list << QString( remotes.strings[i] );
+    git_strarray_free( &remotes );
+
+    QMessageBox::information(0, "", tr("remote count = %1\n%2").arg(list.count()).arg( list.join( "\n" ) ) );
+
+    delete repo;
+}
+
