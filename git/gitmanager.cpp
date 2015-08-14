@@ -51,7 +51,7 @@ void GitManager::init()
 
     if (succeed)
     {
-        QMessageBox::information(0, tr(""), tr("git init succeed!"));
+        QMessageBox::information(0, tr(""), tr("git init succeessfully!"));
     }
 }
 
