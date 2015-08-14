@@ -90,3 +90,8 @@ void GitManager::gitIgnore()
     }
 }
 
+bool GitManager::isSupportedSsh() const
+{
+    return (git_libgit2_features() & GIT_FEATURE_SSH);
+}
+
