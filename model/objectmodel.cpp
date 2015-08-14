@@ -906,6 +906,9 @@ void ObjectModel::updateItemsDifferenceAsIs(ObjectItems *allTargets)
         {
             subProg.next();
 
+            if ( (*it)->isModified() )
+                continue;
+
             bool isDifferent;
             os->compareTempDir( (*it)->name(), &isDifferent );
             if ( !isDifferent )
