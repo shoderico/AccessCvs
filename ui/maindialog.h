@@ -23,12 +23,28 @@ class MainDialog : public QDialog
 public:
     explicit MainDialog(Access::Application *application,  QWidget *parent = 0);
     ~MainDialog();
+
+    void showAsManual();
+    void showAsAutoExport();
+    void showAsAutoImport();
+    enum ShowMode
+    {
+        ManualMode,
+        AutoExportMode,
+        AutoImportMode,
+        UnkownMode,
+    };
+    Q_DECLARE_FLAGS(ShowModes, ShowMode)
+
 public slots:
     void exception(int code, const QString & source, const QString & desc, const QString & help);
     void	propertyChanged(const QString & name);
     void	signal(const QString & name, int argc, void * argv);
 
 private slots:
+    void onAccepted();
+    void onRejected();
+
     void clearCache();
     void refreshItems();
     void executeExport();
@@ -48,6 +64,11 @@ private:
     Access::Application *m_application;
     ObjectModel *m_model;
     ObjectProxyModel *m_proxyModel;
+    ShowModes m_showMode;
+
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(MainDialog::ShowModes)
+
 
 #endif // MAINDIALOG_H

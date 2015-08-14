@@ -34,12 +34,12 @@ void ActionManager::manual()
 
 void ActionManager::autoImport()
 {
-
+    m_dlg->showAsAutoImport();
 }
 
 void ActionManager::autoExport()
 {
-
+    m_dlg->showAsAutoExport();
 }
 
 void ActionManager::init()

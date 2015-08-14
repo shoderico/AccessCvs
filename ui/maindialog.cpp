@@ -23,6 +23,7 @@ MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::MainDialog)
   , m_application(application)
+  , m_showMode( ShowMode::UnkownMode )
 {
     ui->setupUi(this);
 
@@ -97,6 +98,7 @@ MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
     ui->showMacroCheckBox->setChecked(true);
     ui->showModuleCheckBox->setChecked(true);
     ui->showReferenceCheckBox->setChecked(true);
+    ui->showSelectedOnlyCheckBox->setChecked(true);
 
 
     ui->progressBar->reset();
@@ -111,6 +113,8 @@ MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
     if (!c) QMessageBox::information(this, "", "connect signal failed");
 
     m_model->setApplication(m_application);
+    m_proxyModel->setFilterShowObjectType( ObjectModel::AllObjectTypes );
+    m_proxyModel->setFilterShowSelectedOnly( true/*selected*/ );
 }
 
 MainDialog::~MainDialog()
@@ -122,6 +126,40 @@ MainDialog::~MainDialog()
         disconnect( m_application, SIGNAL(propertyChanged(QString)), this, SLOT(propertyChanged(QString)) );
         disconnect( m_application, SIGNAL(signal(QString,int,void*)), this, SLOT(signal(QString,int,void*)) );
     }
+}
+
+void MainDialog::showAsManual()
+{
+    m_showMode = ShowMode::ManualMode;
+    show();
+}
+
+void MainDialog::showAsAutoExport()
+{
+    m_showMode = ShowMode::AutoExportMode;
+    show();
+
+    m_model->refreshItems();
+    m_model->selectItemsForProcess( true/*selected*/, true/*resetSelection*/ );
+    m_proxyModel->setFilterShowObjectType( ObjectModel::AllObjectTypes );
+    m_proxyModel->setFilterShowSelectedOnly( true/*selected*/ );
+
+    if (m_proxyModel->rowCount() == 0)
+        accept();
+}
+
+void MainDialog::showAsAutoImport()
+{
+    m_showMode = ShowMode::AutoImportMode;
+    show();
+
+    m_model->refreshItems();
+    m_model->selectItemsForProcess( true/*selected*/, true/*resetSelection*/ );
+    m_proxyModel->setFilterShowObjectType( ObjectModel::AllObjectTypes );
+    m_proxyModel->setFilterShowSelectedOnly( true/*selected*/ );
+
+    if (m_proxyModel->rowCount() == 0)
+        accept();
 }
 
 void MainDialog::exception(int code, const QString &source, const QString &desc, const QString &help)
@@ -137,7 +175,43 @@ void MainDialog::propertyChanged(const QString &name)
 void MainDialog::signal(const QString &name, int argc, void *argv)
 {
     Q_UNUSED(argc) Q_UNUSED(argv)
-    QMessageBox::information(this, "", QString("propertyChanged ") + name);
+            QMessageBox::information(this, "", QString("propertyChanged ") + name);
+}
+
+void MainDialog::onAccepted()
+{
+    switch (m_showMode) {
+        case ManualMode:
+        {
+            accept();
+            break;
+        }
+
+        case AutoExportMode:
+        {
+            m_model->executeExport();
+            accept();
+            break;
+        }
+
+        case AutoImportMode:
+        {
+            m_model->executeImport();
+            accept();
+            break;
+        }
+
+        default:
+        {
+            accept();
+            break;
+        }
+    }
+}
+
+void MainDialog::onRejected()
+{
+    reject();
 }
 
 void MainDialog::clearCache()
