@@ -8,10 +8,8 @@
 
 #include <QDebug>
 
-#include <QWinWidget>
-
 #include "comutil.h"
-#include "ui/maindialog.h"
+#include "ui/actionmanager.h"
 #include "git/gitmanager.h"
 
 
@@ -26,8 +24,7 @@ AddInImpl::AddInImpl(QObject *parent)
     , m_applicationIDisp(0)
     , m_addInInstIDisp(0)
     , m_application(0)
-    , m_winWidget(0)
-    , m_dlg(0)
+    , m_actionManager(0)
     , m_gitManager(0)
 {
     HRESULT hr;
@@ -149,6 +146,7 @@ HRESULT AddInImpl::OnConnection(IDispatch *Application, ext_ConnectMode ConnectM
     Access::_Application *_application = new Access::_Application(m_applicationIDisp/*, this*/);
     m_application = new Access::Application(_application);
 
+    m_actionManager = new ActionManager(m_application, this);
     m_gitManager = new GitManager(m_application, this);
 
     // If we are connecting during startup, we should wait for OnStartupComplete
@@ -177,14 +175,10 @@ HRESULT AddInImpl::OnDisconnection(ext_DisconnectMode RemoveMode, SAFEARRAY **cu
    if (RemoveMode != ext_dm_HostShutdown)
        OnBeginShutdown(custom);
 
-   if (m_dlg)
+   if (m_actionManager)
    {
-       m_dlg->close();
-       delete m_dlg;
-       m_dlg = 0;
-
-       delete m_winWidget;
-       m_winWidget = 0;
+       delete m_actionManager;
+       m_actionManager = 0;
    }
 
    if (m_gitManager)
@@ -309,27 +303,12 @@ HRESULT AddInImpl::ButtonClicked(IDispatch *ribbonControl)
     rc->Release();
 
     if (controlId == "StandardManualButton")
-    {
-        if (!m_winWidget)
-        {
-            m_winWidget = new QWinWidget( (HWND)m_application->hWndAccessApp() );
-            m_winWidget->showCentered();
-            m_dlg = new MainDialog( m_application, m_winWidget );
-            m_dlg->show();
-        }
-        else
-        {
-            m_dlg->show();
-        }
-    }
+        m_actionManager->manual();
     else if (controlId == "StandardExportButton")
-    {
-
-    }
+        m_actionManager->autoExport();
     else if (controlId == "StandardImportButton")
-    {
+        m_actionManager->autoImport();
 
-    }
     else if (controlId == "GitInitButton")
         m_gitManager->init();
     else if (controlId == "GitIgnoreButton")

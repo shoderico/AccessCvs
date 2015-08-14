@@ -65,7 +65,8 @@ SOURCES += \
     model/tabledatasanitizesetting.cpp \
     model/tabledefsanitizesetting.cpp \
     model/objectproxymodel.cpp \
-    git/gitmanager.cpp
+    git/gitmanager.cpp \
+    ui/actionmanager.cpp
 
 HEADERS +=\
     addin/msaddndr.h \
@@ -101,7 +102,8 @@ HEADERS +=\
     model/tabledatasanitizesetting.h \
     model/tabledefsanitizesetting.h \
     model/objectproxymodel.h \
-    git/gitmanager.h
+    git/gitmanager.h \
+    ui/actionmanager.h
 
 DISTFILES += \
     addin/addin.def \

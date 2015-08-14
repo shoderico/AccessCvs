@@ -9,8 +9,7 @@
 #include "ribboncallback.h"
 
 
-class QWinWidget;
-class MainDialog;
+class ActionManager;
 class GitManager;
 
 namespace Access {
@@ -100,11 +99,8 @@ private:
 
     Access::Application *m_application;
 
-//    MainDialog *m_pDlg;
-    QWinWidget *m_winWidget;
-    MainDialog *m_dlg;
-
-    GitManager *m_gitManager;
+    ActionManager   *m_actionManager;
+    GitManager      *m_gitManager;
 };
 
 #endif // ADDINIMPL_H
