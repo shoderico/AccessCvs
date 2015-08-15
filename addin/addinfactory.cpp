@@ -113,8 +113,8 @@ void AddInFactory::registerClassInternal(const QString &key, AddInFactory::WordS
         QScopedPointer<QSettings> st( new QSettings( registryPath(ws) , QSettings::NativeFormat));
         st->setValue("/" + progID() + "/LoadBehavior",      3);
         st->setValue("/" + progID() + "/CommandLineSafe",   0);
-        st->setValue("/" + progID() + "/FriendlyName",      QString("FriendlyName"));
-        st->setValue("/" + progID() + "/Description",       QString("Description"));
+        st->setValue("/" + progID() + "/FriendlyName",      tr("FriendlyName"));
+        st->setValue("/" + progID() + "/Description",       tr("Description"));
     }
 }
 
