@@ -56,18 +56,18 @@ void ObjectSetting::mkdirSourceObjectPath()
 
 
 
-ObjectItem *ObjectSetting::createItemFromFileSystem(QFileInfo &fileInfo, QObject *parent)
+ObjectItem *ObjectSetting::createItemFromSourceDir(QFileInfo &fileInfo, QObject *parent)
 {
     ObjectItem *item = new ObjectItem(parent);
 
     item->setObjectType( m_objectType );
     item->setName( fileInfo.completeBaseName() );
-    item->setInFileSystem( Model::Present );
+    item->setInSourceDir( Model::Present );
 
     return item;
 }
 
-bool ObjectSetting::copyFromTempDirToFileSystem(const QString &objectName)
+bool ObjectSetting::copyFromTempDirToSourceDir(const QString &objectName)
 {
     deleteAllFileFromSourceDir(objectName);
     copyFile(TempDir, SourceDir, DesignFile, objectName);
@@ -77,7 +77,7 @@ bool ObjectSetting::copyFromTempDirToFileSystem(const QString &objectName)
     return true;
 }
 
-bool ObjectSetting::copyFromFileSystemToTempDir(const QString &objectName)
+bool ObjectSetting::copyFromSourceDirToTempDir(const QString &objectName)
 {
     deleteAllFileFromTempDir(objectName);
     copyFile(SourceDir, TempDir, DesignFile, objectName);
@@ -125,7 +125,7 @@ bool ObjectSetting::compareTempDir(const QString &objectName, bool *pisDifferent
     return true;
 }
 
-bool ObjectSetting::deleteFromFileSystem(const QString &objectName)
+bool ObjectSetting::deleteFromSourceDir(const QString &objectName)
 {
     deleteAllFileFromSourceDir(objectName);
     return true;

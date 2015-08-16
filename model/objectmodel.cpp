@@ -48,7 +48,7 @@ QVariant ObjectModel::headerData(int section, Qt::Orientation orientation, int r
         {
             case NameColumn: return tr("Name");
             case InProjectColumn: return tr("InProject");
-            case InFileSystemColumn: return tr("InRepository");
+            case InSourceDirColumn: return tr("InRepository");
             case CreateDateColumn: return tr("CreateDate");
             case UpdateDateColumn: return tr("UpdateDate");
             case ExportDateColumn: return tr("ExportDate");
@@ -92,7 +92,7 @@ QVariant ObjectModel::data(const QModelIndex &index, int role) const
         switch (index.column()) {
             case NameColumn:          return item->name();
             case InProjectColumn:     return (int)item->inProject();
-            case InFileSystemColumn:  return (int)item->inFileSystem();
+            case InSourceDirColumn:  return (int)item->inSourceDir();
             case CreateDateColumn:    return item->createDate();
             case UpdateDateColumn:    return item->updateDate();
             case ExportDateColumn:    return item->exportDate();
@@ -283,12 +283,12 @@ void ObjectModel::prepareCommit()
 
     //-------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------
-    //:confirm to reflect from Project to FileSystem
+    //:confirm to reflect from Project to SourceDir
 
 
     //-------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------
-    //:execute to reflect from Project to FileSystem
+    //:execute to reflect from Project to SourceDir
     executeExport();
 
 
@@ -417,7 +417,7 @@ bool ObjectModel::executeExport()
 {
     //-------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------
-    //:execute to reflect from Project to FileSystem
+    //:execute to reflect from Project to SourceDir
 
     if (!checkProjectState())
         return false;
@@ -427,12 +427,12 @@ bool ObjectModel::executeExport()
     bool selectedOnly = true;
 
     ObjectItems targetsInProjectOnly;
-    ObjectItems targetsInFileSystemOnly;
+    ObjectItems targetsInSourceDirOnly;
     ObjectItems targetsInBoth_Different;
     ObjectItems targetsInBoth_Same;
 
     getItems(&targetsInProjectOnly,    InProjectOnly,    selectedOnly, false/*modifiedOnly*/);
-    getItems(&targetsInFileSystemOnly, InFileSystemOnly, selectedOnly, false/*modifiedOnly*/);
+    getItems(&targetsInSourceDirOnly, InSourceDirOnly, selectedOnly, false/*modifiedOnly*/);
     getItems(&targetsInBoth_Different, InBoth_Different, selectedOnly, false/*modifiedOnly*/);
     getItems(&targetsInBoth_Same,      InBoth_Same,      selectedOnly, false/*modifiedOnly*/);
 
@@ -443,12 +443,12 @@ bool ObjectModel::executeExport()
 
             exportFromProjectToTempDir(targets);       // InProjectOnly    : BLOCK :                   :
             sanitizeTempDir(targets);                  // InProjectOnly    :       :                   :
-            copyFromTempDirToFileSystem(targets);      // InProjectOnly    :       : Dirty FileSystem  : need one-more step? like confirm
+            copyFromTempDirToSourceDir(targets);      // InProjectOnly    :       : Dirty SourceDir  : need one-more step? like confirm
 
             // smart-refresh : post-process
             QDateTime currentTime = QDateTime::currentDateTime();
             updateItemsExportDate(targets, currentTime, AllDifferenceTypes);   // set exportDate
-            updateItemsInFileSystem(targets, Model::Present);                  // set inFileSystem flag to Present
+            updateItemsInSourceDir(targets, Model::Present);                  // set inSourceDir flag to Present
             updateItemsDifference(targets, Model::SameContents);               // set isDifferent  flag to SameContents
         }
     }
@@ -456,9 +456,9 @@ bool ObjectModel::executeExport()
     // for InFileSytemOnly
     {
         {
-            ObjectItems *targets = &targetsInFileSystemOnly;
+            ObjectItems *targets = &targetsInSourceDirOnly;
 
-            deleteFromFileSystem(targets);                                             // InFileSystemOnly :       : Dirty FileSystem  : need one-more step? like confirm
+            deleteFromSourceDir(targets);                                             // InSourceDirOnly :       : Dirty SourceDir  : need one-more step? like confirm
 
             // smart-refresh : post-process
             deleteItems(targets); // delete item from model
@@ -471,7 +471,7 @@ bool ObjectModel::executeExport()
         {
             ObjectItems *targets = &targetsInBoth_Different;
 
-            copyFromTempDirToFileSystem(targets);                                  // InBoth_Different :       : Dirty FileSystem  : need one-more step? like confirm
+            copyFromTempDirToSourceDir(targets);                                  // InBoth_Different :       : Dirty SourceDir  : need one-more step? like confirm
 
             // smart-refresh : post-process
             QDateTime currentTime = QDateTime::currentDateTime();
@@ -484,7 +484,7 @@ bool ObjectModel::executeExport()
         {
             ObjectItems *targets = &targetsInBoth_Same;
 
-            copyFromTempDirToFileSystem(targets);                                  // InBoth_Same      :       : Dirty FileSystem  : need one-more step? like confirm
+            copyFromTempDirToSourceDir(targets);                                  // InBoth_Same      :       : Dirty SourceDir  : need one-more step? like confirm
 
             // smart-refresh : post-process
             QDateTime currentTime = QDateTime::currentDateTime();
@@ -511,12 +511,12 @@ bool ObjectModel::executeImport()
     bool selectedOnly = true;
 
     ObjectItems targetsInProjectOnly;
-    ObjectItems targetsInFileSystemOnly;
+    ObjectItems targetsInSourceDirOnly;
     ObjectItems targetsInBoth_Different;
     ObjectItems targetsInBoth_Same;
 
     getItems(&targetsInProjectOnly,    InProjectOnly,    selectedOnly, false/*modifiedOnly*/);
-    getItems(&targetsInFileSystemOnly, InFileSystemOnly, selectedOnly, false/*modifiedOnly*/);
+    getItems(&targetsInSourceDirOnly, InSourceDirOnly, selectedOnly, false/*modifiedOnly*/);
     getItems(&targetsInBoth_Different, InBoth_Different, selectedOnly, false/*modifiedOnly*/);
     getItems(&targetsInBoth_Same,      InBoth_Same,      selectedOnly, false/*modifiedOnly*/);
 
@@ -536,11 +536,11 @@ bool ObjectModel::executeImport()
     // for InFileSytemOnly
     {
         {
-            ObjectItems *targets = &targetsInFileSystemOnly;
+            ObjectItems *targets = &targetsInSourceDirOnly;
 
-            copyFromFileSystemToTempDir(targets);      // InFileSytemOnly  :       :               :
+            copyFromSourceDirToTempDir(targets);      // InFileSytemOnly  :       :               :
             desanitizeTempDir(targets);                // InFileSytemOnly  :       :               :
-            importFromTempDirToProject(targets);       // InFileSystemOnly : BLOCK : Dirty Project : need one-more step? like confirm
+            importFromTempDirToProject(targets);       // InSourceDirOnly : BLOCK : Dirty Project : need one-more step? like confirm
 
             // smart-refresh : post-process
             QDateTime currentTime = QDateTime::currentDateTime();
@@ -558,7 +558,7 @@ bool ObjectModel::executeImport()
         {
             ObjectItems *targets = &targetsInBoth_Different;
 
-            copyFromFileSystemToTempDir(targets);  // InBoth_Different :       :               :
+            copyFromSourceDirToTempDir(targets);  // InBoth_Different :       :               :
             desanitizeTempDir(targets);            // InBoth_Different :       :               :
             importFromTempDirToProject(targets);   // InBoth_Different : BLOCK : Dirty Project : need one-more step? like confirm
 
@@ -573,7 +573,7 @@ bool ObjectModel::executeImport()
         {
             ObjectItems *targets = &targetsInBoth_Same;
 
-            copyFromFileSystemToTempDir(targets);  // InBoth_Same      :       :               :
+            copyFromSourceDirToTempDir(targets);  // InBoth_Same      :       :               :
             desanitizeTempDir(targets);            // InBoth_Same      :       :               :
             importFromTempDirToProject(targets);   // InBoth_Same      : BLOCK : Dirty Project : need one-more step? like confirm
 
@@ -678,40 +678,40 @@ void ObjectModel::getItems(ObjectItems *pItems, ItemsTypes itemsType, SelectObje
         if (!toBeInserted && itemsType & InBoth)
         {
             if ( item->inProject()    == Model::Present &&
-                 item->inFileSystem() == Model::Present )
+                 item->inSourceDir() == Model::Present )
                 toBeInserted = item;
         }
         if (!toBeInserted && itemsType & InBoth_Different)
         {
             if ( item->inProject()    == Model::Present &&
-                 item->inFileSystem() == Model::Present &&
+                 item->inSourceDir() == Model::Present &&
                  item->isDifferent()  == Model::DifferentContents )
                 toBeInserted = item;
         }
         if (!toBeInserted && itemsType & InBoth_Same)
         {
             if ( item->inProject()    == Model::Present &&
-                 item->inFileSystem() == Model::Present &&
+                 item->inSourceDir() == Model::Present &&
                  item->isDifferent()  == Model::SameContents )
                 toBeInserted = item;
         }
         if (!toBeInserted && itemsType & InBoth_NotSame)
         {
             if ( item->inProject()    == Model::Present &&
-                 item->inFileSystem() == Model::Present &&
+                 item->inSourceDir() == Model::Present &&
                  item->isDifferent()  != Model::SameContents )
                 toBeInserted = item;
         }
         if (!toBeInserted && itemsType & InProjectOnly)
         {
             if ( item->inProject()    == Model::Present &&
-                 item->inFileSystem() == Model::Absent )
+                 item->inSourceDir() == Model::Absent )
                 toBeInserted = item;
         }
-        if (!toBeInserted && itemsType & InFileSystemOnly)
+        if (!toBeInserted && itemsType & InSourceDirOnly)
         {
             if ( item->inProject()    == Model::Absent &&
-                 item->inFileSystem() == Model::Present )
+                 item->inSourceDir() == Model::Present )
                 toBeInserted = item;
         }
 
@@ -724,7 +724,7 @@ void ObjectModel::getItems(ObjectItems *pItems, ItemsTypes itemsType, SelectObje
 
 void ObjectModel::selectItemsForProcess(bool selected, bool resetSelection)
 {
-    selectItems( InProjectOnly | InFileSystemOnly | InBoth_Different, selected, resetSelection );
+    selectItems( InProjectOnly | InSourceDirOnly | InBoth_Different, selected, resetSelection );
 }
 
 void ObjectModel::selectItems(ObjectModel::ItemsTypes itemsType, bool selected, bool resetSelection)
@@ -828,23 +828,23 @@ void ObjectModel::updateItemsInProject(ObjectItems *allTargets, Model::ObjectExi
         emit dataChanged( createIndex(helper.first(), InProjectColumn), createIndex(helper.last(), InProjectColumn) );
 }
 
-void ObjectModel::updateItemsInFileSystem(ObjectItems *allTargets, Model::ObjectExistence existence)
+void ObjectModel::updateItemsInSourceDir(ObjectItems *allTargets, Model::ObjectExistence existence)
 {
     DataChangedHelper helper( m_items.count() );
-    ProgressNotifier mainProg(UpdateItemsInFileSystemProcess, this);
+    ProgressNotifier mainProg(UpdateItemsInSourceDirProcess, this);
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
-        ProgressNotifier subProg(UpdateItemsInFileSystemProcess, items.count(), this);
+        ProgressNotifier subProg(UpdateItemsInSourceDirProcess, items.count(), this);
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
             subProg.next();
-            (*it)->setInFileSystem(existence);
+            (*it)->setInSourceDir(existence);
             helper.changed( m_items.indexOf( (*it) ) );
         }
     }
     if (helper.isChanged())
-        emit dataChanged( createIndex(helper.first(), InFileSystemColumn), createIndex(helper.last(), InFileSystemColumn) );
+        emit dataChanged( createIndex(helper.first(), InSourceDirColumn), createIndex(helper.last(), InSourceDirColumn) );
 }
 
 void ObjectModel::updateItemsDifference(ObjectItems *allTargets, Model::ObjectDifference difference)
@@ -1075,11 +1075,11 @@ void ObjectModel::loadItemsFromProject(QList<ObjectItem*> *items)
 }
 
 
-void ObjectModel::loadItemsFromFileSystem(QList<ObjectItem*> *items)
+void ObjectModel::loadItemsFromSourceDir(QList<ObjectItem*> *items)
 {
     // load items from local file system.
 
-    ProgressNotifier mainProg(LoadItemFromFileSystemProcess, this);
+    ProgressNotifier mainProg(LoadItemFromSourceDirProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
     setting.initialize(m_application);
@@ -1093,12 +1093,12 @@ void ObjectModel::loadItemsFromFileSystem(QList<ObjectItem*> *items)
         {
             objectDir.setNameFilters( (QStringList() << ("*." + os->existCheckExtension() ) ) );
             QFileInfoList fileInfos = objectDir.entryInfoList( QDir::Files );
-            ProgressNotifier subProg(LoadItemFromFileSystemProcess, fileInfos.length(), this);
+            ProgressNotifier subProg(LoadItemFromSourceDirProcess, fileInfos.length(), this);
 
             for (QFileInfoList::iterator it = fileInfos.begin(); it != fileInfos.end(); ++it )
             {
                 subProg.next();
-                items->append( os->createItemFromFileSystem( (*it), this) );
+                items->append( os->createItemFromSourceDir( (*it), this) );
             }
         }
     }
@@ -1109,10 +1109,10 @@ void ObjectModel::reloadAndMergeItems()
     // loading items more smart
 
     QList<ObjectItem*> itemsFromProject;
-    QList<ObjectItem*> itemsFromFileSystem;
+    QList<ObjectItem*> itemsFromSourceDir;
 
     loadItemsFromProject( &itemsFromProject );
-    loadItemsFromFileSystem( &itemsFromFileSystem );
+    loadItemsFromSourceDir( &itemsFromSourceDir );
 
 
     // we need to do here for ..
@@ -1129,13 +1129,13 @@ void ObjectModel::reloadAndMergeItems()
     for ( QList<ObjectItem*>::iterator it = itemsFromProject.begin(); it != itemsFromProject.end(); ++it )
     {
         // assume in project but NOT in fileSytem. merged later.
-        (*it)->setInFileSystem( Model::Absent );
+        (*it)->setInSourceDir( Model::Absent );
 
         items << (*it);
         mapItems[ (*it)->objectType() ].insert( (*it)->name(), (*it) );
     }
-    // merged from FileSystem
-    for ( QList<ObjectItem*>::iterator it = itemsFromFileSystem.begin(); it != itemsFromFileSystem.end(); ++it )
+    // merged from SourceDir
+    for ( QList<ObjectItem*>::iterator it = itemsFromSourceDir.begin(); it != itemsFromSourceDir.end(); ++it )
     {
         if ( mapItems[ (*it)->objectType() ].contains( (*it)->name() ) )
         {
@@ -1146,7 +1146,7 @@ void ObjectModel::reloadAndMergeItems()
         {
             // insert new
 
-            // in fileSystem but NOT in project
+            // in SourceDir but NOT in project
             (*it)->setInProject( Model::Absent );
 
             items << (*it);
@@ -1197,7 +1197,7 @@ void ObjectModel::reloadAndMergeItems()
             //          * updateDate
             //          * exportDate
             //          * inProject
-            //          * inFileSystem
+            //          * inSourceDir
             //          * isDifferent ???
             //          * hasData
             //     * no need to update
@@ -1210,7 +1210,7 @@ void ObjectModel::reloadAndMergeItems()
             item->setUpdateDate( (*it)->updateDate() );
             item->setExportDate( (*it)->exportDate() );
             item->setInProject( (*it)->inProject() );
-            item->setInFileSystem( (*it)->inFileSystem() );
+            item->setInSourceDir( (*it)->inSourceDir() );
             item->setDifferent( (*it)->isDifferent() );
             item->setHasData( (*it)->hasData() );
         }
@@ -1230,7 +1230,7 @@ void ObjectModel::reloadAndMergeItems()
 void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
 {
     // export to temp directory
-    //      for objects existing in both Project and FileSystem
+    //      for objects existing in both Project and SourceDir
     //      for objects existing in ProjectOnly
     // without sanitizing and any extra processes.
 
@@ -1293,9 +1293,9 @@ void ObjectModel::importFromTempDirToProject(ObjectItems *allTargets)
     }
 }
 
-void ObjectModel::copyFromTempDirToFileSystem(ObjectItems *allTargets)
+void ObjectModel::copyFromTempDirToSourceDir(ObjectItems *allTargets)
 {
-    ProgressNotifier mainProg(CopyFromTempDirToFileSystemProcess, this);
+    ProgressNotifier mainProg(CopyFromTempDirToSourceDirProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
     setting.initialize(m_application);
@@ -1307,19 +1307,19 @@ void ObjectModel::copyFromTempDirToFileSystem(ObjectItems *allTargets)
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
-        ProgressNotifier subProg(CopyFromTempDirToFileSystemProcess, objectNames.count(), this);
+        ProgressNotifier subProg(CopyFromTempDirToSourceDirProcess, objectNames.count(), this);
 
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
-            os->copyFromTempDirToFileSystem( (*it) );
+            os->copyFromTempDirToSourceDir( (*it) );
         }
     }
 }
 
-void ObjectModel::copyFromFileSystemToTempDir(ObjectItems *allTargets)
+void ObjectModel::copyFromSourceDirToTempDir(ObjectItems *allTargets)
 {
-    ProgressNotifier mainProg(CopyFromFileSystemToTempDirProcess, this);
+    ProgressNotifier mainProg(CopyFromSourceDirToTempDirProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
     setting.initialize(m_application);
@@ -1330,12 +1330,12 @@ void ObjectModel::copyFromFileSystemToTempDir(ObjectItems *allTargets)
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
-        ProgressNotifier subProg(CopyFromFileSystemToTempDirProcess, objectNames.count(), this);
+        ProgressNotifier subProg(CopyFromSourceDirToTempDirProcess, objectNames.count(), this);
 
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
-            os->copyFromFileSystemToTempDir( (*it) );
+            os->copyFromSourceDirToTempDir( (*it) );
         }
     }
 
@@ -1429,9 +1429,9 @@ void ObjectModel::compareTempDir(ObjectItems *allTargets)
         emit dataChanged( createIndex(helper.first(), DifferentColumn), createIndex( helper.last(), DifferentColumn ) );
 }
 
-void ObjectModel::deleteFromFileSystem(ObjectItems *allTargets)
+void ObjectModel::deleteFromSourceDir(ObjectItems *allTargets)
 {
-    ProgressNotifier mainProg(DeleteFromFileSystemProcess, this);
+    ProgressNotifier mainProg(DeleteFromSourceDirProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
     setting.initialize(m_application);
@@ -1442,12 +1442,12 @@ void ObjectModel::deleteFromFileSystem(ObjectItems *allTargets)
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
-        ProgressNotifier subProg(DeleteFromFileSystemProcess, objectNames.count(), this);
+        ProgressNotifier subProg(DeleteFromSourceDirProcess, objectNames.count(), this);
 
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
-            os->deleteFromFileSystem( (*it) );
+            os->deleteFromSourceDir( (*it) );
         }
     }
 }
@@ -1502,7 +1502,7 @@ void ObjectModel::deleteFromTempDir(ObjectItems *allTargets)
 
 void ObjectModel::mergeItemProperties(ObjectItem *itemSrc, ObjectItem *itemDst)
 {
-    // itemSrc : item created from FileSystem
+    // itemSrc : item created from SourceDir
     // itemDst : item created from Project
 
     itemDst->setInProject(
@@ -1510,9 +1510,9 @@ void ObjectModel::mergeItemProperties(ObjectItem *itemSrc, ObjectItem *itemDst)
                 (itemDst->inProject() == Model::Absent  || itemSrc->inProject() == Model::Absent ) ? Model::Absent  :
                                                                                                      Model::OE_Unchecked );
 
-    itemDst->setInFileSystem(
-                (itemDst->inFileSystem() == Model::Present || itemSrc->inFileSystem() == Model::Present) ? Model::Present :
-                (itemDst->inFileSystem() == Model::Absent  || itemSrc->inFileSystem() == Model::Absent ) ? Model::Absent  :
+    itemDst->setInSourceDir(
+                (itemDst->inSourceDir() == Model::Present || itemSrc->inSourceDir() == Model::Present) ? Model::Present :
+                (itemDst->inSourceDir() == Model::Absent  || itemSrc->inSourceDir() == Model::Absent ) ? Model::Absent  :
                                                                                                            Model::OE_Unchecked );
 
     itemDst->setCreateDate(      itemSrc->createDate().isValid() ? itemSrc->createDate()

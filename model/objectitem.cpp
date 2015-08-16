@@ -5,7 +5,7 @@ ObjectItem::ObjectItem(QObject *parent)
     , m_isSelected(false)
     , m_hasData(false)
     , m_inProject(Model::OE_Unchecked)
-    , m_inFileSystem(Model::OE_Unchecked)
+    , m_inSourceDir(Model::OE_Unchecked)
     , m_isDifferent(Model::OD_Unchecked)
     , m_objectType(Model::Unknwon)
     , m_gitStatusInIndex(Model::GS_Unknown)
@@ -26,7 +26,7 @@ ObjectItem::ObjectItem(ObjectItem *object, QObject *parent)
     this->m_isSelected = object->m_isSelected;
     this->m_hasData = object->m_hasData;
     this->m_inProject = object->m_inProject;
-    this->m_inFileSystem = object->m_inFileSystem;
+    this->m_inSourceDir = object->m_inSourceDir;
     this->m_isDifferent = object->m_isDifferent;
     this->m_objectType = object->m_objectType;
     this->m_gitStatusInIndex = object->m_gitStatusInIndex;
@@ -36,7 +36,7 @@ ObjectItem::ObjectItem(ObjectItem *object, QObject *parent)
 
 bool ObjectItem::isModified() const
 {
-    return !( inProject() && inFileSystem() &&
+    return !( inProject() && inSourceDir() &&
               updateDate().isValid() && exportDate().isValid() &&
               updateDate() <= exportDate() );
 }

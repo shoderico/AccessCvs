@@ -38,7 +38,7 @@ public:
         NameColumn = 0,
         HasDataColumn,
         InProjectColumn,
-        InFileSystemColumn,
+        InSourceDirColumn,
         DifferentColumn,
         CreateDateColumn,
         UpdateDateColumn,
@@ -82,7 +82,7 @@ public:
         InBoth_Same      = 4,
         InBoth_NotSame   = 8,
         InProjectOnly    = 16,
-        InFileSystemOnly = 32,
+        InSourceDirOnly = 32,
         AllItems         = 63,
     };
     Q_DECLARE_FLAGS(ItemsTypes, ItemsType)
@@ -118,7 +118,7 @@ public:
 
     void updateItemsExportDate(ObjectItems *allTargets, const QDateTime &exportDate, const ObjectDifferenceTypes differenceTypes);
     void updateItemsInProject(ObjectItems *allTargets, Model::ObjectExistence existence);
-    void updateItemsInFileSystem(ObjectItems *allTargets, Model::ObjectExistence existence);
+    void updateItemsInSourceDir(ObjectItems *allTargets, Model::ObjectExistence existence);
     void updateItemsDifference(ObjectItems *allTargets, Model::ObjectDifference difference);
     void updateItemsDifferenceByFileTime(ObjectItems *allTargets);
     void updateItemsDifferenceAsIs(ObjectItems *allTargets);
@@ -137,26 +137,26 @@ public:
 
     // load and build-up model-item from object/file
     void loadItemsFromProject(QList<ObjectItem*> *items);        //                                                      : BLOCK
-    void loadItemsFromFileSystem(QList<ObjectItem*> *items);     //                                                      :
+    void loadItemsFromSourceDir(QList<ObjectItem*> *items);     //                                                      :
     void reloadAndMergeItems();
 
     // import/export object
     void exportFromProjectToTempDir(ObjectItems *allTargets);   // InBoth           , InProjectOnly ,                   : BLOCK
-    void importFromTempDirToProject(ObjectItems *allTargets);   // InBoth_DiffOnly  ,               , InFileSystemOnly  : BLOCK : Dirty Project
+    void importFromTempDirToProject(ObjectItems *allTargets);   // InBoth_DiffOnly  ,               , InSourceDirOnly  : BLOCK : Dirty Project
 
     // copy files between directories
-    void copyFromTempDirToFileSystem(ObjectItems *allTargets);  // InBoth:DiffOnly  , InProjectOnly ,                   :       : Dirty FileSystem
-    void copyFromFileSystemToTempDir(ObjectItems *allTargets);  // InBoth_DiffOnly  ,               , InFileSystemOnly  :
+    void copyFromTempDirToSourceDir(ObjectItems *allTargets);  // InBoth:DiffOnly  , InProjectOnly ,                   :       : Dirty SourceDir
+    void copyFromSourceDirToTempDir(ObjectItems *allTargets);  // InBoth_DiffOnly  ,               , InSourceDirOnly  :
 
     // sanitize/de-sanitize files
     void sanitizeTempDir(ObjectItems *allTargets);              // InBoth           , InProjectOnly ,                   :
-    void desanitizeTempDir(ObjectItems *allTargets);            // InBoth_DiffOnly  ,               , InFileSystemOnly  :
+    void desanitizeTempDir(ObjectItems *allTargets);            // InBoth_DiffOnly  ,               , InSourceDirOnly  :
 
     // compare files and update model-item status
     void compareTempDir(ObjectItems *allTargets);               // InBoth           ,               ,                   :
 
     // delete object/file
-    void deleteFromFileSystem(ObjectItems *allTargets);         //                  ,               , InFileSystemOnly  :       : Dirty FileSytem
+    void deleteFromSourceDir(ObjectItems *allTargets);         //                  ,               , InSourceDirOnly  :       : Dirty FileSytem
     void deleteFromProject(ObjectItems *allTargets);            //                  , InProjectOnly ,                   : BLOCK : Dirty Project
 
     void deleteFromTempDir(ObjectItems *allTargets);
@@ -171,19 +171,19 @@ public:
         ImportProcess,
 
         LoadItemFromProjectProcess,
-        LoadItemFromFileSystemProcess,
+        LoadItemFromSourceDirProcess,
 
         ExportFromProjectToTempDirProcess,
         ImportFromTempDirToProjectProcess,
 
-        CopyFromTempDirToFileSystemProcess,
-        CopyFromFileSystemToTempDirProcess,
+        CopyFromTempDirToSourceDirProcess,
+        CopyFromSourceDirToTempDirProcess,
 
         SanitizeTempDirProcess,
         DesanitizeTempDirProcess,
         CompareTempDirProcess,
 
-        DeleteFromFileSystemProcess,
+        DeleteFromSourceDirProcess,
         DeleteFromProjectProcess,
 
         DeleteFromTempDirProcess,
@@ -194,7 +194,7 @@ public:
         UpdateFileTimeInTempDirProcess,
 
         UpdateItemsInProjectProcess,
-        UpdateItemsInFileSystemProcess,
+        UpdateItemsInSourceDirProcess,
         UpdateItemsDifferenceProcess,
         UpdateItemsDifferenceAsIsProcess,
         DeleteItemsProcess,
