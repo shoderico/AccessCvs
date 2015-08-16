@@ -136,8 +136,8 @@ public:
     // internal procedures
 
     // load and build-up model-item from object/file
-    void loadItemFromProject(QList<ObjectItem*> *items);        //                                                      : BLOCK
-    void loadItemFromFileSystem(QList<ObjectItem*> *items);     //                                                      :
+    void loadItemsFromProject(QList<ObjectItem*> *items);        //                                                      : BLOCK
+    void loadItemsFromFileSystem(QList<ObjectItem*> *items);     //                                                      :
     void reloadAndMergeItems();
 
     // import/export object

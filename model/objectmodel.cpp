@@ -1046,7 +1046,7 @@ void ObjectModel::updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, c
 }
 
 
-void ObjectModel::loadItemFromProject(QList<ObjectItem*> *items)
+void ObjectModel::loadItemsFromProject(QList<ObjectItem*> *items)
 {
     ProgressNotifier mainProg(LoadItemFromProjectProcess, this);
     ProjectSetting setting(this);
@@ -1075,7 +1075,7 @@ void ObjectModel::loadItemFromProject(QList<ObjectItem*> *items)
 }
 
 
-void ObjectModel::loadItemFromFileSystem(QList<ObjectItem*> *items)
+void ObjectModel::loadItemsFromFileSystem(QList<ObjectItem*> *items)
 {
     // load items from local file system.
 
@@ -1111,8 +1111,8 @@ void ObjectModel::reloadAndMergeItems()
     QList<ObjectItem*> itemsFromProject;
     QList<ObjectItem*> itemsFromFileSystem;
 
-    loadItemFromProject( &itemsFromProject );
-    loadItemFromFileSystem( &itemsFromFileSystem );
+    loadItemsFromProject( &itemsFromProject );
+    loadItemsFromFileSystem( &itemsFromFileSystem );
 
 
     // we need to do here for ..
