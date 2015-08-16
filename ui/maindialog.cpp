@@ -52,8 +52,8 @@ MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
     ui->treeView->setSortingEnabled(true);
     ui->treeView->sortByColumn(ObjectModel::NameColumn, Qt::AscendingOrder);
 
-    connect( ui->okButton,     SIGNAL(clicked(bool)), this, SLOT(accept()) );
-    connect( ui->cancelButton, SIGNAL(clicked(bool)), this, SLOT(reject()) );
+    connect( ui->okButton,     SIGNAL(clicked(bool)), this, SLOT(onAccepted()) );
+    connect( ui->cancelButton, SIGNAL(clicked(bool)), this, SLOT(onRejected()) );
 
     connect( ui->refreshItemsButton,  SIGNAL(clicked(bool)), this, SLOT(refreshItems()) );
     connect( ui->clearCacheButton, SIGNAL(clicked(bool)), this, SLOT(clearCache()) );
