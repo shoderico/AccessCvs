@@ -111,11 +111,11 @@ public:
     void setInProject(const Model::ObjectExistence existence) { m_inProject = existence; }
 
     /*!
-       \brief inFileSystem
+       \brief inSourceDir
        \return
      */
-    Model::ObjectExistence inFileSystem() const { return m_inFileSystem; }
-    void setInFileSystem(const Model::ObjectExistence existence) { m_inFileSystem = existence; }
+    Model::ObjectExistence inSourceDir() const { return m_inSourceDir; }
+    void setInSourceDir(const Model::ObjectExistence existence) { m_inSourceDir = existence; }
 
     /*!
        \brief isDifferent
@@ -165,7 +165,7 @@ protected:
     bool        m_isSelected;
     bool        m_hasData;
     Model::ObjectExistence  m_inProject;
-    Model::ObjectExistence  m_inFileSystem;
+    Model::ObjectExistence  m_inSourceDir;
     Model::ObjectDifference m_isDifferent;
     Model::ObjectType       m_objectType;
     Model::GitStatus        m_gitStatusInIndex;

@@ -58,7 +58,7 @@ public:
 
 public:
     virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0) = 0;
-    virtual ObjectItem *createItemFromFileSystem(QFileInfo &fileInfo, QObject *parent = 0);
+    virtual ObjectItem *createItemFromSourceDir(QFileInfo &fileInfo, QObject *parent = 0);
 
     virtual bool exportFromProjectToTempDir(QAxObject* object, const QString &objectName) = 0;
     virtual bool importFromTempDirToProject(QAxObject* object, const QString &objectName) = 0;
@@ -66,12 +66,12 @@ public:
     virtual bool sanitizeTempDir(QAxObject* object, const QString &objectName) = 0;
     virtual bool desanitizeTempDir(QAxObject* object, const QString &objectName) = 0;
 
-    virtual bool copyFromTempDirToFileSystem(const QString &objectName);
-    virtual bool copyFromFileSystemToTempDir(const QString &objectName);
+    virtual bool copyFromTempDirToSourceDir(const QString &objectName);
+    virtual bool copyFromSourceDirToTempDir(const QString &objectName);
 
     virtual bool compareTempDir(const QString &objectName, bool *pisDifferent);
 
-    virtual bool deleteFromFileSystem(const QString &objectName);
+    virtual bool deleteFromSourceDir(const QString &objectName);
     virtual bool deleteFromProject(const QString &objectName);
     virtual bool deleteFromTempDir(const QString &objectName);
 

@@ -37,11 +37,11 @@ MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
     ui->treeView->setModel(m_proxyModel);
     ui->treeView->setIndentation(0);
     ui->treeView->setItemDelegateForColumn( ObjectModel::InProjectColumn,     new CheckBoxItemDelegate() );
-    ui->treeView->setItemDelegateForColumn( ObjectModel::InFileSystemColumn,  new CheckBoxItemDelegate() );
+    ui->treeView->setItemDelegateForColumn( ObjectModel::InSourceDirColumn,  new CheckBoxItemDelegate() );
     ui->treeView->setItemDelegateForColumn( ObjectModel::DifferentColumn,     new CheckBoxItemDelegate() );
     ui->treeView->setItemDelegateForColumn( ObjectModel::HasDataColumn,       new BoolCheckBoxItemDelegate() );
     ui->treeView->setColumnWidth(ObjectModel::InProjectColumn,    35);
-    ui->treeView->setColumnWidth(ObjectModel::InFileSystemColumn, 35);
+    ui->treeView->setColumnWidth(ObjectModel::InSourceDirColumn, 35);
     ui->treeView->setColumnWidth(ObjectModel::DifferentColumn,    35);
     ui->treeView->setColumnWidth(ObjectModel::HasDataColumn,      35);
     ui->treeView->setColumnWidth(ObjectModel::NameColumn, 200);
