@@ -27,7 +27,13 @@ MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // FIXME: one-click action for auto-export, auto-import in Ribbon
+    // FIXME: to be canceled
+    // FIXME: change okBUtton caption on AutoImport, AutoExport
+    // FIXME: hide import/export button on AutoImport, AutoExport
+    // FIXME: show current progress name
+    // FIXME: show current position and total count in progress
+    // FIXME: show ellapsed time in progress
+
 
 
     m_model = new ObjectModel(this);
