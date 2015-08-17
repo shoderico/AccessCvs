@@ -431,7 +431,7 @@ void MainDialog::progressStart(int type, int count)
     ui->progressBar->setRange(0, count);
     ui->progressBar->setValue(0);
     setProcessTypeName(type);
-    QApplication::processEvents();
+    //QApplication::processEvents();
 }
 
 void MainDialog::progressChange(int type, int value)
@@ -442,6 +442,7 @@ void MainDialog::progressChange(int type, int value)
                                     .arg(value, 4, 10, QLatin1Char('0'))
                                     .arg(ui->progressBar->maximum(), 4, 10, QLatin1Char('0'))
                                     );
+    setProcessTypeName(type);
     QApplication::processEvents();
 }
 

@@ -8,6 +8,7 @@ QT += gui
 QT += axserver
 QT += axcontainer
 QT += winextras
+QT += concurrent
 CONFIG += dll
 #CONFIG += qaxserver_no_postlink
 CONFIG += c++11

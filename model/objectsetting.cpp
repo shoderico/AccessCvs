@@ -995,11 +995,13 @@ bool AccessDesignObjectSetting::sanitizeTempDir(QAxObject *object, const QString
 
 
     // sanitize
-    m_sanitizer->sanitize( streamSrc, m_codecForProject, streamDstDesign, streamDstModule, m_codecForCvs );
+    SanitizeSetting sanitizer;
+    sanitizer.sanitize( streamSrc, m_codecForProject, streamDstDesign, streamDstModule, m_codecForCvs );
+    //m_sanitizer->sanitize( streamSrc, m_codecForProject, streamDstDesign, streamDstModule, m_codecForCvs );
 
 
     // post process for subclasses.
-    afterSanitizeTempDir(object, objectName);
+    afterSanitizeTempDir(object, objectName, &sanitizer);
 
 
     // close files
@@ -1015,6 +1017,7 @@ bool AccessDesignObjectSetting::sanitizeTempDir(QAxObject *object, const QString
     // Check design data corruption for Unicode-Shift_JIS problem.
     // FIXME: this must be independent function and store results to ObjectItem
     //if ( m_codecForProject->codec()->name() ==  "???") // FIXME: check only for Shift_JIS.
+    /*
     {
         QFile fileDstDesign( filePath(TempDir, DesignFile, objectName) );
         fileDstDesign.open( QIODevice::ReadOnly );
@@ -1032,6 +1035,7 @@ bool AccessDesignObjectSetting::sanitizeTempDir(QAxObject *object, const QString
         }
         fileDstDesign.close();
     }
+    */
 
     return true;
 }
@@ -1223,10 +1227,11 @@ void AccessDesignObjectSetting::determineCodecForProject()
     }
 }
 
-bool AccessDesignObjectSetting::afterSanitizeTempDir(QAxObject *object, const QString &objectName)
+bool AccessDesignObjectSetting::afterSanitizeTempDir(QAxObject *object, const QString &objectName, SanitizeSetting *sanitizer)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
+    Q_UNUSED(sanitizer)
     return true;
 }
 
@@ -1383,7 +1388,7 @@ bool ReportSetting::importFromTempDirToProject(QAxObject *object, const QString 
     return true;
 }
 
-bool ReportSetting::afterSanitizeTempDir(QAxObject *object, const QString &objectName)
+bool ReportSetting::afterSanitizeTempDir(QAxObject *object, const QString &objectName, SanitizeSetting *sanitizer)
 {
     Q_UNUSED(object);
 
@@ -1398,7 +1403,7 @@ bool ReportSetting::afterSanitizeTempDir(QAxObject *object, const QString &objec
     // PrtDevMode
     settings.beginGroup("PrtDevMode");
     {
-        QByteArray prtDevModeData = m_sanitizer->blockData( "PrtDevMode" );
+        QByteArray prtDevModeData = sanitizer->blockData( "PrtDevMode" );
         if ( prtDevModeData.size() > 0 )
         {
             const void *pprtDevModeData = (const void*)prtDevModeData.constData();

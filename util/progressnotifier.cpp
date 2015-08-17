@@ -5,6 +5,7 @@ ProgressNotifier::ProgressNotifier(int type, int count, QObject *parent)
     , m_type(type)
     , m_count(count)
     , m_value(0)
+    , m_finished(false)
 {
     init();
 }
@@ -14,6 +15,7 @@ ProgressNotifier::ProgressNotifier(int type, QObject *parent)
     , m_type(type)
     , m_count(0)
     , m_value(0)
+    , m_finished(false)
 {
     init();
 }
@@ -33,6 +35,41 @@ void ProgressNotifier::next()
 {
     m_value++;
     emit change(m_type, m_value);
+}
+
+bool ProgressNotifier::isFinished()
+{
+    //QMutexLocker locker(&m_mutex);
+    QReadLocker locker(&m_lock);
+    return m_finished;
+}
+
+void ProgressNotifier::progressRangeChanged(int minimum, int maximum)
+{
+    //QMutexLocker locker(&m_mutex);
+    emit start(m_type, m_count);
+}
+
+void ProgressNotifier::progressValueChanged(int progressValue)
+{
+    int value = 0;
+    {
+        //QMutexLocker locker(&m_mutex);
+        QWriteLocker locker(&m_lock);
+        m_value++;
+        value = progressValue;
+    }
+    emit change(m_type, value);
+}
+
+void ProgressNotifier::finished()
+{
+    {
+        //QMutexLocker locker(&m_mutex);
+        QWriteLocker locker(&m_lock);
+        m_finished = true;
+    }
+    emit end(m_type);
 }
 
 void ProgressNotifier::init()

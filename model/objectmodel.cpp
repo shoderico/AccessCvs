@@ -6,6 +6,8 @@
 #include <QApplication> // requred for QApplication::processEvents();
 #include <QDebug>
 
+#include <QtConcurrent>
+
 #include "officelib/officelib.h"
 #include "util/comptr.h"
 #include "util/progressnotifier.h"
@@ -1341,6 +1343,23 @@ void ObjectModel::copyFromSourceDirToTempDir(ObjectItems *allTargets)
 
 }
 
+struct SanitizeTempDirFunctionObject
+{
+    SanitizeTempDirFunctionObject(ObjectSetting *os)
+        : m_os(os)
+    {
+    }
+
+    typedef void result_type;
+
+    void operator()(const QString &objectName)
+    {
+        m_os->sanitizeTempDir(NULL, objectName);
+    }
+
+    ObjectSetting *m_os;
+};
+
 void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
 {
     ProgressNotifier mainProg(SanitizeTempDirProcess, this);
@@ -1356,11 +1375,35 @@ void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
         QStringList objectNames = targets.keys();
         ProgressNotifier subProg(SanitizeTempDirProcess, objectNames.count(), this);
 
+        // /*
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
             os->sanitizeTempDir(NULL, (*it) );
         }
+        // */
+
+        /*
+        QFutureWatcher<void> futureWatcher;
+        QEventLoop loop;
+
+        connect( &futureWatcher, SIGNAL(finished()), &subProg, SLOT(finished()) );
+        connect( &futureWatcher, SIGNAL(finished()), &loop, SLOT(quit()) );
+        connect( &futureWatcher, SIGNAL(progressRangeChanged(int,int)), &subProg, SLOT(progressRangeChanged(int,int)) );
+        connect( &futureWatcher, SIGNAL(progressValueChanged(int)), &subProg, SLOT(progressValueChanged(int)) );
+
+        QFuture<void> future = QtConcurrent::map(objectNames, SanitizeTempDirFunctionObject(os) );
+        futureWatcher.setFuture( future );
+
+        if (!subProg.isFinished())
+            loop.exec();
+
+//        while (!futureWatcher.isFinished())
+//        {
+//            QThread::sleep(100);
+//            QApplication::processEvents();
+//        }
+        // */
     }
 }
 

@@ -4,6 +4,7 @@
 #include <QObject>
 
 #include <QFileInfo>
+#include <QReadWriteLock>
 
 #include "objectitem.h"
 #include "util/comptr.h"
@@ -238,7 +239,7 @@ public:
 
 protected:
     virtual void determineCodecForProject();
-    virtual bool afterSanitizeTempDir(QAxObject* object, const QString &objectName);
+    virtual bool afterSanitizeTempDir(QAxObject* object, const QString &objectName, SanitizeSetting *sanitizer);
     SanitizeSetting *m_sanitizer;
 };
 
@@ -265,8 +266,9 @@ public:
     virtual QAxObject  *itemUnsafePtr(const QVariant &index);
     virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
 protected:
-    virtual bool afterSanitizeTempDir(QAxObject *object, const QString &objectName);
+    virtual bool afterSanitizeTempDir(QAxObject *object, const QString &objectName, SanitizeSetting *sanitizer);
     ComPtr<Access::AllReports> m_objects;
+    QReadWriteLock m_lock;
 };
 
 class MacroSetting : public AccessDesignObjectSetting
