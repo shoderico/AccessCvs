@@ -28,8 +28,6 @@ MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
     ui->setupUi(this);
 
     // FIXME: to be canceled
-    // FIXME: change okBUtton caption on AutoImport, AutoExport
-    // FIXME: hide import/export button on AutoImport, AutoExport
     // FIXME: show current progress name
     // FIXME: show current position and total count in progress
     // FIXME: show ellapsed time in progress
@@ -137,12 +135,18 @@ MainDialog::~MainDialog()
 void MainDialog::showAsManual()
 {
     m_showMode = ShowMode::ManualMode;
+    ui->executeExportButton->show();
+    ui->executeImportButton->show();
+    ui->okButton->setText(tr("OK"));
     show();
 }
 
 void MainDialog::showAsAutoExport()
 {
     m_showMode = ShowMode::AutoExportMode;
+    ui->executeExportButton->hide();
+    ui->executeImportButton->hide();
+    ui->okButton->setText(tr("Export"));
     show();
 
     m_model->refreshItems();
@@ -157,6 +161,9 @@ void MainDialog::showAsAutoExport()
 void MainDialog::showAsAutoImport()
 {
     m_showMode = ShowMode::AutoImportMode;
+    ui->executeExportButton->hide();
+    ui->executeImportButton->hide();
+    ui->okButton->setText(tr("Import"));
     show();
 
     m_model->refreshItems();
