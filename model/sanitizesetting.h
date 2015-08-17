@@ -22,7 +22,7 @@ public:
 
 private:
     QString readLine();
-    void writeLine( QTextStream &stDesign, QTextStream &stModule, bool isCodeBehind, const QString &txt, const QString &lineEnd);
+    void writeLine( QTextStream &stDesign, QTextStream &stModule, bool isCodeBehind, QString &txt, const QString &lineEnd);
 
 private:
     QRegularExpression *m_reBlock;

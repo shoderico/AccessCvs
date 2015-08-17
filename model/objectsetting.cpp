@@ -515,14 +515,14 @@ bool TableDefSetting::desanitizeTempDir(QAxObject *object, const QString &object
     determineCodecForProject();
 
     FileUtil::copyContents( filePath(TempDir, DesignFile, objectName), m_codecForCvs,
-                            filePath(TempDir, TempFile,   objectName), m_codecForProject );
+                            filePath(TempDir, TempFile,   objectName), m_codecForProject, false/*removeTrailingSpaces*/ );
 //    FileUtil::deleteFile(   designFilePathInTempDir(objectName) ); keep original files
 
     // de-sanitize data-file : just convert codec.
     if ( m_tableDataTargets.contains(objectName) )
     {
         FileUtil::copyContents( filePath(TempDir, DataFile,     objectName), m_codecForCvs,
-                                filePath(TempDir, DataTempFile, objectName), m_codecForProject );
+                                filePath(TempDir, DataTempFile, objectName), m_codecForProject, false/*removeTrailingSpaces*/ );
     }
 
     return true;
@@ -1502,7 +1502,7 @@ bool ModuleSetting::sanitizeTempDir(QAxObject *object, const QString &objectName
 
     // FIXME: use fromLocal8Bit
     FileUtil::copyContents( filePath(TempDir, TempFile,   objectName), m_codecForProject,
-                            filePath(TempDir, ModuleFile, objectName), m_codecForCvs );
+                            filePath(TempDir, ModuleFile, objectName), m_codecForCvs, true/*removeTrailingSpaces*/ );
 //    FileUtil::deleteFile(     tempFilePathInTempDir(objectName) ); // keep original files
 
     return true;
@@ -1520,7 +1520,7 @@ bool ModuleSetting::desanitizeTempDir(QAxObject *object, const QString &objectNa
 
     // FIXME: use toLocal8Bit
     FileUtil::copyContents( filePath(TempDir, ModuleFile, objectName), m_codecForCvs,
-                            filePath(TempDir, TempFile,   objectName), m_codecForProject );
+                            filePath(TempDir, TempFile,   objectName), m_codecForProject, false/*removeTrailingSpaces*/ );
 //    FileUtil::deleteFile(   moduleFilePathInTempDir(objectName) ); // keep original files
 
     return true;

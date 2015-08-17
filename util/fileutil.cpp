@@ -33,7 +33,7 @@ void FileUtil::saveToFile(const QString &contents, const QString &filePath, Code
     file.close();
 }
 
-void FileUtil::copyContents(const QString &filePathSrc, CodecInfo *codecSrc, const QString &filePathDst, CodecInfo *codecDst)
+void FileUtil::copyContents(const QString &filePathSrc, CodecInfo *codecSrc, const QString &filePathDst, CodecInfo *codecDst, const bool removeTrailingSpaces)
 {
 
     QFile fileSrc( filePathSrc );
@@ -72,6 +72,12 @@ void FileUtil::copyContents(const QString &filePathSrc, CodecInfo *codecSrc, con
 
             if (line.endsWith( codecSrc->lineEnd() ))
                 line.chop( codecSrc->lineEnd().length() );
+
+            if ( removeTrailingSpaces )
+            {
+                while ( line.size() > 0 && line.at( line.size() - 1 ).isSpace() )
+                    line.chop( 1 );
+            }
 
             streamDst << line << codecDst->lineEnd();
         }

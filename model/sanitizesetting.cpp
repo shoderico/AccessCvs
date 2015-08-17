@@ -293,11 +293,16 @@ QString SanitizeSetting::readLine()
     return line;
 }
 
-void SanitizeSetting::writeLine( QTextStream &stDesign, QTextStream &stModule, bool isCodeBehind, const QString &txt, const QString &lineEnd)
+void SanitizeSetting::writeLine( QTextStream &stDesign, QTextStream &stModule, bool isCodeBehind, QString &txt, const QString &lineEnd)
 {
     if ( !isCodeBehind )
         stDesign << txt << lineEnd;
     else
+    {
+        // remove trailing spaces
+        while ( txt.size() > 0 && txt.at( txt.size() - 1 ).isSpace() )
+            txt.chop( 1 );
         stModule << txt << lineEnd;
+    }
 }
 
