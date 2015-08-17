@@ -2,6 +2,7 @@
 #define MAINDIALOG_H
 
 #include <QDialog>
+#include <QTimer>
 #include "model/objectmodel.h"
 
 namespace Ui {
@@ -49,11 +50,18 @@ private slots:
     void refreshItems();
     void executeExport();
     void executeImport();
+    void prepareExport();
+    void prepareImport();
+
+    void beginBatch();
+    void endBatch();
 
     void selectAuto();
     void selectCheckStateChanged(int state);
     void showCheckStateChanged(int state);
     void showSelectedOnly(int state);
+
+    void onTimeout();
 
     void progressStart(int type, int count);
     void progressChange(int type, int value);
@@ -65,6 +73,8 @@ private:
     ObjectModel *m_model;
     ObjectProxyModel *m_proxyModel;
     ShowModes m_showMode;
+    QTime m_progressTime;
+    QTimer m_progressTimer;
 
 };
 

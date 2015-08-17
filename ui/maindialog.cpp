@@ -86,6 +86,7 @@ MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
     connect( ui->showModuleCheckBox,      SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
     connect( ui->showReferenceCheckBox,   SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
 
+    connect( &m_progressTimer, SIGNAL(timeout()), this, SLOT(onTimeout()) );
 
 
 
@@ -149,10 +150,7 @@ void MainDialog::showAsAutoExport()
     ui->okButton->setText(tr("Export"));
     show();
 
-    m_model->refreshItems();
-    m_model->selectItemsForProcess( true/*selected*/, true/*resetSelection*/ );
-    m_proxyModel->setFilterShowObjectType( ObjectModel::AllObjectTypes );
-    m_proxyModel->setFilterShowSelectedOnly( true/*selected*/ );
+    prepareExport();
 
     if (m_proxyModel->rowCount() == 0)
         accept();
@@ -166,10 +164,7 @@ void MainDialog::showAsAutoImport()
     ui->okButton->setText(tr("Import"));
     show();
 
-    m_model->refreshItems();
-    m_model->selectItemsForProcess( true/*selected*/, true/*resetSelection*/ );
-    m_proxyModel->setFilterShowObjectType( ObjectModel::AllObjectTypes );
-    m_proxyModel->setFilterShowSelectedOnly( true/*selected*/ );
+    prepareImport();
 
     if (m_proxyModel->rowCount() == 0)
         accept();
@@ -202,14 +197,14 @@ void MainDialog::onAccepted()
 
         case AutoExportMode:
         {
-            m_model->executeExport();
+            executeExport();
             accept();
             break;
         }
 
         case AutoImportMode:
         {
-            m_model->executeImport();
+            executeImport();
             accept();
             break;
         }
@@ -224,6 +219,7 @@ void MainDialog::onAccepted()
 
 void MainDialog::onRejected()
 {
+    endBatch();
     reject();
 }
 
@@ -234,23 +230,67 @@ void MainDialog::clearCache()
 
 void MainDialog::refreshItems()
 {
+    beginBatch();
+
     m_model->refreshItems();
-//    m_model->selectItemsForProcess( true, false );
-    // FIXME: i don't know why but cursor stays with WaitCursor in several seconds.
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    QApplication::restoreOverrideCursor();
+
+    endBatch();
 }
 
 void MainDialog::executeExport()
 {
+    beginBatch();
+
     m_model->executeExport();
-    QMessageBox::information(0,"","done");
+
+    endBatch();
 }
 
 void MainDialog::executeImport()
 {
+    beginBatch();
+
     m_model->executeImport();
-    QMessageBox::information(0,"","done");
+
+    endBatch();
+}
+
+void MainDialog::prepareExport()
+{
+    beginBatch();
+
+    m_model->refreshItems();
+    m_model->selectItemsForProcess( true/*selected*/, true/*resetSelection*/ );
+    m_proxyModel->setFilterShowObjectType( ObjectModel::AllObjectTypes );
+    m_proxyModel->setFilterShowSelectedOnly( true/*selected*/ );
+
+    endBatch();
+}
+
+void MainDialog::prepareImport()
+{
+    beginBatch();
+
+    m_model->refreshItems();
+    m_model->selectItemsForProcess( true/*selected*/, true/*resetSelection*/ );
+    m_proxyModel->setFilterShowObjectType( ObjectModel::AllObjectTypes );
+    m_proxyModel->setFilterShowSelectedOnly( true/*selected*/ );
+
+    endBatch();
+}
+
+void MainDialog::beginBatch()
+{
+    m_progressTime.restart();
+    m_progressTimer.start(250);
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+}
+
+void MainDialog::endBatch()
+{
+    m_progressTimer.stop();
+    onTimeout();
+    QApplication::restoreOverrideCursor();
 }
 
 void MainDialog::selectAuto()
@@ -344,6 +384,23 @@ void MainDialog::showSelectedOnly(int state)
     bool selected = (state == Qt::Checked);
 
     m_proxyModel->setFilterShowSelectedOnly( selected );
+}
+
+void MainDialog::onTimeout()
+{
+    int msecs = m_progressTime.elapsed() % 1000;
+    int secs = m_progressTime.elapsed() / 1000;
+    int mins = (secs / 60) % 60;
+    int hours = (secs / 3600);
+    secs = secs % 60;
+
+    ui->elapsedTimeLabel->setText(
+                QString("%1:%2:%3.%4")
+                .arg(hours, 2, 10, QLatin1Char('0'))
+                .arg(mins, 2, 10, QLatin1Char('0'))
+                .arg(secs, 2, 10, QLatin1Char('0'))
+                .arg(msecs, 3, 10, QLatin1Char('0'))
+                );
 }
 
 void MainDialog::progressStart(int type, int count)
