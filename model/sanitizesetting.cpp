@@ -4,7 +4,10 @@
 #include <QRegularExpression>
 
 #include "util/codecinfo.h"
-
+#include <QTextCodec>
+#include <QTextDecoder>
+#include <QTextEncoder>
+#include <QByteArray>
 
 
 SanitizeSetting::SanitizeSetting(QObject *parent) : QObject(parent)
@@ -43,6 +46,9 @@ SanitizeSetting::SanitizeSetting(QObject *parent) : QObject(parent)
     m_reMultiLine = new QRegularExpression();
     m_reMultiLine->setPattern(sPattern);
 
+    // text decoder
+    m_codecInfoSrc = NULL;
+    m_deviceSrc = NULL;
 }
 
 SanitizeSetting::~SanitizeSetting()
@@ -52,23 +58,15 @@ SanitizeSetting::~SanitizeSetting()
     delete m_reMultiLine;
 }
 
-namespace
-{
-    void writeLine( QTextStream &stDesign, QTextStream &stModule, bool isCodeBehind, const QString &txt, const QString &lineEnd)
-    {
-        if ( !isCodeBehind )
-            stDesign << txt << lineEnd;
-        else
-            stModule << txt << lineEnd;
-    }
-}
-
-void SanitizeSetting::sanitize(QTextStream &streamSrc, QTextStream &streamDstDesign, QTextStream &streamDstModule, CodecInfo *codecDst)
+void SanitizeSetting::sanitize(QTextStream &streamSrc, CodecInfo *codecSrc, QTextStream &streamDstDesign, QTextStream &streamDstModule, CodecInfo *codecDst)
 {
 
     // TODO: remove trailing spaces
 
     m_blockData.clear();
+
+    m_deviceSrc = streamSrc.device();
+    m_codecInfoSrc = codecSrc;
 
     bool getLine = true;
     bool isCodeBehind = false;
@@ -78,12 +76,12 @@ void SanitizeSetting::sanitize(QTextStream &streamSrc, QTextStream &streamDstDes
     QString txt;
     QString sPattern;
 
-    while (!streamSrc.atEnd())
+    while (!m_deviceSrc->atEnd())
     {
         //qDebug() << stIn.readLine();
 
         if ( getLine )
-            txt = streamSrc.readLine();
+            txt = readLine();
         else
             getLine = true;
 
@@ -124,9 +122,9 @@ void SanitizeSetting::sanitize(QTextStream &streamSrc, QTextStream &streamDstDes
                 reIndentLess.setPattern(sPattern);
             }
 
-            while ( !streamSrc.atEnd() )
+            while ( !m_deviceSrc->atEnd() )
             {
-                txt = streamSrc.readLine();
+                txt = readLine();
                 if (reIndentSame.match(txt).hasMatch() || reIndentLess.match(txt).hasMatch())
                     break;
             }
@@ -143,9 +141,9 @@ void SanitizeSetting::sanitize(QTextStream &streamSrc, QTextStream &streamDstDes
             QRegularExpression reBinary;
             reBinary.setPattern("^\\s*0x(\\w+)(?: ,|)$");
             QString binaryStr = "";
-            while ( !streamSrc.atEnd() )
+            while ( !m_deviceSrc->atEnd() )
             {
-                txt = streamSrc.readLine();
+                txt = readLine();
                 QRegularExpressionMatch matchesBinary = reBinary.match(txt);
                 if ( matchesBinary.hasMatch() )
                     binaryStr += matchesBinary.captured(1);
@@ -215,5 +213,28 @@ QByteArray SanitizeSetting::blockData(const QString &elementName)
         data = QByteArray::fromHex( dataStr.toLatin1() );
     }
     return data;
+}
+
+QString SanitizeSetting::readLine()
+{
+    QByteArray lineData = m_deviceSrc->readLine();
+
+    QString line;
+    if (m_codecInfoSrc->codec()->name() == "Shift_JIS")
+        line = QString::fromLocal8Bit( lineData );
+    else
+        line = lineData;
+
+    if (line.endsWith( m_codecInfoSrc->lineEnd() ))
+        line.chop( m_codecInfoSrc->lineEnd().length() );
+    return line;
+}
+
+void SanitizeSetting::writeLine( QTextStream &stDesign, QTextStream &stModule, bool isCodeBehind, const QString &txt, const QString &lineEnd)
+{
+    if ( !isCodeBehind )
+        stDesign << txt << lineEnd;
+    else
+        stModule << txt << lineEnd;
 }
 

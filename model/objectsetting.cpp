@@ -995,7 +995,7 @@ bool AccessDesignObjectSetting::sanitizeTempDir(QAxObject *object, const QString
 
 
     // sanitize
-    m_sanitizer->sanitize( streamSrc, streamDstDesign, streamDstModule, m_codecForCvs );
+    m_sanitizer->sanitize( streamSrc, m_codecForProject, streamDstDesign, streamDstModule, m_codecForCvs );
 
 
     // post process for subclasses.
@@ -1099,13 +1099,43 @@ bool AccessDesignObjectSetting::desanitizeTempDir(QAxObject *object, const QStri
 
     // de-sanitize : just join two files
     {
-        while (!streamDstDesign.atEnd())
-            streamSrc << streamDstDesign.readLine() << m_codecForProject->lineEnd();
+        if (m_codecForProject->codec()->name() == "Shift_JIS")
+        {
+            while (!streamDstDesign.atEnd())
+            {
+                QString line = streamDstDesign.readLine();
+                line += m_codecForProject->lineEnd();
+
+                QByteArray lineData = line.toLocal8Bit();
+                fileSrc.write( lineData );
+            }
+        }
+        else
+        {
+            while (!streamDstDesign.atEnd())
+            {
+                QString line = streamDstDesign.readLine();
+                streamSrc << line << m_codecForProject->lineEnd();
+            }
+        }
     }
     if (hasModule)
     {
-        while (!streamDstModule.atEnd())
-            streamSrc << streamDstModule.readLine() << m_codecForProject->lineEnd();
+        if (m_codecForProject->codec()->name() == "Shift_JIS")
+        {
+            while (!streamDstModule.atEnd())
+            {
+                QString line = streamDstModule.readLine();
+                line += m_codecForProject->lineEnd();
+                QByteArray lineData = line.toLocal8Bit();
+                fileSrc.write( lineData );
+            }
+        }
+        else
+        {
+            while (!streamDstModule.atEnd())
+                streamSrc << streamDstModule.readLine() << m_codecForProject->lineEnd();
+        }
     }
 
 
@@ -1470,6 +1500,7 @@ bool ModuleSetting::sanitizeTempDir(QAxObject *object, const QString &objectName
     // codec
     determineCodecForProject();
 
+    // FIXME: use fromLocal8Bit
     FileUtil::copyContents( filePath(TempDir, TempFile,   objectName), m_codecForProject,
                             filePath(TempDir, ModuleFile, objectName), m_codecForCvs );
 //    FileUtil::deleteFile(     tempFilePathInTempDir(objectName) ); // keep original files
@@ -1487,6 +1518,7 @@ bool ModuleSetting::desanitizeTempDir(QAxObject *object, const QString &objectNa
     // codec
     determineCodecForProject();
 
+    // FIXME: use toLocal8Bit
     FileUtil::copyContents( filePath(TempDir, ModuleFile, objectName), m_codecForCvs,
                             filePath(TempDir, TempFile,   objectName), m_codecForProject );
 //    FileUtil::deleteFile(   moduleFilePathInTempDir(objectName) ); // keep original files

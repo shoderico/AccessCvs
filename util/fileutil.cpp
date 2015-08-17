@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QFileInfo>
+#include <QTextCodec>
 
 #include <QCryptographicHash>
 #include <qt_windows.h>
@@ -62,8 +63,33 @@ void FileUtil::copyContents(const QString &filePathSrc, CodecInfo *codecSrc, con
     streamDst.setGenerateByteOrderMark(codecDst->bom());
 
     // copy contents
-    while (!streamSrc.atEnd())
-        streamDst << streamSrc.readLine() << codecDst->lineEnd();
+    if ( codecSrc->codec()->name() == "Shift_JIS" )
+    {
+        while (!fileSrc.atEnd())
+        {
+            QByteArray lineData = fileSrc.readLine();
+            QString line = QString::fromLocal8Bit( lineData );
+
+            if (line.endsWith( codecSrc->lineEnd() ))
+                line.chop( codecSrc->lineEnd().length() );
+
+            streamDst << line << codecDst->lineEnd();
+        }
+    }
+    else if ( codecDst->codec()->name() == "Shift_JIS" )
+    {
+        while (!streamSrc.atEnd())
+        {
+            QString line = streamSrc.readLine() + codecDst->lineEnd();
+            QByteArray lineData = line.toLocal8Bit();
+            fileDst.write( lineData );
+        }
+    }
+    else
+    {
+        while (!streamSrc.atEnd())
+            streamDst << streamSrc.readLine() << codecDst->lineEnd();
+    }
 
     // close files
     fileSrc.close();
