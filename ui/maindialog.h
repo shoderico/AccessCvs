@@ -67,6 +67,8 @@ private slots:
     void progressChange(int type, int value);
     void progressEnd(int type);
 
+    void setProcessTypeName(int type);
+
 private:
     Ui::MainDialog *ui;
     Access::Application *m_application;
@@ -75,6 +77,7 @@ private:
     ShowModes m_showMode;
     QTime m_progressTime;
     QTimer m_progressTimer;
+    QMap<int, QString> m_processTypeNames;
 
 };
 

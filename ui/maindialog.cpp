@@ -28,11 +28,6 @@ MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
     ui->setupUi(this);
 
     // FIXME: to be canceled
-    // FIXME: show current progress name
-    // FIXME: show current position and total count in progress
-    // FIXME: show ellapsed time in progress
-
-
 
     m_model = new ObjectModel(this);
     m_proxyModel = new ObjectProxyModel(this);
@@ -120,6 +115,32 @@ MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
     m_model->setApplication(m_application);
     m_proxyModel->setFilterShowObjectType( ObjectModel::AllObjectTypes );
     m_proxyModel->setFilterShowSelectedOnly( true/*selected*/ );
+
+    m_processTypeNames[ ObjectModel::RefreshProcess ] = tr("RefreshProcess");
+    m_processTypeNames[ ObjectModel::ExportProcess ] = tr("ExportProcess");
+    m_processTypeNames[ ObjectModel::ImportProcess ] = tr("ImportProcess");
+    m_processTypeNames[ ObjectModel::LoadItemFromProjectProcess ] = tr("LoadItemFromProjectProcess");
+    m_processTypeNames[ ObjectModel::LoadItemFromSourceDirProcess ] = tr("LoadItemFromSourceDirProcess");
+    m_processTypeNames[ ObjectModel::ExportFromProjectToTempDirProcess ] = tr("ExportFromProjectToTempDirProcess");
+    m_processTypeNames[ ObjectModel::ImportFromTempDirToProjectProcess ] = tr("ImportFromTempDirToProjectProcess");
+    m_processTypeNames[ ObjectModel::CopyFromTempDirToSourceDirProcess ] = tr("CopyFromTempDirToSourceDirProcess");
+    m_processTypeNames[ ObjectModel::CopyFromSourceDirToTempDirProcess ] = tr("CopyFromSourceDirToTempDirProcess");
+    m_processTypeNames[ ObjectModel::SanitizeTempDirProcess ] = tr("SanitizeTempDirProcess");
+    m_processTypeNames[ ObjectModel::DesanitizeTempDirProcess ] = tr("DesanitizeTempDirProcess");
+    m_processTypeNames[ ObjectModel::CompareTempDirProcess ] = tr("CompareTempDirProcess");
+    m_processTypeNames[ ObjectModel::DeleteFromSourceDirProcess ] = tr("DeleteFromSourceDirProcess");
+    m_processTypeNames[ ObjectModel::DeleteFromProjectProcess ] = tr("DeleteFromProjectProcess");
+    m_processTypeNames[ ObjectModel::DeleteFromTempDirProcess ] = tr("DeleteFromTempDirProcess");
+    m_processTypeNames[ ObjectModel::UpdateItemsDifferenceByFileTimeProcess ] = tr("UpdateItemsDifferenceByFileTimeProcess");
+    m_processTypeNames[ ObjectModel::UpdateFileTimeInTempDirByExportDateProcess ] = tr("UpdateFileTimeInTempDirByExportDateProcess");
+    m_processTypeNames[ ObjectModel::UpdateItemsExportDateProcess ] = tr("UpdateItemsExportDateProcess");
+    m_processTypeNames[ ObjectModel::UpdateFileTimeInTempDirProcess ] = tr("UpdateFileTimeInTempDirProcess");
+    m_processTypeNames[ ObjectModel::UpdateItemsInProjectProcess ] = tr("UpdateItemsInProjectProcess");
+    m_processTypeNames[ ObjectModel::UpdateItemsInSourceDirProcess ] = tr("UpdateItemsInSourceDirProcess");
+    m_processTypeNames[ ObjectModel::UpdateItemsDifferenceProcess ] = tr("UpdateItemsDifferenceProcess");
+    m_processTypeNames[ ObjectModel::UpdateItemsDifferenceAsIsProcess ] = tr("UpdateItemsDifferenceAsIsProcess");
+    m_processTypeNames[ ObjectModel::DeleteItemsProcess ] = tr("DeleteItemsProcess");
+    m_processTypeNames[ ObjectModel::UpdateItemsCreateUpdateDateFromProjectProcess ] = tr("UpdateItemsCreateUpdateDateFromProjectProcess");
 }
 
 MainDialog::~MainDialog()
@@ -284,6 +305,7 @@ void MainDialog::beginBatch()
     m_progressTime.restart();
     m_progressTimer.start(250);
     QApplication::setOverrideCursor(Qt::WaitCursor);
+    ui->progressCountLabel->setText(tr("( 0000 / 0000 )"));
 }
 
 void MainDialog::endBatch()
@@ -291,6 +313,7 @@ void MainDialog::endBatch()
     m_progressTimer.stop();
     onTimeout();
     QApplication::restoreOverrideCursor();
+    ui->progressCountLabel->setText(tr("( 0000 / 0000 )"));
 }
 
 void MainDialog::selectAuto()
@@ -405,15 +428,20 @@ void MainDialog::onTimeout()
 
 void MainDialog::progressStart(int type, int count)
 {
-    Q_UNUSED(type);
     ui->progressBar->setRange(0, count);
     ui->progressBar->setValue(0);
+    setProcessTypeName(type);
+    QApplication::processEvents();
 }
 
 void MainDialog::progressChange(int type, int value)
 {
     Q_UNUSED(type);
     ui->progressBar->setValue(value);
+    ui->progressCountLabel->setText(QString("( %1 / %2 )")
+                                    .arg(value, 4, 10, QLatin1Char('0'))
+                                    .arg(ui->progressBar->maximum(), 4, 10, QLatin1Char('0'))
+                                    );
     QApplication::processEvents();
 }
 
@@ -423,5 +451,11 @@ void MainDialog::progressEnd(int type)
     ui->progressBar->setValue(0);
     ui->progressBar->setMaximum(1);
     ui->progressBar->reset();
+    ui->processTypeNameLabel->setText("");
+}
+
+void MainDialog::setProcessTypeName(int type)
+{
+    ui->processTypeNameLabel->setText(QString("%1 ...").arg( m_processTypeNames.value(type) ));
 }
 

@@ -36,6 +36,20 @@
         </widget>
        </item>
        <item>
+        <widget class="QLabel" name="progressCountLabel">
+         <property name="text">
+          <string>( 0000 / 0000 )</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="processTypeNameLabel">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="horizontalSpacer_4">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -57,6 +71,9 @@
       <widget class="QProgressBar" name="progressBar">
        <property name="value">
         <number>24</number>
+       </property>
+       <property name="format">
+        <string>%p%</string>
        </property>
       </widget>
      </item>
