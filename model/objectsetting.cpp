@@ -1012,6 +1012,27 @@ bool AccessDesignObjectSetting::sanitizeTempDir(QAxObject *object, const QString
     // delete temp file
 //    FileUtil::deleteFile( fileSrc.fileName() ); // keep original files
 
+    // Check design data corruption for Unicode-Shift_JIS problem.
+    // FIXME: this must be independent function and store results to ObjectItem
+    //if ( m_codecForProject->codec()->name() ==  "???") // FIXME: check only for Shift_JIS.
+    {
+        QFile fileDstDesign( filePath(TempDir, DesignFile, objectName) );
+        fileDstDesign.open( QIODevice::ReadOnly );
+        QTextStream streamDstDesign( &fileDstDesign );
+        QString line = "";
+        int lineNum = 0;
+        while (!streamDstDesign.atEnd())
+        {
+            ++lineNum;
+            line = streamDstDesign.readLine();
+            if (line.contains('?'))
+            {
+                qCritical() << QString("'?' found!  line :%1, content :%2, file :%3").arg(lineNum).arg(line).arg(fileDstDesign.fileName());
+            }
+        }
+        fileDstDesign.close();
+    }
+
     return true;
 }
 
