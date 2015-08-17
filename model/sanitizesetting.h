@@ -28,6 +28,9 @@ private:
     QRegularExpression *m_reBlock;
     QRegularExpression *m_reSingleLine;
     QRegularExpression *m_reMultiLine;
+    QRegularExpression *m_rePictureData;
+    QRegularExpression *m_rePictureDataFirstLine;
+
 
     QIODevice    *m_deviceSrc;
     CodecInfo    *m_codecInfoSrc;

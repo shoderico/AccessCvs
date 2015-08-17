@@ -46,6 +46,26 @@ SanitizeSetting::SanitizeSetting(QObject *parent) : QObject(parent)
     m_reMultiLine = new QRegularExpression();
     m_reMultiLine->setPattern(sPattern);
 
+    // picture-data
+    sPattern = "^\\s*(?:";
+    sPattern += "PictureData";
+    sPattern += ")";
+    m_rePictureData = new QRegularExpression();
+    m_rePictureData->setPattern(sPattern);
+    //
+    sPattern = "^(\\s*)0x";       //1
+    sPattern += "([0-9a-z]{16})"; //2
+    sPattern += "([0-9a-z]{8})";  //3
+    sPattern += "([0-9a-z]{8})";  //4
+    sPattern += "([0-9a-z]{8})";  //5
+    sPattern += "([0-9a-z]{8})";  //6
+    sPattern += "([0-9a-z]{16})"; //7
+    sPattern += " ,$";
+    m_rePictureDataFirstLine = new QRegularExpression();
+    m_rePictureDataFirstLine->setPattern(sPattern);
+
+
+
     // text decoder
     m_codecInfoSrc = NULL;
     m_deviceSrc = NULL;
@@ -88,6 +108,8 @@ void SanitizeSetting::sanitize(QTextStream &streamSrc, CodecInfo *codecSrc, QTex
         QRegularExpressionMatch matchesSingleLine;
         QRegularExpressionMatch matchesMultiLine;
         QRegularExpressionMatch matchesBlock;
+        QRegularExpressionMatch matchesPictureData;
+        QRegularExpressionMatch matchesPictureDataFirstLine;
 
 
         // SingleLine
@@ -157,6 +179,47 @@ void SanitizeSetting::sanitize(QTextStream &streamSrc, CodecInfo *codecSrc, QTex
 //                qDebug() << "PrtDevMode" << binaryStr.length(); // 3112
 //                qDebug() << binaryStr;
 //            }
+
+            if (isReport && isReportPositionBegin) { isReport = false; isReportPositionBegin = false; }
+            goto end_of_while;
+        }
+
+        // picture-data
+        // http://www.lebans.com/imagecontroltoclipboard.htm
+        matchesPictureData = m_rePictureData->match(txt);
+        if ( matchesPictureData.hasMatch() )
+        {
+            writeLine(streamDstDesign, streamDstModule, isCodeBehind, txt, codecDst->lineEnd());
+
+            txt = readLine();
+            matchesPictureDataFirstLine = m_rePictureDataFirstLine->match(txt);
+
+            QString indent = matchesPictureDataFirstLine.captured(1);
+            QString cfData = matchesPictureDataFirstLine.captured(2);
+            QString mfh1   = matchesPictureDataFirstLine.captured(3);
+            QString mfh2   = matchesPictureDataFirstLine.captured(4);
+            QString mfh3   = matchesPictureDataFirstLine.captured(5);
+            QString mfh4   = matchesPictureDataFirstLine.captured(6);
+            QString rest   = matchesPictureDataFirstLine.captured(7);
+
+            if (cfData.startsWith("03"))
+            {
+                // CF_METAFILEPICT = 3
+                // sanitize 2 - 4 bytes to 00 ( unused )
+                cfData = "0300000000000000";
+                // sanitize METAFILEHEADER::hMetaFile ( always changed )
+                mfh4   = "00000000";
+            }
+            else if (cfData.startsWith("0e"))
+            {
+                // CF_ENHMETAFILE = 14
+                // sanitize 2 - 4 bytes to 00 ( unused )
+                cfData = "0e00000000000000";
+            }
+
+            txt = indent + "0x" + cfData + mfh1 + mfh2 + mfh3 + mfh4 + rest + " ,";
+            writeLine(streamDstDesign, streamDstModule, isCodeBehind, txt, codecDst->lineEnd());
+
 
             if (isReport && isReportPositionBegin) { isReport = false; isReportPositionBegin = false; }
             goto end_of_while;
