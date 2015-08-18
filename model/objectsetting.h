@@ -85,6 +85,7 @@ public:
     virtual void loadSettings(QSettings *settings) { Q_UNUSED(settings) }
     virtual void saveSettings(QSettings *settings) { Q_UNUSED(settings) }
 
+    virtual void determineCodecForProject();
 protected:
     enum DirectoryType
     {
@@ -115,7 +116,6 @@ protected:
 
     void mkpathObjectPath(DirectoryType dirType);
 
-    virtual void determineCodecForProject();
 
 
 protected:
@@ -159,8 +159,8 @@ public:
     virtual void saveSettings(QSettings *settings);
 
     void setTableDataTargets(QStringList *newTargets);
-protected:
     virtual void determineCodecForProject();
+protected:
     ComPtr<DAO::TableDefs> m_tableDefs;
     QStringList m_tableDataTargets;
     TableDefSanitizeSetting *m_tableDefSanitizer;
@@ -236,9 +236,9 @@ public:
     explicit AccessDesignObjectSetting(ProjectSetting *parent);
     virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
     virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
+    virtual void determineCodecForProject();
 
 protected:
-    virtual void determineCodecForProject();
     virtual bool afterSanitizeTempDir(QAxObject* object, const QString &objectName, SanitizeSetting *sanitizer);
     SanitizeSetting *m_sanitizer;
 };
@@ -292,8 +292,8 @@ public:
     virtual bool        prepareItemCollection();
     virtual int         itemCount();
     virtual QAxObject  *itemUnsafePtr(const QVariant &index);
-protected:
     virtual void determineCodecForProject();
+protected:
     ComPtr<Access::AllModules> m_objects;
 };
 

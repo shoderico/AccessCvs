@@ -849,6 +849,25 @@ void ObjectModel::updateItemsInSourceDir(ObjectItems *allTargets, Model::ObjectE
         emit dataChanged( createIndex(helper.first(), InSourceDirColumn), createIndex(helper.last(), InSourceDirColumn) );
 }
 
+
+
+struct UpdateItemsDifferenceFunctionObject
+{
+    UpdateItemsDifferenceFunctionObject(Model::ObjectDifference difference)
+        : m_difference(difference)
+    {
+    }
+
+    typedef void result_type;
+
+    void operator()(ObjectItem *item)
+    {
+        item->setDifferent(m_difference);
+    }
+
+    Model::ObjectDifference m_difference;
+};
+
 void ObjectModel::updateItemsDifference(ObjectItems *allTargets, Model::ObjectDifference difference)
 {
     DataChangedHelper helper( m_items.count() );
@@ -857,12 +876,40 @@ void ObjectModel::updateItemsDifference(ObjectItems *allTargets, Model::ObjectDi
     {
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
         ProgressNotifier subProg(UpdateItemsDifferenceProcess, items.count(), this);
+
+        // register indexes for dataChanged emission
+        for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
+            helper.changed( m_items.indexOf( (*it) ) );
+
+        //----------------------------------------------------------------------------------------
+        // synchronous call
+        /*
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
             subProg.next();
             (*it)->setDifferent(difference);
-            helper.changed( m_items.indexOf( (*it) ) );
         }
+        // */
+
+        //----------------------------------------------------------------------------------------
+        // asynchronous call
+        //*
+        QFutureWatcher<void> futureWatcher;
+        QEventLoop loop;
+
+        connect( &futureWatcher, SIGNAL(finished()),                    &loop,    SLOT(quit()) );
+        connect( &futureWatcher, SIGNAL(finished()),                    &subProg, SLOT(finished()) );
+        connect( &futureWatcher, SIGNAL(progressRangeChanged(int,int)), &subProg, SLOT(progressRangeChanged(int,int)) );
+        connect( &futureWatcher, SIGNAL(progressValueChanged(int)),     &subProg, SLOT(progressValueChanged(int)) );
+
+        QFuture<void> future = QtConcurrent::map(items, UpdateItemsDifferenceFunctionObject(difference) );
+        futureWatcher.setFuture( future );
+
+        if (!subProg.isFinished())
+            loop.exec();
+
+        // */
+
     }
     if (helper.isChanged())
         emit dataChanged( createIndex(helper.first(), DifferentColumn), createIndex(helper.last(), DifferentColumn) );
@@ -1340,8 +1387,9 @@ void ObjectModel::copyFromSourceDirToTempDir(ObjectItems *allTargets)
             os->copyFromSourceDirToTempDir( (*it) );
         }
     }
-
 }
+
+
 
 struct SanitizeTempDirFunctionObject
 {
@@ -1370,12 +1418,15 @@ void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
     {
         os = setting[ objectType ];
+        os->determineCodecForProject();
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
         ProgressNotifier subProg(SanitizeTempDirProcess, objectNames.count(), this);
 
-        // /*
+        //----------------------------------------------------------------------------------------
+        // synchronous call
+        /*
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
@@ -1383,26 +1434,22 @@ void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
         }
         // */
 
-        /*
+        //----------------------------------------------------------------------------------------
+        // asynchronous call
+        //*
         QFutureWatcher<void> futureWatcher;
         QEventLoop loop;
 
-        connect( &futureWatcher, SIGNAL(finished()), &subProg, SLOT(finished()) );
-        connect( &futureWatcher, SIGNAL(finished()), &loop, SLOT(quit()) );
+        connect( &futureWatcher, SIGNAL(finished()),                    &loop,    SLOT(quit()) );
+        connect( &futureWatcher, SIGNAL(finished()),                    &subProg, SLOT(finished()) );
         connect( &futureWatcher, SIGNAL(progressRangeChanged(int,int)), &subProg, SLOT(progressRangeChanged(int,int)) );
-        connect( &futureWatcher, SIGNAL(progressValueChanged(int)), &subProg, SLOT(progressValueChanged(int)) );
+        connect( &futureWatcher, SIGNAL(progressValueChanged(int)),     &subProg, SLOT(progressValueChanged(int)) );
 
         QFuture<void> future = QtConcurrent::map(objectNames, SanitizeTempDirFunctionObject(os) );
         futureWatcher.setFuture( future );
 
         if (!subProg.isFinished())
             loop.exec();
-
-//        while (!futureWatcher.isFinished())
-//        {
-//            QThread::sleep(100);
-//            QApplication::processEvents();
-//        }
         // */
     }
 }
@@ -1417,6 +1464,7 @@ void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
     {
         os = setting[ objectType ];
+        os->determineCodecForProject();
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
@@ -1428,7 +1476,6 @@ void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
             os->desanitizeTempDir(NULL, (*it) );
         }
     }
-
 }
 
 void ObjectModel::compareTempDir(ObjectItems *allTargets)
@@ -1518,6 +1565,25 @@ void ObjectModel::deleteFromProject(ObjectItems *allTargets)
     }
 }
 
+
+
+struct DeleteFromTempDirFunctionObject
+{
+    DeleteFromTempDirFunctionObject(ObjectSetting *os)
+        : m_os(os)
+    {
+    }
+
+    typedef void result_type;
+
+    void operator()(const QString &objectName)
+    {
+        m_os->deleteFromTempDir(objectName);
+    }
+
+    ObjectSetting *m_os;
+};
+
 void ObjectModel::deleteFromTempDir(ObjectItems *allTargets)
 {
     ProgressNotifier mainProg(DeleteFromTempDirProcess, this);
@@ -1533,11 +1599,33 @@ void ObjectModel::deleteFromTempDir(ObjectItems *allTargets)
         QStringList objectNames = targets.keys();
         ProgressNotifier subProg(DeleteFromTempDirProcess, objectNames.count(), this);
 
+        //----------------------------------------------------------------------------------------
+        // syncronous call
+        /*
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
             os->deleteFromTempDir( (*it) );
         }
+        // */
+
+        //----------------------------------------------------------------------------------------
+        // asynchronous call
+        //*
+        QFutureWatcher<void> futureWatcher;
+        QEventLoop loop;
+
+        connect( &futureWatcher, SIGNAL(finished()),                    &loop,    SLOT(quit()) );
+        connect( &futureWatcher, SIGNAL(finished()),                    &subProg, SLOT(finished()) );
+        connect( &futureWatcher, SIGNAL(progressRangeChanged(int,int)), &subProg, SLOT(progressRangeChanged(int,int)) );
+        connect( &futureWatcher, SIGNAL(progressValueChanged(int)),     &subProg, SLOT(progressValueChanged(int)) );
+
+        QFuture<void> future = QtConcurrent::map(objectNames, DeleteFromTempDirFunctionObject(os) );
+        futureWatcher.setFuture( future );
+
+        if (!subProg.isFinished())
+            loop.exec();
+        // */
     }
 }
 

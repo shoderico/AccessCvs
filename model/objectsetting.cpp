@@ -426,7 +426,7 @@ bool TableDefSetting::sanitizeTempDir(QAxObject *object, const QString &objectNa
     Q_UNUSED(object)
 
     // codec
-    determineCodecForProject();
+//    determineCodecForProject();
 
     // sanitize table-def
     {
@@ -512,7 +512,7 @@ bool TableDefSetting::desanitizeTempDir(QAxObject *object, const QString &object
     // we have to convert ONLY codec.
 
     // codec
-    determineCodecForProject();
+//    determineCodecForProject();
 
     FileUtil::copyContents( filePath(TempDir, DesignFile, objectName), m_codecForCvs,
                             filePath(TempDir, TempFile,   objectName), m_codecForProject, false/*removeTrailingSpaces*/ );
@@ -971,7 +971,7 @@ bool AccessDesignObjectSetting::sanitizeTempDir(QAxObject *object, const QString
         fileDstModule.open( QIODevice::WriteOnly );
 
     // codec
-    determineCodecForProject();
+//    determineCodecForProject();
 
     // streams
     QTextStream streamSrc( &fileSrc );
@@ -1078,7 +1078,7 @@ bool AccessDesignObjectSetting::desanitizeTempDir(QAxObject *object, const QStri
         fileDstModule.open( QIODevice::ReadOnly );
 
     // codec
-    determineCodecForProject();
+//    determineCodecForProject();
 
     // streams
     QTextStream streamSrc( &fileSrc );
@@ -1396,8 +1396,10 @@ bool ReportSetting::afterSanitizeTempDir(QAxObject *object, const QString &objec
 
     FileUtil::deleteFile( filePath( TempDir, ReportPropFile, objectName ) );
 
+    // QSettings : low performance
+    /*
     // open report-prop-file
-    QSettings settings( filePath( TempDir, ReportPropFile, objectName ), QSettings::IniFormat, this );
+    QSettings settings( filePath( TempDir, ReportPropFile, objectName ), QSettings::IniFormat, 0 );
     settings.setIniCodec( m_codecForCvs->codec() );
 
     // PrtDevMode
@@ -1424,6 +1426,42 @@ bool ReportSetting::afterSanitizeTempDir(QAxObject *object, const QString &objec
         }
     }
     settings.endGroup();
+    */
+
+
+    // Implement own
+    QFile file( filePath( TempDir, ReportPropFile, objectName ) );
+    file.open( QIODevice::WriteOnly /*| QFile::Text*/ );
+    QTextStream stream( &file );
+    stream.setCodec( m_codecForCvs->codec() );
+    stream.setGenerateByteOrderMark( m_codecForCvs->bom() );
+
+    stream << "[PrtDevMode]" << m_codecForCvs->lineEnd();
+    {
+        QByteArray prtDevModeData = sanitizer->blockData( "PrtDevMode" );
+        if ( prtDevModeData.size() > 0 )
+        {
+            const void *pprtDevModeData = (const void*)prtDevModeData.constData();
+            const DEVMODEA *pdm = static_cast<const DEVMODEA*>(pprtDevModeData);
+
+            stream << "hasPrtDevMode=true" << m_codecForCvs->lineEnd();
+            stream << QString("dmOrientation=%1")   .arg( pdm->dmOrientation )  << m_codecForCvs->lineEnd();
+            stream << QString("dmPaperSize=%1")     .arg( pdm->dmPaperSize )    << m_codecForCvs->lineEnd();
+            stream << QString("dmPaperLength=%1")   .arg( pdm->dmPaperLength )  << m_codecForCvs->lineEnd();
+            stream << QString("dmPaperWidth=%1")    .arg( pdm->dmPaperWidth )   << m_codecForCvs->lineEnd();
+            stream << QString("dmScale=%1")         .arg( pdm->dmScale )        << m_codecForCvs->lineEnd();
+            stream << QString("dmColor=%1")         .arg( pdm->dmColor )        << m_codecForCvs->lineEnd();
+
+        }
+        else
+        {
+            stream << "hasPrtDevMode=false" << m_codecForCvs->lineEnd();
+        }
+    }
+
+
+    file.close();
+
 
     return true;
 }
@@ -1503,7 +1541,7 @@ bool ModuleSetting::sanitizeTempDir(QAxObject *object, const QString &objectName
     // we have to convert ONLY codec.
 
     // codec
-    determineCodecForProject();
+//    determineCodecForProject();
 
     // FIXME: use fromLocal8Bit
     FileUtil::copyContents( filePath(TempDir, TempFile,   objectName), m_codecForProject,
@@ -1521,7 +1559,7 @@ bool ModuleSetting::desanitizeTempDir(QAxObject *object, const QString &objectNa
     // we have to convert ONLY codec.
 
     // codec
-    determineCodecForProject();
+//    determineCodecForProject();
 
     // FIXME: use toLocal8Bit
     FileUtil::copyContents( filePath(TempDir, ModuleFile, objectName), m_codecForCvs,
