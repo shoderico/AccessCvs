@@ -15,6 +15,7 @@ public:
     void move(int value);
     void next();
     bool isFinished() const;
+    int type() const;
 
 signals:
     void start(int type, int count);

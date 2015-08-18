@@ -901,7 +901,7 @@ void ObjectModel::updateItemsExportDate(ObjectItems *allTargets, const QDateTime
         //*
         // concurrent-map
         {
-            ProgressNotifier subProg(UpdateItemsExportDateProcess, items.count(), this);
+            ProgressNotifier subProg(mainProg.type(), items.count(), this);
             ConcurrentMapHelper<void> mapHelper( &subProg );
             mapHelper.run( QtConcurrent::map(items, UpdateItemsExportDateFunctionObject(exportDate, differenceTypes, &helper, &m_items) ) );
         }
@@ -957,7 +957,7 @@ void ObjectModel::updateItemsInProject(ObjectItems *allTargets, Model::ObjectExi
         //*
         // concurrent-map
         {
-            ProgressNotifier subProg(UpdateItemsInProjectProcess, items.count(), this);
+            ProgressNotifier subProg(mainProg.type(), items.count(), this);
             ConcurrentMapHelper<void> mapHelper( &subProg );
             mapHelper.run( QtConcurrent::map(items, UpdateItemsInProjectFunctionObject(existence, &helper, &m_items) ) );
         }
@@ -1014,7 +1014,7 @@ void ObjectModel::updateItemsInSourceDir(ObjectItems *allTargets, Model::ObjectE
         //*
         // concurrent-map
         {
-            ProgressNotifier subProg(UpdateItemsInSourceDirProcess, items.count(), this);
+            ProgressNotifier subProg(mainProg.type(), items.count(), this);
             ConcurrentMapHelper<void> mapHelper( &subProg );
             mapHelper.run( QtConcurrent::map(items, UpdateItemsInSourceDirFunctionObject(existence, &helper, &m_items) ) );
         }
@@ -1071,7 +1071,7 @@ void ObjectModel::updateItemsDifference(ObjectItems *allTargets, Model::ObjectDi
         //*
         // concurrent map
         {
-            ProgressNotifier subProg(UpdateItemsDifferenceProcess, items.count(), this);
+            ProgressNotifier subProg(mainProg.type(), items.count(), this);
             ConcurrentMapHelper<void> mapHelper( &subProg );
             mapHelper.run( QtConcurrent::map(items, UpdateItemsDifferenceFunctionObject(difference, &helper, &m_items) ) );
         }
@@ -1131,7 +1131,7 @@ void ObjectModel::updateItemsDifferenceByFileTime(ObjectItems *allTargets)
         //*
         // concurrent-map
         {
-            ProgressNotifier subProg(UpdateItemsDifferenceByFileTimeProcess, items.count(), this);
+            ProgressNotifier subProg(mainProg.type(), items.count(), this);
             ConcurrentMapHelper<void> mapHelper( &subProg );
             mapHelper.run( QtConcurrent::map(items, UpdateItemsDifferenceByFileTimeFunctionObject( &helper, &m_items ) ) );
         }
@@ -1215,7 +1215,7 @@ void ObjectModel::updateItemsDifferenceAsIs(ObjectItems *allTargets)
         //*
         // concurrent-map
         {
-            ProgressNotifier subProg(UpdateItemsDifferenceAsIsProcess, items.count(), this);
+            ProgressNotifier subProg(mainProg.type(), items.count(), this);
             ConcurrentMapHelper<void> mapHelper( &subProg );
             mapHelper.run( QtConcurrent::map(items, UpdateItemsDifferenceAsIsFunctionObject(os, Model::SameContents, NULL, NULL) ) );
         }
@@ -1242,7 +1242,7 @@ void ObjectModel::updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets
             continue;
 
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
-        ProgressNotifier subProg(UpdateItemsCreateUpdateDateFromProjectProcess, items.count(), this);
+        ProgressNotifier subProg(mainProg.type(), items.count(), this);
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
             subProg.next();
@@ -1330,7 +1330,7 @@ void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTi
         //*
         // concurrent-map
         {
-            ProgressNotifier subProg(UpdateFileTimeInTempDirProcess, items.count(), this);
+            ProgressNotifier subProg(mainProg.type(), items.count(), this);
             ConcurrentMapHelper<void> mapHelper( &subProg );
             mapHelper.run( QtConcurrent::map(items, UpdateFileTimeInTempDirFunctionObject(os, fileTime, differenceTypes, NULL, NULL) ) );
         }
@@ -1347,7 +1347,7 @@ void ObjectModel::deleteItems(ObjectItems *allTargets)
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
-        ProgressNotifier subProg(DeleteItemsProcess, items.count(), this);
+        ProgressNotifier subProg(mainProg.type(), items.count(), this);
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
             subProg.next();
@@ -1448,7 +1448,7 @@ void ObjectModel::updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, c
         // asynchronous call
         //*
         {
-            ProgressNotifier subProg(UpdateFileTimeInTempDirByExportDateProcess, items.count(), this);
+            ProgressNotifier subProg(mainProg.type(), items.count(), this);
             ConcurrentMapHelper<void> mapHelper( &subProg );
             mapHelper.run( QtConcurrent::map(items, UpdateFileTimeInTempDirByExportDateFunctionObject(os, differenceTypes, &helper, &m_items) ) );
         }
@@ -1475,7 +1475,7 @@ void ObjectModel::loadItemsFromProject(QList<ObjectItem*> *items)
         if ( !os->prepareItemCollection() )
             continue;
 
-        ProgressNotifier subProg(LoadItemFromProjectProcess, os->itemCount(), this);
+        ProgressNotifier subProg(mainProg.type(), os->itemCount(), this);
         for ( int i = 0 ; i < os->itemCount() ; ++i )
         {
             subProg.next();
@@ -1507,7 +1507,7 @@ void ObjectModel::loadItemsFromSourceDir(QList<ObjectItem*> *items)
         {
             objectDir.setNameFilters( (QStringList() << ("*." + os->existCheckExtension() ) ) );
             QFileInfoList fileInfos = objectDir.entryInfoList( QDir::Files );
-            ProgressNotifier subProg(LoadItemFromSourceDirProcess, fileInfos.length(), this);
+            ProgressNotifier subProg(mainProg.type(), fileInfos.length(), this);
 
             for (QFileInfoList::iterator it = fileInfos.begin(); it != fileInfos.end(); ++it )
             {
@@ -1667,7 +1667,7 @@ void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
-        ProgressNotifier subProg(ExportFromProjectToTempDirProcess, objectNames.count(), this);
+        ProgressNotifier subProg(mainProg.type(), objectNames.count(), this);
 
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
@@ -1696,7 +1696,7 @@ void ObjectModel::importFromTempDirToProject(ObjectItems *allTargets)
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
-        ProgressNotifier subProg(ImportFromTempDirToProjectProcess, objectNames.count(), this);
+        ProgressNotifier subProg(mainProg.type(), objectNames.count(), this);
 
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
@@ -1764,7 +1764,7 @@ void ObjectModel::copyFromTempDirToSourceDir(ObjectItems *allTargets)
         // asynchronous call
         //*
         {
-            ProgressNotifier subProg(CopyFromTempDirToSourceDirProcess, objectNames.count(), this);
+            ProgressNotifier subProg(mainProg.type(), objectNames.count(), this);
             ConcurrentMapHelper<void> mapHelper( &subProg );
             mapHelper.run( QtConcurrent::map(objectNames, CopyFromTempDirToSourceDirFunctionObject(os) ) );
         }
@@ -1821,7 +1821,7 @@ void ObjectModel::copyFromSourceDirToTempDir(ObjectItems *allTargets)
         // asynchronous call
         //*
         {
-            ProgressNotifier subProg(CopyFromSourceDirToTempDirProcess, objectNames.count(), this);
+            ProgressNotifier subProg(mainProg.type(), objectNames.count(), this);
             ConcurrentMapHelper<void> mapHelper( &subProg );
             mapHelper.run( QtConcurrent::map(objectNames, CopyFromSourceDirToTempDirFunctionObject(os) ) );
         }
@@ -1879,7 +1879,7 @@ void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
         // asynchronous call
         //*
         {
-            ProgressNotifier subProg(SanitizeTempDirProcess, objectNames.count(), this);
+            ProgressNotifier subProg(mainProg.type(), objectNames.count(), this);
             ConcurrentMapHelper<void> mapHelper( &subProg );
             mapHelper.run( QtConcurrent::map(objectNames, SanitizeTempDirFunctionObject(os) ) );
         }
@@ -1935,7 +1935,7 @@ void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
         // asynchronous call
         //*
         {
-            ProgressNotifier subProg(DesanitizeTempDirProcess, objectNames.count(), this);
+            ProgressNotifier subProg(mainProg.type(), objectNames.count(), this);
             ConcurrentMapHelper<void> mapHelper( &subProg );
             mapHelper.run( QtConcurrent::map(objectNames, DesanitizeTempDirFunctionObject(os) ) );
         }
@@ -2023,7 +2023,7 @@ void ObjectModel::compareTempDir(ObjectItems *allTargets)
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
         //
         {
-            ProgressNotifier subProg(CompareTempDirProcess, items.count(), this);
+            ProgressNotifier subProg(mainProg.type(), items.count(), this);
             ConcurrentMapHelper<void> mapHelper( &subProg );
             mapHelper.run( QtConcurrent::map(items, CompareTempDirFunctionObject(os, &helper, &m_items) ) );
         }
@@ -2085,7 +2085,7 @@ void ObjectModel::deleteFromSourceDir(ObjectItems *allTargets)
         // asynchronous call
         //*
         {
-            ProgressNotifier subProg(DeleteFromSourceDirProcess, objectNames.count(), this);
+            ProgressNotifier subProg(mainProg.type(), objectNames.count(), this);
             ConcurrentMapHelper<void> mapHelper( &subProg );
             mapHelper.run( QtConcurrent::map(objectNames, DeleteFromSourceDirFunctionObject(os) ) );
         }
@@ -2108,7 +2108,7 @@ void ObjectModel::deleteFromProject(ObjectItems *allTargets)
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
-        ProgressNotifier subProg(DeleteFromProjectProcess, objectNames.count(), this);
+        ProgressNotifier subProg(mainProg.type(), objectNames.count(), this);
 
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
@@ -2167,7 +2167,7 @@ void ObjectModel::deleteFromTempDir(ObjectItems *allTargets)
         // asynchronous call
         //*
         {
-            ProgressNotifier subProg(DeleteFromTempDirProcess, objectNames.count(), this);
+            ProgressNotifier subProg(mainProg.type(), objectNames.count(), this);
             ConcurrentMapHelper<void> mapHelper( &subProg );
             mapHelper.run( QtConcurrent::map(objectNames, DeleteFromTempDirFunctionObject(os) ) );
         }

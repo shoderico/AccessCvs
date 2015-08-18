@@ -49,6 +49,11 @@ bool ProgressNotifier::isFinished() const
     return m_finished;
 }
 
+int ProgressNotifier::type() const
+{
+    return m_type;
+}
+
 void ProgressNotifier::progressRangeChanged(int minimum, int maximum)
 {
     Q_UNUSED(minimum)
