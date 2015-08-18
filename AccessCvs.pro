@@ -22,10 +22,18 @@ TEMPLATE = lib
 DEF_FILE = addin/addin.def
 RC_FILE  = addin/addin.rc
 
-include(../QtSolutions/qtwinmigrate/src/qtwinmigrate.pri)
-
 DEFINES += ACCESSCVS_LIBRARY
 DEFINES += QT_MESSAGELOGCONTEXT
+
+# output directories
+BUILDDIR = $$_PRO_FILE_PWD_/build
+Release:DESTDIR = $$BUILDDIR/release/bin
+Debug:DESTDIR = $$BUILDDIR/debug/bin
+OBJECTS_DIR = $$DESTDIR/../.obj
+MOC_DIR = $$DESTDIR/../.moc
+RCC_DIR = $$DESTDIR/../.rcc
+UI_DIR = $$DESTDIR/../.ui
+
 
 # LibQGit2
 LIBQGIT_DIR = $$PWD/../LibQGit2/install
@@ -34,14 +42,47 @@ LIBS        += -L$$LIBQGIT_DIR/lib/ -lgit2.dll
 INCLUDEPATH +=   $$LIBQGIT_DIR/include
 DEPENDPATH  +=   $$LIBQGIT_DIR/include
 
-#
-BUILDDIR = $$_PRO_FILE_PWD_/build
-Release:DESTDIR = $$BUILDDIR/release/bin
-Debug:DESTDIR = $$BUILDDIR/debug/bin
-OBJECTS_DIR = $$DESTDIR/../.obj
-MOC_DIR = $$DESTDIR/../.moc
-RCC_DIR = $$DESTDIR/../.rcc
-UI_DIR = $$DESTDIR/../.ui
+
+# QtSolutions
+QTSOLUTIONS_DIR = $$PWD/../QtSolutions/qtwinmigrate
+include($$QTSOLUTIONS_DIR/src/qtwinmigrate.pri)
+
+# OpenSSL
+OPENSSL_DIR = C:/OpenSSL-Win32
+
+# Depend : *.dll
+DEPEND_DLL_FILES += \
+    $$[QT_INSTALL_BINS]/libstdc++-6.dll \
+    $$[QT_INSTALL_BINS]/libwinpthread-1.dll \
+    $$[QT_INSTALL_BINS]/libgcc_s_dw2-1.dll \
+    $$[QT_INSTALL_BINS]/Qt5Concurrent.dll \
+    $$[QT_INSTALL_BINS]/Qt5Core.dll \
+    $$[QT_INSTALL_BINS]/Qt5Gui.dll \
+    $$[QT_INSTALL_BINS]/Qt5Widgets.dll \
+    $$[QT_INSTALL_BINS]/Qt5WinExtras.dll \
+    $$QTSOLUTIONS_DIR/lib/QtSolutions_MFCMigrationFramework-head.dll \
+    $$OPENSSL_DIR/libeay32.dll \
+    $$OPENSSL_DIR/ssleay32.dll
+
+DEPEND_DLL_FILES_COPY = $${DEPEND_DLL_FILES}
+DEPEND_DLL_FILES_COPY ~= s,/,\\,g
+DESTDIR_DLL_COPY = $${DESTDIR}
+DESTDIR_DLL_COPY ~= s,/,\\,g
+for(FILE,DEPEND_DLL_FILES_COPY){
+    QMAKE_PRE_LINK += copy /y \"$${FILE}\" $${DESTDIR_DLL_COPY}$$escape_expand(\n\t)
+}
+
+# Depend : platforms/*.dll
+DEPEND_PLUGIN_FILES += \
+    $$[QT_INSTALL_PLUGINS]/platforms/qwindows.dll
+
+DEPEND_PLUGIN_FILES_COPY = $${DEPEND_PLUGIN_FILES}
+DEPEND_PLUGIN_FILES_COPY ~= s,/,\\,g
+DESTDIR_PLUGIN_COPY = $${DESTDIR}/platforms
+DESTDIR_PLUGIN_COPY ~= s,/,\\,g
+for(FILE_PLUGIN,DEPEND_PLUGIN_FILES_COPY){
+    QMAKE_PRE_LINK += copy /y \"$${FILE_PLUGIN}\" $${DESTDIR_PLUGIN_COPY}$$escape_expand(\n\t)
+}
 
 
 
