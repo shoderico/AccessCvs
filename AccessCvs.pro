@@ -27,11 +27,12 @@ include(../QtSolutions/qtwinmigrate/src/qtwinmigrate.pri)
 DEFINES += ACCESSCVS_LIBRARY
 DEFINES += QT_MESSAGELOGCONTEXT
 
-# dynamic link
-LIBS        += -L$$PWD/../LibQGit2/install/lib/ -lqgit2.dll
-LIBS        += -L$$PWD/../LibQGit2/install/lib/ -lgit2.dll
-INCLUDEPATH +=   $$PWD/../LibQGit2/install/include
-DEPENDPATH  +=   $$PWD/../LibQGit2/install/include
+# LibQGit2
+LIBQGIT_DIR = $$PWD/../LibQGit2/install
+LIBS        += -L$$LIBQGIT_DIR/lib/ -lqgit2.dll
+LIBS        += -L$$LIBQGIT_DIR/lib/ -lgit2.dll
+INCLUDEPATH +=   $$LIBQGIT_DIR/include
+DEPENDPATH  +=   $$LIBQGIT_DIR/include
 
 #
 BUILDDIR = $$_PRO_FILE_PWD_/build
