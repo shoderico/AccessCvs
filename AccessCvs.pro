@@ -67,7 +67,8 @@ SOURCES += \
     model/tabledefsanitizesetting.cpp \
     model/objectproxymodel.cpp \
     git/gitmanager.cpp \
-    ui/actionmanager.cpp
+    ui/actionmanager.cpp \
+    util/concurrentmaphelper.cpp
 
 HEADERS +=\
     addin/msaddndr.h \
@@ -104,7 +105,8 @@ HEADERS +=\
     model/tabledefsanitizesetting.h \
     model/objectproxymodel.h \
     git/gitmanager.h \
-    ui/actionmanager.h
+    ui/actionmanager.h \
+    util/concurrentmaphelper.h
 
 DISTFILES += \
     addin/addin.def \

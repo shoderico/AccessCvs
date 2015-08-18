@@ -2,7 +2,6 @@
 #define PROGRESSNOTIFIER_H
 
 #include <QObject>
-#include <QMutex>
 #include <QReadWriteLock>
 
 class ProgressNotifier : public QObject
@@ -15,7 +14,7 @@ public:
 
     void move(int value);
     void next();
-    bool isFinished();
+    bool isFinished() const;
 
 signals:
     void start(int type, int count);
@@ -36,8 +35,7 @@ private:
     int m_count;
     int m_value;
     bool m_finished;
-    QMutex m_mutex;
-    QReadWriteLock m_lock;
+    mutable QReadWriteLock m_lock;
 };
 
 #endif // PROGRESSNOTIFIER_H

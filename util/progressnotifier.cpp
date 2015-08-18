@@ -27,26 +27,32 @@ ProgressNotifier::~ProgressNotifier()
 
 void ProgressNotifier::move(int value)
 {
+    {
+        QWriteLocker locker(&m_lock);
+        m_value = value;
+    }
     emit change(m_type, value);
-    m_value = value;
 }
 
 void ProgressNotifier::next()
 {
-    m_value++;
+    {
+        QWriteLocker locker(&m_lock);
+        m_value++;
+    }
     emit change(m_type, m_value);
 }
 
-bool ProgressNotifier::isFinished()
+bool ProgressNotifier::isFinished() const
 {
-    //QMutexLocker locker(&m_mutex);
     QReadLocker locker(&m_lock);
     return m_finished;
 }
 
 void ProgressNotifier::progressRangeChanged(int minimum, int maximum)
 {
-    //QMutexLocker locker(&m_mutex);
+    Q_UNUSED(minimum)
+    Q_UNUSED(maximum)
     emit start(m_type, m_count);
 }
 
@@ -54,7 +60,6 @@ void ProgressNotifier::progressValueChanged(int progressValue)
 {
     int value = 0;
     {
-        //QMutexLocker locker(&m_mutex);
         QWriteLocker locker(&m_lock);
         m_value++;
         value = progressValue;
@@ -65,7 +70,6 @@ void ProgressNotifier::progressValueChanged(int progressValue)
 void ProgressNotifier::finished()
 {
     {
-        //QMutexLocker locker(&m_mutex);
         QWriteLocker locker(&m_lock);
         m_finished = true;
     }

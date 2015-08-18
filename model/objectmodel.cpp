@@ -12,6 +12,7 @@
 #include "util/comptr.h"
 #include "util/progressnotifier.h"
 #include "util/datachangedhelper.h"
+#include "util/concurrentmaphelper.h"
 
 #include "projectsetting.h"
 #include "objectsetting.h"
@@ -724,6 +725,16 @@ void ObjectModel::getItems(ObjectItems *pItems, ItemsTypes itemsType, SelectObje
     }
 }
 
+
+
+
+
+
+
+
+
+
+
 void ObjectModel::selectItemsForProcess(bool selected, bool resetSelection)
 {
     selectItems( InProjectOnly | InSourceDirOnly | InBoth_Different, selected, resetSelection );
@@ -731,7 +742,7 @@ void ObjectModel::selectItemsForProcess(bool selected, bool resetSelection)
 
 void ObjectModel::selectItems(ObjectModel::ItemsTypes itemsType, bool selected, bool resetSelection)
 {
-    // FIXME: non-blocking, can be async
+    // FIXME: non-blocking, can be async ?
     DataChangedHelper helper( m_items.count() );
     if (resetSelection)
     {
@@ -760,7 +771,7 @@ void ObjectModel::selectItems(ObjectModel::ItemsTypes itemsType, bool selected, 
 
 void ObjectModel::selectItemsByObjectType(SelectObjectTypes objectTypes, bool selected, bool resetSelection)
 {
-    // FIXME: non-blocking, can be async
+    // FIXME: non-blocking, can be async ?
     DataChangedHelper helper( m_items.count() );
     if (resetSelection)
     {
@@ -787,6 +798,69 @@ void ObjectModel::selectItemsByObjectType(SelectObjectTypes objectTypes, bool se
         emit dataChanged( createIndex(helper.first(), NameColumn), createIndex(helper.last(), NameColumn) );
 }
 
+
+
+
+
+
+
+
+
+struct ObjectDifferenceTypesFilterFunctionObject
+{
+    ObjectDifferenceTypesFilterFunctionObject(ObjectModel::ObjectDifferenceTypes differenceTypes, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
+        : m_differenceTypes(differenceTypes)
+        , m_dataChangedHelper(dataChangedHelper)
+        , m_items(items)
+    {
+    }
+
+    typedef bool result_type;
+
+    bool operator()(ObjectItem *item)
+    {
+        switch( item->isDifferent() )
+        {
+            case Model::SameContents:       if (!(m_differenceTypes & ObjectModel::SameContentsType      )) return false;
+            case Model::DifferentContents:  if (!(m_differenceTypes & ObjectModel::DifferentContentsTypes)) return false;
+            default:
+            {
+                if (m_dataChangedHelper && m_items)
+                    m_dataChangedHelper->changed( m_items->indexOf(item) );
+                return true;
+            }
+        }
+    }
+
+    ObjectModel::ObjectDifferenceTypes m_differenceTypes;
+    DataChangedHelper *m_dataChangedHelper;
+    QList<ObjectItem*> *m_items;
+};
+
+
+struct UpdateItemsExportDateFunctionObject
+{
+    UpdateItemsExportDateFunctionObject(QDateTime exportDate, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
+        : m_exportDate(exportDate)
+        , m_dataChangedHelper(dataChangedHelper)
+        , m_items(items)
+    {
+    }
+
+    typedef void result_type;
+
+    void operator()(ObjectItem *item)
+    {
+        item->setExportDate(m_exportDate);
+        if (m_dataChangedHelper && m_items)
+            m_dataChangedHelper->changed( m_items->indexOf(item) );
+    }
+
+    QDateTime m_exportDate;
+    DataChangedHelper *m_dataChangedHelper;
+    QList<ObjectItem*> *m_items;
+};
+
 void ObjectModel::updateItemsExportDate(ObjectItems *allTargets, const QDateTime &exportDate, const ObjectDifferenceTypes differenceTypes)
 {
     // FIXME: non-blocking, can be async
@@ -795,6 +869,10 @@ void ObjectModel::updateItemsExportDate(ObjectItems *allTargets, const QDateTime
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
+
+        //----------------------------------------------------------------------------------------
+        // synchronous call
+        /*
         ProgressNotifier subProg(UpdateItemsExportDateProcess, items.count(), this);
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
@@ -809,10 +887,53 @@ void ObjectModel::updateItemsExportDate(ObjectItems *allTargets, const QDateTime
             (*it)->setExportDate(exportDate);
             helper.changed( m_items.indexOf( (*it) ) );
         }
+        // */
+
+
+        //----------------------------------------------------------------------------------------
+        // asynchronous call
+        //*
+        // filter items
+        {
+            ProgressNotifier subProgFilter(UpdateItemsExportDateProcess, items.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProgFilter );
+            mapHelper.run( QtConcurrent::map(items, ObjectDifferenceTypesFilterFunctionObject(differenceTypes, &helper, &m_items) ) );
+        }
+        // concurrent-map
+        {
+            ProgressNotifier subProg(UpdateItemsExportDateProcess, items.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProg );
+            mapHelper.run( QtConcurrent::map(items, UpdateItemsExportDateFunctionObject(exportDate, NULL, NULL) ) );
+        }
+        // */
     }
     if (helper.isChanged())
         emit dataChanged( createIndex(helper.first(), ExportDateColumn), createIndex(helper.last(), ExportDateColumn) );
 }
+
+
+struct UpdateItemsInProjectFunctionObject
+{
+    UpdateItemsInProjectFunctionObject(Model::ObjectExistence existence, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
+        : m_existence(existence)
+        , m_dataChangedHelper(dataChangedHelper)
+        , m_items(items)
+    {
+    }
+
+    typedef void result_type;
+
+    void operator()(ObjectItem *item)
+    {
+        item->setInProject(m_existence);
+        if (m_dataChangedHelper && m_items)
+            m_dataChangedHelper->changed( m_items->indexOf(item) );
+    }
+
+    Model::ObjectExistence m_existence;
+    DataChangedHelper *m_dataChangedHelper;
+    QList<ObjectItem*> *m_items;
+};
 
 void ObjectModel::updateItemsInProject(ObjectItems *allTargets, Model::ObjectExistence existence)
 {
@@ -822,6 +943,10 @@ void ObjectModel::updateItemsInProject(ObjectItems *allTargets, Model::ObjectExi
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
+
+        //----------------------------------------------------------------------------------------
+        // synchronous call
+        /*
         ProgressNotifier subProg(UpdateItemsInProjectProcess, items.count(), this);
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
@@ -829,10 +954,47 @@ void ObjectModel::updateItemsInProject(ObjectItems *allTargets, Model::ObjectExi
             (*it)->setInProject(existence);
             helper.changed( m_items.indexOf( (*it) ) );
         }
+        */
+
+        //----------------------------------------------------------------------------------------
+        // asynchronous call
+        //*
+        // concurrent-map
+        {
+            ProgressNotifier subProg(UpdateItemsInProjectProcess, items.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProg );
+            mapHelper.run( QtConcurrent::map(items, UpdateItemsInProjectFunctionObject(existence, &helper, &m_items) ) );
+        }
+        // */
     }
     if (helper.isChanged())
         emit dataChanged( createIndex(helper.first(), InProjectColumn), createIndex(helper.last(), InProjectColumn) );
 }
+
+
+
+struct UpdateItemsInSourceDirFunctionObject
+{
+    UpdateItemsInSourceDirFunctionObject(Model::ObjectExistence existence, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
+        : m_existence(existence)
+        , m_dataChangedHelper(dataChangedHelper)
+        , m_items(items)
+    {
+    }
+
+    typedef void result_type;
+
+    void operator()(ObjectItem *item)
+    {
+        item->setInSourceDir(m_existence);
+        if (m_dataChangedHelper && m_items)
+            m_dataChangedHelper->changed( m_items->indexOf(item) );
+    }
+
+    Model::ObjectExistence m_existence;
+    DataChangedHelper *m_dataChangedHelper;
+    QList<ObjectItem*> *m_items;
+};
 
 void ObjectModel::updateItemsInSourceDir(ObjectItems *allTargets, Model::ObjectExistence existence)
 {
@@ -842,6 +1004,10 @@ void ObjectModel::updateItemsInSourceDir(ObjectItems *allTargets, Model::ObjectE
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
+
+        //----------------------------------------------------------------------------------------
+        // synchronous call
+        /*
         ProgressNotifier subProg(UpdateItemsInSourceDirProcess, items.count(), this);
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
@@ -849,6 +1015,18 @@ void ObjectModel::updateItemsInSourceDir(ObjectItems *allTargets, Model::ObjectE
             (*it)->setInSourceDir(existence);
             helper.changed( m_items.indexOf( (*it) ) );
         }
+        */
+
+        //----------------------------------------------------------------------------------------
+        // asynchronous call
+        //*
+        // concurrent-map
+        {
+            ProgressNotifier subProg(UpdateItemsInSourceDirProcess, items.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProg );
+            mapHelper.run( QtConcurrent::map(items, UpdateItemsInSourceDirFunctionObject(existence, &helper, &m_items) ) );
+        }
+        // */
     }
     if (helper.isChanged())
         emit dataChanged( createIndex(helper.first(), InSourceDirColumn), createIndex(helper.last(), InSourceDirColumn) );
@@ -858,8 +1036,10 @@ void ObjectModel::updateItemsInSourceDir(ObjectItems *allTargets, Model::ObjectE
 
 struct UpdateItemsDifferenceFunctionObject
 {
-    UpdateItemsDifferenceFunctionObject(Model::ObjectDifference difference)
+    UpdateItemsDifferenceFunctionObject(Model::ObjectDifference difference, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
         : m_difference(difference)
+        , m_dataChangedHelper(dataChangedHelper)
+        , m_items(items)
     {
     }
 
@@ -868,9 +1048,13 @@ struct UpdateItemsDifferenceFunctionObject
     void operator()(ObjectItem *item)
     {
         item->setDifferent(m_difference);
+        if (m_dataChangedHelper && m_items)
+            m_dataChangedHelper->changed( m_items->indexOf(item) );
     }
 
     Model::ObjectDifference m_difference;
+    DataChangedHelper *m_dataChangedHelper;
+    QList<ObjectItem*> *m_items;
 };
 
 void ObjectModel::updateItemsDifference(ObjectItems *allTargets, Model::ObjectDifference difference)
@@ -881,46 +1065,59 @@ void ObjectModel::updateItemsDifference(ObjectItems *allTargets, Model::ObjectDi
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
-        ProgressNotifier subProg(UpdateItemsDifferenceProcess, items.count(), this);
-
-        //----------------------------------------------------------------------------------------
-        // register indexes for dataChanged emission
-        for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
-            helper.changed( m_items.indexOf( (*it) ) );
 
         //----------------------------------------------------------------------------------------
         // synchronous call
         /*
+        ProgressNotifier subProg(UpdateItemsDifferenceProcess, items.count(), this);
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
             subProg.next();
             (*it)->setDifferent(difference);
+            helper.changed( m_items.indexOf( (*it) ) );
         }
         // */
 
         //----------------------------------------------------------------------------------------
         // asynchronous call
         //*
-        QFutureWatcher<void> futureWatcher;
-        QEventLoop loop;
-
-        connect( &futureWatcher, SIGNAL(finished()),                    &loop,    SLOT(quit()) );
-        connect( &futureWatcher, SIGNAL(finished()),                    &subProg, SLOT(finished()) );
-        connect( &futureWatcher, SIGNAL(progressRangeChanged(int,int)), &subProg, SLOT(progressRangeChanged(int,int)) );
-        connect( &futureWatcher, SIGNAL(progressValueChanged(int)),     &subProg, SLOT(progressValueChanged(int)) );
-
-        QFuture<void> future = QtConcurrent::map(items, UpdateItemsDifferenceFunctionObject(difference) );
-        futureWatcher.setFuture( future );
-
-        if (!subProg.isFinished())
-            loop.exec();
-
+        // concurrent map
+        {
+            ProgressNotifier subProg(UpdateItemsDifferenceProcess, items.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProg );
+            mapHelper.run( QtConcurrent::map(items, UpdateItemsDifferenceFunctionObject(difference, &helper, &m_items) ) );
+        }
         // */
 
     }
     if (helper.isChanged())
         emit dataChanged( createIndex(helper.first(), DifferentColumn), createIndex(helper.last(), DifferentColumn) );
 }
+
+
+struct UpdateItemsDifferenceByFileTimeFunctionObject
+{
+    UpdateItemsDifferenceByFileTimeFunctionObject(DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
+        : m_dataChangedHelper(dataChangedHelper)
+        , m_items(items)
+    {
+    }
+
+    typedef void result_type;
+
+    void operator()(ObjectItem *item)
+    {
+        if ( !item->isModified() )
+        {
+            item->setDifferent( Model::SameContents );
+            if (m_dataChangedHelper && m_items)
+                m_dataChangedHelper->changed( m_items->indexOf(item) );
+        }
+    }
+
+    DataChangedHelper *m_dataChangedHelper;
+    QList<ObjectItem*> *m_items;
+};
 
 void ObjectModel::updateItemsDifferenceByFileTime(ObjectItems *allTargets)
 {
@@ -930,6 +1127,10 @@ void ObjectModel::updateItemsDifferenceByFileTime(ObjectItems *allTargets)
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
+
+        //----------------------------------------------------------------------------------------
+        // synchronous call
+        /*
         ProgressNotifier subProg(UpdateItemsDifferenceByFileTimeProcess, items.count(), this);
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
@@ -940,10 +1141,56 @@ void ObjectModel::updateItemsDifferenceByFileTime(ObjectItems *allTargets)
                 helper.changed( m_items.indexOf( (*it) ) );
             }
         }
+        */
+
+        //----------------------------------------------------------------------------------------
+        // asynchronous call
+        //*
+        // concurrent-map
+        {
+            ProgressNotifier subProg(UpdateItemsDifferenceByFileTimeProcess, items.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProg );
+            mapHelper.run( QtConcurrent::map(items, UpdateItemsDifferenceByFileTimeFunctionObject( &helper, &m_items ) ) );
+        }
+        // */
+
     }
     if (helper.isChanged())
         emit dataChanged( createIndex(helper.first(), DifferentColumn), createIndex(helper.last(), DifferentColumn) );
 }
+
+
+struct UpdateItemsDifferenceAsIsFilterFunctionObject
+{
+    UpdateItemsDifferenceAsIsFilterFunctionObject(ObjectSetting *os, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
+        : m_os(os)
+        , m_dataChangedHelper(dataChangedHelper)
+        , m_items(items)
+    {
+    }
+
+    typedef bool result_type;
+
+    bool operator()(ObjectItem *item)
+    {
+        if ( item->isModified() )
+            return false;
+
+        bool isDifferent;
+        m_os->compareTempDir( item->name(), &isDifferent );
+        if ( isDifferent )
+            return false;
+
+        if (m_dataChangedHelper && m_items)
+            m_dataChangedHelper->changed( m_items->indexOf(item) );
+        return true;
+    }
+
+    ObjectSetting *m_os;
+    DataChangedHelper *m_dataChangedHelper;
+    QList<ObjectItem*> *m_items;
+};
+
 
 void ObjectModel::updateItemsDifferenceAsIs(ObjectItems *allTargets)
 {
@@ -959,6 +1206,10 @@ void ObjectModel::updateItemsDifferenceAsIs(ObjectItems *allTargets)
         os = setting[ objectType ];
 
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
+
+        //----------------------------------------------------------------------------------------
+        // synchronous call
+        /*
         ProgressNotifier subProg(UpdateItemsDifferenceAsIsProcess, items.count(), this);
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
@@ -975,6 +1226,25 @@ void ObjectModel::updateItemsDifferenceAsIs(ObjectItems *allTargets)
                 helper.changed( m_items.indexOf( (*it) ) );
             }
         }
+        */
+
+        //----------------------------------------------------------------------------------------
+        // asynchronous call
+        //*
+        // filter items
+        {
+            ProgressNotifier subProgFilter(UpdateItemsDifferenceAsIsProcess, items.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProgFilter );
+            mapHelper.run( QtConcurrent::filter(items, UpdateItemsDifferenceAsIsFilterFunctionObject(os, &helper, &m_items) ) );
+        }
+        // concurrent-map
+        {
+            ProgressNotifier subProg(UpdateItemsDifferenceAsIsProcess, items.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProg );
+            mapHelper.run( QtConcurrent::map(items, UpdateItemsDifferenceFunctionObject(Model::SameContents, NULL, NULL) ) );
+        }
+        // */
+
     }
     if (helper.isChanged())
         emit dataChanged( createIndex(helper.first(), DifferentColumn), createIndex(helper.last(), DifferentColumn) );
@@ -1016,6 +1286,35 @@ void ObjectModel::updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets
     }
 }
 
+
+
+struct UpdateFileTimeInTempDirFunctionObject
+{
+    UpdateFileTimeInTempDirFunctionObject(ObjectSetting *os, const QDateTime &fileTime, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
+        : m_os(os)
+        , m_fileTime(fileTime)
+        , m_dataChangedHelper(dataChangedHelper)
+        , m_items(items)
+    {
+    }
+
+    typedef void result_type;
+
+    void operator()(ObjectItem *item)
+    {
+        m_os->updateFileTimeInTempDir( item->name(), m_fileTime );
+
+        if (m_dataChangedHelper && m_items)
+            m_dataChangedHelper->changed( m_items->indexOf(item) );
+    }
+
+    ObjectSetting *m_os;
+    QDateTime m_fileTime;
+    DataChangedHelper *m_dataChangedHelper;
+    QList<ObjectItem*> *m_items;
+};
+
+
 void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTime &fileTime, const ObjectDifferenceTypes differenceTypes)
 {
     // FIXME: non-blocking, can be async
@@ -1028,6 +1327,9 @@ void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTi
     {
         os = setting[ objectType ];
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
+        //----------------------------------------------------------------------------------------
+        // synchronous call
+        /*
         ProgressNotifier subProg(UpdateFileTimeInTempDirProcess, items.count(), this);
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
@@ -1041,6 +1343,25 @@ void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTi
 
             os->updateFileTimeInTempDir( (*it)->name(), fileTime );
         }
+        */
+
+        //----------------------------------------------------------------------------------------
+        // asynchronous call
+        //*
+        // filter items
+        {
+            ProgressNotifier subProgFilter(UpdateFileTimeInTempDirProcess, items.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProgFilter );
+            mapHelper.run( QtConcurrent::filter(items, ObjectDifferenceTypesFilterFunctionObject(differenceTypes, NULL, NULL) ) );
+        }
+        // concurrent-map
+        {
+            ProgressNotifier subProg(UpdateFileTimeInTempDirProcess, items.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProg );
+            mapHelper.run( QtConcurrent::map(items, UpdateFileTimeInTempDirFunctionObject(os, fileTime, NULL, NULL) ) );
+        }
+        // */
+
     }
 }
 
@@ -1444,11 +1765,11 @@ void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
-        ProgressNotifier subProg(SanitizeTempDirProcess, objectNames.count(), this);
 
         //----------------------------------------------------------------------------------------
         // synchronous call
         /*
+        ProgressNotifier subProg(SanitizeTempDirProcess, objectNames.count(), this);
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
@@ -1459,19 +1780,11 @@ void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
         //----------------------------------------------------------------------------------------
         // asynchronous call
         //*
-        QFutureWatcher<void> futureWatcher;
-        QEventLoop loop;
-
-        connect( &futureWatcher, SIGNAL(finished()),                    &loop,    SLOT(quit()) );
-        connect( &futureWatcher, SIGNAL(finished()),                    &subProg, SLOT(finished()) );
-        connect( &futureWatcher, SIGNAL(progressRangeChanged(int,int)), &subProg, SLOT(progressRangeChanged(int,int)) );
-        connect( &futureWatcher, SIGNAL(progressValueChanged(int)),     &subProg, SLOT(progressValueChanged(int)) );
-
-        QFuture<void> future = QtConcurrent::map(objectNames, SanitizeTempDirFunctionObject(os) );
-        futureWatcher.setFuture( future );
-
-        if (!subProg.isFinished())
-            loop.exec();
+        {
+            ProgressNotifier subProg(SanitizeTempDirProcess, objectNames.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProg );
+            mapHelper.run( QtConcurrent::map(objectNames, SanitizeTempDirFunctionObject(os) ) );
+        }
         // */
     }
 }
@@ -1501,6 +1814,45 @@ void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
     }
 }
 
+
+
+
+struct CompareTempDirFunctionObject
+{
+    CompareTempDirFunctionObject(ObjectSetting *os, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
+        : m_os(os)
+        , m_dataChangedHelper(dataChangedHelper)
+        , m_items(items)
+    {
+    }
+
+    typedef void result_type;
+
+    void operator()(ObjectItem *item)
+    {
+        bool isDifferent = false;
+        m_os->compareTempDir( item->name() , &isDifferent);
+
+        if (isDifferent == true && item->isDifferent() != Model::DifferentContents )
+        {
+            item->setDifferent( Model::DifferentContents );
+            if (m_dataChangedHelper && m_items)
+                m_dataChangedHelper->changed( m_items->indexOf(item) );
+        }
+        else if (isDifferent == false && item->isDifferent() != Model::SameContents )
+        {
+            item->setDifferent( Model::SameContents );
+            if (m_dataChangedHelper && m_items)
+                m_dataChangedHelper->changed( m_items->indexOf(item) );
+        }
+    }
+
+    ObjectSetting *m_os;
+    DataChangedHelper *m_dataChangedHelper;
+    QList<ObjectItem*> *m_items;
+};
+
+
 void ObjectModel::compareTempDir(ObjectItems *allTargets)
 {
     // FIXME: non-blocking, can be async
@@ -1514,10 +1866,13 @@ void ObjectModel::compareTempDir(ObjectItems *allTargets)
     {
         os = setting[ objectType ];
 
+
+        //----------------------------------------------------------------------------------------
+        // synchronous call
+        /*
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
         ProgressNotifier subProg(CompareTempDirProcess, objectNames.count(), this);
-
         bool isDifferent = false;
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
@@ -1536,6 +1891,16 @@ void ObjectModel::compareTempDir(ObjectItems *allTargets)
             }
             helper.changed( m_items.indexOf( item ) );
         }
+        */
+        //----------------------------------------------------------------------------------------
+        // asynchronous call
+        //*
+        QList<ObjectItem*> items = allTargets->value( objectType ).values();
+        //
+        ProgressNotifier subProg(CompareTempDirProcess, items.count(), this);
+        ConcurrentMapHelper<void> mapHelper( &subProg );
+        mapHelper.run( QtConcurrent::map(items, CompareTempDirFunctionObject(os, &helper, &m_items) ) );
+        // */
     }
 
     // update items
@@ -1624,11 +1989,11 @@ void ObjectModel::deleteFromTempDir(ObjectItems *allTargets)
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
-        ProgressNotifier subProg(DeleteFromTempDirProcess, objectNames.count(), this);
 
         //----------------------------------------------------------------------------------------
         // syncronous call
         /*
+        ProgressNotifier subProg(DeleteFromTempDirProcess, objectNames.count(), this);
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
@@ -1639,19 +2004,10 @@ void ObjectModel::deleteFromTempDir(ObjectItems *allTargets)
         //----------------------------------------------------------------------------------------
         // asynchronous call
         //*
-        QFutureWatcher<void> futureWatcher;
-        QEventLoop loop;
+        ProgressNotifier subProg(DeleteFromTempDirProcess, objectNames.count(), this);
+        ConcurrentMapHelper<void> mapHelper( &subProg );
+        mapHelper.run( QtConcurrent::map(objectNames, DeleteFromTempDirFunctionObject(os) ) );
 
-        connect( &futureWatcher, SIGNAL(finished()),                    &loop,    SLOT(quit()) );
-        connect( &futureWatcher, SIGNAL(finished()),                    &subProg, SLOT(finished()) );
-        connect( &futureWatcher, SIGNAL(progressRangeChanged(int,int)), &subProg, SLOT(progressRangeChanged(int,int)) );
-        connect( &futureWatcher, SIGNAL(progressValueChanged(int)),     &subProg, SLOT(progressValueChanged(int)) );
-
-        QFuture<void> future = QtConcurrent::map(objectNames, DeleteFromTempDirFunctionObject(os) );
-        futureWatcher.setFuture( future );
-
-        if (!subProg.isFinished())
-            loop.exec();
         // */
     }
 }

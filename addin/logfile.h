@@ -4,6 +4,7 @@
 #include <QString>
 #include <QFile>
 #include <QTextStream>
+#include <QReadWriteLock>
 
 class LogFile
 {
@@ -17,6 +18,7 @@ public:
 private:
     QFile m_file;
     QTextStream m_stream;
+    QReadWriteLock m_lock;
 };
 
 #endif // LOGFILE_H

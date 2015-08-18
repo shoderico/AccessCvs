@@ -45,6 +45,8 @@ void LogFile::MessageOutput(QtMsgType type, const QMessageLogContext &context, c
 {
     // https://gist.github.com/ajithbh/9383850
 
+    QWriteLocker locker(&static_instance->m_lock);
+
     QString datetime = QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss");
     QString contextMsg = QString(" : %1:%2 %3").arg(context.file).arg(context.line).arg(context.function);
     QString typeMsg = "";

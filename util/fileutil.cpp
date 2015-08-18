@@ -245,7 +245,10 @@ bool FileUtil::setFileTime(const QString &fileName, const QDateTime &createDate,
 {
 
     if ( !QFile(fileName).exists() )
+    {
         qDebug() << "file does not exist" << fileName;
+        return false;
+    }
 
     qint64 lastFSModifiedDate = updateDate.toTime_t();
     qint64 FSCreationDate = createDate.toTime_t();

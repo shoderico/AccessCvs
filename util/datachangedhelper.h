@@ -1,6 +1,7 @@
 #ifndef DATACHANGEDHELPER_H
 #define DATACHANGEDHELPER_H
 
+#include <QReadWriteLock>
 
 class DataChangedHelper
 {
@@ -19,6 +20,7 @@ private:
     int m_count;
     int m_first;
     int m_last;
+    mutable QReadWriteLock m_lock;
 };
 
 #endif // DATACHANGEDHELPER_H
