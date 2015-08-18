@@ -29,7 +29,7 @@ ActionManager::~ActionManager()
 
 void ActionManager::manual()
 {
-    m_dlg->show();
+    m_dlg->showAsManual();
 }
 
 void ActionManager::autoImport()
