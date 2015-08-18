@@ -62,7 +62,9 @@ DEPEND_DLL_FILES += \
     $$[QT_INSTALL_BINS]/Qt5WinExtras.dll \
     $$QTSOLUTIONS_DIR/lib/QtSolutions_MFCMigrationFramework-head.dll \
     $$OPENSSL_DIR/libeay32.dll \
-    $$OPENSSL_DIR/ssleay32.dll
+    $$OPENSSL_DIR/ssleay32.dll \
+    $$LIBQGIT_DIR/bin/libgit2.dll \
+    $$LIBQGIT_DIR/bin/libqgit2.dll \
 
 DEPEND_DLL_FILES_COPY = $${DEPEND_DLL_FILES}
 DEPEND_DLL_FILES_COPY ~= s,/,\\,g
