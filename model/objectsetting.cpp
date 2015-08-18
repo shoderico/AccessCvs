@@ -1344,6 +1344,8 @@ bool ReportSetting::importFromTempDirToProject(QAxObject *object, const QString 
     if ( !QFile( filePath( TempDir, ReportPropFile, objectName ) ).exists() )
         return true;
 
+    // QSettings : low performance
+    /*
     // open report-prop-file
     QSettings settings( filePath( TempDir, ReportPropFile, objectName ), QSettings::IniFormat, this );
     settings.setIniCodec( m_codecForCvs->codec() );
@@ -1384,6 +1386,64 @@ bool ReportSetting::importFromTempDirToProject(QAxObject *object, const QString 
         }
     }
     settings.endGroup();
+    */
+
+    // Implement own : faster
+    QFile file( filePath( TempDir, ReportPropFile, objectName ) );
+    file.open( QIODevice::ReadOnly /*| QFile::Text*/ );
+    QTextStream stream( &file );
+    stream.setCodec( m_codecForCvs->codec() );
+
+    while (!stream.atEnd())
+    {
+        QString txt = stream.readLine();
+
+        if (txt == "[PrtDevMode]")
+        {
+            QString hasPrtDevMode = stream.readLine();
+            if (hasPrtDevMode.endsWith("true"))
+            {
+                DEVMODEA dmTemp;
+                // order is important !
+                dmTemp.dmOrientation = stream.readLine().remove( 0, QString("dmOrientation=")  .length() ).toShort();
+                dmTemp.dmPaperSize   = stream.readLine().remove( 0, QString("dmPaperSize=")    .length() ).toShort();
+                dmTemp.dmPaperLength = stream.readLine().remove( 0, QString("dmPaperLength=")  .length() ).toShort();
+                dmTemp.dmPaperWidth  = stream.readLine().remove( 0, QString("dmPaperWidth=")   .length() ).toShort();
+                dmTemp.dmScale       = stream.readLine().remove( 0, QString("dmScale=")        .length() ).toShort();
+                dmTemp.dmColor       = stream.readLine().remove( 0, QString("dmColor=")        .length() ).toShort();
+
+                // open target report in design view
+                ComPtr<Access::DoCmd> doCmd = m_projectSetting->application()->DoCmd();
+                doCmd->OpenReport( objectName, Access::acViewDesign );
+                ComPtr<Access::Reports> reports = m_projectSetting->application()->Reports();
+                ComPtr<Access::Report> report = reports->Item( objectName );
+
+                // retreive PrtDevMode
+                QByteArray prtDevModeDataSrc = report->PrtDevMode().toByteArray();
+
+                // consturct new PrtDevMode
+                DEVMODEA dm;
+                mempcpy( &dm, (const void*)prtDevModeDataSrc.constData(), sizeof(dm) );
+                dm.dmOrientation = dmTemp.dmOrientation;
+                dm.dmPaperSize   = dmTemp.dmPaperSize;
+                dm.dmPaperLength = dmTemp.dmPaperLength;
+                dm.dmPaperWidth  = dmTemp.dmPaperWidth;
+                dm.dmScale       = dmTemp.dmScale;
+                dm.dmColor       = dmTemp.dmColor;
+
+                QByteArray prtDevModeDataDst( (const char *)&dm, sizeof(dm) );
+
+                // set new PrtDevMode to report
+                report->SetPrtDevMode( prtDevModeDataDst );
+
+                // save report
+                doCmd->Close( Access::acReport, objectName, Access::acSaveYes );
+
+            }
+        }
+    }
+
+    file.close();
 
     return true;
 }
@@ -1445,6 +1505,7 @@ bool ReportSetting::afterSanitizeTempDir(QAxObject *object, const QString &objec
             const DEVMODEA *pdm = static_cast<const DEVMODEA*>(pprtDevModeData);
 
             stream << "hasPrtDevMode=true" << m_codecForCvs->lineEnd();
+            // order is important !
             stream << QString("dmOrientation=%1")   .arg( pdm->dmOrientation )  << m_codecForCvs->lineEnd();
             stream << QString("dmPaperSize=%1")     .arg( pdm->dmPaperSize )    << m_codecForCvs->lineEnd();
             stream << QString("dmPaperLength=%1")   .arg( pdm->dmPaperLength )  << m_codecForCvs->lineEnd();
