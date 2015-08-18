@@ -806,44 +806,45 @@ void ObjectModel::selectItemsByObjectType(SelectObjectTypes objectTypes, bool se
 
 
 
-struct ObjectDifferenceTypesFilterFunctionObject
+struct BaseFunctionObject
 {
-    ObjectDifferenceTypesFilterFunctionObject(ObjectModel::ObjectDifferenceTypes differenceTypes, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
-        : m_differenceTypes(differenceTypes)
-        , m_dataChangedHelper(dataChangedHelper)
+    BaseFunctionObject(DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
+        : m_dataChangedHelper(dataChangedHelper)
         , m_items(items)
     {
     }
 
-    typedef bool result_type;
+    typedef void result_type;
 
-    bool operator()(ObjectItem *item)
+    void registerChanged(ObjectItem* item)
     {
-        switch( item->isDifferent() )
-        {
-            case Model::SameContents:       if (!(m_differenceTypes & ObjectModel::SameContentsType      )) return false;
-            case Model::DifferentContents:  if (!(m_differenceTypes & ObjectModel::DifferentContentsTypes)) return false;
-            default:
-            {
-                if (m_dataChangedHelper && m_items)
-                    m_dataChangedHelper->changed( m_items->indexOf(item) );
-                return true;
-            }
-        }
+        if (m_dataChangedHelper && m_items)
+            m_dataChangedHelper->changed( m_items->indexOf(item) );
     }
 
-    ObjectModel::ObjectDifferenceTypes m_differenceTypes;
     DataChangedHelper *m_dataChangedHelper;
     QList<ObjectItem*> *m_items;
 };
 
 
-struct UpdateItemsExportDateFunctionObject
+
+
+
+
+
+
+
+
+
+
+
+
+struct UpdateItemsExportDateFunctionObject : public BaseFunctionObject
 {
-    UpdateItemsExportDateFunctionObject(QDateTime exportDate, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
-        : m_exportDate(exportDate)
-        , m_dataChangedHelper(dataChangedHelper)
-        , m_items(items)
+    UpdateItemsExportDateFunctionObject(QDateTime exportDate, ObjectModel::ObjectDifferenceTypes differenceTypes, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
+        : BaseFunctionObject(dataChangedHelper, items)
+        , m_exportDate(exportDate)
+        , m_differenceTypes(differenceTypes)
     {
     }
 
@@ -851,19 +852,24 @@ struct UpdateItemsExportDateFunctionObject
 
     void operator()(ObjectItem *item)
     {
+        switch( item->isDifferent() )
+        {
+            case Model::SameContents:       if (!(m_differenceTypes & ObjectModel::SameContentsType      )) return;
+            case Model::DifferentContents:  if (!(m_differenceTypes & ObjectModel::DifferentContentsTypes)) return;
+            default: break;
+        }
+
         item->setExportDate(m_exportDate);
-        if (m_dataChangedHelper && m_items)
-            m_dataChangedHelper->changed( m_items->indexOf(item) );
+        registerChanged( item );
     }
 
     QDateTime m_exportDate;
-    DataChangedHelper *m_dataChangedHelper;
-    QList<ObjectItem*> *m_items;
+    ObjectModel::ObjectDifferenceTypes m_differenceTypes;
 };
 
 void ObjectModel::updateItemsExportDate(ObjectItems *allTargets, const QDateTime &exportDate, const ObjectDifferenceTypes differenceTypes)
 {
-    // FIXME: non-blocking, can be async
+    // non-blocking
     DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(UpdateItemsExportDateProcess, this);
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
@@ -893,17 +899,11 @@ void ObjectModel::updateItemsExportDate(ObjectItems *allTargets, const QDateTime
         //----------------------------------------------------------------------------------------
         // asynchronous call
         //*
-        // filter items
-        {
-            ProgressNotifier subProgFilter(UpdateItemsExportDateProcess, items.count(), this);
-            ConcurrentMapHelper<void> mapHelper( &subProgFilter );
-            mapHelper.run( QtConcurrent::map(items, ObjectDifferenceTypesFilterFunctionObject(differenceTypes, &helper, &m_items) ) );
-        }
         // concurrent-map
         {
             ProgressNotifier subProg(UpdateItemsExportDateProcess, items.count(), this);
             ConcurrentMapHelper<void> mapHelper( &subProg );
-            mapHelper.run( QtConcurrent::map(items, UpdateItemsExportDateFunctionObject(exportDate, NULL, NULL) ) );
+            mapHelper.run( QtConcurrent::map(items, UpdateItemsExportDateFunctionObject(exportDate, differenceTypes, &helper, &m_items) ) );
         }
         // */
     }
@@ -912,12 +912,11 @@ void ObjectModel::updateItemsExportDate(ObjectItems *allTargets, const QDateTime
 }
 
 
-struct UpdateItemsInProjectFunctionObject
+struct UpdateItemsInProjectFunctionObject : public BaseFunctionObject
 {
     UpdateItemsInProjectFunctionObject(Model::ObjectExistence existence, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
-        : m_existence(existence)
-        , m_dataChangedHelper(dataChangedHelper)
-        , m_items(items)
+        : BaseFunctionObject(dataChangedHelper, items)
+        , m_existence(existence)
     {
     }
 
@@ -926,18 +925,15 @@ struct UpdateItemsInProjectFunctionObject
     void operator()(ObjectItem *item)
     {
         item->setInProject(m_existence);
-        if (m_dataChangedHelper && m_items)
-            m_dataChangedHelper->changed( m_items->indexOf(item) );
+        registerChanged( item );
     }
 
     Model::ObjectExistence m_existence;
-    DataChangedHelper *m_dataChangedHelper;
-    QList<ObjectItem*> *m_items;
 };
 
 void ObjectModel::updateItemsInProject(ObjectItems *allTargets, Model::ObjectExistence existence)
 {
-    // FIXME: non-blocking, can be async
+    // non-blocking
     DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(UpdateItemsInProjectProcess, this);
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
@@ -973,12 +969,11 @@ void ObjectModel::updateItemsInProject(ObjectItems *allTargets, Model::ObjectExi
 
 
 
-struct UpdateItemsInSourceDirFunctionObject
+struct UpdateItemsInSourceDirFunctionObject : public BaseFunctionObject
 {
     UpdateItemsInSourceDirFunctionObject(Model::ObjectExistence existence, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
-        : m_existence(existence)
-        , m_dataChangedHelper(dataChangedHelper)
-        , m_items(items)
+        : BaseFunctionObject(dataChangedHelper, items)
+        , m_existence(existence)
     {
     }
 
@@ -987,18 +982,15 @@ struct UpdateItemsInSourceDirFunctionObject
     void operator()(ObjectItem *item)
     {
         item->setInSourceDir(m_existence);
-        if (m_dataChangedHelper && m_items)
-            m_dataChangedHelper->changed( m_items->indexOf(item) );
+        registerChanged( item );
     }
 
     Model::ObjectExistence m_existence;
-    DataChangedHelper *m_dataChangedHelper;
-    QList<ObjectItem*> *m_items;
 };
 
 void ObjectModel::updateItemsInSourceDir(ObjectItems *allTargets, Model::ObjectExistence existence)
 {
-    // FIXME: non-blocking, can be async
+    // non-blocking
     DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(UpdateItemsInSourceDirProcess, this);
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
@@ -1034,12 +1026,11 @@ void ObjectModel::updateItemsInSourceDir(ObjectItems *allTargets, Model::ObjectE
 
 
 
-struct UpdateItemsDifferenceFunctionObject
+struct UpdateItemsDifferenceFunctionObject : public BaseFunctionObject
 {
     UpdateItemsDifferenceFunctionObject(Model::ObjectDifference difference, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
-        : m_difference(difference)
-        , m_dataChangedHelper(dataChangedHelper)
-        , m_items(items)
+        : BaseFunctionObject(dataChangedHelper, items)
+        , m_difference(difference)
     {
     }
 
@@ -1048,13 +1039,10 @@ struct UpdateItemsDifferenceFunctionObject
     void operator()(ObjectItem *item)
     {
         item->setDifferent(m_difference);
-        if (m_dataChangedHelper && m_items)
-            m_dataChangedHelper->changed( m_items->indexOf(item) );
+        registerChanged( item );
     }
 
     Model::ObjectDifference m_difference;
-    DataChangedHelper *m_dataChangedHelper;
-    QList<ObjectItem*> *m_items;
 };
 
 void ObjectModel::updateItemsDifference(ObjectItems *allTargets, Model::ObjectDifference difference)
@@ -1095,11 +1083,10 @@ void ObjectModel::updateItemsDifference(ObjectItems *allTargets, Model::ObjectDi
 }
 
 
-struct UpdateItemsDifferenceByFileTimeFunctionObject
+struct UpdateItemsDifferenceByFileTimeFunctionObject : public BaseFunctionObject
 {
     UpdateItemsDifferenceByFileTimeFunctionObject(DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
-        : m_dataChangedHelper(dataChangedHelper)
-        , m_items(items)
+        : BaseFunctionObject(dataChangedHelper, items)
     {
     }
 
@@ -1110,18 +1097,14 @@ struct UpdateItemsDifferenceByFileTimeFunctionObject
         if ( !item->isModified() )
         {
             item->setDifferent( Model::SameContents );
-            if (m_dataChangedHelper && m_items)
-                m_dataChangedHelper->changed( m_items->indexOf(item) );
+            registerChanged( item );
         }
     }
-
-    DataChangedHelper *m_dataChangedHelper;
-    QList<ObjectItem*> *m_items;
 };
 
 void ObjectModel::updateItemsDifferenceByFileTime(ObjectItems *allTargets)
 {
-    // FIXME: non-blocking, can be async
+    // non-blocking
     DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(UpdateItemsDifferenceByFileTimeProcess, this);
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
@@ -1160,41 +1143,40 @@ void ObjectModel::updateItemsDifferenceByFileTime(ObjectItems *allTargets)
 }
 
 
-struct UpdateItemsDifferenceAsIsFilterFunctionObject
+
+struct UpdateItemsDifferenceAsIsFunctionObject : public BaseFunctionObject
 {
-    UpdateItemsDifferenceAsIsFilterFunctionObject(ObjectSetting *os, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
-        : m_os(os)
-        , m_dataChangedHelper(dataChangedHelper)
-        , m_items(items)
+    UpdateItemsDifferenceAsIsFunctionObject(ObjectSetting *os, Model::ObjectDifference difference, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
+        : BaseFunctionObject(dataChangedHelper, items)
+        , m_os(os)
+        , m_difference(difference)
     {
     }
 
-    typedef bool result_type;
+    typedef void result_type;
 
-    bool operator()(ObjectItem *item)
+    void operator()(ObjectItem *item)
     {
         if ( item->isModified() )
-            return false;
+            return;
 
         bool isDifferent;
         m_os->compareTempDir( item->name(), &isDifferent );
         if ( isDifferent )
-            return false;
+            return;
 
-        if (m_dataChangedHelper && m_items)
-            m_dataChangedHelper->changed( m_items->indexOf(item) );
-        return true;
+        item->setDifferent(m_difference);
+        registerChanged( item );
     }
 
     ObjectSetting *m_os;
-    DataChangedHelper *m_dataChangedHelper;
-    QList<ObjectItem*> *m_items;
+    Model::ObjectDifference m_difference;
 };
 
 
 void ObjectModel::updateItemsDifferenceAsIs(ObjectItems *allTargets)
 {
-    // FIXME: non-blocking, can be async
+    // non-blocking
     DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(UpdateItemsDifferenceAsIsProcess, this);
     ProjectSetting setting(this);
@@ -1231,17 +1213,11 @@ void ObjectModel::updateItemsDifferenceAsIs(ObjectItems *allTargets)
         //----------------------------------------------------------------------------------------
         // asynchronous call
         //*
-        // filter items
-        {
-            ProgressNotifier subProgFilter(UpdateItemsDifferenceAsIsProcess, items.count(), this);
-            ConcurrentMapHelper<void> mapHelper( &subProgFilter );
-            mapHelper.run( QtConcurrent::filter(items, UpdateItemsDifferenceAsIsFilterFunctionObject(os, &helper, &m_items) ) );
-        }
         // concurrent-map
         {
             ProgressNotifier subProg(UpdateItemsDifferenceAsIsProcess, items.count(), this);
             ConcurrentMapHelper<void> mapHelper( &subProg );
-            mapHelper.run( QtConcurrent::map(items, UpdateItemsDifferenceFunctionObject(Model::SameContents, NULL, NULL) ) );
+            mapHelper.run( QtConcurrent::map(items, UpdateItemsDifferenceAsIsFunctionObject(os, Model::SameContents, NULL, NULL) ) );
         }
         // */
 
@@ -1288,13 +1264,13 @@ void ObjectModel::updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets
 
 
 
-struct UpdateFileTimeInTempDirFunctionObject
+struct UpdateFileTimeInTempDirFunctionObject : public BaseFunctionObject
 {
-    UpdateFileTimeInTempDirFunctionObject(ObjectSetting *os, const QDateTime &fileTime, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
-        : m_os(os)
+    UpdateFileTimeInTempDirFunctionObject(ObjectSetting *os, const QDateTime &fileTime, const ObjectModel::ObjectDifferenceTypes differenceTypes, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
+        : BaseFunctionObject(dataChangedHelper, items)
+        , m_os(os)
         , m_fileTime(fileTime)
-        , m_dataChangedHelper(dataChangedHelper)
-        , m_items(items)
+        , m_differenceTypes(differenceTypes)
     {
     }
 
@@ -1302,22 +1278,26 @@ struct UpdateFileTimeInTempDirFunctionObject
 
     void operator()(ObjectItem *item)
     {
-        m_os->updateFileTimeInTempDir( item->name(), m_fileTime );
+        switch( item->isDifferent() )
+        {
+            case Model::SameContents:       if (!(m_differenceTypes & ObjectModel::SameContentsType      )) return;
+            case Model::DifferentContents:  if (!(m_differenceTypes & ObjectModel::DifferentContentsTypes)) return;
+            default: break;
+        }
 
-        if (m_dataChangedHelper && m_items)
-            m_dataChangedHelper->changed( m_items->indexOf(item) );
+        m_os->updateFileTimeInTempDir( item->name(), m_fileTime );
+        registerChanged( item );
     }
 
     ObjectSetting *m_os;
     QDateTime m_fileTime;
-    DataChangedHelper *m_dataChangedHelper;
-    QList<ObjectItem*> *m_items;
+    ObjectModel::ObjectDifferenceTypes m_differenceTypes;
 };
 
 
 void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTime &fileTime, const ObjectDifferenceTypes differenceTypes)
 {
-    // FIXME: non-blocking, can be async
+    // non-blocking
     ProgressNotifier mainProg(UpdateFileTimeInTempDirProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1348,17 +1328,11 @@ void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTi
         //----------------------------------------------------------------------------------------
         // asynchronous call
         //*
-        // filter items
-        {
-            ProgressNotifier subProgFilter(UpdateFileTimeInTempDirProcess, items.count(), this);
-            ConcurrentMapHelper<void> mapHelper( &subProgFilter );
-            mapHelper.run( QtConcurrent::filter(items, ObjectDifferenceTypesFilterFunctionObject(differenceTypes, NULL, NULL) ) );
-        }
         // concurrent-map
         {
             ProgressNotifier subProg(UpdateFileTimeInTempDirProcess, items.count(), this);
             ConcurrentMapHelper<void> mapHelper( &subProg );
-            mapHelper.run( QtConcurrent::map(items, UpdateFileTimeInTempDirFunctionObject(os, fileTime, NULL, NULL) ) );
+            mapHelper.run( QtConcurrent::map(items, UpdateFileTimeInTempDirFunctionObject(os, fileTime, differenceTypes, NULL, NULL) ) );
         }
         // */
 
@@ -1367,7 +1341,7 @@ void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTi
 
 void ObjectModel::deleteItems(ObjectItems *allTargets)
 {
-    // FIXME: non-blocking, can be async
+    // FIXME: non-blocking, can be async ? require removeRows emission ?
     ProgressNotifier mainProg(DeleteItemsProcess, this);
 
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
@@ -1388,9 +1362,47 @@ void ObjectModel::deleteItems(ObjectItems *allTargets)
     }
 }
 
+
+struct UpdateFileTimeInTempDirByExportDateFunctionObject : public BaseFunctionObject
+{
+    UpdateFileTimeInTempDirByExportDateFunctionObject(ObjectSetting *os, const ObjectModel::ObjectDifferenceTypes differenceTypes, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
+        : BaseFunctionObject(dataChangedHelper, items)
+        , m_os(os)
+        , m_differenceTypes(differenceTypes)
+    {
+    }
+
+    typedef void result_type;
+
+    void operator()(ObjectItem *item)
+    {
+        switch( item->isDifferent() )
+        {
+            case Model::SameContents:       if (!(m_differenceTypes & ObjectModel::SameContentsType      )) return;
+            case Model::DifferentContents:  if (!(m_differenceTypes & ObjectModel::DifferentContentsTypes)) return;
+            default: break;
+        }
+
+        if ( item->exportDate().isValid() )
+            m_os->updateFileTimeInTempDir( item->name(), item->exportDate() );
+        else
+        {
+            // treat as 1 sec. old from udpateDate
+            QDateTime exportDate = item->updateDate().addSecs(-1);
+            m_os->updateFileTimeInTempDir( item->name(), exportDate );
+            item->setExportDate( exportDate );
+            registerChanged( item );
+        }
+    }
+
+    ObjectSetting *m_os;
+    ObjectModel::ObjectDifferenceTypes m_differenceTypes;
+};
+
 void ObjectModel::updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, const ObjectDifferenceTypes differenceTypes)
 {
-    // FIXME: non-blocking, can be async
+    // non-blocking
+    DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(UpdateFileTimeInTempDirByExportDateProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1400,6 +1412,11 @@ void ObjectModel::updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, c
     {
         os = setting[ objectType ];
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
+
+
+        //----------------------------------------------------------------------------------------
+        // synchronous call
+        /*
         ProgressNotifier subProg(UpdateFileTimeInTempDirByExportDateProcess, items.count(), this);
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
@@ -1425,7 +1442,21 @@ void ObjectModel::updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, c
 
             }
         }
+        */
+
+        //----------------------------------------------------------------------------------------
+        // asynchronous call
+        //*
+        {
+            ProgressNotifier subProg(UpdateFileTimeInTempDirByExportDateProcess, items.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProg );
+            mapHelper.run( QtConcurrent::map(items, UpdateFileTimeInTempDirByExportDateFunctionObject(os, differenceTypes, &helper, &m_items) ) );
+        }
+        // */
     }
+
+    if (helper.isChanged())
+        emit dataChanged( createIndex(helper.first(), ExportDateColumn), createIndex(helper.last(), ExportDateColumn) );
 }
 
 
@@ -1461,7 +1492,7 @@ void ObjectModel::loadItemsFromProject(QList<ObjectItem*> *items)
 
 void ObjectModel::loadItemsFromSourceDir(QList<ObjectItem*> *items)
 {
-    // FIXME: non-blocking, can be async
+    // FIXME: non-blocking, can be async ? require append ?
     ProgressNotifier mainProg(LoadItemFromSourceDirProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1682,9 +1713,29 @@ void ObjectModel::importFromTempDirToProject(ObjectItems *allTargets)
     }
 }
 
+
+
+struct CopyFromTempDirToSourceDirFunctionObject
+{
+    CopyFromTempDirToSourceDirFunctionObject(ObjectSetting *os)
+        : m_os(os)
+    {
+    }
+
+    typedef void result_type;
+
+    void operator()(const QString &objectName)
+    {
+        m_os->copyFromTempDirToSourceDir(objectName);
+    }
+
+    ObjectSetting *m_os;
+};
+
+
 void ObjectModel::copyFromTempDirToSourceDir(ObjectItems *allTargets)
 {
-    // FIXME: non-blocking, can be async
+    // non-blocking
     ProgressNotifier mainProg(CopyFromTempDirToSourceDirProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1697,19 +1748,52 @@ void ObjectModel::copyFromTempDirToSourceDir(ObjectItems *allTargets)
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
-        ProgressNotifier subProg(CopyFromTempDirToSourceDirProcess, objectNames.count(), this);
 
+        //----------------------------------------------------------------------------------------
+        // synchronous call
+        /*
+        ProgressNotifier subProg(CopyFromTempDirToSourceDirProcess, objectNames.count(), this);
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
             os->copyFromTempDirToSourceDir( (*it) );
         }
+        */
+
+        //----------------------------------------------------------------------------------------
+        // asynchronous call
+        //*
+        {
+            ProgressNotifier subProg(CopyFromTempDirToSourceDirProcess, objectNames.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProg );
+            mapHelper.run( QtConcurrent::map(objectNames, CopyFromTempDirToSourceDirFunctionObject(os) ) );
+        }
+        // */
     }
 }
 
+
+
+struct CopyFromSourceDirToTempDirFunctionObject
+{
+    CopyFromSourceDirToTempDirFunctionObject(ObjectSetting *os)
+        : m_os(os)
+    {
+    }
+
+    typedef void result_type;
+
+    void operator()(const QString &objectName)
+    {
+        m_os->copyFromSourceDirToTempDir(objectName);
+    }
+
+    ObjectSetting *m_os;
+};
+
 void ObjectModel::copyFromSourceDirToTempDir(ObjectItems *allTargets)
 {
-    // FIXME: non-blocking, can be async
+    // non-blocking
     ProgressNotifier mainProg(CopyFromSourceDirToTempDirProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1721,13 +1805,27 @@ void ObjectModel::copyFromSourceDirToTempDir(ObjectItems *allTargets)
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
-        ProgressNotifier subProg(CopyFromSourceDirToTempDirProcess, objectNames.count(), this);
 
+        //----------------------------------------------------------------------------------------
+        // synchronous call
+        /*
+        ProgressNotifier subProg(CopyFromSourceDirToTempDirProcess, objectNames.count(), this);
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
             os->copyFromSourceDirToTempDir( (*it) );
         }
+        */
+
+        //----------------------------------------------------------------------------------------
+        // asynchronous call
+        //*
+        {
+            ProgressNotifier subProg(CopyFromSourceDirToTempDirProcess, objectNames.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProg );
+            mapHelper.run( QtConcurrent::map(objectNames, CopyFromSourceDirToTempDirFunctionObject(os) ) );
+        }
+        // */
     }
 }
 
@@ -1789,9 +1887,26 @@ void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
     }
 }
 
+struct DesanitizeTempDirFunctionObject
+{
+    DesanitizeTempDirFunctionObject(ObjectSetting *os)
+        : m_os(os)
+    {
+    }
+
+    typedef void result_type;
+
+    void operator()(const QString &objectName)
+    {
+        m_os->desanitizeTempDir(NULL, objectName);
+    }
+
+    ObjectSetting *m_os;
+};
+
 void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
 {
-    // FIXME: non-blocking, can be async
+    // non-blocking
     ProgressNotifier mainProg(DesanitizeTempDirProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1804,25 +1919,38 @@ void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
-        ProgressNotifier subProg(DesanitizeTempDirProcess, objectNames.count(), this);
 
+        //----------------------------------------------------------------------------------------
+        // synchronous call
+        /*
+        ProgressNotifier subProg(DesanitizeTempDirProcess, objectNames.count(), this);
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
             os->desanitizeTempDir(NULL, (*it) );
         }
+        */
+
+        //----------------------------------------------------------------------------------------
+        // asynchronous call
+        //*
+        {
+            ProgressNotifier subProg(DesanitizeTempDirProcess, objectNames.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProg );
+            mapHelper.run( QtConcurrent::map(objectNames, DesanitizeTempDirFunctionObject(os) ) );
+        }
+        // */
     }
 }
 
 
 
 
-struct CompareTempDirFunctionObject
+struct CompareTempDirFunctionObject : public BaseFunctionObject
 {
     CompareTempDirFunctionObject(ObjectSetting *os, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
-        : m_os(os)
-        , m_dataChangedHelper(dataChangedHelper)
-        , m_items(items)
+        : BaseFunctionObject(dataChangedHelper, items)
+        , m_os(os)
     {
     }
 
@@ -1836,26 +1964,22 @@ struct CompareTempDirFunctionObject
         if (isDifferent == true && item->isDifferent() != Model::DifferentContents )
         {
             item->setDifferent( Model::DifferentContents );
-            if (m_dataChangedHelper && m_items)
-                m_dataChangedHelper->changed( m_items->indexOf(item) );
+            registerChanged( item );
         }
         else if (isDifferent == false && item->isDifferent() != Model::SameContents )
         {
             item->setDifferent( Model::SameContents );
-            if (m_dataChangedHelper && m_items)
-                m_dataChangedHelper->changed( m_items->indexOf(item) );
+            registerChanged( item );
         }
     }
 
     ObjectSetting *m_os;
-    DataChangedHelper *m_dataChangedHelper;
-    QList<ObjectItem*> *m_items;
 };
 
 
 void ObjectModel::compareTempDir(ObjectItems *allTargets)
 {
-    // FIXME: non-blocking, can be async
+    // non-blocking
     DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(CompareTempDirProcess, this);
     ProjectSetting setting(this);
@@ -1892,14 +2016,17 @@ void ObjectModel::compareTempDir(ObjectItems *allTargets)
             helper.changed( m_items.indexOf( item ) );
         }
         */
+
         //----------------------------------------------------------------------------------------
         // asynchronous call
         //*
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
         //
-        ProgressNotifier subProg(CompareTempDirProcess, items.count(), this);
-        ConcurrentMapHelper<void> mapHelper( &subProg );
-        mapHelper.run( QtConcurrent::map(items, CompareTempDirFunctionObject(os, &helper, &m_items) ) );
+        {
+            ProgressNotifier subProg(CompareTempDirProcess, items.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProg );
+            mapHelper.run( QtConcurrent::map(items, CompareTempDirFunctionObject(os, &helper, &m_items) ) );
+        }
         // */
     }
 
@@ -1908,9 +2035,29 @@ void ObjectModel::compareTempDir(ObjectItems *allTargets)
         emit dataChanged( createIndex(helper.first(), DifferentColumn), createIndex( helper.last(), DifferentColumn ) );
 }
 
+
+
+struct DeleteFromSourceDirFunctionObject
+{
+    DeleteFromSourceDirFunctionObject(ObjectSetting *os)
+        : m_os(os)
+    {
+    }
+
+    typedef void result_type;
+
+    void operator()(const QString &objectName)
+    {
+        m_os->deleteFromSourceDir(objectName);
+    }
+
+    ObjectSetting *m_os;
+};
+
+
 void ObjectModel::deleteFromSourceDir(ObjectItems *allTargets)
 {
-    // FIXME: non-blocking, can be async
+    // non-blocking
     ProgressNotifier mainProg(DeleteFromSourceDirProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1922,19 +2069,34 @@ void ObjectModel::deleteFromSourceDir(ObjectItems *allTargets)
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
-        ProgressNotifier subProg(DeleteFromSourceDirProcess, objectNames.count(), this);
 
+        //----------------------------------------------------------------------------------------
+        // syncronous call
+        /*
+        ProgressNotifier subProg(DeleteFromSourceDirProcess, objectNames.count(), this);
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
             subProg.next();
             os->deleteFromSourceDir( (*it) );
         }
+        */
+
+        //----------------------------------------------------------------------------------------
+        // asynchronous call
+        //*
+        {
+            ProgressNotifier subProg(DeleteFromSourceDirProcess, objectNames.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProg );
+            mapHelper.run( QtConcurrent::map(objectNames, DeleteFromSourceDirFunctionObject(os) ) );
+        }
+        // */
     }
 }
 
 void ObjectModel::deleteFromProject(ObjectItems *allTargets)
 {
     // BLOCKING, cannot be async
+
     ProgressNotifier mainProg(DeleteFromProjectProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -2004,10 +2166,11 @@ void ObjectModel::deleteFromTempDir(ObjectItems *allTargets)
         //----------------------------------------------------------------------------------------
         // asynchronous call
         //*
-        ProgressNotifier subProg(DeleteFromTempDirProcess, objectNames.count(), this);
-        ConcurrentMapHelper<void> mapHelper( &subProg );
-        mapHelper.run( QtConcurrent::map(objectNames, DeleteFromTempDirFunctionObject(os) ) );
-
+        {
+            ProgressNotifier subProg(DeleteFromTempDirProcess, objectNames.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProg );
+            mapHelper.run( QtConcurrent::map(objectNames, DeleteFromTempDirFunctionObject(os) ) );
+        }
         // */
     }
 }
