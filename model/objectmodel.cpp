@@ -731,6 +731,7 @@ void ObjectModel::selectItemsForProcess(bool selected, bool resetSelection)
 
 void ObjectModel::selectItems(ObjectModel::ItemsTypes itemsType, bool selected, bool resetSelection)
 {
+    // FIXME: non-blocking, can be async
     DataChangedHelper helper( m_items.count() );
     if (resetSelection)
     {
@@ -759,6 +760,7 @@ void ObjectModel::selectItems(ObjectModel::ItemsTypes itemsType, bool selected, 
 
 void ObjectModel::selectItemsByObjectType(SelectObjectTypes objectTypes, bool selected, bool resetSelection)
 {
+    // FIXME: non-blocking, can be async
     DataChangedHelper helper( m_items.count() );
     if (resetSelection)
     {
@@ -787,6 +789,7 @@ void ObjectModel::selectItemsByObjectType(SelectObjectTypes objectTypes, bool se
 
 void ObjectModel::updateItemsExportDate(ObjectItems *allTargets, const QDateTime &exportDate, const ObjectDifferenceTypes differenceTypes)
 {
+    // FIXME: non-blocking, can be async
     DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(UpdateItemsExportDateProcess, this);
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
@@ -813,6 +816,7 @@ void ObjectModel::updateItemsExportDate(ObjectItems *allTargets, const QDateTime
 
 void ObjectModel::updateItemsInProject(ObjectItems *allTargets, Model::ObjectExistence existence)
 {
+    // FIXME: non-blocking, can be async
     DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(UpdateItemsInProjectProcess, this);
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
@@ -832,6 +836,7 @@ void ObjectModel::updateItemsInProject(ObjectItems *allTargets, Model::ObjectExi
 
 void ObjectModel::updateItemsInSourceDir(ObjectItems *allTargets, Model::ObjectExistence existence)
 {
+    // FIXME: non-blocking, can be async
     DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(UpdateItemsInSourceDirProcess, this);
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
@@ -870,6 +875,7 @@ struct UpdateItemsDifferenceFunctionObject
 
 void ObjectModel::updateItemsDifference(ObjectItems *allTargets, Model::ObjectDifference difference)
 {
+    // non-blocking
     DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(UpdateItemsDifferenceProcess, this);
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
@@ -877,6 +883,7 @@ void ObjectModel::updateItemsDifference(ObjectItems *allTargets, Model::ObjectDi
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
         ProgressNotifier subProg(UpdateItemsDifferenceProcess, items.count(), this);
 
+        //----------------------------------------------------------------------------------------
         // register indexes for dataChanged emission
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
             helper.changed( m_items.indexOf( (*it) ) );
@@ -917,6 +924,7 @@ void ObjectModel::updateItemsDifference(ObjectItems *allTargets, Model::ObjectDi
 
 void ObjectModel::updateItemsDifferenceByFileTime(ObjectItems *allTargets)
 {
+    // FIXME: non-blocking, can be async
     DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(UpdateItemsDifferenceByFileTimeProcess, this);
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
@@ -939,6 +947,7 @@ void ObjectModel::updateItemsDifferenceByFileTime(ObjectItems *allTargets)
 
 void ObjectModel::updateItemsDifferenceAsIs(ObjectItems *allTargets)
 {
+    // FIXME: non-blocking, can be async
     DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(UpdateItemsDifferenceAsIsProcess, this);
     ProjectSetting setting(this);
@@ -973,6 +982,7 @@ void ObjectModel::updateItemsDifferenceAsIs(ObjectItems *allTargets)
 
 void ObjectModel::updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets)
 {
+    // BLOCKING, cannot be asynch
     DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(UpdateItemsCreateUpdateDateFromProjectProcess, this);
     ProjectSetting setting(this);
@@ -1008,6 +1018,7 @@ void ObjectModel::updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets
 
 void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTime &fileTime, const ObjectDifferenceTypes differenceTypes)
 {
+    // FIXME: non-blocking, can be async
     ProgressNotifier mainProg(UpdateFileTimeInTempDirProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1035,6 +1046,7 @@ void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTi
 
 void ObjectModel::deleteItems(ObjectItems *allTargets)
 {
+    // FIXME: non-blocking, can be async
     ProgressNotifier mainProg(DeleteItemsProcess, this);
 
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
@@ -1057,6 +1069,7 @@ void ObjectModel::deleteItems(ObjectItems *allTargets)
 
 void ObjectModel::updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, const ObjectDifferenceTypes differenceTypes)
 {
+    // FIXME: non-blocking, can be async
     ProgressNotifier mainProg(UpdateFileTimeInTempDirByExportDateProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1097,6 +1110,7 @@ void ObjectModel::updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, c
 
 void ObjectModel::loadItemsFromProject(QList<ObjectItem*> *items)
 {
+    // BLOCKING, cannot be async
     ProgressNotifier mainProg(LoadItemFromProjectProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1126,8 +1140,7 @@ void ObjectModel::loadItemsFromProject(QList<ObjectItem*> *items)
 
 void ObjectModel::loadItemsFromSourceDir(QList<ObjectItem*> *items)
 {
-    // load items from local file system.
-
+    // FIXME: non-blocking, can be async
     ProgressNotifier mainProg(LoadItemFromSourceDirProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1155,6 +1168,8 @@ void ObjectModel::loadItemsFromSourceDir(QList<ObjectItem*> *items)
 
 void ObjectModel::reloadAndMergeItems()
 {
+    // FIXME: conjunction with BLOCKING and non-blocking, can be async ?
+
     // loading items more smart
 
     QList<ObjectItem*> itemsFromProject;
@@ -1278,6 +1293,8 @@ void ObjectModel::reloadAndMergeItems()
 
 void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
 {
+    // BLOCKING, cannot be async
+
     // export to temp directory
     //      for objects existing in both Project and SourceDir
     //      for objects existing in ProjectOnly
@@ -1311,6 +1328,8 @@ void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
 
 void ObjectModel::importFromTempDirToProject(ObjectItems *allTargets)
 {
+    // BLOCKING, cannot be async
+
     ProgressNotifier mainProg(ImportFromTempDirToProjectProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1344,6 +1363,7 @@ void ObjectModel::importFromTempDirToProject(ObjectItems *allTargets)
 
 void ObjectModel::copyFromTempDirToSourceDir(ObjectItems *allTargets)
 {
+    // FIXME: non-blocking, can be async
     ProgressNotifier mainProg(CopyFromTempDirToSourceDirProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1368,6 +1388,7 @@ void ObjectModel::copyFromTempDirToSourceDir(ObjectItems *allTargets)
 
 void ObjectModel::copyFromSourceDirToTempDir(ObjectItems *allTargets)
 {
+    // FIXME: non-blocking, can be async
     ProgressNotifier mainProg(CopyFromSourceDirToTempDirProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1410,6 +1431,7 @@ struct SanitizeTempDirFunctionObject
 
 void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
 {
+    // non-blocking
     ProgressNotifier mainProg(SanitizeTempDirProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1456,6 +1478,7 @@ void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
 
 void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
 {
+    // FIXME: non-blocking, can be async
     ProgressNotifier mainProg(DesanitizeTempDirProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1480,6 +1503,7 @@ void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
 
 void ObjectModel::compareTempDir(ObjectItems *allTargets)
 {
+    // FIXME: non-blocking, can be async
     DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(CompareTempDirProcess, this);
     ProjectSetting setting(this);
@@ -1521,6 +1545,7 @@ void ObjectModel::compareTempDir(ObjectItems *allTargets)
 
 void ObjectModel::deleteFromSourceDir(ObjectItems *allTargets)
 {
+    // FIXME: non-blocking, can be async
     ProgressNotifier mainProg(DeleteFromSourceDirProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1544,6 +1569,7 @@ void ObjectModel::deleteFromSourceDir(ObjectItems *allTargets)
 
 void ObjectModel::deleteFromProject(ObjectItems *allTargets)
 {
+    // BLOCKING, cannot be async
     ProgressNotifier mainProg(DeleteFromProjectProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
@@ -1586,6 +1612,7 @@ struct DeleteFromTempDirFunctionObject
 
 void ObjectModel::deleteFromTempDir(ObjectItems *allTargets)
 {
+    // non-blocking
     ProgressNotifier mainProg(DeleteFromTempDirProcess, this);
     ProjectSetting setting(this);
     ObjectSetting *os;
