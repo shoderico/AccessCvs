@@ -33,6 +33,16 @@ LIBS        += -L$$PWD/../LibQGit2/install/lib/ -lgit2.dll
 INCLUDEPATH +=   $$PWD/../LibQGit2/install/include
 DEPENDPATH  +=   $$PWD/../LibQGit2/install/include
 
+#
+BUILDDIR = $$_PRO_FILE_PWD_/build
+Release:DESTDIR = $$BUILDDIR/release/bin
+Debug:DESTDIR = $$BUILDDIR/debug/bin
+OBJECTS_DIR = $$DESTDIR/../.obj
+MOC_DIR = $$DESTDIR/../.moc
+RCC_DIR = $$DESTDIR/../.rcc
+UI_DIR = $$DESTDIR/../.ui
+
+
 
 SOURCES += \
     addin/msaddndr_i.c \
