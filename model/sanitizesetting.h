@@ -23,6 +23,7 @@ public:
 private:
     QString readLine();
     void writeLine( QTextStream &stDesign, QTextStream &stModule, bool isCodeBehind, QString &txt, const QString &lineEnd);
+    bool atEnd();
 
 private:
     QRegularExpression *m_reBlock;
@@ -34,6 +35,7 @@ private:
 
     QIODevice    *m_deviceSrc;
     CodecInfo    *m_codecInfoSrc;
+    QTextStream  *m_streamSrc;
 
     QMap<QString, QString> m_blockData;
 };

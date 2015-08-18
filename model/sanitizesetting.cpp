@@ -87,6 +87,7 @@ void SanitizeSetting::sanitize(QTextStream &streamSrc, CodecInfo *codecSrc, QTex
 
     m_deviceSrc = streamSrc.device();
     m_codecInfoSrc = codecSrc;
+    m_streamSrc = &streamSrc;
 
     bool getLine = true;
     bool isCodeBehind = false;
@@ -96,7 +97,7 @@ void SanitizeSetting::sanitize(QTextStream &streamSrc, CodecInfo *codecSrc, QTex
     QString txt;
     QString sPattern;
 
-    while (!m_deviceSrc->atEnd())
+    while ( !atEnd() )
     {
         //qDebug() << stIn.readLine();
 
@@ -144,7 +145,7 @@ void SanitizeSetting::sanitize(QTextStream &streamSrc, CodecInfo *codecSrc, QTex
                 reIndentLess.setPattern(sPattern);
             }
 
-            while ( !m_deviceSrc->atEnd() )
+            while ( !atEnd() )
             {
                 txt = readLine();
                 if (reIndentSame.match(txt).hasMatch() || reIndentLess.match(txt).hasMatch())
@@ -163,7 +164,7 @@ void SanitizeSetting::sanitize(QTextStream &streamSrc, CodecInfo *codecSrc, QTex
             QRegularExpression reBinary;
             reBinary.setPattern("^\\s*0x(\\w+)(?: ,|)$");
             QString binaryStr = "";
-            while ( !m_deviceSrc->atEnd() )
+            while ( !atEnd() )
             {
                 txt = readLine();
                 QRegularExpressionMatch matchesBinary = reBinary.match(txt);
@@ -280,13 +281,18 @@ QByteArray SanitizeSetting::blockData(const QString &elementName)
 
 QString SanitizeSetting::readLine()
 {
-    QByteArray lineData = m_deviceSrc->readLine();
 
     QString line;
     if (m_codecInfoSrc->codec()->name() == "Shift_JIS")
+    {
+        QByteArray lineData = m_deviceSrc->readLine();
         line = QString::fromLocal8Bit( lineData );
+    }
     else
-        line = lineData;
+    {
+//        line = lineData;
+        line = m_streamSrc->readLine();
+    }
 
     if (line.endsWith( m_codecInfoSrc->lineEnd() ))
         line.chop( m_codecInfoSrc->lineEnd().length() );
@@ -304,5 +310,13 @@ void SanitizeSetting::writeLine( QTextStream &stDesign, QTextStream &stModule, b
             txt.chop( 1 );
         stModule << txt << lineEnd;
     }
+}
+
+bool SanitizeSetting::atEnd()
+{
+    if (m_codecInfoSrc->codec()->name() == "Shift_JIS")
+        return m_deviceSrc->atEnd();
+    else
+        return m_streamSrc->atEnd();
 }
 
