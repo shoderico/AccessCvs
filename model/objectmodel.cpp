@@ -742,7 +742,6 @@ void ObjectModel::selectItemsForProcess(bool selected, bool resetSelection)
 
 void ObjectModel::selectItems(ObjectModel::ItemsTypes itemsType, bool selected, bool resetSelection)
 {
-    // FIXME: non-blocking, can be async ?
     DataChangedHelper helper( m_items.count() );
     if (resetSelection)
     {
@@ -771,7 +770,6 @@ void ObjectModel::selectItems(ObjectModel::ItemsTypes itemsType, bool selected, 
 
 void ObjectModel::selectItemsByObjectType(SelectObjectTypes objectTypes, bool selected, bool resetSelection)
 {
-    // FIXME: non-blocking, can be async ?
     DataChangedHelper helper( m_items.count() );
     if (resetSelection)
     {
