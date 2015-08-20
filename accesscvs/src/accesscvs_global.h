@@ -1,0 +1,12 @@
+#ifndef ACCESSCVS_GLOBAL_H
+#define ACCESSCVS_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(ACCESSCVS_LIBRARY)
+#  define ADDINTTESTSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define ADDINTTESTSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // ACCESSCVS_GLOBAL_H

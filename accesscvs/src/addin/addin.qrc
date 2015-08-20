@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/addin">
+        <file>ribbon.xml</file>
+        <file>button.png</file>
+    </qresource>
+</RCC>

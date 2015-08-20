@@ -1,0 +1,30 @@
+// midl RibbonCallback.idl /h ribboncallback.h /iid ribboncallback_i.c
+
+import "ocidl.idl";
+
+[
+    uuid(ab935936-c2ca-4cad-accc-fa114fde9be6),
+    version(1.0),
+    helpstring("RibbonCallback Libary")
+]
+library RibbonCallback
+{
+    // TLib :     // TLib : OLE Automation : {00020430-0000-0000-C000-000000000046}
+    importlib("stdole2.tlb");
+
+    [
+        object,
+        uuid(4199dd4a-0bdc-4a00-91eb-c0397217fd14),
+        dual,
+        nonextensible,
+        helpstring("IRibbonCallback Interface"),
+        pointer_default(unique)
+    ]
+    interface IRibbonCallback : IDispatch
+    {
+        [id(42),helpstring("Button Callback")]
+        HRESULT ButtonClicked([in]IDispatch* ribbonControl);
+        [id(43),helpstring("Button Image")]
+        HRESULT GetButtonImage([in]IDispatch* ribbonControl, [out, retval]IPictureDisp** picture);
+    };
+};

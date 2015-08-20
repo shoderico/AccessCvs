@@ -1,0 +1,4 @@
+2015.08.20 08:50:18 [Warning]  QSvgHandler: Image filename is empty : :0 
+2015.08.20 08:50:18 [Warning]  QSvgHandler: Image filename is empty : :0 
+2015.08.20 08:50:18 [Warning]  libpng warning: iCCP: known incorrect sRGB profile : :0 
+2015.08.20 08:50:18 [Warning]  libpng warning: iCCP: known incorrect sRGB profile : :0 
