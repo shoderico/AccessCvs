@@ -25,6 +25,8 @@ SanitizeSetting::SanitizeSetting(QObject *parent) : QObject(parent)
     m_reBlock->setPattern(sPattern);
 
     // single-line
+    // FIXME: remove ItemSuffix
+    // FIXME: remove TabIndex from Report
     sPattern = "^\\s*(?:";
     sPattern += "Checksum =";
     sPattern += "|NoSaveCTIWhenDisabled =1";
