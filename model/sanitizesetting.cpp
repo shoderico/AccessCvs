@@ -14,6 +14,14 @@ SanitizeSetting::SanitizeSetting(QObject *parent) : QObject(parent)
 {
     QString sPattern;
 
+    // NOTE: PrtMip is changed without meaning.
+    // In some case, PrtMip's Margins will be changed while import/export in different machine.
+    // In my case, BottomMargin switched 283 and 284.
+    // This cannot be sanitized but makes meaning-less changes.
+    // To be a Known-Issue.
+    // PrtMip : https://msdn.microsoft.com/ja-jp/library/office/Ff836632.aspx
+
+
     // block
     sPattern = "^\\s*";
     sPattern += "(";
