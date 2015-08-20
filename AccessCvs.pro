@@ -9,6 +9,7 @@ QT += axserver
 QT += axcontainer
 QT += winextras
 QT += concurrent
+QT += svg
 CONFIG += dll
 #CONFIG += qaxserver_no_postlink
 CONFIG += c++11
@@ -58,6 +59,7 @@ DEPEND_DLL_FILES += \
     $$[QT_INSTALL_BINS]/Qt5Concurrent.dll \
     $$[QT_INSTALL_BINS]/Qt5Core.dll \
     $$[QT_INSTALL_BINS]/Qt5Gui.dll \
+    $$[QT_INSTALL_BINS]/Qt5Svg.dll \
     $$[QT_INSTALL_BINS]/Qt5Widgets.dll \
     $$[QT_INSTALL_BINS]/Qt5WinExtras.dll \
     $$QTSOLUTIONS_DIR/lib/QtSolutions_MFCMigrationFramework-head.dll \
@@ -123,7 +125,8 @@ SOURCES += \
     model/objectproxymodel.cpp \
     git/gitmanager.cpp \
     ui/actionmanager.cpp \
-    util/concurrentmaphelper.cpp
+    util/concurrentmaphelper.cpp \
+    addin/addinutil.cpp
 
 HEADERS +=\
     addin/msaddndr.h \
@@ -161,7 +164,8 @@ HEADERS +=\
     model/objectproxymodel.h \
     git/gitmanager.h \
     ui/actionmanager.h \
-    util/concurrentmaphelper.h
+    util/concurrentmaphelper.h \
+    addin/addinutil.h
 
 DISTFILES += \
     addin/addin.def \

@@ -9,6 +9,7 @@
 #include <QDebug>
 
 #include "comutil.h"
+#include "addinutil.h"
 #include "ui/actionmanager.h"
 #include "git/gitmanager.h"
 
@@ -341,17 +342,41 @@ HRESULT AddInImpl::GetButtonImage(IDispatch *ribbonControl, IPictureDisp **pictu
     ::SysFreeString( bstrControlId );
     rc->Release();
 
-    // determine icon image path
-    QString imagePath = ":/ui/images/";
-    if ( controlId == "StandardManualButton")
-        imagePath += "manual.png";
-    else if ( controlId == "StandardExportButton")
-        imagePath += "export.png";
-    else if ( controlId == "StandardImportButton")
-        imagePath += "import.png";
 
-    // load icon picture
-    IPictureDisp  *pd = ComUtil::loadPicture(imagePath);
+    // determine icon image path and size
+    QString imagePath = ":/ui/images/";
+    QSize size(16,16);
+    // Standard
+    if ( controlId == "StandardManualButton")
+    {
+        imagePath += "manual.svg";
+        size = AddInUtil::ribbonIconSize(AddInUtil::Large);
+    }
+    else if ( controlId == "StandardExportButton")
+    {
+        imagePath += "export.svg";
+        size = AddInUtil::ribbonIconSize(AddInUtil::Large);
+    }
+    else if ( controlId == "StandardImportButton")
+    {
+        imagePath += "import.svg";
+        size = AddInUtil::ribbonIconSize(AddInUtil::Large);
+    }
+    // Git
+    else if ( controlId == "GitInitButton")
+    {
+        imagePath += "git-init.svg";
+        size = AddInUtil::ribbonIconSize(AddInUtil::Small);
+    }
+    else if ( controlId == "GitIgnoreButton")
+    {
+        imagePath += "git-update-gitignore.svg";
+        size = AddInUtil::ribbonIconSize(AddInUtil::Small);
+    }
+
+    // load picutre
+    IPictureDisp  *pd = ComUtil::loadPictureFromSvg( imagePath, size );
+
     if ( pd )
         *picture = pd;
 

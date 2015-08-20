@@ -3,13 +3,21 @@
 #include <QPixmap>
 #include <QtWin>
 
+#include <QSvgRenderer>
+#include <QPainter>
+
+
 #include <olectl.h>
 
 IPictureDisp *ComUtil::loadPicture(const QString &imagePath)
 {
     QPixmap pixmap( imagePath );
-    HBITMAP hbm = QtWin::toHBITMAP( pixmap, QtWin::HBitmapAlpha );
+    return loadPicture(pixmap);
+}
 
+IPictureDisp *ComUtil::loadPicture(const QPixmap &pixmap)
+{
+    HBITMAP hbm = QtWin::toHBITMAP( pixmap, QtWin::HBitmapAlpha );
 
     IPictureDisp  *pd;
     PICTDESC pdesc;
@@ -27,4 +35,14 @@ IPictureDisp *ComUtil::loadPicture(const QString &imagePath)
         pd = NULL;
 
     return pd;
+}
+
+IPictureDisp *ComUtil::loadPictureFromSvg(const QString &imagePath, const QSize &size)
+{
+    QSvgRenderer renderer( imagePath );
+    QPixmap pixmap( size );
+    pixmap.fill( Qt::transparent );
+    QPainter painter( &pixmap );
+    renderer.render( &painter );
+    return loadPicture( pixmap );
 }
