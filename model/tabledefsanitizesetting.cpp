@@ -12,7 +12,7 @@ TableDefSanitizeSetting::TableDefSanitizeSetting(QObject *parent) : QObject(pare
     // line
     m_reLine = new QRegularExpression();
     sPattern = "^\\s*";
-    sPattern += "<od:tableProperty name=\"";
+    sPattern += "<od:(?:table|field)Property name=\"";
     sPattern += "(NameMap|GUID)";
     sPattern += "\".*$";
     m_reLine->setPattern( sPattern );
