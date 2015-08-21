@@ -26,18 +26,21 @@ RC_FILE  = addin/addin.rc
 DEFINES += ACCESSCVS_LIBRARY
 DEFINES += QT_MESSAGELOGCONTEXT
 
+include(../../common.pri)
 
-PROJECT_ROOT = $$PWD/../..
-LIBRARY_ROOT = $$PWD/../../..
+INCLUDEPATH += $${PROJECT_INCLUDE_DIR}
 
-# output directories
-BUILDDIR = $${PROJECT_ROOT}/build
-Release:DESTDIR = $${BUILDDIR}/release/bin
-Debug:  DESTDIR = $${BUILDDIR}/debug/bin
-OBJECTS_DIR = $$DESTDIR/../.obj
-MOC_DIR     = $$DESTDIR/../.moc
-RCC_DIR     = $$DESTDIR/../.rcc
-UI_DIR      = $$DESTDIR/../.ui
+
+# directory where *.dll output to
+DESTDIR = $${BUILD_ROOT}/$${BUILD_TYPE}/bin
+DESTDIR_WNT = $${DESTDIR}
+DESTDIR_WNT ~= s,/,\\,g
+
+
+
+# officelib
+OFFICELIB_DIR = $${PROJECT_LIBRARY_DIR}
+LIBS += -L$${OFFICELIB_DIR}/ -lofficelib
 
 
 # LibQGit2
@@ -67,23 +70,34 @@ DEPEND_DLL_FILES += \
     $$[QT_INSTALL_BINS]/Qt5Widgets.dll \
     $$[QT_INSTALL_BINS]/Qt5WinExtras.dll \
     $${QTSOLUTIONS_DIR}/lib/QtSolutions_MFCMigrationFramework-head.dll \
+
+DEPEND_DLL_EXTERNAL_FILES += \
     $${OPENSSL_DIR}/libeay32.dll \
     $${OPENSSL_DIR}/ssleay32.dll \
     $${LIBQGIT_DIR}/bin/libgit2.dll \
     $${LIBQGIT_DIR}/bin/libqgit2.dll \
+    $${OFFICELIB_DIR}/officelib.dll
 
-DEPEND_DLL_FILES_COPY = $${DEPEND_DLL_FILES}
-DEPEND_DLL_FILES_COPY ~= s,/,\\,g
-DESTDIR_DLL_COPY = $${DESTDIR}
-DESTDIR_DLL_COPY ~= s,/,\\,g
-for(FILE,DEPEND_DLL_FILES_COPY){
-    QMAKE_PRE_LINK += copy /y \"$${FILE}\" $${DESTDIR_DLL_COPY}$$escape_expand(\n\t)
+# copy dlls to DESTDIR
+DEPEND_DLL_FILES_WNT = $${DEPEND_DLL_FILES} $${DEPEND_DLL_EXTERNAL_FILES}
+DEPEND_DLL_FILES_WNT ~= s,/,\\,g
+for(FILE,DEPEND_DLL_FILES_WNT){
+    QMAKE_PRE_LINK += copy /y \"$${FILE}\" $${DESTDIR_WNT}$$escape_expand(\n\t)
 }
+
+# for idc.exe, we have to copy dlls to OUT_PWD
+DEPEND_DLL_EXTERNAL_FILES_WNT = $${DEPEND_DLL_EXTERNAL_FILES}
+DEPEND_DLL_EXTERNAL_FILES_WNT ~= s,/,\\,g
+for(f,DEPEND_DLL_EXTERNAL_FILES_WNT) {
+    QMAKE_PRE_LINK += $(COPY) \"$${f}\" $${OUT_PWD_WNT}$$escape_expand(\n\t)
+}
+
 
 # Depend : platforms/*.dll
 DEPEND_PLUGIN_FILES += \
     $$[QT_INSTALL_PLUGINS]/platforms/qwindows.dll
 
+# copy platforms/*.dll to DESTDIR
 DEPEND_PLUGIN_FILES_COPY = $${DEPEND_PLUGIN_FILES}
 DEPEND_PLUGIN_FILES_COPY ~= s,/,\\,g
 DESTDIR_PLUGIN_COPY = $${DESTDIR}/platforms
@@ -103,11 +117,6 @@ SOURCES += \
     addin/ribbon_i.c \
     addin/ribboncallback_i.c \
     ui/maindialog.cpp \
-    officelib/access.cpp \
-    officelib/adodb.cpp \
-    officelib/dao.cpp \
-    officelib/office.cpp \
-    officelib/vbide.cpp \
     model/objectitem.cpp \
     model/objectmodel.cpp \
     util/comptr.cpp \
@@ -140,15 +149,9 @@ HEADERS +=\
     addin/ribbon.h \
     addin/ribboncallback.h \
     ui/maindialog.h \
-    officelib/access.h \
-    officelib/adodb.h \
-    officelib/dao.h \
-    officelib/office.h \
-    officelib/vbide.h \
     model/objectitem.h \
     model/objectmodel.h \
     util/comptr.h \
-    officelib/officelib.h \
     util/getcomobject.h \
     accesscvs_global.h \
     model/objectsetting.h \
