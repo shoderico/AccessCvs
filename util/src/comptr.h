@@ -1,9 +1,10 @@
 #ifndef COMPTR_H
 #define COMPTR_H
 
+#include "util_global.h"
 
 template <typename T>
-class ComPtr
+class UTILSHARED_EXPORT ComPtr
 {
 public:
     ComPtr(T* ptr) : m_ptr(ptr){}

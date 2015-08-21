@@ -42,6 +42,10 @@ DESTDIR_WNT ~= s,/,\\,g
 OFFICELIB_DIR = $${PROJECT_LIBRARY_DIR}
 LIBS += -L$${OFFICELIB_DIR}/ -lofficelib
 
+# util
+UTIL_DIR = $${PROJECT_LIBRARY_DIR}
+LIBS += -L$${UTIL_DIR}/ -lutil
+
 
 # LibQGit2
 LIBQGIT_DIR = $${LIBRARY_ROOT}/LibQGit2/install
@@ -76,7 +80,8 @@ DEPEND_DLL_EXTERNAL_FILES += \
     $${OPENSSL_DIR}/ssleay32.dll \
     $${LIBQGIT_DIR}/bin/libgit2.dll \
     $${LIBQGIT_DIR}/bin/libqgit2.dll \
-    $${OFFICELIB_DIR}/officelib.dll
+    $${OFFICELIB_DIR}/officelib.dll \
+    $${UTIL_DIR}/util.dll
 
 # copy dlls to DESTDIR
 DEPEND_DLL_FILES_WNT = $${DEPEND_DLL_FILES} $${DEPEND_DLL_EXTERNAL_FILES}
@@ -119,18 +124,12 @@ SOURCES += \
     ui/maindialog.cpp \
     model/objectitem.cpp \
     model/objectmodel.cpp \
-    util/comptr.cpp \
-    util/getcomobject.cpp \
     model/objectsetting.cpp \
     model/projectsetting.cpp \
     model/objectitems.cpp \
-    util/fileutil.cpp \
-    util/codecinfo.cpp \
     model/sanitizesetting.cpp \
     addin/comutil.cpp \
     addin/logfile.cpp \
-    util/progressnotifier.cpp \
-    util/datachangedhelper.cpp \
     view/checkboxitemdelegate.cpp \
     view/boolcheckboxitemdelegate.cpp \
     model/tabledatasanitizesetting.cpp \
@@ -138,8 +137,15 @@ SOURCES += \
     model/objectproxymodel.cpp \
     git/gitmanager.cpp \
     ui/actionmanager.cpp \
-    util/concurrentmaphelper.cpp \
     addin/addinutil.cpp
+
+#    util/comptr.cpp \
+#    util/getcomobject.cpp \
+#    util/fileutil.cpp \
+#    util/codecinfo.cpp \
+#    util/progressnotifier.cpp \
+#    util/datachangedhelper.cpp \
+#    util/concurrentmaphelper.cpp \
 
 HEADERS +=\
     addin/msaddndr.h \
@@ -151,19 +157,13 @@ HEADERS +=\
     ui/maindialog.h \
     model/objectitem.h \
     model/objectmodel.h \
-    util/comptr.h \
-    util/getcomobject.h \
     accesscvs_global.h \
     model/objectsetting.h \
     model/projectsetting.h \
     model/objectitems.h \
-    util/fileutil.h \
-    util/codecinfo.h \
     model/sanitizesetting.h \
     addin/comutil.h \
     addin/logfile.h \
-    util/progressnotifier.h \
-    util/datachangedhelper.h \
     view/checkboxitemdelegate.h \
     view/boolcheckboxitemdelegate.h \
     model/tabledatasanitizesetting.h \
@@ -171,8 +171,15 @@ HEADERS +=\
     model/objectproxymodel.h \
     git/gitmanager.h \
     ui/actionmanager.h \
-    util/concurrentmaphelper.h \
     addin/addinutil.h
+
+#    util/comptr.h \
+#    util/getcomobject.h \
+#    util/fileutil.h \
+#    util/codecinfo.h \
+#    util/progressnotifier.h \
+#    util/datachangedhelper.h \
+#    util/concurrentmaphelper.h \
 
 DISTFILES += \
     addin/addin.def \

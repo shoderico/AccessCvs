@@ -1,5 +1,4 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    util \
-    accesscvs
+    src

@@ -1,6 +1,8 @@
 #ifndef CONCURRENTMAPHELPER_H
 #define CONCURRENTMAPHELPER_H
 
+#include "util_global.h"
+
 #include <QObject>
 #include <QFutureWatcher>
 #include <QEventLoop>
@@ -8,7 +10,7 @@
 
 
 template <typename T>
-class ConcurrentMapHelper // : public QObject
+class UTILSHARED_EXPORT ConcurrentMapHelper // : public QObject
 {
     //Q_OBJECT
     QFutureWatcher<T> m_futureWatcher;

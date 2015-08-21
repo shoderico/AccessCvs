@@ -1,12 +1,14 @@
 #ifndef GETCOMOBJECT_H
 #define GETCOMOBJECT_H
 
+#include "util_global.h"
+
 #include <QString>
 #include <QList>
 
 class QAxObject;
 
-class GetComObject
+class UTILSHARED_EXPORT GetComObject
 {
     QString m_targetExeName;
     QString m_targetWndClassName;

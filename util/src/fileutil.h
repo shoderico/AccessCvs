@@ -1,6 +1,8 @@
 #ifndef FILEUTIL_H
 #define FILEUTIL_H
 
+#include "util_global.h"
+
 #include <QString>
 #include <QDateTime>
 
@@ -8,7 +10,7 @@ class CodecInfo;
 
 class QFile;
 
-class FileUtil
+class UTILSHARED_EXPORT FileUtil
 {
 public:
     FileUtil(){}

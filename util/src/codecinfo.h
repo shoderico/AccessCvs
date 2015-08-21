@@ -1,9 +1,11 @@
 #ifndef CODECINFO_H
 #define CODECINFO_H
 
+#include "util_global.h"
+
 #include <QObject>
 
-class CodecInfo : public QObject
+class UTILSHARED_EXPORT CodecInfo : public QObject
 {
     Q_OBJECT
 public:

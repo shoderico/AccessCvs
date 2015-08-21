@@ -1,9 +1,11 @@
 #ifndef DATACHANGEDHELPER_H
 #define DATACHANGEDHELPER_H
 
+#include "util_global.h"
+
 #include <QReadWriteLock>
 
-class DataChangedHelper
+class UTILSHARED_EXPORT DataChangedHelper
 {
 public:
     DataChangedHelper(int count);

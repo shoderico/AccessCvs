@@ -1,10 +1,11 @@
 #ifndef PROGRESSNOTIFIER_H
 #define PROGRESSNOTIFIER_H
 
+#include "util_global.h"
 #include <QObject>
 #include <QReadWriteLock>
 
-class ProgressNotifier : public QObject
+class UTILSHARED_EXPORT ProgressNotifier : public QObject
 {
     Q_OBJECT
 public:
