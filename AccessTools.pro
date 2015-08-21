@@ -3,6 +3,9 @@ TEMPLATE = subdirs
 SUBDIRS += \
     util \
     accesscvs \
-    accutil
+    accutil \
+    accessutil \
+    external
 
 accesscvs.depends += util
+accutil.depends += accessutil

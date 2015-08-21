@@ -4,8 +4,8 @@
 #
 #-------------------------------------------------
 
-QT       += core
-QT       -= gui
+QT += core
+QT -= gui
 
 TARGET = accutil
 CONFIG += console
@@ -14,3 +14,12 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 SOURCES += main.cpp
+
+include(../../common.pri) # directory declarations
+include(../../subexe.pri) # copy *.exe to build/*/bin
+include(../$${TARGET}_dep.pri) # dependencies for self
+
+# copy dependent files for execution to OUT_PWD?
+installQtDlls( $${OUT_PWD}/$${BUILD_TYPE} )
+installModuleDlls( $${OUT_PWD}/$${BUILD_TYPE} )
+installExternalDlls( $${OUT_PWD}/$${BUILD_TYPE} )

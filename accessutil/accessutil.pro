@@ -4,4 +4,6 @@ SUBDIRS += \
     src
 
 OTHER_FILES += \
-    accesscvs_dep.pri
+    accessutil_inc.pri \
+    accessutil_dep.pri
+

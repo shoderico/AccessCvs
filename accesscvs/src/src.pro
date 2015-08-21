@@ -26,94 +26,6 @@ RC_FILE  = addin/addin.rc
 DEFINES += ACCESSCVS_LIBRARY
 DEFINES += QT_MESSAGELOGCONTEXT
 
-include(../../common.pri)
-
-INCLUDEPATH += $${PROJECT_INCLUDE_DIR}
-
-
-# directory where *.dll output to
-DESTDIR = $${BUILD_ROOT}/$${BUILD_TYPE}/bin
-DESTDIR_WNT = $${DESTDIR}
-DESTDIR_WNT ~= s,/,\\,g
-
-
-
-# officelib
-OFFICELIB_DIR = $${PROJECT_LIBRARY_DIR}
-LIBS += -L$${OFFICELIB_DIR}/ -lofficelib
-
-# util
-UTIL_DIR = $${PROJECT_LIBRARY_DIR}
-LIBS += -L$${UTIL_DIR}/ -lutil
-
-
-# LibQGit2
-LIBQGIT_DIR = $${LIBRARY_ROOT}/LibQGit2/install
-LIBS        += -L$${LIBQGIT_DIR}/lib/ -lqgit2.dll
-LIBS        += -L$${LIBQGIT_DIR}/lib/ -lgit2.dll
-INCLUDEPATH +=   $${LIBQGIT_DIR}/include
-DEPENDPATH  +=   $${LIBQGIT_DIR}/include
-
-
-# QtSolutions
-QTSOLUTIONS_DIR = $${LIBRARY_ROOT}/QtSolutions/qtwinmigrate
-include($${QTSOLUTIONS_DIR}/src/qtwinmigrate.pri)
-
-# OpenSSL
-OPENSSL_DIR = C:/OpenSSL-Win32
-
-# Depend : *.dll
-DEPEND_DLL_FILES += \
-    $$[QT_INSTALL_BINS]/libstdc++-6.dll \
-    $$[QT_INSTALL_BINS]/libwinpthread-1.dll \
-    $$[QT_INSTALL_BINS]/libgcc_s_dw2-1.dll \
-    $$[QT_INSTALL_BINS]/Qt5Concurrent.dll \
-    $$[QT_INSTALL_BINS]/Qt5Core.dll \
-    $$[QT_INSTALL_BINS]/Qt5Gui.dll \
-    $$[QT_INSTALL_BINS]/Qt5Svg.dll \
-    $$[QT_INSTALL_BINS]/Qt5Widgets.dll \
-    $$[QT_INSTALL_BINS]/Qt5WinExtras.dll \
-    $${QTSOLUTIONS_DIR}/lib/QtSolutions_MFCMigrationFramework-head.dll \
-
-DEPEND_DLL_EXTERNAL_FILES += \
-    $${OPENSSL_DIR}/libeay32.dll \
-    $${OPENSSL_DIR}/ssleay32.dll \
-    $${LIBQGIT_DIR}/bin/libgit2.dll \
-    $${LIBQGIT_DIR}/bin/libqgit2.dll \
-    $${OFFICELIB_DIR}/officelib.dll \
-    $${UTIL_DIR}/util.dll
-
-# copy dlls to DESTDIR
-DEPEND_DLL_FILES_WNT = $${DEPEND_DLL_FILES} $${DEPEND_DLL_EXTERNAL_FILES}
-DEPEND_DLL_FILES_WNT ~= s,/,\\,g
-for(FILE,DEPEND_DLL_FILES_WNT){
-    QMAKE_PRE_LINK += copy /y \"$${FILE}\" $${DESTDIR_WNT}$$escape_expand(\n\t)
-}
-
-# for idc.exe, we have to copy dlls to OUT_PWD
-DEPEND_DLL_EXTERNAL_FILES_WNT = $${DEPEND_DLL_EXTERNAL_FILES}
-DEPEND_DLL_EXTERNAL_FILES_WNT ~= s,/,\\,g
-for(f,DEPEND_DLL_EXTERNAL_FILES_WNT) {
-    QMAKE_PRE_LINK += $(COPY) \"$${f}\" $${OUT_PWD_WNT}$$escape_expand(\n\t)
-}
-
-
-# Depend : platforms/*.dll
-DEPEND_PLUGIN_FILES += \
-    $$[QT_INSTALL_PLUGINS]/platforms/qwindows.dll
-
-# copy platforms/*.dll to DESTDIR
-DEPEND_PLUGIN_FILES_COPY = $${DEPEND_PLUGIN_FILES}
-DEPEND_PLUGIN_FILES_COPY ~= s,/,\\,g
-DESTDIR_PLUGIN_COPY = $${DESTDIR}/platforms
-DESTDIR_PLUGIN_COPY ~= s,/,\\,g
-QMAKE_PRE_LINK += $(CHK_DIR_EXISTS) $${DESTDIR_PLUGIN_COPY} $(MKDIR) $${DESTDIR_PLUGIN_COPY}$$escape_expand(\n\t)
-for(FILE_PLUGIN,DEPEND_PLUGIN_FILES_COPY){
-    QMAKE_PRE_LINK += copy /y \"$${FILE_PLUGIN}\" $${DESTDIR_PLUGIN_COPY}$$escape_expand(\n\t)
-}
-
-
-
 SOURCES += \
     addin/msaddndr_i.c \
     addin/addinmain.cpp \
@@ -194,3 +106,17 @@ RESOURCES += \
 FORMS += \
     ui/maindialog.ui
 
+
+
+include(../../common.pri)
+include(../../submodule.pri)
+include(../$${TARGET}_dep.pri) # dependencies for self
+
+INCLUDEPATH += $${PROJECT_INCLUDE_DIR}
+
+# directory where *.dll output to
+#DESTDIR = $${BUILD_ROOT}/$${BUILD_TYPE}/bin
+
+installQtDlls( $$OUT_PWD/$${BUILD_TYPE} )
+installModuleDlls( $$OUT_PWD/$${BUILD_TYPE} $$OUT_PWD )
+installExternalDlls( $$OUT_PWD/$${BUILD_TYPE} $$OUT_PWD )
