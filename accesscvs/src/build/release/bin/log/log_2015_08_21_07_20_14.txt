@@ -1,5 +1,0 @@
-2015.08.21 07:20:15 [Warning]  QSvgHandler: Image filename is empty : :0 
-2015.08.21 07:20:15 [Warning]  QSvgHandler: Image filename is empty : :0 
-2015.08.21 07:20:15 [Warning]  QSvgHandler: Image filename is empty : :0 
-2015.08.21 07:20:15 [Warning]  QSvgHandler: Image filename is empty : :0 
-2015.08.21 07:20:15 [Warning]  QSvgHandler: Image filename is empty : :0 

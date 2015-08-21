@@ -1,3 +1,0 @@
-2015.08.19 22:48:54 [Warning]  libpng warning: iCCP: known incorrect sRGB profile : :0 
-2015.08.19 22:48:54 [Warning]  libpng warning: iCCP: known incorrect sRGB profile : :0 
-2015.08.19 22:48:54 [Warning]  libpng warning: iCCP: known incorrect sRGB profile : :0 

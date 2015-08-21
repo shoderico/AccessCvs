@@ -1,5 +1,0 @@
-2015.08.20 08:28:55 [Warning]  QSvgHandler: Image filename is empty : :0 
-2015.08.20 08:28:55 [Warning]  QSvgHandler: Image filename is empty : :0 
-2015.08.20 08:28:55 [Warning]  QPixmap::fill: Cannot fill while pixmap is being painted on : :0 
-2015.08.20 08:28:55 [Warning]  libpng warning: iCCP: known incorrect sRGB profile : :0 
-2015.08.20 08:28:55 [Warning]  libpng warning: iCCP: known incorrect sRGB profile : :0 
