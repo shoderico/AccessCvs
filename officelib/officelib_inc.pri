@@ -1,11 +1,11 @@
 # officelib
-OFFICELIB_DIR   = $${PROJECT_LIBRARY_DIR}
-OFFICELIB_FILES = $${OFFICELIB_DIR}/officelib.dll
-LIBS +=         -L$${OFFICELIB_DIR}/ -lofficelib
+OFFICELIB_LIB_DIR = $${PROJECT_LIBRARY_DIR}
+OFFICELIB_BIN_DIR = $${PROJECT_BINARY_DIR}
+OFFICELIB_FILES   = $${OFFICELIB_BIN_DIR}/officelib.dll
+LIBS           += -L$${OFFICELIB_LIB_DIR}/ -lofficelib
 
-# register dlls to module/external
+# register this module dll files to depenent module files
 DEP_DLLS_MODULE.files += $${OFFICELIB_FILES}
-#DEP_DLLS_EXTERNAL.files += $${}
 
 # load self dependencies
 include(officelib_dep.pri)

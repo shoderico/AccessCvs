@@ -1,9 +1,10 @@
 # QtSolutions
-QTSOLUTIONS_DIR   = $${LIBRARY_ROOT}/QtSolutions/qtwinmigrate
-QTSOLUTIONS_FILES = $${QTSOLUTIONS_DIR}/lib/QtSolutions_MFCMigrationFramework-head.dll
+QTSOLUTIONS_DIR     = $${LIBRARY_ROOT}/QtSolutions/qtwinmigrate
+QTSOLUTIONS_BIN_DIR = $${QTSOLUTIONS_DIR}/lib
+QTSOLUTIONS_FILES   = $${QTSOLUTIONS_BIN_DIR}/QtSolutions_MFCMigrationFramework-head.dll
 include($${QTSOLUTIONS_DIR}/src/qtwinmigrate.pri)
 
-# register dlls to module/external
+# register this module dll files to dependent external files
 DEP_DLLS_EXTERNAL.files += $${QTSOLUTIONS_FILES}
 
 # load self dependencies
