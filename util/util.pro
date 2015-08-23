@@ -1,7 +1,8 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    src
+    src \
+    tests
 
 OTHER_FILES += \
     util_inc.pri \
