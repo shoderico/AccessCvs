@@ -15,7 +15,8 @@ HEADERS += \
     datachangedhelper.h \
     fileutil.h \
     getcomobject.h \
-    progressnotifier.h
+    progressnotifier.h \
+    officeutil.h
 
 DEFINES += UTIL_LIBRARY
 
@@ -27,7 +28,8 @@ SOURCES += \
     datachangedhelper.cpp \
     fileutil.cpp \
     getcomobject.cpp \
-    progressnotifier.cpp
+    progressnotifier.cpp \
+    officeutil.cpp
 
 include(../../common.pri)
 include(../../submodule.pri)
