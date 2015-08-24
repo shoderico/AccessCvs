@@ -136,6 +136,7 @@ QAxObject *GetComObjectFromHWnd(HWND hWnd)
         return NULL;
 
     QAxObject *pComObject = new QAxObject( pIDispatch );
+    pIDispatch->Release();
 
     return pComObject;
 }
