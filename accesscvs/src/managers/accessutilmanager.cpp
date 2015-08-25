@@ -64,13 +64,16 @@ void AccessUtilManager::decompileAndCompactRepair()
 
 bool AccessUtilManager::getCurrentFileName(QString &fileName)
 {
+    fileName = "";
     ComPtr<Access::CurrentProject> currentProject = m_application->CurrentProject();
-    if (!currentProject.is())
+    if (currentProject.is())
+        fileName = currentProject->FullName();
+
+    if (fileName.isEmpty())
     {
         QMessageBox::information(m_winWidgetManager->widget(), "", tr("no project is opened!"));
         return false;
     }
-    fileName = currentProject->FullName();
     return true;
 }
 
