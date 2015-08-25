@@ -106,8 +106,8 @@ DISTFILES += \
     addin/ribbon.xml
 
 RESOURCES += \
-    addin/addin.qrc \
-    ui/resource.qrc
+    addin/addin.qrc
+#    ui/resource.qrc
 
 FORMS += \
     ui/maindialog.ui

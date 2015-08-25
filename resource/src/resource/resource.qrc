@@ -1,17 +1,17 @@
 <RCC>
-    <qresource prefix="/ui">
+    <qresource prefix="/">
         <file>images/application_form.png</file>
-        <file>images/page.png</file>
-        <file>images/report.png</file>
-        <file>images/script.png</file>
-        <file>images/table.png</file>
-        <file>images/table_multiple.png</file>
-        <file>images/page_link.png</file>
         <file>images/export.svg</file>
         <file>images/git-init.svg</file>
         <file>images/git-update-gitignore.svg</file>
         <file>images/import.svg</file>
         <file>images/manual.svg</file>
+        <file>images/page.png</file>
+        <file>images/page_link.png</file>
+        <file>images/report.png</file>
+        <file>images/script.png</file>
         <file>images/setting.svg</file>
+        <file>images/table.png</file>
+        <file>images/table_multiple.png</file>
     </qresource>
 </RCC>

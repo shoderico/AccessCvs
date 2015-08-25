@@ -5,7 +5,8 @@ SUBDIRS += \
     accesscvs \
     accutil \
     accessutil \
-    external
+    external \
+    resource
 
 accesscvs.depends += util accessutil
 accutil.depends += accessutil

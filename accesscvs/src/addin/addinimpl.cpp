@@ -151,6 +151,8 @@ HRESULT AddInImpl::OnConnection(IDispatch *Application, ext_ConnectMode ConnectM
     Access::_Application *_application = new Access::_Application(m_applicationIDisp/*, this*/);
     m_application = new Access::Application(_application);
 
+    Q_INIT_RESOURCE(resource);
+
     m_winWidgetManager = new WindowWidgetManager(m_application, this);
     m_actionManager = new ActionManager(m_application, m_winWidgetManager, this);
     m_gitManager = new GitManager(m_application, this);
@@ -205,6 +207,8 @@ HRESULT AddInImpl::OnDisconnection(ext_DisconnectMode RemoveMode, SAFEARRAY **cu
        delete m_winWidgetManager;
        m_winWidgetManager = 0;
    }
+
+   Q_CLEANUP_RESOURCE(resource);
 
    if (m_application)
    {
@@ -369,7 +373,7 @@ HRESULT AddInImpl::GetButtonImage(IDispatch *ribbonControl, IPictureDisp **pictu
 
 
     // determine icon image path and size
-    QString imagePath = ":/ui/images/";
+    QString imagePath = ":/images/";
     QSize size(16,16);
     // Standard
     if ( controlId == "StandardManualButton")

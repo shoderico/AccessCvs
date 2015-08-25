@@ -17,6 +17,10 @@ public:
     bool compactRepair(const QString &fileName, const int repeatCount = 1);
     bool openCurrentDatabase(Access::Application *application, const QString &fileName);
     quint64 getAccessThreadId(Access::Application *application);
+
+    // TODO: clearConnection() for ADP
+    // TODO: removeLinkTables() for MDB
+    // TODO: clearWorkTables() for MDB
 };
 
 #endif // ACCESSUTIL_H

@@ -122,13 +122,13 @@ QVariant ObjectModel::data(const QModelIndex &index, int role) const
 
         // TODO: make icon manager
         switch (item->objectType()) {
-            case Model::TableDef:   return QIcon( ":ui/images/table.png" );
-            case Model::Query:      return QIcon( ":ui/images/table_multiple.png" );
-            case Model::Form:       return QIcon( ":ui/images/application_form.png" );
-            case Model::Report:     return QIcon( ":ui/images/report.png" );
-            case Model::Macro:      return QIcon( ":ui/images/script.png" );
-            case Model::Module:     return QIcon( ":ui/images/page.png" );
-            case Model::Reference:  return QIcon( ":ui/images/page_link.png" );
+            case Model::TableDef:   return QIcon( ":/images/table.png" );
+            case Model::Query:      return QIcon( ":/images/table_multiple.png" );
+            case Model::Form:       return QIcon( ":/images/application_form.png" );
+            case Model::Report:     return QIcon( ":/images/report.png" );
+            case Model::Macro:      return QIcon( ":/images/script.png" );
+            case Model::Module:     return QIcon( ":/images/page.png" );
+            case Model::Reference:  return QIcon( ":/images/page_link.png" );
 
         default:
             break;
