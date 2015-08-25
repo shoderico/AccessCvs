@@ -54,6 +54,29 @@
                     />
                  -->
                 </group>
+
+                <group id="UtilGroup"
+                    label="Util">
+                    <button id="UtilDecompileButton"
+                       size="normal"
+                       label="Decompile"
+                       onAction="ButtonClicked"
+                       getImage="GetButtonImage"
+                       />
+                    <button id="UtilCompactRepairButton"
+                       size="normal"
+                       label="CompactRepair"
+                       onAction="ButtonClicked"
+                       getImage="GetButtonImage"
+                       />
+                    <button id="UtilDecompileAndCompactRepairButton"
+                       size="normal"
+                       label="Decompile &amp; CompactRepair"
+                       onAction="ButtonClicked"
+                       getImage="GetButtonImage"
+                       />
+                </group>
+
             </tab>
         </tabs>
     </ribbon>

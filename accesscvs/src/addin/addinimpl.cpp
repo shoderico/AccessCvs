@@ -12,6 +12,8 @@
 #include "addinutil.h"
 #include "ui/actionmanager.h"
 #include "git/gitmanager.h"
+#include "managers/accessutilmanager.h"
+#include "managers/windowwidgetmanager.h"
 
 
 #include "officelib/officelib.h"
@@ -27,6 +29,8 @@ AddInImpl::AddInImpl(QObject *parent)
     , m_application(0)
     , m_actionManager(0)
     , m_gitManager(0)
+    , m_accessUtilManager(0)
+    , m_winWidgetManager(0)
 {
     HRESULT hr;
     ITypeLib *pTypeLib = NULL;
@@ -147,8 +151,10 @@ HRESULT AddInImpl::OnConnection(IDispatch *Application, ext_ConnectMode ConnectM
     Access::_Application *_application = new Access::_Application(m_applicationIDisp/*, this*/);
     m_application = new Access::Application(_application);
 
-    m_actionManager = new ActionManager(m_application, this);
+    m_winWidgetManager = new WindowWidgetManager(m_application, this);
+    m_actionManager = new ActionManager(m_application, m_winWidgetManager, this);
     m_gitManager = new GitManager(m_application, this);
+    m_accessUtilManager = new AccessUtilManager(m_application, m_winWidgetManager, this);
 
     // If we are connecting during startup, we should wait for OnStartupComplete
     // before modifying the user-interface and prompting the user. Otherwise, we
@@ -186,6 +192,18 @@ HRESULT AddInImpl::OnDisconnection(ext_DisconnectMode RemoveMode, SAFEARRAY **cu
    {
        delete m_gitManager;
        m_gitManager = 0;
+   }
+
+   if (m_accessUtilManager)
+   {
+       delete m_accessUtilManager;
+       m_accessUtilManager = NULL;
+   }
+
+   if (m_winWidgetManager)
+   {
+       delete m_winWidgetManager;
+       m_winWidgetManager = 0;
    }
 
    if (m_application)
@@ -319,6 +337,13 @@ HRESULT AddInImpl::ButtonClicked(IDispatch *ribbonControl)
     else if (controlId == "GitPullButton")
         m_gitManager->pull();
 
+    else if (controlId == "UtilDecompileButton")
+        m_accessUtilManager->decompile();
+    else if (controlId == "UtilCompactRepairButton")
+        m_accessUtilManager->compactRepair();
+    else if (controlId == "UtilDecompileAndCompactRepairButton")
+        m_accessUtilManager->decompileAndCompactRepair();
+
     return S_OK;
 }
 
@@ -373,6 +398,8 @@ HRESULT AddInImpl::GetButtonImage(IDispatch *ribbonControl, IPictureDisp **pictu
         imagePath += "git-update-gitignore.svg";
         size = AddInUtil::ribbonIconSize(AddInUtil::Small);
     }
+    else
+        return S_OK;
 
     // load picutre
     IPictureDisp  *pd = ComUtil::loadPictureFromSvg( imagePath, size );

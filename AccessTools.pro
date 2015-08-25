@@ -7,7 +7,7 @@ SUBDIRS += \
     accessutil \
     external
 
-accesscvs.depends += util
+accesscvs.depends += util accessutil
 accutil.depends += accessutil
 
 OTHER_FILES += \

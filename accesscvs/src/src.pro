@@ -49,7 +49,9 @@ SOURCES += \
     model/objectproxymodel.cpp \
     git/gitmanager.cpp \
     ui/actionmanager.cpp \
-    addin/addinutil.cpp
+    addin/addinutil.cpp \
+    managers/accessutilmanager.cpp \
+    managers/windowwidgetmanager.cpp
 
 #    util/comptr.cpp \
 #    util/getcomobject.cpp \
@@ -83,7 +85,9 @@ HEADERS +=\
     model/objectproxymodel.h \
     git/gitmanager.h \
     ui/actionmanager.h \
-    addin/addinutil.h
+    addin/addinutil.h \
+    managers/accessutilmanager.h \
+    managers/windowwidgetmanager.h
 
 #    util/comptr.h \
 #    util/getcomobject.h \

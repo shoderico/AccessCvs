@@ -11,6 +11,8 @@
 
 class ActionManager;
 class GitManager;
+class AccessUtilManager;
+class WindowWidgetManager;
 
 namespace Access {
 class Application;
@@ -101,6 +103,8 @@ private:
 
     ActionManager   *m_actionManager;
     GitManager      *m_gitManager;
+    AccessUtilManager *m_accessUtilManager;
+    WindowWidgetManager *m_winWidgetManager;
 };
 
 #endif // ADDINIMPL_H

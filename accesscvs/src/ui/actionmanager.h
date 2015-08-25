@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-class QWinWidget;
+class WindowWidgetManager;
 class MainDialog;
 
 namespace Access {
@@ -14,7 +14,7 @@ class ActionManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit ActionManager(Access::Application *application, QObject *parent = 0);
+    explicit ActionManager(Access::Application *application, WindowWidgetManager *winWidgetManager, QObject *parent = 0);
     ~ActionManager();
 
     void manual();
@@ -30,7 +30,7 @@ private:
 
 private:
     Access::Application *m_application;
-    QWinWidget *m_winWidget;
+    WindowWidgetManager *m_winWidgetManager;
     MainDialog *m_dlg;
 };
 

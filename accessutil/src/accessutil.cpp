@@ -79,7 +79,7 @@ HWND GetWindowHandle(const DWORD TargetID)
     return NULL;
 }
 
-bool AccessUtil::decompile(const QString &fileName)
+bool AccessUtil::decompile(const QString &fileName, quint64 threadIdForAttachInput)
 {
     if (!QFile(fileName).exists())
         return false;
@@ -93,27 +93,44 @@ bool AccessUtil::decompile(const QString &fileName)
 
     if (process.waitForStarted())
     {
-        quint64 targetProcessId = process.processId();
 
-        DWORD targetThreadId = GetThreadIdFromProcessId( (DWORD)targetProcessId );
-        DWORD currentThreadId = GetCurrentThreadId();
+        // find target hWnd and ProcessId
+        HWND targetHwnd = NULL;
+        DWORD targetThreadId = 0;
+
+        // find from processId
+        {
+            quint64 targetProcessId = process.processId();
+            targetThreadId = GetThreadIdFromProcessId( (DWORD)targetProcessId );
+            while (targetHwnd == NULL)
+                targetHwnd = GetWindowHandle(targetProcessId);
+        }
+        // find from hWnd
+        if (false)
+        {
+            DWORD targetProcessId = 0;
+            targetThreadId = GetWindowThreadProcessId( targetHwnd, &targetProcessId);
+        }
+
+        // threadId for input attach
+        DWORD currentThreadId = threadIdForAttachInput;
+        if (!currentThreadId)
+        {
+            currentThreadId = GetCurrentThreadId();
+        }
 
 
-        if (targetThreadId) {
+        if (targetThreadId)
+        {
 
             // attach input
             BOOL ret = 0;
             while (ret == 0)
                 ret = AttachThreadInput(currentThreadId, targetThreadId, TRUE);
 
-            // find hWNd
-            HWND hwnd = NULL;
-            while (hwnd == NULL)
-                hwnd = GetWindowHandle(targetProcessId);
-
             // set focus
-            SetForegroundWindow(hwnd);
-            SetFocus(hwnd);
+            SetForegroundWindow(targetHwnd);
+            SetFocus(targetHwnd);
 
 
             QAxObject *application = NULL;
@@ -207,9 +224,10 @@ bool AccessUtil::compactRepair(const QString &fileName, const int repeatCount)
 
         application->CompactRepair( sourceFile, destinationFile, "");
 
-        sourceFile = destinationFile;
         if (i > 0)
             QFile(sourceFile).remove();
+
+        sourceFile = destinationFile;
     }
     application->Quit();
     delete application;
@@ -219,4 +237,58 @@ bool AccessUtil::compactRepair(const QString &fileName, const int repeatCount)
     QFile(destinationFile).remove();
 
     return true;
+}
+
+bool AccessUtil::openCurrentDatabase(Access::Application *application, const QString &fileName)
+{
+    HWND targetHwnd = (HWND)application->hWndAccessApp();
+    DWORD targetProcessId = 0;
+    DWORD targetThreadId = GetWindowThreadProcessId( targetHwnd, &targetProcessId);
+//    DWORD currentThreadId = GetCurrentThreadId();
+
+
+    if (targetThreadId)
+    {
+
+        // attach input
+//        BOOL ret = 0;
+//        while (ret == 0)
+//            ret = AttachThreadInput(currentThreadId, targetThreadId, TRUE);
+
+        // set focus
+        SetForegroundWindow(targetHwnd);
+        SetFocus(targetHwnd);
+
+        BYTE keyStateSrc[256];
+        BYTE keyStateDst[256];
+        if ( GetKeyboardState(keyStateSrc) && GetKeyboardState(keyStateDst) )
+        {
+            // simulate Shift key pressed
+            keyStateDst[VK_SHIFT] = 0x80;
+            SetKeyboardState(keyStateDst);
+
+            // open file
+            if (fileName.toUpper().endsWith(".ADP"))
+                application->OpenAccessProject(fileName);
+            else
+                application->OpenCurrentDatabase(fileName);
+
+            // restore keyboard state
+            SetKeyboardState(keyStateSrc);
+        }
+
+        // detach input
+//        AttachThreadInput(currentThreadId, targetThreadId, FALSE);
+    }
+
+    return true;
+}
+
+quint64 AccessUtil::getAccessThreadId(Access::Application *application)
+{
+    HWND currentHwnd = (HWND)application->hWndAccessApp();
+    DWORD currentProcessId = 0;
+    DWORD currentThreadId = 0;
+    currentThreadId = GetWindowThreadProcessId( currentHwnd, &currentProcessId );
+    return currentThreadId;
 }

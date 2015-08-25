@@ -1,6 +1,7 @@
 # directly dependent libraries for this module
 include($${PROJECT_ROOT}/officelib/officelib_inc.pri)
 include($${PROJECT_ROOT}/util/util_inc.pri)
+include($${PROJECT_ROOT}/accessutil/accessutil_inc.pri)
 include($${PROJECT_ROOT}/external/libqgit2_inc.pri)
 include($${PROJECT_ROOT}/external/qtsolutions_inc.pri)
 

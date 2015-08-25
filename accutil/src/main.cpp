@@ -38,13 +38,13 @@ int main(int argc, char *argv[])
     if (isSetDecompile && !inputFile.isEmpty())
     {
         AccessUtil au;
-        au.decompile(inputFile);
+        au.decompile(inputFile, 0);
     }
 
     if (isSetCompactRepair && !inputFile.isEmpty())
     {
         AccessUtil au;
-        au.compactRepair(inputFile, 2);
+        au.compactRepair(inputFile, 5);
     }
 
     return 0;
