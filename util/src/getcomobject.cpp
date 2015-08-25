@@ -59,7 +59,6 @@ int GetProcessIdList(QList<DWORD> &processIdList, const QString &targetExeName)
 
         if ( exeFile.toUpper() == targetExeName.toUpper() )
         {
-            qDebug() << exeFile;
             processIdList.append( pe.th32ProcessID );
         }
 
@@ -67,10 +66,6 @@ int GetProcessIdList(QList<DWORD> &processIdList, const QString &targetExeName)
     }
 
     CloseHandle(hSnap);
-
-    foreach (int procId, processIdList) {
-        qDebug() << procId;
-    }
 
     return processIdList.size();
 }
@@ -89,8 +84,6 @@ int GetProcessHWndList(const QList<DWORD> &processIdList, const QString &targetW
     QList<HWND> allhWndList;
     EnumWindows(EnumWindowsProc, (LPARAM)&allhWndList);
 
-    qDebug() << "allhWndList.size() = " << allhWndList.size();
-
     hWndList.clear();
     foreach( DWORD processId, processIdList)
     {
@@ -107,7 +100,6 @@ int GetProcessHWndList(const QList<DWORD> &processIdList, const QString &targetW
                     QString className = QString::fromWCharArray( classNameApi );
                     if ( className == targetWndClassName)
                     {
-                        qDebug() << "found, hWnd = " << hWnd << ", className = " << className;
                         hWndList.append( hWnd );
                     }
                 }
@@ -131,7 +123,6 @@ QAxObject *GetComObjectFromHWnd(HWND hWnd)
 
     HRESULT hr;
     hr = AccessibleObjectFromWindow( hWnd, OBJID_NATIVEOM, IID_IDispatch, (void**)&pIDispatch );
-    qDebug() << "AccessibleObjectFromWindow is called " << hr;
     if ( hr != S_OK )
         return NULL;
 
