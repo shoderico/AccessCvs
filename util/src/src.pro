@@ -16,7 +16,8 @@ HEADERS += \
     util/fileutil.h \
     util/getcomobject.h \
     util/progressnotifier.h \
-    util/officeutil.h
+    util/officeutil.h \
+    util/threadedinvoker.h
 
 DEFINES += UTIL_LIBRARY
 
@@ -29,7 +30,8 @@ SOURCES += \
     util/fileutil.cpp \
     util/getcomobject.cpp \
     util/progressnotifier.cpp \
-    util/officeutil.cpp
+    util/officeutil.cpp \
+    util/threadedinvoker.cpp
 
 include(../../common.pri)
 include(../../submodule.pri)

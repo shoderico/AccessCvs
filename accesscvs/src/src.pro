@@ -51,7 +51,8 @@ SOURCES += \
     ui/actionmanager.cpp \
     addin/addinutil.cpp \
     managers/accessutilmanager.cpp \
-    managers/windowwidgetmanager.cpp
+    managers/windowwidgetmanager.cpp \
+    view/uiblocker.cpp
 
 #    util/comptr.cpp \
 #    util/getcomobject.cpp \
@@ -87,7 +88,8 @@ HEADERS +=\
     ui/actionmanager.h \
     addin/addinutil.h \
     managers/accessutilmanager.h \
-    managers/windowwidgetmanager.h
+    managers/windowwidgetmanager.h \
+    view/uiblocker.h
 
 #    util/comptr.h \
 #    util/getcomobject.h \
