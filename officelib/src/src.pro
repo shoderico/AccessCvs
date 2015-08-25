@@ -8,20 +8,20 @@ TEMPLATE = lib
 DEFINES += OFFICELIB_LIBRARY
 
 SOURCES += \
-    access.cpp \
-    adodb.cpp \
-    dao.cpp \
-    office.cpp \
-    vbide.cpp
+    officelib/access.cpp \
+    officelib/adodb.cpp \
+    officelib/dao.cpp \
+    officelib/office.cpp \
+    officelib/vbide.cpp
 
 HEADERS +=\
-    access.h \
-    adodb.h \
-    dao.h \
-    office.h \
-    vbide.h \
-    officelib.h \
-    officelib_global.h
+    officelib/access.h \
+    officelib/adodb.h \
+    officelib/dao.h \
+    officelib/office.h \
+    officelib/vbide.h \
+    officelib/officelib.h \
+    officelib/officelib_global.h
 
 include(../../common.pri)
 include(../../submodule.pri)

@@ -13,11 +13,11 @@ TEMPLATE = lib
 DEFINES += ACCESSUTIL_LIBRARY
 
 SOURCES += \
-    accessutil.cpp
+    accessutil/accessutil.cpp
 
 HEADERS += \
-    accessutil_global.h \
-    accessutil.h
+    accessutil/accessutil_global.h \
+    accessutil/accessutil.h
 
 include(../../common.pri)
 include(../../submodule.pri)
