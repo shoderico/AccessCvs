@@ -41,5 +41,5 @@ int main(int argc, char *argv[])
         au.decompile(inputFile);
     }
 
-    return app.exec();
+    return 0;
 }
