@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     qDebug() << "" << isSetCompactRepair;
     qDebug() << "" << inputFile;
 
-    if (isSetDecompile)
+    if (isSetDecompile && !inputFile.isEmpty())
     {
         AccessUtil au;
         au.decompile(inputFile);

@@ -5,6 +5,7 @@
 
 #include <QProcess>
 #include <QAxObject>
+#include <QFile>
 
 #include <windows.h>
 #include <tlhelp32.h>
@@ -77,6 +78,9 @@ HWND GetWindowHandle(const DWORD TargetID)
 
 bool AccessUtil::decompile(const QString &fileName)
 {
+    if (!QFile(fileName).exists())
+        return false;
+
     QString exePath = OfficeUtil::getExePath("Access.Application");
     QStringList arguments;
     arguments << "/decompile" << QString("%1").arg(fileName);
@@ -176,6 +180,7 @@ bool AccessUtil::decompile(const QString &fileName)
 
     if (process.state() == QProcess::Running)
         process.terminate();
+    process.waitForFinished();
 
     return true;
 }
