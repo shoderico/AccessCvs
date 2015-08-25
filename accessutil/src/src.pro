@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT -= gui
+QT += axcontainer
 
 TARGET = accessutil
 TEMPLATE = lib

@@ -3,6 +3,8 @@
 #include <QCommandLineParser>
 #include <QDebug>
 
+#include "accessutil/accessutil.h"
+
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
@@ -32,6 +34,12 @@ int main(int argc, char *argv[])
     qDebug() << "" << isSetDecompile;
     qDebug() << "" << isSetCompactRepair;
     qDebug() << "" << inputFile;
+
+    if (isSetDecompile)
+    {
+        AccessUtil au;
+        au.decompile(inputFile);
+    }
 
     return app.exec();
 }

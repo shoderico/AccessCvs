@@ -1,5 +1,5 @@
 # directly dependent libraries for this module
-#include($${PROJECT_ROOT}/mod/mod.pri)
+include($${PROJECT_ROOT}/util/util_inc.pri)
 
 # directly dependent qt dlls for this module
 #DEP_DLLS_QT.files +=

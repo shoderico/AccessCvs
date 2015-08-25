@@ -112,7 +112,6 @@ include(../../common.pri)
 include(../../submodule.pri)
 include(../$${TARGET}_dep.pri) # dependencies for self
 
-INCLUDEPATH += $${PROJECT_INCLUDE_DIR}
 
 # directory where *.dll output to
 #DESTDIR = $${BUILD_ROOT}/$${BUILD_TYPE}/bin

@@ -42,7 +42,14 @@ DEP_DLLS_QT_PLATFORMS.destdir = platforms
 DEP_DLLS_MODULE.destdir = .
 DEP_DLLS_EXTERNAL.destdir = .
 
+DEP_DLLS_QT.files += \
+    $$[QT_INSTALL_BINS]/libstdc++-6.dll \
+    $$[QT_INSTALL_BINS]/libwinpthread-1.dll \
+    $$[QT_INSTALL_BINS]/libgcc_s_dw2-1.dll \
+    $$[QT_INSTALL_BINS]/Qt5Core.dll
 
+
+INCLUDEPATH += $${PROJECT_INCLUDE_DIR}
 
 
 
@@ -54,6 +61,7 @@ defineTest(copyFiles) {
     arg = $$1
     destdirs = $$eval($${arg}.destdirs)
     srcfiles = $$eval($${arg}.files)
+    #message($$srcfiles)
 
     for (destdir, destdirs) {
         QMAKE_PRE_LINK += $(CHK_DIR_EXISTS) $$system_path($${destdir}) $(MKDIR) $$system_path($${destdir})$$escape_expand(\n\t)

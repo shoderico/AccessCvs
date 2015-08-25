@@ -2,5 +2,7 @@
 include($${PROJECT_ROOT}/accessutil/accessutil_inc.pri)
 
 # directly dependent qt dlls for this module
-#DEP_DLLS_QT.files +=
+DEP_DLLS_QT.files += \
+    $$[QT_INSTALL_BINS]/Qt5Gui.dll \
+    $$[QT_INSTALL_BINS]/Qt5Widgets.dll
 #DEP_DLLS_QT_PLATFORMS +=
