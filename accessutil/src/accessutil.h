@@ -10,7 +10,7 @@ public:
     AccessUtil(){}
 
     bool decompile(const QString &fileName);
-    bool compactRepair(const QString &fileName);
+    bool compactRepair(const QString &fileName, const int repeatCount = 1);
 };
 
 #endif // ACCESSUTIL_H

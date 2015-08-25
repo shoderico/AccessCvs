@@ -2,10 +2,13 @@
 
 #include "util/officeutil.h"
 #include "util/getcomobject.h"
+#include "officelib/officelib.h"
 
+#include <QDebug>
 #include <QProcess>
 #include <QAxObject>
 #include <QFile>
+#include <QTemporaryFile>
 
 #include <windows.h>
 #include <tlhelp32.h>
@@ -185,8 +188,35 @@ bool AccessUtil::decompile(const QString &fileName)
     return true;
 }
 
-bool AccessUtil::compactRepair(const QString &fileName)
+bool AccessUtil::compactRepair(const QString &fileName, const int repeatCount)
 {
-    Q_UNUSED(fileName)
+    if (!QFile(fileName).exists())
+        return false;
+
+    Access::Application *application = new Access::Application();
+
+    QString sourceFile = fileName;
+    QString destinationFile = "";
+    for (int i = 0 ; i < repeatCount ; ++i )
+    {
+        int temp = 0;
+        do {
+            destinationFile = QString(fileName + ".temp.%1").arg(++temp);
+        }
+        while ( QFile(destinationFile).exists() );
+
+        application->CompactRepair( sourceFile, destinationFile, "");
+
+        sourceFile = destinationFile;
+        if (i > 0)
+            QFile(sourceFile).remove();
+    }
+    application->Quit();
+    delete application;
+
+    QFile(fileName).remove();
+    QFile::copy(destinationFile, fileName);
+    QFile(destinationFile).remove();
+
     return true;
 }

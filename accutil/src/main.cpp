@@ -41,5 +41,11 @@ int main(int argc, char *argv[])
         au.decompile(inputFile);
     }
 
+    if (isSetCompactRepair && !inputFile.isEmpty())
+    {
+        AccessUtil au;
+        au.compactRepair(inputFile);
+    }
+
     return 0;
 }
