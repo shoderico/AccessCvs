@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     if (isSetCompactRepair && !inputFile.isEmpty())
     {
         AccessUtil au;
-        au.compactRepair(inputFile);
+        au.compactRepair(inputFile, 2);
     }
 
     return 0;
