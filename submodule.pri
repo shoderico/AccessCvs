@@ -17,5 +17,7 @@ QMAKE_POST_LINK += $(CHK_DIR_EXISTS) $$system_path($${PROJECT_LIBRARY_DIR}) $(MK
 QMAKE_POST_LINK += $(COPY) $$system_path($${OUT_PWD}/$${BUILD_TYPE}/lib$${TARGET}.a) $$system_path($${PROJECT_LIBRARY_DIR})$$escape_expand(\n\t)
 
 # copy  *.dll files to bin
+contains (CONFIG, dll) {
 QMAKE_POST_LINK += $(CHK_DIR_EXISTS) $$system_path($${PROJECT_BINARY_DIR}) $(MKDIR) $$system_path($${PROJECT_BINARY_DIR} )$$escape_expand(\n\t)
 QMAKE_POST_LINK += $(COPY) $$system_path($${OUT_PWD}/$${BUILD_TYPE}/$${TARGET}.dll) $$system_path($${PROJECT_BINARY_DIR} )$$escape_expand(\n\t)
+}

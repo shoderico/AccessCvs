@@ -9,6 +9,8 @@ QT -= gui
 TARGET = resource
 TEMPLATE = lib
 
+CONFIG += dll
+
 DEFINES += RESOURCE_LIBRARY
 
 SOURCES +=

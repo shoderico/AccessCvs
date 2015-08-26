@@ -10,6 +10,8 @@ QT += axcontainer
 TARGET = accessutil
 TEMPLATE = lib
 
+CONFIG += dll
+
 LIBS += -loleacc
 
 DEFINES += ACCESSUTIL_LIBRARY

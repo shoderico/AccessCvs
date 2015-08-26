@@ -1,12 +1,14 @@
 #ifndef LOGFILE_H
 #define LOGFILE_H
 
+#include "addin_global.h"
+
 #include <QString>
 #include <QFile>
 #include <QTextStream>
 #include <QReadWriteLock>
 
-class LogFile
+class ADDINSHARED_EXPORT LogFile
 {
 public:
     LogFile(const QString &path, const QString &baseFileName, const bool append);

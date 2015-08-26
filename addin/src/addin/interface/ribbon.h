@@ -3,20 +3,20 @@
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 
 
- /* File created by MIDL compiler version 6.00.0366 */
-/* at Fri Jul 24 16:33:49 2015
+ /* File created by MIDL compiler version 8.00.0603 */
+/* at Wed Aug 26 21:02:33 2015
  */
-/* Compiler settings for IRibbon.idl:
-    Oicf, W1, Zp8, env=Win32 (32b run)
+/* Compiler settings for ribbon.idl:
+    Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
          __declspec(uuid()), __declspec(selectany), __declspec(novtable)
          DECLSPEC_UUID(), MIDL_INTERFACE()
 */
-//@@MIDL_FILE_HEADING(  )
+/* @@MIDL_FILE_HEADING(  ) */
 
-//#pragma warning( disable: 4049 )  /* more than 64k source lines */
+#pragma warning( disable: 4049 )  /* more than 64k source lines */
 
 
 /* verify that the <rpcndr.h> version is high enough to compile this file*/
@@ -32,8 +32,8 @@
 #endif // __RPCNDR_H_VERSION__
 
 
-#ifndef __iribbon_h__
-#define __iribbon_h__
+#ifndef __ribbon_h__
+#define __ribbon_h__
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -44,18 +44,21 @@
 #ifndef __IRibbonUI_FWD_DEFINED__
 #define __IRibbonUI_FWD_DEFINED__
 typedef interface IRibbonUI IRibbonUI;
+
 #endif 	/* __IRibbonUI_FWD_DEFINED__ */
 
 
 #ifndef __IRibbonControl_FWD_DEFINED__
 #define __IRibbonControl_FWD_DEFINED__
 typedef interface IRibbonControl IRibbonControl;
+
 #endif 	/* __IRibbonControl_FWD_DEFINED__ */
 
 
 #ifndef __IRibbonExtensibility_FWD_DEFINED__
 #define __IRibbonExtensibility_FWD_DEFINED__
 typedef interface IRibbonExtensibility IRibbonExtensibility;
+
 #endif 	/* __IRibbonExtensibility_FWD_DEFINED__ */
 
 
@@ -63,8 +66,6 @@ typedef interface IRibbonExtensibility IRibbonExtensibility;
 extern "C"{
 #endif 
 
-//void * __RPC_USER MIDL_user_allocate(size_t);
-//void __RPC_USER MIDL_user_free( void * );
 
 
 #ifndef __Office_LIBRARY_DEFINED__
@@ -98,6 +99,7 @@ EXTERN_C const IID IID_IRibbonUI;
         
     };
     
+    
 #else 	/* C style interface */
 
     typedef struct IRibbonUIVtbl
@@ -107,7 +109,8 @@ EXTERN_C const IID IID_IRibbonUI;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IRibbonUI * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ void **ppvObject);
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IRibbonUI * This);
@@ -129,20 +132,28 @@ EXTERN_C const IID IID_IRibbonUI;
             IRibbonUI * This,
             /* [in] */ REFIID riid,
             /* [size_is][in] */ LPOLESTR *rgszNames,
-            /* [in] */ UINT cNames,
+            /* [range][in] */ UINT cNames,
             /* [in] */ LCID lcid,
             /* [size_is][out] */ DISPID *rgDispId);
         
         /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
             IRibbonUI * This,
-            /* [in] */ DISPID dispIdMember,
-            /* [in] */ REFIID riid,
-            /* [in] */ LCID lcid,
-            /* [in] */ WORD wFlags,
-            /* [out][in] */ DISPPARAMS *pDispParams,
-            /* [out] */ VARIANT *pVarResult,
-            /* [out] */ EXCEPINFO *pExcepInfo,
-            /* [out] */ UINT *puArgErr);
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
         
         /* [helpcontext][id] */ HRESULT ( STDMETHODCALLTYPE *Invalidate )( 
             IRibbonUI * This);
@@ -165,62 +176,39 @@ EXTERN_C const IID IID_IRibbonUI;
 
 
 #define IRibbonUI_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
 
 #define IRibbonUI_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
+    ( (This)->lpVtbl -> AddRef(This) ) 
 
 #define IRibbonUI_Release(This)	\
-    (This)->lpVtbl -> Release(This)
+    ( (This)->lpVtbl -> Release(This) ) 
 
 
 #define IRibbonUI_GetTypeInfoCount(This,pctinfo)	\
-    (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo)
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
 
 #define IRibbonUI_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
-    (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo)
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
 
 #define IRibbonUI_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
-    (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
 
 #define IRibbonUI_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
-    (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
 
 
 #define IRibbonUI_Invalidate(This)	\
-    (This)->lpVtbl -> Invalidate(This)
+    ( (This)->lpVtbl -> Invalidate(This) ) 
 
 #define IRibbonUI_InvalidateControl(This,ControlID)	\
-    (This)->lpVtbl -> InvalidateControl(This,ControlID)
+    ( (This)->lpVtbl -> InvalidateControl(This,ControlID) ) 
 
 #endif /* COBJMACROS */
 
 
 #endif 	/* C style interface */
 
-
-
-/* [helpcontext][id] */ HRESULT STDMETHODCALLTYPE IRibbonUI_Invalidate_Proxy( 
-    IRibbonUI * This);
-
-
-void __RPC_STUB IRibbonUI_Invalidate_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-/* [helpcontext][id] */ HRESULT STDMETHODCALLTYPE IRibbonUI_InvalidateControl_Proxy( 
-    IRibbonUI * This,
-    /* [in] */ BSTR ControlID);
-
-
-void __RPC_STUB IRibbonUI_InvalidateControl_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
 
 
 
@@ -253,6 +241,7 @@ EXTERN_C const IID IID_IRibbonControl;
         
     };
     
+    
 #else 	/* C style interface */
 
     typedef struct IRibbonControlVtbl
@@ -262,7 +251,8 @@ EXTERN_C const IID IID_IRibbonControl;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IRibbonControl * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ void **ppvObject);
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IRibbonControl * This);
@@ -284,20 +274,28 @@ EXTERN_C const IID IID_IRibbonControl;
             IRibbonControl * This,
             /* [in] */ REFIID riid,
             /* [size_is][in] */ LPOLESTR *rgszNames,
-            /* [in] */ UINT cNames,
+            /* [range][in] */ UINT cNames,
             /* [in] */ LCID lcid,
             /* [size_is][out] */ DISPID *rgDispId);
         
         /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
             IRibbonControl * This,
-            /* [in] */ DISPID dispIdMember,
-            /* [in] */ REFIID riid,
-            /* [in] */ LCID lcid,
-            /* [in] */ WORD wFlags,
-            /* [out][in] */ DISPPARAMS *pDispParams,
-            /* [out] */ VARIANT *pVarResult,
-            /* [out] */ EXCEPINFO *pExcepInfo,
-            /* [out] */ UINT *puArgErr);
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
         
         /* [helpcontext][propget][id] */ HRESULT ( STDMETHODCALLTYPE *get_Id )( 
             IRibbonControl * This,
@@ -325,78 +323,42 @@ EXTERN_C const IID IID_IRibbonControl;
 
 
 #define IRibbonControl_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
 
 #define IRibbonControl_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
+    ( (This)->lpVtbl -> AddRef(This) ) 
 
 #define IRibbonControl_Release(This)	\
-    (This)->lpVtbl -> Release(This)
+    ( (This)->lpVtbl -> Release(This) ) 
 
 
 #define IRibbonControl_GetTypeInfoCount(This,pctinfo)	\
-    (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo)
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
 
 #define IRibbonControl_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
-    (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo)
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
 
 #define IRibbonControl_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
-    (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
 
 #define IRibbonControl_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
-    (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
 
 
 #define IRibbonControl_get_Id(This,Id)	\
-    (This)->lpVtbl -> get_Id(This,Id)
+    ( (This)->lpVtbl -> get_Id(This,Id) ) 
 
 #define IRibbonControl_get_Context(This,Context)	\
-    (This)->lpVtbl -> get_Context(This,Context)
+    ( (This)->lpVtbl -> get_Context(This,Context) ) 
 
 #define IRibbonControl_get_Tag(This,Tag)	\
-    (This)->lpVtbl -> get_Tag(This,Tag)
+    ( (This)->lpVtbl -> get_Tag(This,Tag) ) 
 
 #endif /* COBJMACROS */
 
 
 #endif 	/* C style interface */
 
-
-
-/* [helpcontext][propget][id] */ HRESULT STDMETHODCALLTYPE IRibbonControl_get_Id_Proxy( 
-    IRibbonControl * This,
-    /* [retval][out] */ BSTR *Id);
-
-
-void __RPC_STUB IRibbonControl_get_Id_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-/* [helpcontext][propget][id] */ HRESULT STDMETHODCALLTYPE IRibbonControl_get_Context_Proxy( 
-    IRibbonControl * This,
-    /* [retval][out] */ IDispatch **Context);
-
-
-void __RPC_STUB IRibbonControl_get_Context_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-/* [helpcontext][propget][id] */ HRESULT STDMETHODCALLTYPE IRibbonControl_get_Tag_Proxy( 
-    IRibbonControl * This,
-    /* [retval][out] */ BSTR *Tag);
-
-
-void __RPC_STUB IRibbonControl_get_Tag_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
 
 
 
@@ -424,6 +386,7 @@ EXTERN_C const IID IID_IRibbonExtensibility;
         
     };
     
+    
 #else 	/* C style interface */
 
     typedef struct IRibbonExtensibilityVtbl
@@ -433,7 +396,8 @@ EXTERN_C const IID IID_IRibbonExtensibility;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IRibbonExtensibility * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ void **ppvObject);
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IRibbonExtensibility * This);
@@ -455,20 +419,28 @@ EXTERN_C const IID IID_IRibbonExtensibility;
             IRibbonExtensibility * This,
             /* [in] */ REFIID riid,
             /* [size_is][in] */ LPOLESTR *rgszNames,
-            /* [in] */ UINT cNames,
+            /* [range][in] */ UINT cNames,
             /* [in] */ LCID lcid,
             /* [size_is][out] */ DISPID *rgDispId);
         
         /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
             IRibbonExtensibility * This,
-            /* [in] */ DISPID dispIdMember,
-            /* [in] */ REFIID riid,
-            /* [in] */ LCID lcid,
-            /* [in] */ WORD wFlags,
-            /* [out][in] */ DISPPARAMS *pDispParams,
-            /* [out] */ VARIANT *pVarResult,
-            /* [out] */ EXCEPINFO *pExcepInfo,
-            /* [out] */ UINT *puArgErr);
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
         
         /* [helpcontext][id] */ HRESULT ( STDMETHODCALLTYPE *GetCustomUI )( 
             IRibbonExtensibility * This,
@@ -489,49 +461,36 @@ EXTERN_C const IID IID_IRibbonExtensibility;
 
 
 #define IRibbonExtensibility_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
 
 #define IRibbonExtensibility_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
+    ( (This)->lpVtbl -> AddRef(This) ) 
 
 #define IRibbonExtensibility_Release(This)	\
-    (This)->lpVtbl -> Release(This)
+    ( (This)->lpVtbl -> Release(This) ) 
 
 
 #define IRibbonExtensibility_GetTypeInfoCount(This,pctinfo)	\
-    (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo)
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
 
 #define IRibbonExtensibility_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
-    (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo)
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
 
 #define IRibbonExtensibility_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
-    (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
 
 #define IRibbonExtensibility_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
-    (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
 
 
 #define IRibbonExtensibility_GetCustomUI(This,RibbonID,RibbonXml)	\
-    (This)->lpVtbl -> GetCustomUI(This,RibbonID,RibbonXml)
+    ( (This)->lpVtbl -> GetCustomUI(This,RibbonID,RibbonXml) ) 
 
 #endif /* COBJMACROS */
 
 
 #endif 	/* C style interface */
 
-
-
-/* [helpcontext][id] */ HRESULT STDMETHODCALLTYPE IRibbonExtensibility_GetCustomUI_Proxy( 
-    IRibbonExtensibility * This,
-    /* [in] */ BSTR RibbonID,
-    /* [retval][out] */ BSTR *RibbonXml);
-
-
-void __RPC_STUB IRibbonExtensibility_GetCustomUI_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
 
 
 

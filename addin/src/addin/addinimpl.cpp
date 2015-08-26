@@ -19,7 +19,7 @@ AddInImpl::AddInImpl(QObject *parent)
     HRESULT hr;
     ITypeLib *pTypeLib = NULL;
     ITypeInfo *pTypeInfo = NULL;
-    QString typeLibResourcePath = QAxFactory::serverFilePath() + "\\2";
+    QString typeLibResourcePath = QAxFactory::serverFilePath() + "\\999";
     hr = LoadTypeLib( reinterpret_cast<const OLECHAR *>( typeLibResourcePath.utf16() ), &pTypeLib);
     if ( SUCCEEDED( hr ) )
     {

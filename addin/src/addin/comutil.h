@@ -1,12 +1,14 @@
 #ifndef COMUTIL_H
 #define COMUTIL_H
 
+#include "addin_global.h"
+
 #include <ocidl.h>
 
 #include <QString>
 #include <QPixmap>
 
-class ComUtil
+class ADDINSHARED_EXPORT ComUtil
 {
 public:
     ComUtil(){}

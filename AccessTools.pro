@@ -7,9 +7,10 @@ SUBDIRS += \
     accessutil \
     external \
     resource \
-    cvsmodel
+    cvsmodel \
+    addin
 
-accesscvs.depends += util accessutil cvsmodel resource
+accesscvs.depends += util accessutil cvsmodel resource addin
 accutil.depends += accessutil
 accessutil.depdens += util
 cvsmodel.depends += util

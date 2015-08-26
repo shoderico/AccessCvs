@@ -1,19 +1,21 @@
 #ifndef ADDINIMPL_H
 #define ADDINIMPL_H
 
+#include "addin_global.h"
+
 #include <QAxAggregated>
 #include <QObject>
 
-#include "msaddndr.h"
-#include "ribbon.h"
-#include "ribboncallback.h"
+#include "interface/msaddndr.h"
+#include "interface/ribbon.h"
+#include "interface/ribboncallback.h"
 
 
 namespace Access {
 class Application;
 } // namespace Access
 
-class AddInImpl
+class ADDINSHARED_EXPORT AddInImpl
         : public QObject
         , public QAxAggregated
         , public IDTExtensibility2

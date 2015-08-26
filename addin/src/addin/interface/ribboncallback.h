@@ -3,20 +3,20 @@
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 
 
- /* File created by MIDL compiler version 6.00.0366 */
-/* at Mon Jul 27 17:52:33 2015
+ /* File created by MIDL compiler version 8.00.0603 */
+/* at Wed Aug 26 21:02:33 2015
  */
 /* Compiler settings for ribboncallback.idl:
-    Oicf, W1, Zp8, env=Win32 (32b run)
+    Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
          __declspec(uuid()), __declspec(selectany), __declspec(novtable)
          DECLSPEC_UUID(), MIDL_INTERFACE()
 */
-//@@MIDL_FILE_HEADING(  )
+/* @@MIDL_FILE_HEADING(  ) */
 
-//#pragma warning( disable: 4049 )  /* more than 64k source lines */
+#pragma warning( disable: 4049 )  /* more than 64k source lines */
 
 
 /* verify that the <rpcndr.h> version is high enough to compile this file*/
@@ -44,6 +44,7 @@
 #ifndef __IRibbonCallback_FWD_DEFINED__
 #define __IRibbonCallback_FWD_DEFINED__
 typedef interface IRibbonCallback IRibbonCallback;
+
 #endif 	/* __IRibbonCallback_FWD_DEFINED__ */
 
 
@@ -54,8 +55,6 @@ typedef interface IRibbonCallback IRibbonCallback;
 extern "C"{
 #endif 
 
-//void * __RPC_USER MIDL_user_allocate(size_t);
-//void __RPC_USER MIDL_user_free( void * );
 
 
 #ifndef __RibbonCallback_LIBRARY_DEFINED__
@@ -91,6 +90,7 @@ EXTERN_C const IID IID_IRibbonCallback;
         
     };
     
+    
 #else 	/* C style interface */
 
     typedef struct IRibbonCallbackVtbl
@@ -100,7 +100,8 @@ EXTERN_C const IID IID_IRibbonCallback;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IRibbonCallback * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ void **ppvObject);
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IRibbonCallback * This);
@@ -122,20 +123,28 @@ EXTERN_C const IID IID_IRibbonCallback;
             IRibbonCallback * This,
             /* [in] */ REFIID riid,
             /* [size_is][in] */ LPOLESTR *rgszNames,
-            /* [in] */ UINT cNames,
+            /* [range][in] */ UINT cNames,
             /* [in] */ LCID lcid,
             /* [size_is][out] */ DISPID *rgDispId);
         
         /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
             IRibbonCallback * This,
-            /* [in] */ DISPID dispIdMember,
-            /* [in] */ REFIID riid,
-            /* [in] */ LCID lcid,
-            /* [in] */ WORD wFlags,
-            /* [out][in] */ DISPPARAMS *pDispParams,
-            /* [out] */ VARIANT *pVarResult,
-            /* [out] */ EXCEPINFO *pExcepInfo,
-            /* [out] */ UINT *puArgErr);
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
         
         /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *ButtonClicked )( 
             IRibbonCallback * This,
@@ -160,64 +169,39 @@ EXTERN_C const IID IID_IRibbonCallback;
 
 
 #define IRibbonCallback_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
 
 #define IRibbonCallback_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
+    ( (This)->lpVtbl -> AddRef(This) ) 
 
 #define IRibbonCallback_Release(This)	\
-    (This)->lpVtbl -> Release(This)
+    ( (This)->lpVtbl -> Release(This) ) 
 
 
 #define IRibbonCallback_GetTypeInfoCount(This,pctinfo)	\
-    (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo)
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
 
 #define IRibbonCallback_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
-    (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo)
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
 
 #define IRibbonCallback_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
-    (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
 
 #define IRibbonCallback_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
-    (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
 
 
 #define IRibbonCallback_ButtonClicked(This,ribbonControl)	\
-    (This)->lpVtbl -> ButtonClicked(This,ribbonControl)
+    ( (This)->lpVtbl -> ButtonClicked(This,ribbonControl) ) 
 
 #define IRibbonCallback_GetButtonImage(This,ribbonControl,picture)	\
-    (This)->lpVtbl -> GetButtonImage(This,ribbonControl,picture)
+    ( (This)->lpVtbl -> GetButtonImage(This,ribbonControl,picture) ) 
 
 #endif /* COBJMACROS */
 
 
 #endif 	/* C style interface */
 
-
-
-/* [helpstring][id] */ HRESULT STDMETHODCALLTYPE IRibbonCallback_ButtonClicked_Proxy( 
-    IRibbonCallback * This,
-    /* [in] */ IDispatch *ribbonControl);
-
-
-void __RPC_STUB IRibbonCallback_ButtonClicked_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-/* [helpstring][id] */ HRESULT STDMETHODCALLTYPE IRibbonCallback_GetButtonImage_Proxy( 
-    IRibbonCallback * This,
-    /* [in] */ IDispatch *ribbonControl,
-    /* [retval][out] */ IPictureDisp **picture);
-
-
-void __RPC_STUB IRibbonCallback_GetButtonImage_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
 
 
 

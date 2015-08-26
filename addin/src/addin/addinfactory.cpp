@@ -7,6 +7,7 @@
 #include <QSettings>
 #include <QFileInfo>
 
+extern QAxFactory *qax_instantiate();
 
 AddInFactory::AddInFactory(const QUuid &app, const QUuid &lib)
     : QAxFactory(app, lib)

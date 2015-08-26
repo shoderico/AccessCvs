@@ -1,12 +1,14 @@
 #ifndef ADDINMAIN_H
 #define ADDINMAIN_H
 
+#include "addin_global.h"
+
 #include <QObject>
 #include <QAxBindable>
 
 class AddInFactory;
 
-class AddInMain : public QObject, public QAxBindable
+class ADDINSHARED_EXPORT AddInMain : public QObject, public QAxBindable
 {
     Q_OBJECT
 public:

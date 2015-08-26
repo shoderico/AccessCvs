@@ -1,0 +1,12 @@
+1. generate *.idl from *.dll
+
+Using OLE/COM Object Viewer (oleview.exe).
+Place *.idl to 'idl' folder.
+
+2. generate *.c, *.h from *.idl
+
+Using midl.exe.
+Place *.c, *.h to 'interface' folder
+
+just execute  idl/generate.bat .
+

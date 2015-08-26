@@ -3,20 +3,20 @@
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 
 
- /* File created by MIDL compiler version 6.00.0366 */
-/* at Tue Jul 21 21:16:03 2015
+ /* File created by MIDL compiler version 8.00.0603 */
+/* at Wed Aug 26 21:02:32 2015
  */
-/* Compiler settings for MSADDNDR.IDL:
-    Oicf, W1, Zp8, env=Win32 (32b run)
+/* Compiler settings for msaddndr.idl:
+    Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
          __declspec(uuid()), __declspec(selectany), __declspec(novtable)
          DECLSPEC_UUID(), MIDL_INTERFACE()
 */
-//@@MIDL_FILE_HEADING(  )
+/* @@MIDL_FILE_HEADING(  ) */
 
-//#pragma warning( disable: 4049 )  /* more than 64k source lines */
+#pragma warning( disable: 4049 )  /* more than 64k source lines */
 
 
 /* verify that the <rpcndr.h> version is high enough to compile this file*/
@@ -44,18 +44,21 @@
 #ifndef __IAddinDesigner_FWD_DEFINED__
 #define __IAddinDesigner_FWD_DEFINED__
 typedef interface IAddinDesigner IAddinDesigner;
+
 #endif 	/* __IAddinDesigner_FWD_DEFINED__ */
 
 
 #ifndef __IAddinInstance_FWD_DEFINED__
 #define __IAddinInstance_FWD_DEFINED__
 typedef interface IAddinInstance IAddinInstance;
+
 #endif 	/* __IAddinInstance_FWD_DEFINED__ */
 
 
 #ifndef ___IDTExtensibility2_FWD_DEFINED__
 #define ___IDTExtensibility2_FWD_DEFINED__
 typedef interface _IDTExtensibility2 _IDTExtensibility2;
+
 #endif 	/* ___IDTExtensibility2_FWD_DEFINED__ */
 
 
@@ -111,8 +114,6 @@ typedef struct AddinInstance2 AddinInstance2;
 extern "C"{
 #endif 
 
-//void * __RPC_USER MIDL_user_allocate(size_t);
-//void __RPC_USER MIDL_user_free( void * );
 
 
 #ifndef __AddInDesignerObjects_LIBRARY_DEFINED__
@@ -125,17 +126,19 @@ extern "C"{
 
 
 typedef /* [public][public][uuid] */  DECLSPEC_UUID("289E9AF1-4973-11D1-AE81-00A0C90F26F4") 
-enum __MIDL___MIDL_itf_MSADDNDR_0000_0001
-    {	ext_cm_AfterStartup	= 0,
-	ext_cm_Startup	= 1,
-	ext_cm_External	= 2,
-	ext_cm_CommandLine	= 3
+enum __MIDL___MIDL_itf_msaddndr_0000_0000_0001
+    {
+        ext_cm_AfterStartup	= 0,
+        ext_cm_Startup	= 1,
+        ext_cm_External	= 2,
+        ext_cm_CommandLine	= 3
     } 	ext_ConnectMode;
 
 typedef /* [public][public][uuid] */  DECLSPEC_UUID("289E9AF2-4973-11D1-AE81-00A0C90F26F4") 
-enum __MIDL___MIDL_itf_MSADDNDR_0000_0002
-    {	ext_dm_HostShutdown	= 0,
-	ext_dm_UserClosed	= 1
+enum __MIDL___MIDL_itf_msaddndr_0000_0000_0002
+    {
+        ext_dm_HostShutdown	= 0,
+        ext_dm_UserClosed	= 1
     } 	ext_DisconnectMode;
 
 typedef /* [public] */ _IDTExtensibility2 IDTExtensibility2;
@@ -160,6 +163,7 @@ EXTERN_C const IID IID_IAddinDesigner;
     public:
     };
     
+    
 #else 	/* C style interface */
 
     typedef struct IAddinDesignerVtbl
@@ -169,7 +173,8 @@ EXTERN_C const IID IID_IAddinDesigner;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAddinDesigner * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ void **ppvObject);
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAddinDesigner * This);
@@ -191,20 +196,28 @@ EXTERN_C const IID IID_IAddinDesigner;
             IAddinDesigner * This,
             /* [in] */ REFIID riid,
             /* [size_is][in] */ LPOLESTR *rgszNames,
-            /* [in] */ UINT cNames,
+            /* [range][in] */ UINT cNames,
             /* [in] */ LCID lcid,
             /* [size_is][out] */ DISPID *rgDispId);
         
         /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
             IAddinDesigner * This,
-            /* [in] */ DISPID dispIdMember,
-            /* [in] */ REFIID riid,
-            /* [in] */ LCID lcid,
-            /* [in] */ WORD wFlags,
-            /* [out][in] */ DISPPARAMS *pDispParams,
-            /* [out] */ VARIANT *pVarResult,
-            /* [out] */ EXCEPINFO *pExcepInfo,
-            /* [out] */ UINT *puArgErr);
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
         
         END_INTERFACE
     } IAddinDesignerVtbl;
@@ -220,26 +233,26 @@ EXTERN_C const IID IID_IAddinDesigner;
 
 
 #define IAddinDesigner_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
 
 #define IAddinDesigner_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
+    ( (This)->lpVtbl -> AddRef(This) ) 
 
 #define IAddinDesigner_Release(This)	\
-    (This)->lpVtbl -> Release(This)
+    ( (This)->lpVtbl -> Release(This) ) 
 
 
 #define IAddinDesigner_GetTypeInfoCount(This,pctinfo)	\
-    (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo)
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
 
 #define IAddinDesigner_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
-    (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo)
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
 
 #define IAddinDesigner_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
-    (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
 
 #define IAddinDesigner_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
-    (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
 
 
 #endif /* COBJMACROS */
@@ -270,6 +283,7 @@ EXTERN_C const IID IID_IAddinInstance;
     public:
     };
     
+    
 #else 	/* C style interface */
 
     typedef struct IAddinInstanceVtbl
@@ -279,7 +293,8 @@ EXTERN_C const IID IID_IAddinInstance;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAddinInstance * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ void **ppvObject);
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAddinInstance * This);
@@ -301,20 +316,28 @@ EXTERN_C const IID IID_IAddinInstance;
             IAddinInstance * This,
             /* [in] */ REFIID riid,
             /* [size_is][in] */ LPOLESTR *rgszNames,
-            /* [in] */ UINT cNames,
+            /* [range][in] */ UINT cNames,
             /* [in] */ LCID lcid,
             /* [size_is][out] */ DISPID *rgDispId);
         
         /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
             IAddinInstance * This,
-            /* [in] */ DISPID dispIdMember,
-            /* [in] */ REFIID riid,
-            /* [in] */ LCID lcid,
-            /* [in] */ WORD wFlags,
-            /* [out][in] */ DISPPARAMS *pDispParams,
-            /* [out] */ VARIANT *pVarResult,
-            /* [out] */ EXCEPINFO *pExcepInfo,
-            /* [out] */ UINT *puArgErr);
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
         
         END_INTERFACE
     } IAddinInstanceVtbl;
@@ -330,26 +353,26 @@ EXTERN_C const IID IID_IAddinInstance;
 
 
 #define IAddinInstance_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
 
 #define IAddinInstance_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
+    ( (This)->lpVtbl -> AddRef(This) ) 
 
 #define IAddinInstance_Release(This)	\
-    (This)->lpVtbl -> Release(This)
+    ( (This)->lpVtbl -> Release(This) ) 
 
 
 #define IAddinInstance_GetTypeInfoCount(This,pctinfo)	\
-    (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo)
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
 
 #define IAddinInstance_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
-    (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo)
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
 
 #define IAddinInstance_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
-    (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
 
 #define IAddinInstance_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
-    (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
 
 
 #endif /* COBJMACROS */
@@ -399,6 +422,7 @@ EXTERN_C const IID IID__IDTExtensibility2;
         
     };
     
+    
 #else 	/* C style interface */
 
     typedef struct _IDTExtensibility2Vtbl
@@ -408,7 +432,8 @@ EXTERN_C const IID IID__IDTExtensibility2;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             _IDTExtensibility2 * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ void **ppvObject);
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             _IDTExtensibility2 * This);
@@ -430,20 +455,28 @@ EXTERN_C const IID IID__IDTExtensibility2;
             _IDTExtensibility2 * This,
             /* [in] */ REFIID riid,
             /* [size_is][in] */ LPOLESTR *rgszNames,
-            /* [in] */ UINT cNames,
+            /* [range][in] */ UINT cNames,
             /* [in] */ LCID lcid,
             /* [size_is][out] */ DISPID *rgDispId);
         
         /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
             _IDTExtensibility2 * This,
-            /* [in] */ DISPID dispIdMember,
-            /* [in] */ REFIID riid,
-            /* [in] */ LCID lcid,
-            /* [in] */ WORD wFlags,
-            /* [out][in] */ DISPPARAMS *pDispParams,
-            /* [out] */ VARIANT *pVarResult,
-            /* [out] */ EXCEPINFO *pExcepInfo,
-            /* [out] */ UINT *puArgErr);
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
         
         /* [id] */ HRESULT ( STDMETHODCALLTYPE *OnConnection )( 
             _IDTExtensibility2 * This,
@@ -483,112 +516,48 @@ EXTERN_C const IID IID__IDTExtensibility2;
 
 
 #define _IDTExtensibility2_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
 
 #define _IDTExtensibility2_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
+    ( (This)->lpVtbl -> AddRef(This) ) 
 
 #define _IDTExtensibility2_Release(This)	\
-    (This)->lpVtbl -> Release(This)
+    ( (This)->lpVtbl -> Release(This) ) 
 
 
 #define _IDTExtensibility2_GetTypeInfoCount(This,pctinfo)	\
-    (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo)
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
 
 #define _IDTExtensibility2_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
-    (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo)
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
 
 #define _IDTExtensibility2_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
-    (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
 
 #define _IDTExtensibility2_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
-    (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
 
 
 #define _IDTExtensibility2_OnConnection(This,Application,ConnectMode,AddInInst,custom)	\
-    (This)->lpVtbl -> OnConnection(This,Application,ConnectMode,AddInInst,custom)
+    ( (This)->lpVtbl -> OnConnection(This,Application,ConnectMode,AddInInst,custom) ) 
 
 #define _IDTExtensibility2_OnDisconnection(This,RemoveMode,custom)	\
-    (This)->lpVtbl -> OnDisconnection(This,RemoveMode,custom)
+    ( (This)->lpVtbl -> OnDisconnection(This,RemoveMode,custom) ) 
 
 #define _IDTExtensibility2_OnAddInsUpdate(This,custom)	\
-    (This)->lpVtbl -> OnAddInsUpdate(This,custom)
+    ( (This)->lpVtbl -> OnAddInsUpdate(This,custom) ) 
 
 #define _IDTExtensibility2_OnStartupComplete(This,custom)	\
-    (This)->lpVtbl -> OnStartupComplete(This,custom)
+    ( (This)->lpVtbl -> OnStartupComplete(This,custom) ) 
 
 #define _IDTExtensibility2_OnBeginShutdown(This,custom)	\
-    (This)->lpVtbl -> OnBeginShutdown(This,custom)
+    ( (This)->lpVtbl -> OnBeginShutdown(This,custom) ) 
 
 #endif /* COBJMACROS */
 
 
 #endif 	/* C style interface */
 
-
-
-/* [id] */ HRESULT STDMETHODCALLTYPE _IDTExtensibility2_OnConnection_Proxy( 
-    _IDTExtensibility2 * This,
-    /* [in] */ IDispatch *Application,
-    /* [in] */ ext_ConnectMode ConnectMode,
-    /* [in] */ IDispatch *AddInInst,
-    /* [in] */ SAFEARRAY * *custom);
-
-
-void __RPC_STUB _IDTExtensibility2_OnConnection_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-/* [id] */ HRESULT STDMETHODCALLTYPE _IDTExtensibility2_OnDisconnection_Proxy( 
-    _IDTExtensibility2 * This,
-    /* [in] */ ext_DisconnectMode RemoveMode,
-    /* [in] */ SAFEARRAY * *custom);
-
-
-void __RPC_STUB _IDTExtensibility2_OnDisconnection_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-/* [id] */ HRESULT STDMETHODCALLTYPE _IDTExtensibility2_OnAddInsUpdate_Proxy( 
-    _IDTExtensibility2 * This,
-    /* [in] */ SAFEARRAY * *custom);
-
-
-void __RPC_STUB _IDTExtensibility2_OnAddInsUpdate_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-/* [id] */ HRESULT STDMETHODCALLTYPE _IDTExtensibility2_OnStartupComplete_Proxy( 
-    _IDTExtensibility2 * This,
-    /* [in] */ SAFEARRAY * *custom);
-
-
-void __RPC_STUB _IDTExtensibility2_OnStartupComplete_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-/* [id] */ HRESULT STDMETHODCALLTYPE _IDTExtensibility2_OnBeginShutdown_Proxy( 
-    _IDTExtensibility2 * This,
-    /* [in] */ SAFEARRAY * *custom);
-
-
-void __RPC_STUB _IDTExtensibility2_OnBeginShutdown_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
 
 
 

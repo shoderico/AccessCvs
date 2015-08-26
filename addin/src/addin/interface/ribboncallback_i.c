@@ -5,20 +5,20 @@
 /* link this file in with the server and any clients */
 
 
- /* File created by MIDL compiler version 6.00.0366 */
-/* at Fri Jul 24 16:33:49 2015
+ /* File created by MIDL compiler version 8.00.0603 */
+/* at Wed Aug 26 21:02:33 2015
  */
-/* Compiler settings for IRibbon.idl:
-    Oicf, W1, Zp8, env=Win32 (32b run)
+/* Compiler settings for ribboncallback.idl:
+    Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
          __declspec(uuid()), __declspec(selectany), __declspec(novtable)
          DECLSPEC_UUID(), MIDL_INTERFACE()
 */
-//@@MIDL_FILE_HEADING(  )
+/* @@MIDL_FILE_HEADING(  ) */
 
-//#pragma warning( disable: 4049 )  /* more than 64k source lines */
+#pragma warning( disable: 4049 )  /* more than 64k source lines */
 
 
 #ifdef __cplusplus
@@ -65,18 +65,12 @@ typedef IID CLSID;
 #define MIDL_DEFINE_GUID(type,name,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) \
         const type name = {l,w1,w2,{b1,b2,b3,b4,b5,b6,b7,b8}}
 
-#endif // !_MIDL_USE_GUIDDEF_
+#endif !_MIDL_USE_GUIDDEF_
 
-MIDL_DEFINE_GUID(IID, LIBID_Office,0x2DF8D04C,0x5BFA,0x101B,0xBD,0xE5,0x00,0xAA,0x00,0x44,0xDE,0x52);
-
-
-MIDL_DEFINE_GUID(IID, IID_IRibbonUI,0x000C03A7,0x0000,0x0000,0xC0,0x00,0x00,0x00,0x00,0x00,0x00,0x46);
+MIDL_DEFINE_GUID(IID, LIBID_RibbonCallback,0xab935936,0xc2ca,0x4cad,0xac,0xcc,0xfa,0x11,0x4f,0xde,0x9b,0xe6);
 
 
-MIDL_DEFINE_GUID(IID, IID_IRibbonControl,0x000C0395,0x0000,0x0000,0xC0,0x00,0x00,0x00,0x00,0x00,0x00,0x46);
-
-
-MIDL_DEFINE_GUID(IID, IID_IRibbonExtensibility,0x000C0396,0x0000,0x0000,0xC0,0x00,0x00,0x00,0x00,0x00,0x00,0x46);
+MIDL_DEFINE_GUID(IID, IID_IRibbonCallback,0x4199dd4a,0x0bdc,0x4a00,0x91,0xeb,0xc0,0x39,0x72,0x17,0xfd,0x14);
 
 #undef MIDL_DEFINE_GUID
 

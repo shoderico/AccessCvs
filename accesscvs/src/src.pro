@@ -20,32 +20,33 @@ TARGET   = AccessCvs
 TEMPLATE = lib
 #VERSION  = 1.0
 
-DEF_FILE = addin/addin.def
-RC_FILE  = addin/addin.rc
+#DEF_FILE = addin/addin.def
+#RC_FILE  = addin/addin.rc
 
 DEFINES += ACCESSCVS_LIBRARY
 DEFINES += QT_MESSAGELOGCONTEXT
 
 SOURCES += \
-    addin/msaddndr_i.c \
-    addin/addinmain.cpp \
-    addin/addinimpl.cpp \
-    addin/addinfactory.cpp \
-    addin/ribbon_i.c \
-    addin/ribboncallback_i.c \
     ui/maindialog.cpp \
-    addin/comutil.cpp \
-    addin/logfile.cpp \
     view/checkboxitemdelegate.cpp \
     view/boolcheckboxitemdelegate.cpp \
     git/gitmanager.cpp \
     managers/actionmanager.cpp \
-    addin/addinutil.cpp \
     managers/accessutilmanager.cpp \
     managers/windowwidgetmanager.cpp \
     view/uiblocker.cpp \
     cvsaddin/cvsaddinfactory.cpp \
     cvsaddin/cvsaddinimpl.cpp
+
+#    addin/msaddndr_i.c \
+#    addin/addinmain.cpp \
+#    addin/addinimpl.cpp \
+#    addin/addinfactory.cpp \
+#    addin/ribbon_i.c \
+#    addin/ribboncallback_i.c \
+#    addin/comutil.cpp \
+#    addin/logfile.cpp \
+#    addin/addinutil.cpp \
 
 #    util/comptr.cpp \
 #    util/getcomobject.cpp \
@@ -56,26 +57,27 @@ SOURCES += \
 #    util/concurrentmaphelper.cpp \
 
 HEADERS +=\
-    addin/msaddndr.h \
-    addin/addinmain.h \
-    addin/addinimpl.h \
-    addin/addinfactory.h \
-    addin/ribbon.h \
-    addin/ribboncallback.h \
     ui/maindialog.h \
     accesscvs_global.h \
-    addin/comutil.h \
-    addin/logfile.h \
     view/checkboxitemdelegate.h \
     view/boolcheckboxitemdelegate.h \
     git/gitmanager.h \
     managers/actionmanager.h \
-    addin/addinutil.h \
     managers/accessutilmanager.h \
     managers/windowwidgetmanager.h \
     view/uiblocker.h \
     cvsaddin/cvsaddinfactory.h \
     cvsaddin/cvsaddinimpl.h
+
+#    addin/addinutil.h \
+#    addin/msaddndr.h \
+#    addin/addinmain.h \
+#    addin/addinimpl.h \
+#    addin/addinfactory.h \
+#    addin/ribbon.h \
+#    addin/ribboncallback.h \
+#    addin/comutil.h \
+#    addin/logfile.h \
 
 #    util/comptr.h \
 #    util/getcomobject.h \
@@ -86,13 +88,15 @@ HEADERS +=\
 #    util/concurrentmaphelper.h \
 
 DISTFILES += \
-    addin/addin.def \
-    addin/addin.rc \
-    addin/ribboncallback.idl \
-    addin/ribbon.xml
+    cvsaddin/ribbon.xml
+#    addin/addin.def \
+#    addin/addin.rc \
+#    addin/ribboncallback.idl \
+
+
 
 RESOURCES += \
-    addin/addin.qrc
+    cvsaddin/cvsaddin.qrc
 #    ui/resource.qrc
 
 FORMS += \

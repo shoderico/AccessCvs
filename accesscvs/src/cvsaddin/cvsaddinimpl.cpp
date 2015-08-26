@@ -62,7 +62,7 @@ void CvsAddInImpl::onDisconnectionEvent()
 
 QString CvsAddInImpl::ribbomXml()
 {
-    QResource resource(":/addin/ribbon.xml");
+    QResource resource(":/cvsaddin/ribbon.xml");
     QFile file(resource.absoluteFilePath());
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return QString();

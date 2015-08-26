@@ -1,11 +1,13 @@
 #ifndef ADDINFACTORY_H
 #define ADDINFACTORY_H
 
+#include "addin_global.h"
+
 #include <QAxFactory>
 
 class QAxAggregated;
 
-class AddInFactory : public QAxFactory
+class ADDINSHARED_EXPORT AddInFactory : public QAxFactory
 {
     Q_OBJECT
 public:

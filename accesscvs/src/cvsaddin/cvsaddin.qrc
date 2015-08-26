@@ -1,6 +1,5 @@
 <RCC>
-    <qresource prefix="/addin">
+    <qresource prefix="/cvsaddin">
         <file>ribbon.xml</file>
-        <file>button.png</file>
     </qresource>
 </RCC>

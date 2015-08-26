@@ -1,9 +1,11 @@
 #ifndef ADDINUTIL_H
 #define ADDINUTIL_H
 
+#include "addin_global.h"
+
 #include <QSize>
 
-class AddInUtil
+class ADDINSHARED_EXPORT AddInUtil
 {
 public:
     AddInUtil(){}
