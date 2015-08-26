@@ -3,6 +3,8 @@
 
 #include "accessutil_global.h"
 
+#include <QObject>
+
 namespace Access {
 class Application;
 } // namespace Access
@@ -14,9 +16,11 @@ public:
     AccessUtil(){}
 
     bool decompile(const QString &fileName, quint64 threadIdForAttachInput);
-    bool compactRepair(const QString &fileName, const int repeatCount = 1);
+    bool compactRepair(Access::Application *application, const QString &fileName, const int repeatCount = 1);
     bool openCurrentDatabase(Access::Application *application, const QString &fileName);
     quint64 getAccessThreadId(Access::Application *application);
+    Access::Application *createAccessApplication(QObject *parent = 0);
+    void quitAndDeleteApplication(Access::Application *application);
 
     // TODO: clearConnection() for ADP
     // TODO: removeLinkTables() for MDB

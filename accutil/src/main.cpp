@@ -44,7 +44,9 @@ int main(int argc, char *argv[])
     if (isSetCompactRepair && !inputFile.isEmpty())
     {
         AccessUtil au;
-        au.compactRepair(inputFile, 5);
+        Access::Application *application = au.createAccessApplication();
+        au.compactRepair(application, inputFile, 5);
+        au.quitAndDeleteApplication(application);
     }
 
     return 0;

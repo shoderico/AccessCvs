@@ -205,12 +205,12 @@ bool AccessUtil::decompile(const QString &fileName, quint64 threadIdForAttachInp
     return true;
 }
 
-bool AccessUtil::compactRepair(const QString &fileName, const int repeatCount)
+bool AccessUtil::compactRepair(Access::Application *application, const QString &fileName, const int repeatCount)
 {
     if (!QFile(fileName).exists())
         return false;
 
-    Access::Application *application = new Access::Application();
+//    Access::Application *application = new Access::Application();
 
     QString sourceFile = fileName;
     QString destinationFile = "";
@@ -229,8 +229,9 @@ bool AccessUtil::compactRepair(const QString &fileName, const int repeatCount)
 
         sourceFile = destinationFile;
     }
-    application->Quit();
-    delete application;
+
+//    application->Quit();
+//    delete application;
 
     QFile(fileName).remove();
     QFile::copy(destinationFile, fileName);
@@ -291,4 +292,16 @@ quint64 AccessUtil::getAccessThreadId(Access::Application *application)
     DWORD currentThreadId = 0;
     currentThreadId = GetWindowThreadProcessId( currentHwnd, &currentProcessId );
     return currentThreadId;
+}
+
+Access::Application *AccessUtil::createAccessApplication(QObject *parent)
+{
+    Access::Application *application = new Access::Application(parent);
+    return application;
+}
+
+void AccessUtil::quitAndDeleteApplication(Access::Application *application)
+{
+    application->Quit();
+    delete application;
 }
