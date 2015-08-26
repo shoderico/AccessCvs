@@ -1,6 +1,8 @@
 #ifndef TABLEDEFSANITIZESETTING_H
 #define TABLEDEFSANITIZESETTING_H
 
+#include "cvsmodel_global.h"
+
 #include <QObject>
 #include <QTextStream>
 
@@ -8,7 +10,7 @@ class QRegularExpression;
 
 class CodecInfo;
 
-class TableDefSanitizeSetting : public QObject
+class CVSMODELSHARED_EXPORT TableDefSanitizeSetting : public QObject
 {
     Q_OBJECT
 public:

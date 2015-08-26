@@ -4,7 +4,7 @@
 #include <QApplication>
 #include <QKeyEvent>
 
-#include "model/objectmodel.h"
+#include "cvsmodel/objectmodel.h"
 
 BoolCheckBoxItemDelegate::BoolCheckBoxItemDelegate(QObject *parent)
     : QStyledItemDelegate(parent)

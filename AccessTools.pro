@@ -9,8 +9,10 @@ SUBDIRS += \
     resource \
     cvsmodel
 
-accesscvs.depends += util accessutil
+accesscvs.depends += util accessutil cvsmodel resource
 accutil.depends += accessutil
+accessutil.depdens += util
+cvsmodel.depends += util
 
 OTHER_FILES += \
     common.pri \

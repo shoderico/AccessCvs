@@ -3,7 +3,7 @@
 #include <QIcon>
 #include <QDir>
 
-#include <QApplication> // requred for QApplication::processEvents();
+//#include <QApplication> // requred for QApplication::processEvents();
 #include <QDebug>
 
 #include <QtConcurrent>

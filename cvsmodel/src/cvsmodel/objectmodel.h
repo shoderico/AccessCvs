@@ -1,6 +1,8 @@
 #ifndef OBJECTMODEL_H
 #define OBJECTMODEL_H
 
+#include "cvsmodel_global.h"
+
 #include <QAbstractItemModel>
 
 #include "objectitem.h"
@@ -11,7 +13,7 @@ class Application;
 }
 
 
-class ObjectModel : public QAbstractItemModel
+class CVSMODELSHARED_EXPORT ObjectModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:

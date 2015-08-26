@@ -3,9 +3,9 @@
 
 #include "officelib/officelib.h"
 
-#include "model/objectmodel.h"
-#include "model/objectitem.h"
-#include "model/objectproxymodel.h"
+#include "cvsmodel/objectmodel.h"
+#include "cvsmodel/objectitem.h"
+#include "cvsmodel/objectproxymodel.h"
 
 #include "view/checkboxitemdelegate.h"
 #include "view/boolcheckboxitemdelegate.h"

@@ -1,11 +1,13 @@
 #ifndef OBJECTITEMS_H
 #define OBJECTITEMS_H
 
+#include "cvsmodel_global.h"
+
 #include <QMap>
 #include <QString>
 #include "objectitem.h"
 
-class ObjectItems : public QMap< Model::ObjectType, QMap< QString, ObjectItem* > >
+class CVSMODELSHARED_EXPORT ObjectItems : public QMap< Model::ObjectType, QMap< QString, ObjectItem* > >
 {
 public:
     ObjectItems();

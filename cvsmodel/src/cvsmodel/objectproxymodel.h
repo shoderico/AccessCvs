@@ -1,10 +1,12 @@
 #ifndef OBJECTPROXYMODEL_H
 #define OBJECTPROXYMODEL_H
 
+#include "cvsmodel_global.h"
+
 #include <QObject>
 #include <QSortFilterProxyModel>
 
-class ObjectProxyModel : public QSortFilterProxyModel
+class CVSMODELSHARED_EXPORT ObjectProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 public:

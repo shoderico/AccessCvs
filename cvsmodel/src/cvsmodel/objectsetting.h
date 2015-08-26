@@ -1,6 +1,8 @@
 #ifndef OBJECTSETTING_H
 #define OBJECTSETTING_H
 
+#include "cvsmodel_global.h"
+
 #include <QObject>
 
 #include <QFileInfo>
@@ -35,7 +37,7 @@ class AllModules;
 
 
 
-class ObjectSetting : public QObject
+class CVSMODELSHARED_EXPORT ObjectSetting : public QObject
 {
     Q_OBJECT
 public:

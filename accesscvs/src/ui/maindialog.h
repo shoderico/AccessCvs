@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include <QTimer>
-#include "model/objectmodel.h"
+#include "cvsmodel/objectmodel.h"
 
 namespace Ui {
 class MainDialog;

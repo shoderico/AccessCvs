@@ -1,6 +1,8 @@
 #ifndef OBJECTITEM_H
 #define OBJECTITEM_H
 
+#include "cvsmodel_global.h"
+
 #include <QObject>
 #include <QString>
 #include <QDateTime>
@@ -45,23 +47,23 @@ enum ObjectCheckState
 
 enum ObjectExistence
 {
-    OE_Unchecked = ObjectCheckState::State_NoChange,
-    Unchecked_OE = ObjectCheckState::State_NoChange,
-    Present = ObjectCheckState::State_On,
-    Absent  = ObjectCheckState::State_Off,
+    OE_Unchecked = State_NoChange,
+    Unchecked_OE = State_NoChange,
+    Present = State_On,
+    Absent  = State_Off,
 };
 
 enum ObjectDifference
 {
-    OD_Unchecked = ObjectCheckState::State_NoChange,
-    Unchecked_OD = ObjectCheckState::State_NoChange,
-    DifferentContents = ObjectCheckState::State_On,
-    SameContents = ObjectCheckState::State_Off,
+    OD_Unchecked = State_NoChange,
+    Unchecked_OD = State_NoChange,
+    DifferentContents = State_On,
+    SameContents = State_Off,
 };
 
 }
 
-class ObjectItem : public QObject
+class CVSMODELSHARED_EXPORT ObjectItem : public QObject
 {
     Q_OBJECT
 public:

@@ -1,6 +1,8 @@
 #ifndef PROJECTSETTING_H
 #define PROJECTSETTING_H
 
+#include "cvsmodel_global.h"
+
 #include <QObject>
 #include <QMap>
 
@@ -16,7 +18,7 @@ namespace Access {
 class Application;
 }
 
-class ProjectSetting : public QObject
+class CVSMODELSHARED_EXPORT ProjectSetting : public QObject
 {
     Q_OBJECT
 public:

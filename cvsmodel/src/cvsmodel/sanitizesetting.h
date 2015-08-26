@@ -1,6 +1,8 @@
 #ifndef SANITIZESETTING_H
 #define SANITIZESETTING_H
 
+#include "cvsmodel_global.h"
+
 #include <QObject>
 #include <QTextStream>
 
@@ -10,7 +12,7 @@ class QTextEncoder;
 
 class CodecInfo;
 
-class SanitizeSetting : public QObject
+class CVSMODELSHARED_EXPORT SanitizeSetting : public QObject
 {
     Q_OBJECT
 public:

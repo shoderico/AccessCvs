@@ -1,6 +1,6 @@
 #include "gitmanager.h"
 
-#include "model/projectsetting.h"
+#include "cvsmodel/projectsetting.h"
 #include "util/fileutil.h"
 #include "qgit2.h"
 
