@@ -40,7 +40,8 @@ HEADERS += \
     addin/logfile.h \
     addin/interface/msaddndr.h \
     addin/interface/ribbon.h \
-    addin/interface/ribboncallback.h
+    addin/interface/ribboncallback.h \
+    addin/addincontroller.h
 
 #DISTFILES += \
 #    addin/addin.rc \
