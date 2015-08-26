@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 
     if (inputFile.isEmpty())
     {
-        qDebug() << QString("input file doesn't exist : %1").arg(inputFile);
+        qDebug() << QCoreApplication::translate("main", "inputfile doesn't exist : %1").arg(inputFile);
         return 1;
     }
 
