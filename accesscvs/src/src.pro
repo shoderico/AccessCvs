@@ -34,19 +34,10 @@ SOURCES += \
     addin/ribbon_i.c \
     addin/ribboncallback_i.c \
     ui/maindialog.cpp \
-    model/objectitem.cpp \
-    model/objectmodel.cpp \
-    model/objectsetting.cpp \
-    model/projectsetting.cpp \
-    model/objectitems.cpp \
-    model/sanitizesetting.cpp \
     addin/comutil.cpp \
     addin/logfile.cpp \
     view/checkboxitemdelegate.cpp \
     view/boolcheckboxitemdelegate.cpp \
-    model/tabledatasanitizesetting.cpp \
-    model/tabledefsanitizesetting.cpp \
-    model/objectproxymodel.cpp \
     git/gitmanager.cpp \
     ui/actionmanager.cpp \
     addin/addinutil.cpp \
@@ -70,20 +61,11 @@ HEADERS +=\
     addin/ribbon.h \
     addin/ribboncallback.h \
     ui/maindialog.h \
-    model/objectitem.h \
-    model/objectmodel.h \
     accesscvs_global.h \
-    model/objectsetting.h \
-    model/projectsetting.h \
-    model/objectitems.h \
-    model/sanitizesetting.h \
     addin/comutil.h \
     addin/logfile.h \
     view/checkboxitemdelegate.h \
     view/boolcheckboxitemdelegate.h \
-    model/tabledatasanitizesetting.h \
-    model/tabledefsanitizesetting.h \
-    model/objectproxymodel.h \
     git/gitmanager.h \
     ui/actionmanager.h \
     addin/addinutil.h \

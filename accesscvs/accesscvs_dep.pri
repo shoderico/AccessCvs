@@ -5,6 +5,7 @@ include($${PROJECT_ROOT}/accessutil/accessutil_inc.pri)
 include($${PROJECT_ROOT}/external/libqgit2_inc.pri)
 include($${PROJECT_ROOT}/external/qtsolutions_inc.pri)
 include($${PROJECT_ROOT}/resource/resource_inc.pri)
+include($${PROJECT_ROOT}/cvsmodel/cvsmodel_inc.pri)
 
 # directly dependent qt dlls for for this module
 DEP_DLLS_QT.files += \

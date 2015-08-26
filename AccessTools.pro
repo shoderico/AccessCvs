@@ -6,7 +6,8 @@ SUBDIRS += \
     accutil \
     accessutil \
     external \
-    resource
+    resource \
+    cvsmodel
 
 accesscvs.depends += util accessutil
 accutil.depends += accessutil
