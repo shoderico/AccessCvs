@@ -40,13 +40,19 @@ int main(int argc, char *argv[])
     qDebug() << "" << isSetCompactRepair;
     qDebug() << "" << inputFile;
 
-    if (isSetDecompile && !inputFile.isEmpty())
+    if (inputFile.isEmpty())
+    {
+        qDebug() << QString("input file doesn't exist : %1").arg(inputFile);
+        return 1;
+    }
+
+    if (isSetDecompile)
     {
         AccessUtil au;
         au.decompile(inputFile, 0);
     }
 
-    if (isSetCompactRepair && !inputFile.isEmpty())
+    if (isSetCompactRepair)
     {
         AccessUtil au;
         Access::Application *application = au.createAccessApplication();
