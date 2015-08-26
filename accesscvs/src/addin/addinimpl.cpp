@@ -2,19 +2,7 @@
 
 #include <QAxFactory>
 #include <QUuid>
-#include <QResource>
-#include <QFile>
-#include <QTextStream>
-
 #include <QDebug>
-
-#include "comutil.h"
-#include "addinutil.h"
-#include "ui/actionmanager.h"
-#include "git/gitmanager.h"
-#include "managers/accessutilmanager.h"
-#include "managers/windowwidgetmanager.h"
-
 
 #include "officelib/officelib.h"
 
@@ -27,10 +15,6 @@ AddInImpl::AddInImpl(QObject *parent)
     , m_applicationIDisp(0)
     , m_addInInstIDisp(0)
     , m_application(0)
-    , m_actionManager(0)
-    , m_gitManager(0)
-    , m_accessUtilManager(0)
-    , m_winWidgetManager(0)
 {
     HRESULT hr;
     ITypeLib *pTypeLib = NULL;
@@ -151,12 +135,7 @@ HRESULT AddInImpl::OnConnection(IDispatch *Application, ext_ConnectMode ConnectM
     Access::_Application *_application = new Access::_Application(m_applicationIDisp/*, this*/);
     m_application = new Access::Application(_application);
 
-    Q_INIT_RESOURCE(resource);
-
-    m_winWidgetManager = new WindowWidgetManager(m_application, this);
-    m_actionManager = new ActionManager(m_application, m_winWidgetManager, this);
-    m_gitManager = new GitManager(m_application, this);
-    m_accessUtilManager = new AccessUtilManager(m_application, m_winWidgetManager, this);
+    onConnectionEvent();
 
     // If we are connecting during startup, we should wait for OnStartupComplete
     // before modifying the user-interface and prompting the user. Otherwise, we
@@ -184,31 +163,7 @@ HRESULT AddInImpl::OnDisconnection(ext_DisconnectMode RemoveMode, SAFEARRAY **cu
    if (RemoveMode != ext_dm_HostShutdown)
        OnBeginShutdown(custom);
 
-   if (m_actionManager)
-   {
-       delete m_actionManager;
-       m_actionManager = 0;
-   }
-
-   if (m_gitManager)
-   {
-       delete m_gitManager;
-       m_gitManager = 0;
-   }
-
-   if (m_accessUtilManager)
-   {
-       delete m_accessUtilManager;
-       m_accessUtilManager = NULL;
-   }
-
-   if (m_winWidgetManager)
-   {
-       delete m_winWidgetManager;
-       m_winWidgetManager = 0;
-   }
-
-   Q_CLEANUP_RESOURCE(resource);
+   onDisconnectionEvent();
 
    if (m_application)
    {
@@ -285,15 +240,12 @@ HRESULT AddInImpl::GetCustomUI(BSTR RibbonID, BSTR *RibbonXml)
     if (!RibbonXml)
         return E_POINTER;
 
-    QResource resource(":/addin/ribbon.xml");
-    QFile file(resource.absoluteFilePath());
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    QString content = ribbomXml();
+    if ( content.isEmpty() )
     {
         qCritical() << "AddInImpl::GetCustomUI resource file open error";
         return E_OUTOFMEMORY;
     }
-    QTextStream in( &file );
-    QString content = in.readAll();
 
     *RibbonXml = SysAllocString( reinterpret_cast<const OLECHAR *>( content.utf16() ) );
 
@@ -325,30 +277,7 @@ HRESULT AddInImpl::ButtonClicked(IDispatch *ribbonControl)
     ::SysFreeString( bstrControlId );
     rc->Release();
 
-    if (controlId == "StandardManualButton")
-        m_actionManager->manual();
-    else if (controlId == "StandardExportButton")
-        m_actionManager->autoExport();
-    else if (controlId == "StandardImportButton")
-        m_actionManager->autoImport();
-
-    else if (controlId == "GitInitButton")
-        m_gitManager->init();
-    else if (controlId == "GitIgnoreButton")
-        m_gitManager->gitIgnore();
-    else if (controlId == "GitManageRemotesButton")
-        m_gitManager->manageRemotes();
-    else if (controlId == "GitPullButton")
-        m_gitManager->pull();
-
-    else if (controlId == "UtilDecompileButton")
-        m_accessUtilManager->decompile();
-    else if (controlId == "UtilCompactRepairButton")
-        m_accessUtilManager->compactRepair();
-    else if (controlId == "UtilDecompileAndCompactRepairButton")
-        m_accessUtilManager->decompileAndCompactRepair();
-
-    return S_OK;
+    return onButtonClicked( controlId );
 }
 
 HRESULT AddInImpl::GetButtonImage(IDispatch *ribbonControl, IPictureDisp **picture)
@@ -371,45 +300,16 @@ HRESULT AddInImpl::GetButtonImage(IDispatch *ribbonControl, IPictureDisp **pictu
     ::SysFreeString( bstrControlId );
     rc->Release();
 
-
-    // determine icon image path and size
-    QString imagePath = ":/images/";
-    QSize size(16,16);
-    // Standard
-    if ( controlId == "StandardManualButton")
-    {
-        imagePath += "manual.svg";
-        size = AddInUtil::ribbonIconSize(AddInUtil::Large);
-    }
-    else if ( controlId == "StandardExportButton")
-    {
-        imagePath += "export.svg";
-        size = AddInUtil::ribbonIconSize(AddInUtil::Large);
-    }
-    else if ( controlId == "StandardImportButton")
-    {
-        imagePath += "import.svg";
-        size = AddInUtil::ribbonIconSize(AddInUtil::Large);
-    }
-    // Git
-    else if ( controlId == "GitInitButton")
-    {
-        imagePath += "git-init.svg";
-        size = AddInUtil::ribbonIconSize(AddInUtil::Small);
-    }
-    else if ( controlId == "GitIgnoreButton")
-    {
-        imagePath += "git-update-gitignore.svg";
-        size = AddInUtil::ribbonIconSize(AddInUtil::Small);
-    }
-    else
-        return S_OK;
-
     // load picutre
-    IPictureDisp  *pd = ComUtil::loadPictureFromSvg( imagePath, size );
+    IPictureDisp  *pd = buttonImage( controlId );
 
     if ( pd )
         *picture = pd;
 
-   return S_OK;
+    return S_OK;
+}
+
+Access::Application *AddInImpl::application() const
+{
+    return m_application;
 }

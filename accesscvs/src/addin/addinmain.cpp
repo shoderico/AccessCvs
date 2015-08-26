@@ -1,13 +1,14 @@
 #include "addinmain.h"
 
-#include "addinimpl.h"
+#include "addinfactory.h"
 
-AddInMain::AddInMain(QObject *parent)
+AddInMain::AddInMain(AddInFactory *factory, QObject *parent)
     : QObject(parent)
+    , m_factory(factory)
 {
 }
 
 QAxAggregated *AddInMain::createAggregate()
 {
-    return new AddInImpl(this);
+    return m_factory->createAggregate(this);
 }

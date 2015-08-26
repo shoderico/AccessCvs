@@ -3,8 +3,11 @@
 
 #include <QAxFactory>
 
+class QAxAggregated;
+
 class AddInFactory : public QAxFactory
 {
+    Q_OBJECT
 public:
     AddInFactory(const QUuid &app, const QUuid &lib);
     ~AddInFactory();
@@ -19,8 +22,25 @@ public:
     void registerClass(const QString &key, QSettings *settings) const;
     void unregisterClass(const QString &key, QSettings *settings) const;
 
+    virtual QAxAggregated *createAggregate(QObject *parent = 0) = 0;
+
+protected:
+    void setClassName(const QString &className);
+    void setClassId(const QString &classId);
+    void setInterfaceId(const QString &interfaceId);
+    void setEventsId(const QString &eventsId);
+    void setFriendlyName(const QString &friendlyName);
+    void setDescription(const QString &description);
+
 private:
     QString m_className;
+    QString m_classId;
+    QString m_interfaceId;
+    QString m_eventsId;
+
+    QString m_friendlyName;
+    QString m_description;
+
     QString m_registryRoot;
     QString m_registryPath;
     QString progID() const;

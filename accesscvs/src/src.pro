@@ -39,11 +39,13 @@ SOURCES += \
     view/checkboxitemdelegate.cpp \
     view/boolcheckboxitemdelegate.cpp \
     git/gitmanager.cpp \
-    ui/actionmanager.cpp \
+    managers/actionmanager.cpp \
     addin/addinutil.cpp \
     managers/accessutilmanager.cpp \
     managers/windowwidgetmanager.cpp \
-    view/uiblocker.cpp
+    view/uiblocker.cpp \
+    cvsaddin/cvsaddinfactory.cpp \
+    cvsaddin/cvsaddinimpl.cpp
 
 #    util/comptr.cpp \
 #    util/getcomobject.cpp \
@@ -67,11 +69,13 @@ HEADERS +=\
     view/checkboxitemdelegate.h \
     view/boolcheckboxitemdelegate.h \
     git/gitmanager.h \
-    ui/actionmanager.h \
+    managers/actionmanager.h \
     addin/addinutil.h \
     managers/accessutilmanager.h \
     managers/windowwidgetmanager.h \
-    view/uiblocker.h
+    view/uiblocker.h \
+    cvsaddin/cvsaddinfactory.h \
+    cvsaddin/cvsaddinimpl.h
 
 #    util/comptr.h \
 #    util/getcomobject.h \

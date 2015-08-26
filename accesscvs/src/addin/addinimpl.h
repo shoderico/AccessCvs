@@ -9,11 +9,6 @@
 #include "ribboncallback.h"
 
 
-class ActionManager;
-class GitManager;
-class AccessUtilManager;
-class WindowWidgetManager;
-
 namespace Access {
 class Application;
 } // namespace Access
@@ -93,6 +88,15 @@ public:
         /* [in] */ IDispatch *ribbonControl,
         /* [retval][out] */ /* external definition not present */ IPictureDisp **picture);
 
+protected:
+    virtual void onConnectionEvent() = 0;
+    virtual void onDisconnectionEvent() = 0;
+    virtual QString ribbomXml() = 0;
+    virtual IPictureDisp *buttonImage(const QString &controlId) = 0;
+    virtual HRESULT onButtonClicked(const QString &controlId) = 0;
+
+    Access::Application *application() const;
+
 private:
     ITypeInfo *m_pTypeInfo;
 
@@ -100,11 +104,6 @@ private:
     IDispatch *m_addInInstIDisp;
 
     Access::Application *m_application;
-
-    ActionManager   *m_actionManager;
-    GitManager      *m_gitManager;
-    AccessUtilManager *m_accessUtilManager;
-    WindowWidgetManager *m_winWidgetManager;
 };
 
 #endif // ADDINIMPL_H
