@@ -5,6 +5,7 @@ CVSMODEL_FILES = $${ACCESSUTIL_BIN_DIR}/cvsmodel.dll
 LIBS +=          -L$${ACCESSUTIL_LIB_DIR}/ -lcvsmodel
 
 INCLUDEPATH += $${PROJECT_ROOT}/cvsmodel/src
+PRE_TARGETDEPS += $${CVSMODEL_LIB_DIR}/libcvsmodel.a
 
 # register dlls to module/external
 DEP_DLLS_MODULE.files += $${CVSMODEL_FILES}

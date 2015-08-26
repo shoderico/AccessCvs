@@ -5,6 +5,7 @@ RESOURCE_FILES = $${RESOURCE_BIN_DIR}/resource.dll
 LIBS +=          -L$${RESOURCE_LIB_DIR}/ -lresource
 
 INCLUDEPATH += $${PROJECT_ROOT}/resource/src
+PRE_TARGETDEPS += $${RESOURCE_LIB_DIR}/libresource.a
 
 # register dlls to module/external
 DEP_DLLS_MODULE.files += $${RESOURCE_FILES}

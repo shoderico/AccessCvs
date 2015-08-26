@@ -5,6 +5,7 @@ OFFICELIB_FILES   = $${OFFICELIB_BIN_DIR}/officelib.dll
 LIBS           += -L$${OFFICELIB_LIB_DIR}/ -lofficelib
 
 INCLUDEPATH += $${PROJECT_ROOT}/officelib/src
+PRE_TARGETDEPS += $${OFFICELIB_LIB_DIR}/libofficelib.a
 
 # register this module dll files to depenent module files
 DEP_DLLS_MODULE.files += $${OFFICELIB_FILES}

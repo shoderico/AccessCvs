@@ -5,6 +5,7 @@ ACCESSUTIL_FILES   = $${ACCESSUTIL_BIN_DIR}/accessutil.dll
 LIBS            += -L$${ACCESSUTIL_LIB_DIR}/ -laccessutil
 
 INCLUDEPATH += $${PROJECT_ROOT}/accessutil/src
+PRE_TARGETDEPS += $${ACCESSUTIL_LIB_DIR}/libaccessutil.a
 
 # register this module dll files to dependent module files
 DEP_DLLS_MODULE.files += $${ACCESSUTIL_FILES}

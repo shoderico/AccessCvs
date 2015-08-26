@@ -5,6 +5,7 @@ UTIL_FILES   = $${UTIL_BIN_DIR}/util.dll
 LIBS +=      -L$${UTIL_LIB_DIR}/ -lutil
 
 INCLUDEPATH += $${PROJECT_ROOT}/util/src
+PRE_TARGETDEPS += $${UTIL_LIB_DIR}/libutil.a
 
 # register this module dll files to dependent module files
 DEP_DLLS_MODULE.files += $${UTIL_FILES}
