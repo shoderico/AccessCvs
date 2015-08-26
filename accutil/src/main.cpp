@@ -12,18 +12,23 @@ int main(int argc, char *argv[])
     QCommandLineParser parser;
     parser.addHelpOption();
 
-    //
+    // decompile
     QCommandLineOption optDecompile(QStringList() << "d" << "decompile", QCoreApplication::translate("main", "Decompile"));
     parser.addOption(optDecompile);
 
-    //
+    // compact repair
     QCommandLineOption optCompactRepair(QStringList() << "c" << "compact", QCoreApplication::translate("main", "Compact and Repair"));
     parser.addOption(optCompactRepair);
 
-    //
+    // input file
     QCommandLineOption optInputFile(QStringList() << "i" << "input", QCoreApplication::translate("main", "Input file <inputfile>"), "inputfile");
     parser.addOption(optInputFile);
 
+    // TODO: clearConnection()
+    // TODO: removeLinkTables()
+    // TODO: clearWorkTables()
+    // TODO: export()
+    // TODO: import()
 
     parser.process(app);
 
