@@ -13,7 +13,6 @@ GetComObject::GetComObject(const QString &targetExeName, const QString &targetWi
     : m_targetExeName( targetExeName )
     , m_targetWndClassName( targetWindowClassName )
 {
-    CoInitialize( NULL );
 }
 
 QString GetComObject::tartgetExeName() const

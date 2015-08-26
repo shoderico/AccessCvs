@@ -4,6 +4,8 @@
 #include <QDebug>
 
 #include "accessutil/accessutil.h"
+//#include "officelib/officelib.h"
+#include <windows.h>
 
 int main(int argc, char *argv[])
 {
@@ -46,19 +48,29 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    AccessUtil au;
+    Access::Application *application = NULL;
+    if (CoInitialize( NULL ) != S_OK )
+        qDebug() << "CoInitialize is failed";
+
+
     if (isSetDecompile)
     {
-        AccessUtil au;
         au.decompile(inputFile, 0);
     }
 
     if (isSetCompactRepair)
     {
-        AccessUtil au;
-        Access::Application *application = au.createAccessApplication();
-        au.compactRepair(application, inputFile, 5);
-        au.quitAndDeleteApplication(application);
+        if (!application)
+            application = au.createAccessApplication();
+
+        au.compactRepair(application, inputFile, 2);
     }
 
+    // clean-up
+    if (application)
+        au.quitAndDeleteApplication(application);
+
+    CoUninitialize();
     return 0;
 }

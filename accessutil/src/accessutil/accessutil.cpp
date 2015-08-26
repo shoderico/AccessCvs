@@ -13,6 +13,7 @@
 #include <windows.h>
 #include <tlhelp32.h>
 #include <winuser.h>
+#include <oleacc.h>
 
 
 // http://www.codeproject.com/Questions/78801/How-to-get-the-main-thread-ID-of-a-process-known-b
@@ -90,8 +91,11 @@ bool AccessUtil::decompile(const QString &fileName, quint64 threadIdForAttachInp
 
     QProcess process;
     process.start(exePath, arguments);
+    bool quitted = false;
 
-    if (process.waitForStarted())
+    if ( !process.waitForStarted() )
+        qDebug() << "process.waitForStarted() timeout";
+    else
     {
 
         // find target hWnd and ProcessId
@@ -101,9 +105,20 @@ bool AccessUtil::decompile(const QString &fileName, quint64 threadIdForAttachInp
         // find from processId
         {
             quint64 targetProcessId = process.processId();
+            if ( !targetProcessId )
+                qDebug() << "process.processId() failed";
+
             targetThreadId = GetThreadIdFromProcessId( (DWORD)targetProcessId );
+            if ( !targetThreadId )
+                qDebug() << "GetThreadIdFromProcessId( (DWORD)targetProcessId ) failed";
+
             while (targetHwnd == NULL)
+            {
                 targetHwnd = GetWindowHandle(targetProcessId);
+                // this cause virus detection
+                //if (targetHwnd == NULL)
+                //    qDebug() << "GetWindowHandle(targetProcessId) failed. try again";
+            }
         }
         // find from hWnd
         if (false)
@@ -124,82 +139,77 @@ bool AccessUtil::decompile(const QString &fileName, quint64 threadIdForAttachInp
         {
 
             // attach input
-            BOOL ret = 0;
-            while (ret == 0)
-                ret = AttachThreadInput(currentThreadId, targetThreadId, TRUE);
+            if ( !AttachThreadInput(currentThreadId, targetThreadId, TRUE) )
+                qDebug() << "AttachThreadInput(currentThreadId, targetThreadId, TRUE) failed";
 
             // set focus
-            SetForegroundWindow(targetHwnd);
+            if ( !SetForegroundWindow(targetHwnd) )
+                qDebug() << "SetForegroundWindow(targetHwnd) failed";
             SetFocus(targetHwnd);
-
 
             QAxObject *application = NULL;
 
             BYTE keyStateSrc[256];
             BYTE keyStateDst[256];
-            if ( GetKeyboardState(keyStateSrc) && GetKeyboardState(keyStateDst) )
+            if ( !( GetKeyboardState(keyStateSrc) && GetKeyboardState(keyStateDst) ) )
+                qDebug() << "GetKeyboardState(keyStateSrc) && GetKeyboardState(keyStateDst) failed";
+            else
             {
                 // simulate Shift key pressed
                 keyStateDst[VK_SHIFT] = 0x80;
-                SetKeyboardState(keyStateDst);
+                if ( !SetKeyboardState(keyStateDst) )
+                    qDebug() << "SetKeyboardState(keyStateDst) failed";
 
                 // wait for boot complete
-
-                // This is ugly.
-                //Sleep(1000);
-
-                // This is too short.
-                /*
-                HANDLE processHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, processId);
-                WaitForInputIdle( processHandle, 5000 );
-                CloseHandle(processHandle);
-                */
-
-                // Get com object and compare its' file path. it works.
-                GetComObject gco("MSACCESS.EXE", "OMain");
-                bool found = false;
-                while (!found)
                 {
-                    QList<QAxObject*> objects = gco.getComObjects();
-                    //qDebug() << "objects.count()" << objects.count();
-                    if (objects.count() == 2) found = true;
-                    foreach (QAxObject *object, objects)
+                    IDispatch *pIDispatch = NULL; // MIDL_INTERFACE("00020400-0000-0000-c000-000000000046")
+                    HRESULT hr = AccessibleObjectFromWindow( targetHwnd, OBJID_NATIVEOM, IID_IDispatch, (void**)&pIDispatch );
+                    if ( hr != S_OK )
+                        qDebug() << "AccessibleObjectFromWindow(targetHwnd, ...) failed";
+                    else
                     {
-                        QAxObject *currentProject = object->querySubObject("CurrentProject()");
-                        if (currentProject)
-                        {
-                            QString fullName = currentProject->property("FullName").toString();
+                        application = new QAxObject( pIDispatch );
+                        pIDispatch->Release();
 
-                            if (fullName.toUpper() == QString(fileName).toUpper())
+                        bool found = false;
+                        while (!found)
+                        {
+                            QAxObject *currentProject = application->querySubObject("CurrentProject()");
+                            if (currentProject)
                             {
-                                found = true;
-                                application = object;
+                                QString fullName = currentProject->property("FullName").toString();
+                                delete currentProject;
+
+                                if (fullName.toUpper() == fileName.toUpper())
+                                    found = true;
                             }
-                            delete currentProject;
-                        }
-                        if (object != application)
-                            delete object;
+                        } // while (!found)
                     }
                 }
 
                 // restore keyboard state
-                SetKeyboardState(keyStateSrc);
+                if ( !SetKeyboardState(keyStateSrc) )
+                    qDebug() << "SetKeyboardState(keyStateSrc) failed";
             }
 
             // detach input
-            AttachThreadInput(currentThreadId, targetThreadId, FALSE);
+            if ( !AttachThreadInput(currentThreadId, targetThreadId, FALSE) )
+                qDebug() << "AttachThreadInput(currentThreadId, targetThreadId, FALSE) failed";
 
             // quit
             if (application)
             {
                 application->dynamicCall("Quit()");
                 delete application;
+                quitted = true;
             }
         }
     }
 
-    if (process.state() == QProcess::Running)
+    if (!quitted && process.state() == QProcess::Running)
+    {
         process.terminate();
+    }
     process.waitForFinished();
 
     return true;

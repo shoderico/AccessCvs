@@ -6,10 +6,13 @@
 
 QT += core
 QT -= gui
+#QT += axcontainer
 
 TARGET = accutil
 CONFIG += console
 CONFIG -= app_bundle
+
+LIBS += -lole32
 
 TEMPLATE = app
 
