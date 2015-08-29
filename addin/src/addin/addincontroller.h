@@ -15,7 +15,7 @@ public:
     virtual void initialize(Access::Application *application, QWidget *parentWidget);
 
     virtual QString ribbonXml() = 0;
-    virtual QString imagePath() = 0;
+    virtual bool imagePath(const QString &controlId, QString &imagePath, QSize &size) = 0;
     virtual bool handleButtonClick(const QString &controlId) = 0;
 };
 

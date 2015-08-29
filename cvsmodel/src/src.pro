@@ -1,4 +1,4 @@
-QT += gui
+QT -= gui
 QT += concurrent
 QT += axcontainer
 

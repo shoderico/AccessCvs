@@ -8,6 +8,7 @@ class CvsAddInFactory : public AddInFactory
     Q_OBJECT
 public:
     CvsAddInFactory(const QUuid &app, const QUuid &lib);
+    ~CvsAddInFactory();
 
     virtual QAxAggregated *createAggregate(QObject *parent = 0);
 };

@@ -5,6 +5,8 @@ CONFIG += dll
 TARGET = util
 TEMPLATE = lib
 
+DEFINES += UTIL_LIBRARY
+
 LIBS += -loleacc
 
 HEADERS += \
@@ -17,10 +19,8 @@ HEADERS += \
     util/getcomobject.h \
     util/progressnotifier.h \
     util/officeutil.h \
-    util/threadedinvoker.h
-
-DEFINES += UTIL_LIBRARY
-
+    util/threadedinvoker.h \
+    util/logfile.h
 
 SOURCES += \
     util/codecinfo.cpp \
@@ -31,7 +31,8 @@ SOURCES += \
     util/getcomobject.cpp \
     util/progressnotifier.cpp \
     util/officeutil.cpp \
-    util/threadedinvoker.cpp
+    util/threadedinvoker.cpp \
+    util/logfile.cpp
 
 include(../../common.pri)
 include(../../submodule.pri)

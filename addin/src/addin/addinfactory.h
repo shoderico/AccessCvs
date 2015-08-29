@@ -25,6 +25,8 @@ public:
     void unregisterClass(const QString &key, QSettings *settings) const;
 
     virtual QAxAggregated *createAggregate(QObject *parent = 0) = 0;
+    virtual void onBeforeConnectionEvent();
+    virtual void onAfterDisconnectionEvent();
 
 protected:
     void setClassName(const QString &className);

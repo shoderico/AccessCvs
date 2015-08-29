@@ -1,6 +1,7 @@
 #include "cvsaddinfactory.h"
 
 #include "cvsaddinimpl.h"
+#include "util/logfile.h"
 
 static const char LibraryID[]     = "{27e3bd9e-2ee3-41ba-a69d-61f510fda820}";
 static const char ApplicationID[] = "{18bf0f9a-c557-4324-b5d8-f4077561a87e}";
@@ -20,11 +21,24 @@ CvsAddInFactory::CvsAddInFactory(const QUuid &app, const QUuid &lib)
     // FIXME: proper friendlyName and description
     setFriendlyName( tr("FriendlyName") );
     setDescription( tr("Description"));
+
+    // log qDebug() output
+    (void)new LogFile( serverDirPath() + "\\log", "log_", false );
+    qInstallMessageHandler(LogFile::MessageOutput);
+}
+
+CvsAddInFactory::~CvsAddInFactory()
+{
+    delete LogFile::instance();
 }
 
 QAxAggregated *CvsAddInFactory::createAggregate(QObject *parent)
 {
     return new CvsAddInImpl(parent);
 }
+
+// onAddInImplConnection : init Resource
+
+// onAddInImplDisconnection : release Resource
 
 QAXFACTORY_EXPORT(CvsAddInFactory, LibraryID, ApplicationID)

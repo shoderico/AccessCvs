@@ -3,16 +3,17 @@
 
 #include "addin/addinimpl.h"
 
-class ActionManager;
-class GitManager;
-class AccessUtilManager;
 class WindowWidgetManager;
+class AddInController;
+class AddInFactory;
 
 class CvsAddInImpl : public AddInImpl
 {
     Q_OBJECT
 public:
-    explicit CvsAddInImpl(QObject *parent = 0);
+    explicit CvsAddInImpl(AddInFactory *factory, QObject *parent = 0);
+
+    void appendController(AddInController *controller);
 
 protected:
     virtual void onConnectionEvent();
@@ -22,10 +23,8 @@ protected:
     virtual HRESULT onButtonClicked(const QString &controlId);
 
 private:
-    ActionManager       *m_actionManager;
-    GitManager          *m_gitManager;
-    AccessUtilManager   *m_accessUtilManager;
-    WindowWidgetManager *m_winWidgetManager;
+    WindowWidgetManager     *m_winWidgetManager;
+    QList<AddInController *> m_controllers;
 };
 
 #endif // CVSADDINIMPL_H

@@ -10,6 +10,7 @@
 #include "interface/ribbon.h"
 #include "interface/ribboncallback.h"
 
+class AddInFactory;
 
 namespace Access {
 class Application;
@@ -24,7 +25,7 @@ class ADDINSHARED_EXPORT AddInImpl
 {
     Q_OBJECT
 public:
-    explicit AddInImpl(QObject *parent = 0);
+    explicit AddInImpl(AddInFactory *factory, QObject *parent = 0);
 
     long queryInterface(const QUuid &iid, void **iface);
 
@@ -106,6 +107,7 @@ private:
     IDispatch *m_addInInstIDisp;
 
     Access::Application *m_application;
+    AddInFactory *m_factory;
 };
 
 #endif // ADDINIMPL_H

@@ -6,15 +6,18 @@
 
 #include "officelib/officelib.h"
 
+#include "addinfactory.h"
+
 //#include <comdef.h>
 //_COM_SMARTPTR_TYPEDEF(ITypeInfo, __uuidof(ITypeInfo));
 
 
-AddInImpl::AddInImpl(QObject *parent)
+AddInImpl::AddInImpl(AddInFactory *factory, QObject *parent)
     : QObject(parent)
     , m_applicationIDisp(0)
     , m_addInInstIDisp(0)
     , m_application(0)
+    , m_factory(factory)
 {
     HRESULT hr;
     ITypeLib *pTypeLib = NULL;
@@ -135,6 +138,7 @@ HRESULT AddInImpl::OnConnection(IDispatch *Application, ext_ConnectMode ConnectM
     Access::_Application *_application = new Access::_Application(m_applicationIDisp/*, this*/);
     m_application = new Access::Application(_application);
 
+    m_factory->onBeforeConnectionEvent();
     onConnectionEvent();
 
     // If we are connecting during startup, we should wait for OnStartupComplete
@@ -164,6 +168,7 @@ HRESULT AddInImpl::OnDisconnection(ext_DisconnectMode RemoveMode, SAFEARRAY **cu
        OnBeginShutdown(custom);
 
    onDisconnectionEvent();
+   m_factory->onAfterDisconnectionEvent();
 
    if (m_application)
    {

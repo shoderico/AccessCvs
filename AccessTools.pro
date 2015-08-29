@@ -1,6 +1,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
+    officelib \
     util \
     accesscvs \
     accutil \
@@ -8,12 +9,33 @@ SUBDIRS += \
     external \
     resource \
     cvsmodel \
-    addin
+    addin \
+    accessutilcontroller \
+    cvscontroller \
+    gitcontroller \
+    view \
+    addinutil \
+    comutil
 
-accesscvs.depends += util accessutil cvsmodel resource addin
+# model layer
+cvsmodel.depends   += util officelib
+accessutil.depends += util officelib
+
+# controller layer
+cvscontroller.depends        += view addinutil cvsmodel
+gitcontroller.depends        += view addinutil cvsmodel
+accessutilcontroller.depends += view addinutil accessutil
+
+# addin layer
+addin.depends     += officelib
+accesscvs.depends += resource addin \
+                     cvscontroller gitcontroller accessutilcontroller \
+                     comutil
+
+# cli layer
 accutil.depends += accessutil
-accessutil.depdens += util
-cvsmodel.depends += util
+
+
 
 OTHER_FILES += \
     common.pri \

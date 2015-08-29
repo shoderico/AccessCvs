@@ -1,7 +1,6 @@
 #include "addinfactory.h"
 
 #include "addinmain.h"
-#include "logfile.h"
 
 #include <QDebug>
 #include <QSettings>
@@ -15,13 +14,10 @@ AddInFactory::AddInFactory(const QUuid &app, const QUuid &lib)
     , m_registryRoot( QLatin1String("HKEY_CURRENT_USER\\Software") )
     , m_registryPath( QLatin1String("\\Microsoft\\Office\\Access\\Addins") )
 {
-    (void)new LogFile( serverDirPath() + "\\log", "log_", false );
-    qInstallMessageHandler(LogFile::MessageOutput);
 }
 
 AddInFactory::~AddInFactory()
 {
-    delete LogFile::instance();
 }
 
 QStringList AddInFactory::featureList() const
@@ -41,7 +37,7 @@ const QMetaObject *AddInFactory::metaObject(const QString &key) const
 QObject *AddInFactory::createObject(const QString &key)
 {
     if (key == m_className)
-        return  new AddInMain(this);
+        return  new AddInMain(this, this);
     return 0;
 }
 
@@ -80,6 +76,16 @@ void AddInFactory::unregisterClass(const QString &key, QSettings *settings) cons
 
     unregisterClassInternal(key, ws32bit);
     //if ( is64bit() ) unregisterClassInternal(key, ws64bit);
+}
+
+void AddInFactory::onBeforeConnectionEvent()
+{
+
+}
+
+void AddInFactory::onAfterDisconnectionEvent()
+{
+
 }
 
 void AddInFactory::setClassName(const QString &className)
