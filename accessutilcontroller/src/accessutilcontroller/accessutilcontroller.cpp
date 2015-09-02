@@ -14,8 +14,8 @@ AccessUtilController::AccessUtilController(QObject *parent)
     : QObject(parent)
     , m_application(0)
     , m_parentWidget(0)
-    , m_threadedInvoker(0)
     , m_uiBlocker(0)
+    , m_threadedInvoker(0)
 {
 }
 
@@ -67,6 +67,9 @@ QString AccessUtilController::ribbonXml()
 
 bool AccessUtilController::imagePath(const QString &controlId, QString &imagePath, QSize &size)
 {
+    Q_UNUSED(controlId)
+    Q_UNUSED(imagePath)
+    Q_UNUSED(size)
     return false;
 }
 
