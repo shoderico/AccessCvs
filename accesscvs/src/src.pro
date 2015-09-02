@@ -16,14 +16,12 @@ DEFINES += ACCESSCVS_LIBRARY
 DEFINES += QT_MESSAGELOGCONTEXT
 
 SOURCES += \
-    cvsaddin/cvsaddinfactory.cpp \
-    cvsaddin/cvsaddinimpl.cpp \
-    managers/windowwidgetmanager.cpp
+    cvsaddin/cvsaddinfactory.cpp
+#    cvsaddin/cvsaddinimpl.cpp
 
 HEADERS +=\
-    cvsaddin/cvsaddinfactory.h \
-    cvsaddin/cvsaddinimpl.h \
-    managers/windowwidgetmanager.h
+    cvsaddin/cvsaddinfactory.h
+#    cvsaddin/cvsaddinimpl.h
 
 OTHER_FILES += \
     cvsaddin/ribbon.xml

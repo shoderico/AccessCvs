@@ -11,6 +11,8 @@ public:
     ~CvsAddInFactory();
 
     virtual QAxAggregated *createAggregate(QObject *parent = 0);
+    virtual void onBeforeConnectionEvent();
+    virtual void onAfterDisconnectionEvent();
 };
 
 #endif // CVSADDINFACTORY_H

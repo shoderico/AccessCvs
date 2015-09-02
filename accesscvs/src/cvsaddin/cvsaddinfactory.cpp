@@ -1,7 +1,12 @@
 #include "cvsaddinfactory.h"
 
-#include "cvsaddinimpl.h"
 #include "util/logfile.h"
+//#include "cvsaddinimpl.h"
+#include "addin/addincontrollerimpl.h"
+
+#include "cvscontroller/cvscontroller.h"
+#include "gitcontroller/gitcontroller.h"
+#include "accessutilcontroller/accessutilcontroller.h"
 
 static const char LibraryID[]     = "{27e3bd9e-2ee3-41ba-a69d-61f510fda820}";
 static const char ApplicationID[] = "{18bf0f9a-c557-4324-b5d8-f4077561a87e}";
@@ -34,7 +39,21 @@ CvsAddInFactory::~CvsAddInFactory()
 
 QAxAggregated *CvsAddInFactory::createAggregate(QObject *parent)
 {
-    return new CvsAddInImpl(parent);
+    AddInControllerImpl *addInImpl = new AddInControllerImpl(this, parent);
+    addInImpl->appendController( new CvsController(this) );
+    addInImpl->appendController( new GitController(this) );
+    addInImpl->appendController( new AccessUtilController(this) );
+    return addInImpl;
+}
+
+void CvsAddInFactory::onBeforeConnectionEvent()
+{
+    Q_INIT_RESOURCE(resource);
+}
+
+void CvsAddInFactory::onAfterDisconnectionEvent()
+{
+    Q_CLEANUP_RESOURCE(resource);
 }
 
 // onAddInImplConnection : init Resource
