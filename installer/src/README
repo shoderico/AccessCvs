@@ -1,0 +1,29 @@
+1. Prepare package directory
+
+packages/com.shoderitz.AccessCvs/
+    data/
+        <place all files to be installed here>
+        AccessCvs.dll
+        Qt5Core.dll
+        ...
+
+    meta/
+        package.xml
+        installscript.qs
+        ...
+
+
+2. Build installer
+
+Build this project.
+
+
+3. Make repository with repogen.exe
+
+cd AccessCvsInstaller
+/ifw-install-dir/repogen.exe -p packages/ repository/
+
+
+4. Upload repository
+
+Upload all files under repository/ to web server.

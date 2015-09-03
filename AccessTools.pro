@@ -15,7 +15,8 @@ SUBDIRS += \
     gitcontroller \
     view \
     addinutil \
-    comutil
+    comutil \
+    installer
 
 # model layer
 cvsmodel.depends   += util officelib
@@ -35,7 +36,8 @@ accesscvs.depends += resource addin \
 # cli layer
 accutil.depends += accessutil
 
-
+# installer layer
+installer.depends += accutil accesscvs
 
 OTHER_FILES += \
     common.pri \
