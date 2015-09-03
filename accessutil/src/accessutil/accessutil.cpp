@@ -232,7 +232,14 @@ bool AccessUtil::compactRepair(Access::Application *application, const QString &
         }
         while ( QFile(destinationFile).exists() );
 
-        application->CompactRepair( sourceFile, destinationFile, "");
+        // workaround for error 'Cannot open any more tables.'
+        if (i > 0)
+        {
+            openCurrentDatabase( application, sourceFile );
+            application->CloseCurrentDatabase();
+        }
+
+        application->CompactRepair( sourceFile, destinationFile );
 
         if (i > 0)
             QFile(sourceFile).remove();
