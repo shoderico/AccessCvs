@@ -28,10 +28,10 @@ gitcontroller.depends        += view addinutil cvsmodel
 accessutilcontroller.depends += view addinutil accessutil
 
 # addin layer
-addin.depends     += officelib
+addin.depends     += officelib comutil
 accesscvs.depends += resource addin \
-                     cvscontroller gitcontroller accessutilcontroller \
-                     comutil
+                     cvscontroller gitcontroller accessutilcontroller
+
 
 # cli layer
 accutil.depends += accessutil
