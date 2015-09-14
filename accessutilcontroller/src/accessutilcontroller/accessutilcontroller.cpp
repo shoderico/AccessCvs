@@ -140,7 +140,7 @@ void AccessUtilController::doCompactRepair()
         m_application->CloseCurrentDatabase();
 
         AccessUtil au;
-        au.compactRepair(m_application, fileName, 3);
+        au.compactRepair(m_application, fileName, 1);
 
         au.openCurrentDatabase(m_application, fileName);
     }
@@ -157,7 +157,7 @@ void AccessUtilController::doDecompileAndCompactRepair()
         AccessUtil au;
         quint64 currentThreadId = au.getAccessThreadId(m_application);
         au.decompile(fileName, currentThreadId);
-        au.compactRepair(m_application, fileName, 3);
+        au.compactRepair(m_application, fileName, 1);
 
         au.openCurrentDatabase(m_application, fileName);
     }
