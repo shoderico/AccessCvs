@@ -21,13 +21,6 @@ void BoolCheckBoxItemDelegate::paint(QPainter *painter, const QStyleOptionViewIt
     QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
     style->drawControl(QStyle::CE_ItemViewItem, &opt, painter, opt.widget);
 
-    /*
-    // table only
-    const QModelIndex index_type = index.model()->index( index.row(), ObjectModel::ObjectTypeColumn );
-    int objectType = index.model()->data(index_type).toInt();
-    if (objectType != Model::TableDef)
-        return;
-    */
     if ( !paintRequired(index) )
         return;
 
@@ -47,16 +40,6 @@ void BoolCheckBoxItemDelegate::paint(QPainter *painter, const QStyleOptionViewIt
 
 bool BoolCheckBoxItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
-    Q_ASSERT(event);
-    Q_ASSERT(model);
-
-    /*
-    // table only
-    QModelIndex index_type = model->index( index.row(), ObjectModel::ObjectTypeColumn );
-    int objectType = model->data(index_type).toInt();
-    if (objectType != Model::TableDef)
-        return false;
-    */
     if ( !editAvaiable(model, index) )
         return false;
 

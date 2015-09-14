@@ -10,6 +10,7 @@ class VIEWSHARED_EXPORT CheckBoxItemDelegate : public QStyledItemDelegate
     Q_OBJECT
 public:
     explicit CheckBoxItemDelegate(QObject *parent = 0);
+    explicit CheckBoxItemDelegate(const int stateNoChange, const int stateOn, const int stateOff, QObject *parent = 0);
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
