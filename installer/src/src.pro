@@ -53,8 +53,8 @@ QMAKE_PRE_LINK =
 INPUT = $${SRC_CONFIG_FILE} \
         $${SRC_PACKAGES_DIR}
 
-#INSTALLER_OPTION = --online-only
-INSTALLER_OPTION = --offline-only
+INSTALLER_OPTION = --online-only
+#INSTALLER_OPTION = --offline-only
 
 installer.input     = INPUT
 installer.output    = $${INSTALLER}
