@@ -1158,6 +1158,9 @@ struct UpdateItemsDifferenceAsIsFunctionObject : public BaseFunctionObject
         if ( item->isModified() )
             return;
 
+        if ( item->objectType() == Model::TableDef )
+            return;
+
         bool isDifferent;
         m_os->compareTempDir( item->name(), &isDifferent );
         if ( isDifferent )
