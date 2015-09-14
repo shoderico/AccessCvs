@@ -71,6 +71,12 @@ QString AccessUtilController::ribbonXml()
             "   onAction=\"ButtonClicked\" "
             "   getImage=\"GetButtonImage\" "
             "   /> "
+            "<button id=\"UtilOpenInConsoleButton\" "
+            "   size=\"normal\" "
+            "   label=\"Open in Console\" "
+            "   onAction=\"ButtonClicked\" "
+            "   getImage=\"GetButtonImage\" "
+            "   /> "
         "</group>"
         ;
     return content;
@@ -95,6 +101,8 @@ bool AccessUtilController::handleButtonClick(const QString &controlId)
 
     else if (controlId == "UtilOpenInExplorerButton")
         openInExplorer();
+    else if (controlId == "UtilOpenInConsoleButton")
+        openInConsole();
 
     else
         return false;
@@ -146,6 +154,27 @@ void AccessUtilController::openInExplorer()
     QString command = explorer + " " + param;
     QProcess::startDetached(command);
 
+}
+
+void AccessUtilController::openInConsole()
+{
+    QString fileName;
+    if (!getCurrentFileName(fileName))
+        return;
+
+    QString driveLetter;
+    QStringList drives = fileName.split(':');
+    if (drives.length() > 0)
+        driveLetter = drives[ 0 ];
+    if (driveLetter.isEmpty())
+        return;
+
+    const QString cmd = "cmd.exe";
+
+    QString param;
+    param += QDir::toNativeSeparators( QFileInfo(fileName).absolutePath()  );
+    QString command = cmd + " /k " + driveLetter + ": && cd " + param;
+    QProcess::startDetached(command);
 }
 
 void AccessUtilController::doDecompile()
