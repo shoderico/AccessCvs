@@ -26,8 +26,8 @@ public:
     ~MainDialog();
 
     void showAsManual();
-    void showAsAutoExport();
-    void showAsAutoImport();
+    void showAsAutoExport(const bool clearCache);
+    void showAsAutoImport(const bool clearCache);
     enum ShowMode
     {
         ManualMode,

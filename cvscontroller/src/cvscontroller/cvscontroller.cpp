@@ -53,6 +53,18 @@ QString CvsController::ribbonXml()
             "   onAction=\"ButtonClicked\" "
             "   getImage=\"GetButtonImage\" "
             "   /> "
+            "<button id=\"StandardClearCacheAndExportButton\" "
+            "   size=\"normal\" "
+            "   label=\"Clear Cache &amp;&amp; Export\" "
+            "   onAction=\"ButtonClicked\" "
+            "   getImage=\"GetButtonImage\" "
+            "   /> "
+            "<button id=\"StandardClearCacheAndImportButton\" "
+            "   size=\"normal\" "
+            "   label=\"Clear Cache &amp;&amp; Import\" "
+            "   onAction=\"ButtonClicked\" "
+            "   getImage=\"GetButtonImage\" "
+            "   /> "
         "</group>"
         ;
     return content;
@@ -76,6 +88,16 @@ bool CvsController::imagePath(const QString &controlId, QString &imagePath, QSiz
         imagePath = ":/images/import.svg";
         size = AddInUtil::ribbonIconSize(AddInUtil::Large);
     }
+    else if ( controlId == "StandardClearCacheAndExportButton")
+    {
+        imagePath = ":/images/export.svg";
+        size = AddInUtil::ribbonIconSize(AddInUtil::Small);
+    }
+    else if ( controlId == "StandardClearCacheAndImportButton")
+    {
+        imagePath = ":/images/import.svg";
+        size = AddInUtil::ribbonIconSize(AddInUtil::Small);
+    }
     else
         return false;
 
@@ -90,6 +112,10 @@ bool CvsController::handleButtonClick(const QString &controlId)
         autoExport();
     else if (controlId == "StandardImportButton")
         autoImport();
+    else if (controlId == "StandardClearCacheAndExportButton")
+        clearCacheAndExport();
+    else if (controlId == "StandardClearCacheAndImportButton")
+        clearCacheAndImport();
     else
         return false;
     return true;
@@ -102,12 +128,22 @@ void CvsController::manual()
 
 void CvsController::autoImport()
 {
-    m_dlg->showAsAutoImport();
+    m_dlg->showAsAutoImport(false);
 }
 
 void CvsController::autoExport()
 {
-    m_dlg->showAsAutoExport();
+    m_dlg->showAsAutoExport(false);
+}
+
+void CvsController::clearCacheAndImport()
+{
+    m_dlg->showAsAutoImport(true);
+}
+
+void CvsController::clearCacheAndExport()
+{
+    m_dlg->showAsAutoExport(true);
 }
 
 void CvsController::init()

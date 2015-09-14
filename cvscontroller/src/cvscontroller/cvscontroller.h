@@ -30,6 +30,9 @@ public:
     void autoImport();
     void autoExport();
 
+    void clearCacheAndExport();
+    void clearCacheAndImport();
+
 signals:
 
 public slots:
