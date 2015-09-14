@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
         if (!application)
             application = au.createAccessApplication();
 
-        au.compactRepair(application, inputFile, 2);
+        au.compactRepair(application, inputFile, 1);
     }
 
     // clean-up

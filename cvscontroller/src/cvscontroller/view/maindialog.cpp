@@ -35,9 +35,9 @@ MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
 
     ui->treeView->setModel(m_proxyModel);
     ui->treeView->setIndentation(0);
-    ui->treeView->setItemDelegateForColumn( ObjectModel::InProjectColumn,     new CheckBoxItemDelegate() );
-    ui->treeView->setItemDelegateForColumn( ObjectModel::InSourceDirColumn,  new CheckBoxItemDelegate() );
-    ui->treeView->setItemDelegateForColumn( ObjectModel::DifferentColumn,     new CheckBoxItemDelegate() );
+    ui->treeView->setItemDelegateForColumn( ObjectModel::InProjectColumn,     new CheckBoxItemDelegate(Model::State_NoChange, Model::State_On, Model::State_Off) );
+    ui->treeView->setItemDelegateForColumn( ObjectModel::InSourceDirColumn,   new CheckBoxItemDelegate(Model::State_NoChange, Model::State_On, Model::State_Off) );
+    ui->treeView->setItemDelegateForColumn( ObjectModel::DifferentColumn,     new CheckBoxItemDelegate(Model::State_NoChange, Model::State_On, Model::State_Off) );
     ui->treeView->setItemDelegateForColumn( ObjectModel::HasDataColumn,       new BoolCheckBoxItemDelegate() );
     ui->treeView->setColumnWidth(ObjectModel::InProjectColumn,    35);
     ui->treeView->setColumnWidth(ObjectModel::InSourceDirColumn, 35);
@@ -163,7 +163,7 @@ void MainDialog::showAsManual()
     show();
 }
 
-void MainDialog::showAsAutoExport()
+void MainDialog::showAsAutoExport(const bool clearCache)
 {
     m_showMode = AutoExportMode;
     ui->executeExportButton->hide();
@@ -171,13 +171,18 @@ void MainDialog::showAsAutoExport()
     ui->okButton->setText(tr("Export"));
     show();
 
+    if (clearCache)
+    {
+        m_model->selectItems(ObjectModel::AllItems, true /*selected*/, true /*resetSelection*/ );
+        m_model->clearItemsCache();
+    }
     prepareExport();
 
     if (m_proxyModel->rowCount() == 0)
         accept();
 }
 
-void MainDialog::showAsAutoImport()
+void MainDialog::showAsAutoImport(const bool clearCache)
 {
     m_showMode = AutoImportMode;
     ui->executeExportButton->hide();
@@ -185,6 +190,11 @@ void MainDialog::showAsAutoImport()
     ui->okButton->setText(tr("Import"));
     show();
 
+    if (clearCache)
+    {
+        m_model->selectItems(ObjectModel::AllItems, true /*selected*/, true /*resetSelection*/ );
+        m_model->clearItemsCache();
+    }
     prepareImport();
 
     if (m_proxyModel->rowCount() == 0)

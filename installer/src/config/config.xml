@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <!-- Name of the product being installed. This is mandatory. -->
+    <Name>AccessCvs</Name>
+
+    <!-- Version of the product being installed in the following
+         format: [0-9]+((\.|-)[0-9]+)* such as 1-1; 1.2-2; 3.4.7.
+         This is mandatory.	-->
+    <Version>1.0.1</Version>
+
+    <!-- Name of the installer as displayed on the title bar. -->
+    <Title>AccessCvs </Title>
+
+    <!-- Publisher of the software (as shown in the Windows Control Panel). -->
+    <Publisher>shoderitz.com</Publisher>
+
+    <!-- URL to a page that contains product information on your web site. -->
+    <ProductUrl>http://shoderitz.com</ProductUrl>
+
+    <!-- Filename for a custom window icon in PNG format for the Installer application.
+    <InstallerWindowIcon>installericon</InstallerWindowIcon>
+    -->
+
+    <!-- Filename for a custom installer icon. The actual file is looked up
+         by attaching a '.icns' (OS X), '.ico' (Windows). No functionality on Unix.
+    <InstallerApplicationIcon>installericon</InstallerApplicationIcon>
+    -->
+	
+    <!-- Filename for a logo used as QWizard::LogoPixmap.
+    <Logo>logo.png</Logo>
+    -->
+	
+    <!-- Filename for a watermark used as QWizard::WatermarkPixmap.
+    <Watermark>watermark.png</Watermark>
+    -->
+
+    <!--
+    <RunProgram>@TargetDir@/YourAppToRun</RunProgram>
+    <RunProgramArguments>
+        <Argument>Argument 1</Argument>
+        <Argument>Argument 2</Argument>
+    </RunProgramArguments>
+    <RunProgramDescription>My nice application</RunProgramDescription>
+    -->
+    <!--
+    -->
+    <StartMenuDir>AccessCvs</StartMenuDir>
+    <TargetDir>@ApplicationsDir@/AccessCvs</TargetDir>
+
+    <RemoteRepositories>
+        <Repository>
+            <Url>http://apprepos.shoderitz.com:9081/apprepos/accesscvs</Url>
+        </Repository>
+    </RemoteRepositories>
+</Installer>

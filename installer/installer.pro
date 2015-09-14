@@ -4,5 +4,4 @@ SUBDIRS += \
     src
 
 OTHER_FILES += \
-    accutil_dep.pri \
-    accutil_inc.pri
+    installer_dep.pri

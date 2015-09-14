@@ -11,12 +11,14 @@ DEFINES += CVSCONTROLLER_LIBRARY
 
 SOURCES += \
     cvscontroller/cvscontroller.cpp \
-    cvscontroller/view/maindialog.cpp
+    cvscontroller/view/maindialog.cpp \
+    cvscontroller/view/hasdatacolumnitemdelegate.cpp
 
 HEADERS += \
     cvscontroller/cvscontroller_global.h \
     cvscontroller/cvscontroller.h \
-    cvscontroller/view/maindialog.h
+    cvscontroller/view/maindialog.h \
+    cvscontroller/view/hasdatacolumnitemdelegate.h
 
 FORMS += \
     cvscontroller/view/maindialog.ui

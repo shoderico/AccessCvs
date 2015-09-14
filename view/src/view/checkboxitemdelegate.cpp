@@ -11,6 +11,15 @@ CheckBoxItemDelegate::CheckBoxItemDelegate(QObject *parent)
 
 }
 
+CheckBoxItemDelegate::CheckBoxItemDelegate(const int stateNoChange, const int stateOn, const int stateOff, QObject *parent)
+    : QStyledItemDelegate(parent)
+    , m_State_NoChange(stateNoChange)
+    , m_State_On(stateOn)
+    , m_State_Off(stateOff)
+{
+
+}
+
 void CheckBoxItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QStyleOptionViewItemV4 opt = option;

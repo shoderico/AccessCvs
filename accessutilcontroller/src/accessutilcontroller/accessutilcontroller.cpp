@@ -9,6 +9,11 @@
 
 #include <QMessageBox>
 
+// for openInExplorer
+#include <QProcess>
+#include <QFileInfo>
+#include <QDir>
+
 
 AccessUtilController::AccessUtilController(QObject *parent)
     : QObject(parent)
@@ -60,6 +65,18 @@ QString AccessUtilController::ribbonXml()
             "   onAction=\"ButtonClicked\" "
             "   getImage=\"GetButtonImage\" "
             "   /> "
+            "<button id=\"UtilOpenInExplorerButton\" "
+            "   size=\"normal\" "
+            "   label=\"Open in Explorer\" "
+            "   onAction=\"ButtonClicked\" "
+            "   getImage=\"GetButtonImage\" "
+            "   /> "
+            "<button id=\"UtilOpenInConsoleButton\" "
+            "   size=\"normal\" "
+            "   label=\"Open in Console\" "
+            "   onAction=\"ButtonClicked\" "
+            "   getImage=\"GetButtonImage\" "
+            "   /> "
         "</group>"
         ;
     return content;
@@ -81,6 +98,12 @@ bool AccessUtilController::handleButtonClick(const QString &controlId)
         compactRepair();
     else if (controlId == "UtilDecompileAndCompactRepairButton")
         decompileAndCompactRepair();
+
+    else if (controlId == "UtilOpenInExplorerButton")
+        openInExplorer();
+    else if (controlId == "UtilOpenInConsoleButton")
+        openInConsole();
+
     else
         return false;
     return true;
@@ -116,6 +139,44 @@ void AccessUtilController::decompileAndCompactRepair()
     m_threadedInvoker->start(this, SLOT(doDecompileAndCompactRepair()) );
 }
 
+void AccessUtilController::openInExplorer()
+{
+    QString fileName;
+    if (!getCurrentFileName(fileName))
+        return;
+
+    const QString explorer = "explorer.exe";
+
+    QString param;
+    if (!QFileInfo(fileName).isDir())
+        param = QLatin1String("/select,");
+    param += QDir::toNativeSeparators(fileName);
+    QString command = explorer + " " + param;
+    QProcess::startDetached(command);
+
+}
+
+void AccessUtilController::openInConsole()
+{
+    QString fileName;
+    if (!getCurrentFileName(fileName))
+        return;
+
+    QString driveLetter;
+    QStringList drives = fileName.split(':');
+    if (drives.length() > 0)
+        driveLetter = drives[ 0 ];
+    if (driveLetter.isEmpty())
+        return;
+
+    const QString cmd = "cmd.exe";
+
+    QString param;
+    param += QDir::toNativeSeparators( QFileInfo(fileName).absolutePath()  );
+    QString command = cmd + " /k " + driveLetter + ": && cd " + param;
+    QProcess::startDetached(command);
+}
+
 void AccessUtilController::doDecompile()
 {
     QString fileName;
@@ -140,7 +201,7 @@ void AccessUtilController::doCompactRepair()
         m_application->CloseCurrentDatabase();
 
         AccessUtil au;
-        au.compactRepair(m_application, fileName, 3);
+        au.compactRepair(m_application, fileName, 1);
 
         au.openCurrentDatabase(m_application, fileName);
     }
@@ -157,7 +218,7 @@ void AccessUtilController::doDecompileAndCompactRepair()
         AccessUtil au;
         quint64 currentThreadId = au.getAccessThreadId(m_application);
         au.decompile(fileName, currentThreadId);
-        au.compactRepair(m_application, fileName, 3);
+        au.compactRepair(m_application, fileName, 1);
 
         au.openCurrentDatabase(m_application, fileName);
     }
