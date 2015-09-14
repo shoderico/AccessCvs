@@ -9,6 +9,11 @@
 
 #include <QMessageBox>
 
+// for openInExplorer
+#include <QProcess>
+#include <QFileInfo>
+#include <QDir>
+
 
 AccessUtilController::AccessUtilController(QObject *parent)
     : QObject(parent)
@@ -60,6 +65,12 @@ QString AccessUtilController::ribbonXml()
             "   onAction=\"ButtonClicked\" "
             "   getImage=\"GetButtonImage\" "
             "   /> "
+            "<button id=\"UtilOpenInExplorerButton\" "
+            "   size=\"normal\" "
+            "   label=\"Open in Explorer\" "
+            "   onAction=\"ButtonClicked\" "
+            "   getImage=\"GetButtonImage\" "
+            "   /> "
         "</group>"
         ;
     return content;
@@ -81,6 +92,10 @@ bool AccessUtilController::handleButtonClick(const QString &controlId)
         compactRepair();
     else if (controlId == "UtilDecompileAndCompactRepairButton")
         decompileAndCompactRepair();
+
+    else if (controlId == "UtilOpenInExplorerButton")
+        openInExplorer();
+
     else
         return false;
     return true;
@@ -114,6 +129,23 @@ void AccessUtilController::decompileAndCompactRepair()
 
     m_uiBlocker->show();
     m_threadedInvoker->start(this, SLOT(doDecompileAndCompactRepair()) );
+}
+
+void AccessUtilController::openInExplorer()
+{
+    QString fileName;
+    if (!getCurrentFileName(fileName))
+        return;
+
+    const QString explorer = "explorer.exe";
+
+    QString param;
+    if (!QFileInfo(fileName).isDir())
+        param = QLatin1String("/select,");
+    param += QDir::toNativeSeparators(fileName);
+    QString command = explorer + " " + param;
+    QProcess::startDetached(command);
+
 }
 
 void AccessUtilController::doDecompile()

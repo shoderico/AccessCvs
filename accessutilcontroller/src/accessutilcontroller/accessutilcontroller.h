@@ -33,6 +33,8 @@ public:
     void compactRepair();
     void decompileAndCompactRepair();
 
+    void openInExplorer();
+
 private slots:
     void doDecompile();
     void doCompactRepair();
