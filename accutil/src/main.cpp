@@ -14,6 +14,10 @@ int main(int argc, char *argv[])
     QCommandLineParser parser;
     parser.addHelpOption();
 
+    // version
+    parser.addVersionOption();
+    app.setApplicationVersion("1.0.2");
+
     // decompile
     QCommandLineOption optDecompile(QStringList() << "d" << "decompile", QCoreApplication::translate("main", "Decompile"));
     parser.addOption(optDecompile);
