@@ -18,7 +18,7 @@ namespace Access {
 class Application;
 }
 
-class CVSMODELSHARED_EXPORT ProjectSetting : public QObject
+class CVSMODEL_SHARED_EXPORT ProjectSetting : public QObject
 {
     Q_OBJECT
 public:

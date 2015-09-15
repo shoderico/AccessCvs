@@ -10,7 +10,7 @@ class QWidget;
 
 class ProcessingDialog;
 
-class VIEWSHARED_EXPORT UiBlocker : public QObject
+class VIEW_SHARED_EXPORT UiBlocker : public QObject
 {
     Q_OBJECT
 public:

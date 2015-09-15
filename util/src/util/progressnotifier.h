@@ -5,7 +5,7 @@
 #include <QObject>
 #include <QReadWriteLock>
 
-class UTILSHARED_EXPORT ProgressNotifier : public QObject
+class UTIL_SHARED_EXPORT ProgressNotifier : public QObject
 {
     Q_OBJECT
 public:

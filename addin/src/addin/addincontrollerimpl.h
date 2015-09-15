@@ -9,7 +9,7 @@ class WindowWidgetManager;
 class AddInController;
 class AddInFactory;
 
-class ADDINSHARED_EXPORT AddInControllerImpl : public AddInImpl
+class ADDIN_SHARED_EXPORT AddInControllerImpl : public AddInImpl
 {
     Q_OBJECT
 public:

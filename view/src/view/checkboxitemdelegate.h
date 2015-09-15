@@ -5,7 +5,7 @@
 
 #include <QStyledItemDelegate>
 
-class VIEWSHARED_EXPORT CheckBoxItemDelegate : public QStyledItemDelegate
+class VIEW_SHARED_EXPORT CheckBoxItemDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 public:

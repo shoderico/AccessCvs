@@ -8,7 +8,7 @@
 
 class AddInFactory;
 
-class ADDINSHARED_EXPORT AddInMain : public QObject, public QAxBindable
+class ADDIN_SHARED_EXPORT AddInMain : public QObject, public QAxBindable
 {
     Q_OBJECT
 public:

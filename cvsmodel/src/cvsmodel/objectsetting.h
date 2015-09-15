@@ -37,7 +37,7 @@ class AllModules;
 
 
 
-class CVSMODELSHARED_EXPORT ObjectSetting : public QObject
+class CVSMODEL_SHARED_EXPORT ObjectSetting : public QObject
 {
     Q_OBJECT
 public:

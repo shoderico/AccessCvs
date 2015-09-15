@@ -5,7 +5,7 @@
 
 #include <QReadWriteLock>
 
-class UTILSHARED_EXPORT DataChangedHelper
+class UTIL_SHARED_EXPORT DataChangedHelper
 {
 public:
     DataChangedHelper(int count);

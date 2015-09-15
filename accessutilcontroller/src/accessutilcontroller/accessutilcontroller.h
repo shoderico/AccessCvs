@@ -15,7 +15,7 @@ namespace Access {
 class Application;
 } // namespace Access
 
-class ACCESSUTILCONTROLLERSHARED_EXPORT AccessUtilController : public QObject, public AddInController
+class ACCESSUTILCONTROLLER_SHARED_EXPORT AccessUtilController : public QObject, public AddInController
 {
     Q_OBJECT
 //    Q_PLUGIN_METADATA(IID "com.shoderitz.addin.AddInController" FILE "basictools.json")

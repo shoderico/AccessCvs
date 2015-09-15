@@ -13,7 +13,7 @@ class Application;
 }
 
 
-class CVSMODELSHARED_EXPORT ObjectModel : public QAbstractItemModel
+class CVSMODEL_SHARED_EXPORT ObjectModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:

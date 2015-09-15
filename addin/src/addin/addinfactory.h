@@ -7,7 +7,7 @@
 
 class QAxAggregated;
 
-class ADDINSHARED_EXPORT AddInFactory : public QAxFactory
+class ADDIN_SHARED_EXPORT AddInFactory : public QAxFactory
 {
     Q_OBJECT
 public:

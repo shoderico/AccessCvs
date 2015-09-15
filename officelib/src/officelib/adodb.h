@@ -11,7 +11,7 @@
 #include "officelib_global.h"
 // Define this symbol to __declspec(dllexport) or __declspec(dllimport)
 #ifndef ADODB_EXPORT
-#define ADODB_EXPORT OFFICELIBSHARED_EXPORT
+#define ADODB_EXPORT OFFICELIB_SHARED_EXPORT
 #endif
 
 #include <qaxobject.h>

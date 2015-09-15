@@ -9,7 +9,7 @@ namespace Access {
 class Application;
 } // namespace Access
 
-class ACCESSUTILSHARED_EXPORT AccessUtil
+class ACCESSUTIL_SHARED_EXPORT AccessUtil
 {
 
 public:

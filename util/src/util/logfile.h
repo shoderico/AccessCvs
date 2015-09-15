@@ -8,7 +8,7 @@
 #include <QTextStream>
 #include <QReadWriteLock>
 
-class UTILSHARED_EXPORT LogFile
+class UTIL_SHARED_EXPORT LogFile
 {
 public:
     LogFile(const QString &path, const QString &baseFileName, const bool append);

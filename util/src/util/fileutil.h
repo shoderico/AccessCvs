@@ -10,7 +10,7 @@ class CodecInfo;
 
 class QFile;
 
-class UTILSHARED_EXPORT FileUtil
+class UTIL_SHARED_EXPORT FileUtil
 {
 public:
     FileUtil(){}

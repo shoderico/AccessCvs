@@ -14,7 +14,7 @@ class Application;
 
 class ProjectSetting;
 
-class GITCONTROLLERSHARED_EXPORT GitController : public QObject, public AddInController
+class GITCONTROLLER_SHARED_EXPORT GitController : public QObject, public AddInController
 {
     Q_OBJECT
     //    Q_PLUGIN_METADATA(IID "com.shoderitz.addin.AddInController" FILE "basictools.json")

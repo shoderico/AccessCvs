@@ -10,7 +10,7 @@
 
 
 template <typename T>
-class UTILSHARED_EXPORT ConcurrentMapHelper // : public QObject
+class UTIL_SHARED_EXPORT ConcurrentMapHelper // : public QObject
 {
     //Q_OBJECT
     QFutureWatcher<T> m_futureWatcher;
