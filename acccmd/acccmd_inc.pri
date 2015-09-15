@@ -1,7 +1,7 @@
-# accutil
+# acccmd
 unset(MY_TARGET)
 unset(MY_FILES)
-MY_TARGET = accutil
+MY_TARGET = acccmd
 MY_FILES  = $${PROJECT_BINARY_DIR}/$${MY_TARGET}.exe
 ACCUTIL_FILES = $${MY_FILES}
 

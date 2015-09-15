@@ -4,7 +4,7 @@ SUBDIRS += \
     officelib \
     util \
     accesscvs \
-    accutil \
+    acccmd \
     accmodel \
     external \
     resource \
@@ -36,10 +36,10 @@ accesscvs.depends += resource addin \
 
 
 # cli layer
-accutil.depends += accmodel
+acccmd.depends += accmodel
 
 # installer layer
-installer.depends += accutil accesscvs
+installer.depends += acccmd accesscvs
 
 OTHER_FILES += \
     common.pri \
