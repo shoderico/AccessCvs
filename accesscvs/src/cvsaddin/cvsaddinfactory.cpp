@@ -6,7 +6,7 @@
 
 #include "cvscontroller/cvscontroller.h"
 #include "gitcontroller/gitcontroller.h"
-#include "accessutilcontroller/accessutilcontroller.h"
+#include "acccontroller/acccontroller.h"
 #include "helpcontroller/helpcontroller.h"
 
 static const char LibraryID[]     = "{27e3bd9e-2ee3-41ba-a69d-61f510fda820}";
@@ -43,7 +43,7 @@ QAxAggregated *CvsAddInFactory::createAggregate(QObject *parent)
     AddInControllerImpl *addInImpl = new AddInControllerImpl(this, parent);
     addInImpl->appendController( new CvsController(this) );
     addInImpl->appendController( new GitController(this) );
-    addInImpl->appendController( new AccessUtilController(this) );
+    addInImpl->appendController( new AccController(this) );
     addInImpl->appendController( new HelpController(this) );
     return addInImpl;
 }

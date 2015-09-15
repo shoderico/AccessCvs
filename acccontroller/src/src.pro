@@ -4,17 +4,17 @@ QT += axcontainer
 
 CONFIG += dll
 
-TARGET   = accessutilcontroller
+TARGET   = acccontroller
 TEMPLATE = lib
 
-DEFINES += ACCESSUTILCONTROLLER_LIBRARY
+DEFINES += ACCCONTROLLER_LIBRARY
 
 SOURCES += \
-    accessutilcontroller/accessutilcontroller.cpp
+    acccontroller/acccontroller.cpp
 
 HEADERS += \
-    accessutilcontroller/accessutilcontroller.h \
-    accessutilcontroller/accessutilcontroller_global.h
+    acccontroller/acccontroller.h \
+    acccontroller/acccontroller_global.h
 
 include(../../common.pri)
 include(../../submodule.pri)

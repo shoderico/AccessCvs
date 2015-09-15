@@ -1,4 +1,4 @@
-#include "accessutilcontroller.h"
+#include "acccontroller.h"
 
 #include "officelib/officelib.h"
 #include "util/comptr.h"
@@ -15,7 +15,7 @@
 #include <QDir>
 
 
-AccessUtilController::AccessUtilController(QObject *parent)
+AccController::AccController(QObject *parent)
     : QObject(parent)
     , m_application(0)
     , m_parentWidget(0)
@@ -24,13 +24,13 @@ AccessUtilController::AccessUtilController(QObject *parent)
 {
 }
 
-AccessUtilController::~AccessUtilController()
+AccController::~AccController()
 {
     delete m_uiBlocker;
     delete m_threadedInvoker;
 }
 
-void AccessUtilController::initialize(Access::Application *application, QWidget *parentWidget)
+void AccController::initialize(Access::Application *application, QWidget *parentWidget)
 {
     m_application = application;
     m_parentWidget = parentWidget;
@@ -42,7 +42,7 @@ void AccessUtilController::initialize(Access::Application *application, QWidget 
     connect(m_threadedInvoker, SIGNAL(finished()), m_uiBlocker, SLOT(hide()) );
 }
 
-QString AccessUtilController::ribbonXml()
+QString AccController::ribbonXml()
 {
     QString content =
         "<group id=\"UtilGroup\" "
@@ -82,7 +82,7 @@ QString AccessUtilController::ribbonXml()
     return content;
 }
 
-bool AccessUtilController::imagePath(const QString &controlId, QString &imagePath, QSize &size)
+bool AccController::imagePath(const QString &controlId, QString &imagePath, QSize &size)
 {
     Q_UNUSED(controlId)
     Q_UNUSED(imagePath)
@@ -90,7 +90,7 @@ bool AccessUtilController::imagePath(const QString &controlId, QString &imagePat
     return false;
 }
 
-bool AccessUtilController::handleButtonClick(const QString &controlId)
+bool AccController::handleButtonClick(const QString &controlId)
 {
     if (controlId == "UtilDecompileButton")
         decompile();
@@ -109,7 +109,7 @@ bool AccessUtilController::handleButtonClick(const QString &controlId)
     return true;
 }
 
-void AccessUtilController::decompile()
+void AccController::decompile()
 {
     QString fileName;
     if (!getCurrentFileName(fileName))
@@ -119,7 +119,7 @@ void AccessUtilController::decompile()
     m_threadedInvoker->start(this, SLOT(doDecompile()) );
 }
 
-void AccessUtilController::compactRepair()
+void AccController::compactRepair()
 {
     QString fileName;
     if (!getCurrentFileName(fileName))
@@ -129,7 +129,7 @@ void AccessUtilController::compactRepair()
     m_threadedInvoker->start(this, SLOT(doCompactRepair()) );
 }
 
-void AccessUtilController::decompileAndCompactRepair()
+void AccController::decompileAndCompactRepair()
 {
     QString fileName;
     if (!getCurrentFileName(fileName))
@@ -139,7 +139,7 @@ void AccessUtilController::decompileAndCompactRepair()
     m_threadedInvoker->start(this, SLOT(doDecompileAndCompactRepair()) );
 }
 
-void AccessUtilController::openInExplorer()
+void AccController::openInExplorer()
 {
     QString fileName;
     if (!getCurrentFileName(fileName))
@@ -156,7 +156,7 @@ void AccessUtilController::openInExplorer()
 
 }
 
-void AccessUtilController::openInConsole()
+void AccController::openInConsole()
 {
     QString fileName;
     if (!getCurrentFileName(fileName))
@@ -177,7 +177,7 @@ void AccessUtilController::openInConsole()
     QProcess::startDetached(command);
 }
 
-void AccessUtilController::doDecompile()
+void AccController::doDecompile()
 {
     QString fileName;
     if (getCurrentFileName(fileName))
@@ -193,7 +193,7 @@ void AccessUtilController::doDecompile()
     m_threadedInvoker->finish();
 }
 
-void AccessUtilController::doCompactRepair()
+void AccController::doCompactRepair()
 {
     QString fileName;
     if (getCurrentFileName(fileName))
@@ -208,7 +208,7 @@ void AccessUtilController::doCompactRepair()
     m_threadedInvoker->finish();
 }
 
-void AccessUtilController::doDecompileAndCompactRepair()
+void AccController::doDecompileAndCompactRepair()
 {
     QString fileName;
     if (getCurrentFileName(fileName))
@@ -225,7 +225,7 @@ void AccessUtilController::doDecompileAndCompactRepair()
     m_threadedInvoker->finish();
 }
 
-bool AccessUtilController::getCurrentFileName(QString &fileName)
+bool AccController::getCurrentFileName(QString &fileName)
 {
     fileName = "";
     ComPtr<Access::CurrentProject> currentProject = m_application->CurrentProject();

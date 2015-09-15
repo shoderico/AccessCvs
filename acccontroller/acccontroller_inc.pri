@@ -1,9 +1,9 @@
-# accessutilcontroller
+# acccontroller
 unset(MY_TARGET)
 unset(MY_FILES)
-MY_TARGET = accessutilcontroller
+MY_TARGET = acccontroller
 MY_FILES  = $${PROJECT_BINARY_DIR}/$${MY_TARGET}.dll
-ACCESSUTILCONTROLLER_FILES = $${MY_FILES}
+ACCCONTROLLER_FILES = $${MY_FILES}
 
 
 LIBS           += -L$${PROJECT_LIBRARY_DIR}/ -l$${MY_TARGET}
