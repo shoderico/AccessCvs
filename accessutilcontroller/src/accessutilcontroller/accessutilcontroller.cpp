@@ -3,7 +3,7 @@
 #include "officelib/officelib.h"
 #include "util/comptr.h"
 #include "util/threadedinvoker.h"
-#include "accessutil/accessutil.h"
+#include "accmodel/accmodel.h"
 #include "view/uiblocker.h"
 #include "addinutil/addinutil.h"
 
@@ -184,7 +184,7 @@ void AccessUtilController::doDecompile()
     {
         m_application->CloseCurrentDatabase();
 
-        AccessUtil au;
+        AccModel au;
         quint64 currentThreadId = au.getAccessThreadId(m_application);
         au.decompile(fileName, currentThreadId);
 
@@ -200,7 +200,7 @@ void AccessUtilController::doCompactRepair()
     {
         m_application->CloseCurrentDatabase();
 
-        AccessUtil au;
+        AccModel au;
         au.compactRepair(m_application, fileName, 1);
 
         au.openCurrentDatabase(m_application, fileName);
@@ -215,7 +215,7 @@ void AccessUtilController::doDecompileAndCompactRepair()
     {
         m_application->CloseCurrentDatabase();
 
-        AccessUtil au;
+        AccModel au;
         quint64 currentThreadId = au.getAccessThreadId(m_application);
         au.decompile(fileName, currentThreadId);
         au.compactRepair(m_application, fileName, 1);

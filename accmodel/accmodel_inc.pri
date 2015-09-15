@@ -1,9 +1,9 @@
-# accessutil
+# accmodel
 unset(MY_TARGET)
 unset(MY_FILES)
-MY_TARGET = accessutil
+MY_TARGET = accmodel
 MY_FILES  = $${PROJECT_BINARY_DIR}/$${MY_TARGET}.dll
-ACCESSUTIL_FILES = $${MY_FILES}
+ACCMODEL_FILES = $${MY_FILES}
 
 
 LIBS           += -L$${PROJECT_LIBRARY_DIR}/ -l$${MY_TARGET}

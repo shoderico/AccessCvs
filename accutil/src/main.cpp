@@ -3,7 +3,7 @@
 #include <QCommandLineParser>
 #include <QDebug>
 
-#include "accessutil/accessutil.h"
+#include "accmodel/accmodel.h"
 //#include "officelib/officelib.h"
 #include <windows.h>
 
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    AccessUtil au;
+    AccModel au;
     Access::Application *application = NULL;
     if (CoInitialize( NULL ) != S_OK )
         qDebug() << "CoInitialize is failed";

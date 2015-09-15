@@ -5,7 +5,7 @@ SUBDIRS += \
     util \
     accesscvs \
     accutil \
-    accessutil \
+    accmodel \
     external \
     resource \
     cvsmodel \
@@ -21,12 +21,12 @@ SUBDIRS += \
 
 # model layer
 cvsmodel.depends   += util officelib
-accessutil.depends += util officelib
+accmodel.depends += util officelib
 
 # controller layer
 cvscontroller.depends        += view addinutil cvsmodel
 gitcontroller.depends        += view addinutil cvsmodel
-accessutilcontroller.depends += view addinutil accessutil
+accessutilcontroller.depends += view addinutil accmodel
 helpcontroller.depends       +=      addinutil comutil
 
 # addin layer
@@ -36,7 +36,7 @@ accesscvs.depends += resource addin \
 
 
 # cli layer
-accutil.depends += accessutil
+accutil.depends += accmodel
 
 # installer layer
 installer.depends += accutil accesscvs
