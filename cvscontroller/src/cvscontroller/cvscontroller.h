@@ -4,7 +4,7 @@
 #include "cvscontroller_global.h"
 
 #include <QObject>
-#include "addin/addincontroller.h"
+#include "addinutil/addincontroller.h"
 
 class MainDialog;
 

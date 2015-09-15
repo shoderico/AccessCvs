@@ -3,7 +3,7 @@
 
 #include "helpcontroller_global.h"
 
-#include "addin/addincontroller.h"
+#include "addinutil/addincontroller.h"
 
 class HELPCONTROLLER_SHARED_EXPORT HelpController : public QObject, public AddInController
 {

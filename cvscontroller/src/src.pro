@@ -27,8 +27,6 @@ include(../../common.pri)
 include(../../submodule.pri)
 include(../$${TARGET}_dep.pri) # dependencies for self
 
-INCLUDEPATH += $${PROJECT_ROOT}/addin/src
-
 #LIBS += -loleacc
 
 #installQtDlls(       $$OUT_PWD/$${BUILD_TYPE} )

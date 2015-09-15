@@ -2,6 +2,7 @@
 include($${PROJECT_ROOT}/officelib/officelib_inc.pri)
 include($${PROJECT_ROOT}/comutil/comutil_inc.pri)
 include($${PROJECT_ROOT}/external/qtsolutions_inc.pri)
+include($${PROJECT_ROOT}/addinutil/addinutil_inc.pri)
 
 # directly dependent qt dlls for this module
 #DEP_DLLS_QT.files +=

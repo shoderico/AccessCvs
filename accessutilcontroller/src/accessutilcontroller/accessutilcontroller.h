@@ -3,7 +3,7 @@
 
 #include "accessutilcontroller_global.h"
 
-#include "addin/addincontroller.h"
+#include "addinutil/addincontroller.h"
 
 #include <QObject>
 
