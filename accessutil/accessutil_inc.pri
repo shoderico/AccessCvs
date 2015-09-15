@@ -1,14 +1,17 @@
 # accessutil
-ACCESSUTIL_LIB_DIR = $${PROJECT_LIBRARY_DIR}
-ACCESSUTIL_BIN_DIR = $${PROJECT_BINARY_DIR}
-ACCESSUTIL_FILES   = $${ACCESSUTIL_BIN_DIR}/accessutil.dll
-LIBS            += -L$${ACCESSUTIL_LIB_DIR}/ -laccessutil
+unset(MY_TARGET)
+unset(MY_FILES)
+MY_TARGET = accessutil
+MY_FILES  = $${PROJECT_BINARY_DIR}/$${MY_TARGET}.dll
+ACCESSUTIL_FILES = $${MY_FILES}
 
-INCLUDEPATH += $${PROJECT_ROOT}/accessutil/src
-PRE_TARGETDEPS += $${ACCESSUTIL_LIB_DIR}/libaccessutil.a
+
+LIBS           += -L$${PROJECT_LIBRARY_DIR}/ -l$${MY_TARGET}
+INCLUDEPATH    += $${PROJECT_ROOT}/$${MY_TARGET}/src
+PRE_TARGETDEPS += $${PROJECT_LIBRARY_DIR}/lib$${MY_TARGET}.a
 
 # register this module dll files to dependent module files
-DEP_DLLS_MODULE.files += $${ACCESSUTIL_FILES}
+DEP_DLLS_MODULE.files += $${MY_FILES}
 
 # load self dependencies
-include(accessutil_dep.pri)
+include($${MY_TARGET}_dep.pri)

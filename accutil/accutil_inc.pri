@@ -1,15 +1,18 @@
 # accutil
-ACCUTIL_LIB_DIR   = $${PROJECT_LIBRARY_DIR}
-ACCUTIL_BIN_DIR   = $${PROJECT_BINARY_DIR}
-ACCUTIL_FILES = $${ACCUTIL_BIN_DIR}/accutil.exe
-#LIBS +=          -L$${ACCUTIL_LIB_DIR}/ -laccutil
+unset(MY_TARGET)
+unset(MY_FILES)
+MY_TARGET = accutil
+MY_FILES  = $${PROJECT_BINARY_DIR}/$${MY_TARGET}.exe
+ACCUTIL_FILES = $${MY_FILES}
 
-INCLUDEPATH += $${PROJECT_ROOT}/accutil/src
-PRE_TARGETDEPS += $${ACCUTIL_BIN_DIR}/accutil.exe # spacial case
+
+#LIBS          += -L$${PROJECT_LIBRARY_DIR}/ -l$${MY_TARGET}
+INCLUDEPATH    += $${PROJECT_ROOT}/$${MY_TARGET}/src
+PRE_TARGETDEPS += $${PROJECT_BINARY_DIR}/$${MY_TARGET}.exe # spacial case
 
 # register dlls to module/external
-DEP_DLLS_MODULE.files += $${ACCUTIL_FILES}
+DEP_DLLS_MODULE.files += $${MY_FILES}
 #DEP_DLLS_EXTERNAL.files += $${}
 
 # load self dependencies
-include(accutil_dep.pri)
+include($${MY_TARGET}_dep.pri)

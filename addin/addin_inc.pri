@@ -1,22 +1,21 @@
 # addin
-ADDIN_LIB_DIR = $${PROJECT_LIBRARY_DIR}
-ADDIN_BIN_DIR = $${PROJECT_BINARY_DIR}
-#ADDIN_FILES   = $${ADDIN_BIN_DIR}/addin.dll
-LIBS +=       -L$${ADDIN_LIB_DIR}/ -laddin
+unset(MY_TARGET)
+unset(MY_FILES)
+MY_TARGET = addin
+#MY_FILES  = $${PROJECT_BINARY_DIR}/$${MY_TARGET}.dll
+#ADDIN_FILES = $${MY_FILES}
 
-INCLUDEPATH += $${PROJECT_ROOT}/addin/src
-PRE_TARGETDEPS += $${ADDIN_LIB_DIR}/libaddin.a
 
-DEF_FILE = $${PROJECT_ROOT}/addin/src/addin/distfile/addin.def
-RC_FILE  = $${PROJECT_ROOT}/addin/src/addin/distfile/addin.rc
-#DISTFILES += \
-#    $${PROJECT_ROOT}/addin/src/addin/addin.def \
-#    $${PROJECT_ROOT}/addin/src/addin/addin.rc \
-#    $${PROJECT_ROOT}/addin/src/addin/ribboncallback.idl
+LIBS           += -L$${PROJECT_LIBRARY_DIR}/ -l$${MY_TARGET}
+INCLUDEPATH    += $${PROJECT_ROOT}/$${MY_TARGET}/src
+PRE_TARGETDEPS += $${PROJECT_LIBRARY_DIR}/lib$${MY_TARGET}.a
+
+DEF_FILE = $${PROJECT_ROOT}/$${MY_TARGET}/src/$${MY_TARGET}/distfile/addin.def
+RC_FILE  = $${PROJECT_ROOT}/$${MY_TARGET}/src/$${MY_TARGET}/distfile/addin.rc
 
 # register dlls to module/external
-#DEP_DLLS_MODULE.files += $${ADDIN_FILES}
-#DEP_DLLS_EXTERNAL.files += $${}
+#DEP_DLLS_MODULE.files += $${MY_FILES}
+#DEP_DLLS_EXTERNAL.files += $${MY_FILES}
 
 # load self dependencies
-include(addin_dep.pri)
+include($${MY_TARGET}_dep.pri)

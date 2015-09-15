@@ -1,15 +1,18 @@
 # resource
-RESOURCE_LIB_DIR   = $${PROJECT_LIBRARY_DIR}
-RESOURCE_BIN_DIR   = $${PROJECT_BINARY_DIR}
-RESOURCE_FILES = $${RESOURCE_BIN_DIR}/resource.dll
-LIBS +=          -L$${RESOURCE_LIB_DIR}/ -lresource
+unset(MY_TARGET)
+unset(MY_FILES)
+MY_TARGET = resource
+MY_FILES  = $${PROJECT_BINARY_DIR}/$${MY_TARGET}.dll
+RESOURCE_FILES = $${MY_FILES}
 
-INCLUDEPATH += $${PROJECT_ROOT}/resource/src
-PRE_TARGETDEPS += $${RESOURCE_LIB_DIR}/libresource.a
+
+LIBS           += -L$${PROJECT_LIBRARY_DIR}/ -l$${MY_TARGET}
+INCLUDEPATH    += $${PROJECT_ROOT}/$${MY_TARGET}/src
+PRE_TARGETDEPS += $${PROJECT_LIBRARY_DIR}/lib$${MY_TARGET}.a
 
 # register dlls to module/external
-DEP_DLLS_MODULE.files += $${RESOURCE_FILES}
+DEP_DLLS_MODULE.files += $${MY_FILES}
 #DEP_DLLS_EXTERNAL.files += $${}
 
 # load self dependencies
-include(resource_dep.pri)
+include($${MY_TARGET}_dep.pri)

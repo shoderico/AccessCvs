@@ -1,15 +1,18 @@
-# accessutil
-ACCESSUTILCONTROLLER_LIB_DIR   = $${PROJECT_LIBRARY_DIR}
-ACCESSUTILCONTROLLER_BIN_DIR   = $${PROJECT_BINARY_DIR}
-ACCESSUTILCONTROLLER_FILES = $${ACCESSUTILCONTROLLER_BIN_DIR}/accessutilcontroller.dll
-LIBS +=          -L$${ACCESSUTILCONTROLLER_LIB_DIR}/ -laccessutilcontroller
+# accessutilcontroller
+unset(MY_TARGET)
+unset(MY_FILES)
+MY_TARGET = accessutilcontroller
+MY_FILES  = $${PROJECT_BINARY_DIR}/$${MY_TARGET}.dll
+ACCESSUTILCONTROLLER_FILES = $${MY_FILES}
 
-INCLUDEPATH += $${PROJECT_ROOT}/accessutilcontroller/src
-PRE_TARGETDEPS += $${ACCESSUTILCONTROLLER_LIB_DIR}/libaccessutilcontroller.a
+
+LIBS           += -L$${PROJECT_LIBRARY_DIR}/ -l$${MY_TARGET}
+INCLUDEPATH    += $${PROJECT_ROOT}/$${MY_TARGET}/src
+PRE_TARGETDEPS += $${PROJECT_LIBRARY_DIR}/lib$${MY_TARGET}.a
 
 # register dlls to module/external
-DEP_DLLS_MODULE.files += $${ACCESSUTILCONTROLLER_FILES}
+DEP_DLLS_MODULE.files += $${MY_FILES}
 #DEP_DLLS_EXTERNAL.files += $${}
 
 # load self dependencies
-include(accessutilcontroller_dep.pri)
+include($${MY_TARGET}_dep.pri)

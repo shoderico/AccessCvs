@@ -1,15 +1,18 @@
 # comutil
-COMUTIL_LIB_DIR   = $${PROJECT_LIBRARY_DIR}
-COMUTIL_BIN_DIR   = $${PROJECT_BINARY_DIR}
-COMUTIL_FILES = $${COMUTIL_BIN_DIR}/comutil.dll
-LIBS +=       -L$${COMUTIL_LIB_DIR}/ -lcomutil
+unset(MY_TARGET)
+unset(MY_FILES)
+MY_TARGET = comutil
+MY_FILES  = $${PROJECT_BINARY_DIR}/$${MY_TARGET}.dll
+COMUTIL_FILES = $${MY_FILES}
 
-INCLUDEPATH += $${PROJECT_ROOT}/comutil/src
-PRE_TARGETDEPS += $${COMUTIL_LIB_DIR}/libcomutil.a
+
+LIBS           += -L$${PROJECT_LIBRARY_DIR}/ -l$${MY_TARGET}
+INCLUDEPATH    += $${PROJECT_ROOT}/$${MY_TARGET}/src
+PRE_TARGETDEPS += $${PROJECT_LIBRARY_DIR}/lib$${MY_TARGET}.a
 
 # register dlls to module/external
-DEP_DLLS_MODULE.files += $${COMUTIL_FILES}
-#DEP_DLLS_EXTERNAL.files += $${}
+DEP_DLLS_MODULE.files += $${MY_FILES}
+#DEP_DLLS_EXTERNAL.files += $${MY_FILES}
 
 # load self dependencies
-include(comutil_dep.pri)
+include($${MY_TARGET}_dep.pri)
