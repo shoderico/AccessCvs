@@ -8,6 +8,7 @@
 
 
 #include <olectl.h>
+#include <ocidl.h>
 
 IPictureDisp *ComUtil::loadPicture(const QString &imagePath)
 {
@@ -39,10 +40,16 @@ IPictureDisp *ComUtil::loadPicture(const QPixmap &pixmap)
 
 IPictureDisp *ComUtil::loadPictureFromSvg(const QString &imagePath, const QSize &size)
 {
+    QPixmap pixmap = renderSvg(imagePath, size);
+    return loadPicture( pixmap );
+}
+
+QPixmap ComUtil::renderSvg(const QString &imagePath, const QSize &size)
+{
     QSvgRenderer renderer( imagePath );
     QPixmap pixmap( size );
     pixmap.fill( Qt::transparent );
     QPainter painter( &pixmap );
     renderer.render( &painter );
-    return loadPicture( pixmap );
+    return pixmap;
 }
