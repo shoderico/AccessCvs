@@ -1,15 +1,11 @@
 # directly dependent libraries for this module
 include($${PROJECT_ROOT}/resource/resource_inc.pri)
 include($${PROJECT_ROOT}/addin/addin_inc.pri)
+# controllers
 include($${PROJECT_ROOT}/accessutilcontroller/accessutilcontroller_inc.pri)
 include($${PROJECT_ROOT}/cvscontroller/cvscontroller_inc.pri)
 include($${PROJECT_ROOT}/gitcontroller/gitcontroller_inc.pri)
 include($${PROJECT_ROOT}/helpcontroller/helpcontroller_inc.pri)
-#include($${PROJECT_ROOT}/comutil/comutil_inc.pri)
-#include($${PROJECT_ROOT}/officelib/officelib_inc.pri)
-#include($${PROJECT_ROOT}/util/util_inc.pri)
-#include($${PROJECT_ROOT}/accessutil/accessutil_inc.pri)
-#include($${PROJECT_ROOT}/cvsmodel/cvsmodel_inc.pri)
 
 # directly dependent qt dlls for for this module
 DEP_DLLS_QT.files += \
