@@ -27,6 +27,9 @@ IFW_BIN_DIR      = C:/Qt/QtIFW2.0.1/bin
 SRC_REPOS_DIR    = $${PWD}/repository
 DST_REPOS_DIR    = $${BUILD_DIR}/repository
 
+PKG_ACCESSCVS_DIR = com.shoderitz.AccessCvs
+PKG_ACCESSCVS_VER = 1.0.1-1
+
 
 #----------------------------------------------------------------------------------------------
 # re-create package configs in build dir
@@ -37,15 +40,14 @@ QMAKE_EXTRA_TARGETS += copy_configs
 
 #----------------------------------------------------------------------------------------------
 # copy files
-installQtDlls(       $${DST_PACKAGE_DIR}/com.shoderitz.AccessCvs/data )
-installModuleDlls(   $${DST_PACKAGE_DIR}/com.shoderitz.AccessCvs/data )
-installExternalDlls( $${DST_PACKAGE_DIR}/com.shoderitz.AccessCvs/data )
+installQtDlls(       $${DST_PACKAGE_DIR}/$${PKG_ACCESSCVS_DIR}/data )
+installModuleDlls(   $${DST_PACKAGE_DIR}/$${PKG_ACCESSCVS_DIR}/data )
+installExternalDlls( $${DST_PACKAGE_DIR}/$${PKG_ACCESSCVS_DIR}/data )
 
 copy_files.commands += $${QMAKE_PRE_LINK}
+QMAKE_PRE_LINK = # clear variables
 copy_files.depends  += copy_configs
 QMAKE_EXTRA_TARGETS += copy_files
-# clear variables
-QMAKE_PRE_LINK =
 
 
 #----------------------------------------------------------------------------------------------
@@ -69,8 +71,17 @@ QMAKE_EXTRA_COMPILERS += installer
 #----------------------------------------------------------------------------------------------
 # repository
 
+REPOS_OUTPUT += \
+    $${DST_REPOS_DIR}/Updates.xml \
+    $${DST_REPOS_DIR}/$${PKG_ACCESSCVS_DIR}/$${PKG_ACCESSCVS_VER}content.7z \
+    $${DST_REPOS_DIR}/$${PKG_ACCESSCVS_DIR}/$${PKG_ACCESSCVS_VER}content.7z.sha1 \
+    $${DST_REPOS_DIR}/$${PKG_ACCESSCVS_DIR}/$${PKG_ACCESSCVS_VER}meta.7z \
+    $${DST_REPOS_DIR}/$${PKG_ACCESSCVS_DIR}/$${PKG_ACCESSCVS_VER}platforms.7z \
+    $${DST_REPOS_DIR}/$${PKG_ACCESSCVS_DIR}/$${PKG_ACCESSCVS_VER}platforms.7z.sha1 \
+
 repository.input     = INPUT
-repository.output    = $${DST_REPOS_DIR}
+repository.output    = $${DST_REPOS_DIR}/Updates.xml
+repository.clean     = $${REPOS_OUTPUT}
 repository.commands += $${IFW_BIN_DIR}/repogen --remove --packages $${DST_PACKAGE_DIR} $${DST_REPOS_DIR}
 repository.CONFIG   += combine no_link target_predeps
 repository.depends  += copy_files copy_configs
@@ -89,7 +100,7 @@ QMAKE_POST_LINK += $(COPY) \"$$system_path($${OUT_PWD}/$${BUILD_TYPE}/$${INSTALL
 OTHER_FILES = \
     $$PWD/README \
     $$PWD/config/config.xml \
-    $$PWD/packages/com.shoderitz.AccessCvs/meta/package.xml \
-    $$PWD/packages/com.shoderitz.AccessCvs/meta/installscript.qs \
-    $$PWD/packages/com.shoderitz.AccessCvs/meta/cc0.txt \
-    $$PWD/packages/com.shoderitz.AccessCvs/meta/gpl3.txt
+    $$PWD/packages/$${PKG_ACCESSCVS_DIR}/meta/package.xml \
+    $$PWD/packages/$${PKG_ACCESSCVS_DIR}/meta/installscript.qs \
+    $$PWD/packages/$${PKG_ACCESSCVS_DIR}/meta/cc0.txt \
+    $$PWD/packages/$${PKG_ACCESSCVS_DIR}/meta/gpl3.txt
