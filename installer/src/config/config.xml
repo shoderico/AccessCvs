@@ -6,7 +6,7 @@
     <!-- Version of the product being installed in the following
          format: [0-9]+((\.|-)[0-9]+)* such as 1-1; 1.2-2; 3.4.7.
          This is mandatory.	-->
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
 
     <!-- Name of the installer as displayed on the title bar. -->
     <Title>AccessCvs </Title>
