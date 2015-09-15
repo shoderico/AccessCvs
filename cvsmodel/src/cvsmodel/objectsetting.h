@@ -169,11 +169,11 @@ protected:
     TableDataSanitizeSetting *m_tableDataSanitizer;
 };
 
-class TableDataSetting : public ObjectSetting
-{
-public:
-    explicit TableDataSetting(ProjectSetting *parent);
-};
+//class TableDataSetting : public ObjectSetting
+//{
+//public:
+//    explicit TableDataSetting(ProjectSetting *parent);
+//};
 
 class RelationSetting : public ObjectSetting
 {

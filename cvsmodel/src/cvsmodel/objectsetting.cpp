@@ -615,19 +615,19 @@ void TableDefSetting::determineCodecForProject()
 // TableData
 // TODO: imeplement tabledata export/import
 
-TableDataSetting::TableDataSetting(ProjectSetting *parent)
-    : ObjectSetting(parent)
-{
-    m_objectType          = Model::TableData;
-    m_accessObjectType    = Access::acTable;
-    m_objectPathName      = "tabledatas";
-    m_containerName       = "";
+//TableDataSetting::TableDataSetting(ProjectSetting *parent)
+//    : ObjectSetting(parent)
+//{
+//    m_objectType          = Model::TableData;
+//    m_accessObjectType    = Access::acTable;
+//    m_objectPathName      = "tabledatas";
+//    m_containerName       = "";
 
-    m_tempFileExtension   = "tmp";
-    m_designFileExtension = "csv";
-    m_moduleFileExtension = "";
-    m_existCheckExtension = m_designFileExtension;
-}
+//    m_tempFileExtension   = "tmp";
+//    m_designFileExtension = "csv";
+//    m_moduleFileExtension = "";
+//    m_existCheckExtension = m_designFileExtension;
+//}
 
 
 //=============================================================================
