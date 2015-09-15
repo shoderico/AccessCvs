@@ -2,7 +2,7 @@
 include($${PROJECT_ROOT}/resource/resource_inc.pri)
 include($${PROJECT_ROOT}/addin/addin_inc.pri)
 # controllers
-include($${PROJECT_ROOT}/accessutilcontroller/accessutilcontroller_inc.pri)
+include($${PROJECT_ROOT}/acccontroller/acccontroller_inc.pri)
 include($${PROJECT_ROOT}/cvscontroller/cvscontroller_inc.pri)
 include($${PROJECT_ROOT}/gitcontroller/gitcontroller_inc.pri)
 include($${PROJECT_ROOT}/helpcontroller/helpcontroller_inc.pri)

@@ -1,7 +1,7 @@
-#ifndef ACCESSUTIL_H
-#define ACCESSUTIL_H
+#ifndef ACCMODEL_H
+#define ACCMODEL_H
 
-#include "accessutil_global.h"
+#include "accmodel_global.h"
 
 #include <QObject>
 
@@ -9,11 +9,11 @@ namespace Access {
 class Application;
 } // namespace Access
 
-class ACCESSUTIL_SHARED_EXPORT AccessUtil
+class ACCMODEL_SHARED_EXPORT AccModel
 {
 
 public:
-    AccessUtil(){}
+    AccModel(){}
 
     Access::Application *createAccessApplication(QObject *parent = 0);
     void quitAndDeleteApplication(Access::Application *application);
@@ -29,4 +29,4 @@ public:
     // TODO: clearWorkTables() for MDB
 };
 
-#endif // ACCESSUTIL_H
+#endif // ACCMODEL_H

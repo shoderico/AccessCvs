@@ -1,14 +1,14 @@
-# accutil
+# acccontroller
 unset(MY_TARGET)
 unset(MY_FILES)
-MY_TARGET = accutil
-MY_FILES  = $${PROJECT_BINARY_DIR}/$${MY_TARGET}.exe
-ACCUTIL_FILES = $${MY_FILES}
+MY_TARGET = acccontroller
+MY_FILES  = $${PROJECT_BINARY_DIR}/$${MY_TARGET}.dll
+ACCCONTROLLER_FILES = $${MY_FILES}
 
 
-#LIBS          += -L$${PROJECT_LIBRARY_DIR}/ -l$${MY_TARGET}
+LIBS           += -L$${PROJECT_LIBRARY_DIR}/ -l$${MY_TARGET}
 INCLUDEPATH    += $${PROJECT_ROOT}/$${MY_TARGET}/src
-PRE_TARGETDEPS += $${PROJECT_BINARY_DIR}/$${MY_TARGET}.exe # spacial case
+PRE_TARGETDEPS += $${PROJECT_LIBRARY_DIR}/lib$${MY_TARGET}.a
 
 # register dlls to module/external
 DEP_DLLS_MODULE.files += $${MY_FILES}
