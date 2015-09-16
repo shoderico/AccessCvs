@@ -150,6 +150,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="showProjectFileCheckBox">
+         <property name="text">
+          <string>ProjectFile</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="horizontalSpacer_3">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -233,6 +240,13 @@
         <widget class="QCheckBox" name="selectReferenceCheckBox">
          <property name="text">
           <string>Reference</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="selectProjectFileCheckBox">
+         <property name="text">
+          <string>ProjectFile</string>
          </property>
         </widget>
        </item>
