@@ -99,7 +99,8 @@ public:
         MacroObjectType = 16,
         ModuleObjectType = 32,
         ReferenceObjectType = 64,
-        AllObjectTypes      = 127,
+        ProjectFileType = 128,
+        AllObjectTypes      = 255,
     };
     Q_DECLARE_FLAGS(SelectObjectTypes, SelectObjectType)
 

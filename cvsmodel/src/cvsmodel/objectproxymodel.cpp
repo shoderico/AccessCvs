@@ -13,6 +13,7 @@ ObjectProxyModel::ObjectProxyModel(QObject *parent)
     m_showObjectTypes[ Model::Macro ] = true;
     m_showObjectTypes[ Model::Module ] = true;
     m_showObjectTypes[ Model::Reference ] = true;
+    m_showObjectTypes[ Model::ProjectFile ] = true;
 }
 
 bool ObjectProxyModel::lessThan(const QModelIndex &source_left, const QModelIndex &source_right) const
@@ -91,6 +92,7 @@ void ObjectProxyModel::setFilterShowObjectType(const int objectTypes)
     m_showObjectTypes[ Model::Macro     ] = ( objectTypes & ObjectModel::MacroObjectType );
     m_showObjectTypes[ Model::Module    ] = ( objectTypes & ObjectModel::ModuleObjectType );
     m_showObjectTypes[ Model::Reference ] = ( objectTypes & ObjectModel::ReferenceObjectType ) ;
+    m_showObjectTypes[ Model::ProjectFile ] = ( objectTypes & ObjectModel::ProjectFileType ) ;
     invalidateFilter();
 }
 

@@ -30,6 +30,7 @@ ProjectSetting::ProjectSetting(QObject *parent)
     m_objectSettings.insert( Model::Macro,      new MacroSetting    (this) );
     m_objectSettings.insert( Model::Module,     new ModuleSetting   (this) );
     m_objectSettings.insert( Model::Reference,  new ReferenceSetting(this) );
+    m_objectSettings.insert( Model::ProjectFile,  new ProjectFileSetting(this) );
 }
 
 ProjectSetting::~ProjectSetting()

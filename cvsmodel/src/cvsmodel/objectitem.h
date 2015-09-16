@@ -20,7 +20,8 @@ enum ObjectType
     Module,
 //    TableData,
     Relation,
-    Reference
+    Reference,
+    ProjectFile
 };
 
 enum GitStatus

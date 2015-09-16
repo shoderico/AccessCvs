@@ -129,6 +129,7 @@ QVariant ObjectModel::data(const QModelIndex &index, int role) const
             case Model::Macro:      return QIcon( ":/images/script.png" );
             case Model::Module:     return QIcon( ":/images/page.png" );
             case Model::Reference:  return QIcon( ":/images/page_link.png" );
+            case Model::ProjectFile: return QIcon( ":/images/page_link.png" );
 
         default:
             break;
@@ -675,6 +676,7 @@ void ObjectModel::getItems(ObjectItems *pItems, ItemsTypes itemsType, SelectObje
             case Model::Macro:      if ( !(objectTypes & ObjectModel::MacroObjectType    ) ) continue; break;
             case Model::Module:     if ( !(objectTypes & ObjectModel::ModuleObjectType   ) ) continue; break;
             case Model::Reference:  if ( !(objectTypes & ObjectModel::ReferenceObjectType) ) continue; break;
+            case Model::ProjectFile:  if ( !(objectTypes & ObjectModel::ProjectFileType) ) continue; break;
             default: break;
         }
 
