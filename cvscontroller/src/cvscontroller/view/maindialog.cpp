@@ -69,6 +69,7 @@ MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
     connect( ui->selectModuleCheckBox,      SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
     connect( ui->selectReferenceCheckBox,   SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
     connect( ui->selectProjectFileCheckBox, SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
+    connect( ui->selectVBProjectCheckBox,   SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
 
 
     connect( ui->showSelectedOnlyCheckBox, SIGNAL(stateChanged(int)), this, SLOT(showSelectedOnly(int)) );
@@ -82,6 +83,7 @@ MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
     connect( ui->showModuleCheckBox,      SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
     connect( ui->showReferenceCheckBox,   SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
     connect( ui->showProjectFileCheckBox, SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
+    connect( ui->showVBProjectCheckBox,   SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
 
     connect( &m_progressTimer, SIGNAL(timeout()), this, SLOT(onTimeout()) );
 
@@ -101,6 +103,7 @@ MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
     ui->showModuleCheckBox->setChecked(true);
     ui->showReferenceCheckBox->setChecked(true);
     ui->showProjectFileCheckBox->setChecked(true);
+    ui->showVBProjectCheckBox->setChecked(true);
     ui->showSelectedOnlyCheckBox->setChecked(true);
 
 
@@ -354,6 +357,7 @@ void MainDialog::selectCheckStateChanged(int state)
         ui->selectModuleCheckBox->setChecked( selected );
         ui->selectReferenceCheckBox->setChecked( selected );
         ui->selectProjectFileCheckBox->setChecked( selected );
+        ui->selectVBProjectCheckBox->setChecked( selected );
     }
     else if (checkBox == ui->selectTableCheckBox)
     {
@@ -387,6 +391,10 @@ void MainDialog::selectCheckStateChanged(int state)
     {
         m_model->selectItemsByObjectType( ObjectModel::ProjectFileType, selected, false );
     }
+    else if (checkBox == ui->selectVBProjectCheckBox)
+    {
+        m_model->selectItemsByObjectType( ObjectModel::VBProjectType, selected, false );
+    }
 }
 
 void MainDialog::showCheckStateChanged(int state)
@@ -406,6 +414,7 @@ void MainDialog::showCheckStateChanged(int state)
         ui->showModuleCheckBox->setChecked( selected );
         ui->showReferenceCheckBox->setChecked( selected );
         ui->showProjectFileCheckBox->setChecked( selected );
+        ui->showVBProjectCheckBox->setChecked( selected );
     }
 
     int objectTypes = 0;
@@ -418,6 +427,7 @@ void MainDialog::showCheckStateChanged(int state)
     if (ui->showModuleCheckBox->checkState() == Qt::Checked)    objectTypes |= ObjectModel::ModuleObjectType;
     if (ui->showReferenceCheckBox->checkState() == Qt::Checked) objectTypes |= ObjectModel::ReferenceObjectType;
     if (ui->showProjectFileCheckBox->checkState() == Qt::Checked) objectTypes |= ObjectModel::ProjectFileType;
+    if (ui->showVBProjectCheckBox->checkState() == Qt::Checked) objectTypes |= ObjectModel::VBProjectType;
 
     m_proxyModel->setFilterShowObjectType( objectTypes );
 }

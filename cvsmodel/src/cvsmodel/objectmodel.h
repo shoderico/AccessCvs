@@ -100,7 +100,8 @@ public:
         ModuleObjectType = 32,
         ReferenceObjectType = 64,
         ProjectFileType = 128,
-        AllObjectTypes      = 255,
+        VBProjectType = 256,
+        AllObjectTypes = 511,
     };
     Q_DECLARE_FLAGS(SelectObjectTypes, SelectObjectType)
 

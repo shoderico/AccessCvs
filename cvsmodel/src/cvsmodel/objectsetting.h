@@ -35,7 +35,9 @@ class AllReports;
 class AllMacros;
 class AllModules;
 }
-
+namespace VBIDE {
+class VBProject;
+}
 
 
 class CVSMODEL_SHARED_EXPORT ObjectSetting : public QObject
@@ -304,47 +306,65 @@ protected:
 
 
 
-
-
-
-class ReferenceSetting : public ObjectSetting
+class ProjectLevelObjectSetting : public ObjectSetting
 {
 public:
-    explicit ReferenceSetting(ProjectSetting *parent);
+    explicit ProjectLevelObjectSetting(ProjectSetting *parent);
     virtual bool        isTargetObject(QAxObject *object) const;
     virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
-    virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
-    virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
+//    virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
+//    virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
     virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
     virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
 
     virtual bool        prepareItemCollection();
     virtual int         itemCount();
     virtual QAxObject  *itemUnsafePtr(const QVariant &index);
-private:
+protected:
     QString m_objectName;
     // ComPtr<Access::XXX> m_objects; // no need
 };
 
 
 
+class ReferenceSetting : public ProjectLevelObjectSetting
+{
+public:
+    explicit ReferenceSetting(ProjectSetting *parent);
+//    virtual bool        isTargetObject(QAxObject *object) const;
+//    virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
+    virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
+    virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
+//    virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
+//    virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
 
-class ProjectFileSetting : public ObjectSetting
+//    virtual bool        prepareItemCollection();
+//    virtual int         itemCount();
+//    virtual QAxObject  *itemUnsafePtr(const QVariant &index);
+private:
+//    QString m_objectName;
+    // ComPtr<Access::XXX> m_objects; // no need
+};
+
+
+
+
+class ProjectFileSetting : public ProjectLevelObjectSetting
 {
 public:
     explicit ProjectFileSetting(ProjectSetting *parent);
-    virtual bool        isTargetObject(QAxObject *object) const;
-    virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
+//    virtual bool        isTargetObject(QAxObject *object) const;
+//    virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
     virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
     virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
-    virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
-    virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
+//    virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
+//    virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
 
-    virtual bool        prepareItemCollection();
-    virtual int         itemCount();
-    virtual QAxObject  *itemUnsafePtr(const QVariant &index);
+//    virtual bool        prepareItemCollection();
+//    virtual int         itemCount();
+//    virtual QAxObject  *itemUnsafePtr(const QVariant &index);
 private:
-    QString m_objectName;
+//    QString m_objectName;
     // ComPtr<Access::XXX> m_objects; // no need
 
 private:
@@ -359,6 +379,20 @@ private:
         }
     };
     void loadProperties( QMap<QString, ProjectFileProperty*> &propMap );
+};
+
+
+
+
+class VBProjectSetting : public ProjectLevelObjectSetting
+{
+public:
+    explicit VBProjectSetting(ProjectSetting *parent);
+    virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
+    virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
+
+private:
+    VBIDE::VBProject *currentVBProject();
 };
 
 

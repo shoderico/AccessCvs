@@ -130,6 +130,7 @@ QVariant ObjectModel::data(const QModelIndex &index, int role) const
             case Model::Module:     return QIcon( ":/images/page.png" );
             case Model::Reference:  return QIcon( ":/images/page_link.png" );
             case Model::ProjectFile: return QIcon( ":/images/page_link.png" );
+            case Model::VBProject:   return QIcon( ":/images/page_link.png" );
 
         default:
             break;
@@ -677,6 +678,7 @@ void ObjectModel::getItems(ObjectItems *pItems, ItemsTypes itemsType, SelectObje
             case Model::Module:     if ( !(objectTypes & ObjectModel::ModuleObjectType   ) ) continue; break;
             case Model::Reference:  if ( !(objectTypes & ObjectModel::ReferenceObjectType) ) continue; break;
             case Model::ProjectFile:  if ( !(objectTypes & ObjectModel::ProjectFileType) ) continue; break;
+            case Model::VBProject:  if ( !(objectTypes & ObjectModel::VBProjectType) ) continue; break;
             default: break;
         }
 
