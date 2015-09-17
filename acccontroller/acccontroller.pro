@@ -4,5 +4,5 @@ SUBDIRS += \
     src
 
 OTHER_FILES += \
-    accutil_dep.pri \
-    accutil_inc.pri
+    acccontroller_inc.pri \
+    acccontroller_dep.pri

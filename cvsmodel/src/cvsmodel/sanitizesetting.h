@@ -12,7 +12,7 @@ class QTextEncoder;
 
 class CodecInfo;
 
-class CVSMODELSHARED_EXPORT SanitizeSetting : public QObject
+class CVSMODEL_SHARED_EXPORT SanitizeSetting : public QObject
 {
     Q_OBJECT
 public:

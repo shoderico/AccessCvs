@@ -8,7 +8,7 @@
 
 class QAxObject;
 
-class UTILSHARED_EXPORT GetComObject
+class UTIL_SHARED_EXPORT GetComObject
 {
     QString m_targetExeName;
     QString m_targetWndClassName;

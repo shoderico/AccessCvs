@@ -16,7 +16,7 @@ namespace Access {
 class Application;
 } // namespace Access
 
-class ADDINSHARED_EXPORT AddInImpl
+class ADDIN_SHARED_EXPORT AddInImpl
         : public QObject
         , public QAxAggregated
         , public IDTExtensibility2

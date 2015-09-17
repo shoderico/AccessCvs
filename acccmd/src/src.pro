@@ -8,7 +8,7 @@ QT += core
 QT -= gui
 #QT += axcontainer
 
-TARGET = accutil
+TARGET = acccmd
 CONFIG += console
 CONFIG -= app_bundle
 

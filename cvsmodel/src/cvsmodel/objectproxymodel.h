@@ -6,7 +6,7 @@
 #include <QObject>
 #include <QSortFilterProxyModel>
 
-class CVSMODELSHARED_EXPORT ObjectProxyModel : public QSortFilterProxyModel
+class CVSMODEL_SHARED_EXPORT ObjectProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 public:

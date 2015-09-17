@@ -2,7 +2,7 @@
 
 #include "comutil/comutil.h"
 
-#include "addincontroller.h"
+#include "addinutil/addincontroller.h"
 #include "windowwidgetmanager.h"
 
 AddInControllerImpl::AddInControllerImpl(AddInFactory *factory, QObject *parent)

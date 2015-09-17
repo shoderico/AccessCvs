@@ -1,15 +1,18 @@
 # cvscontroller
-CVSCONTROLLER_LIB_DIR   = $${PROJECT_LIBRARY_DIR}
-CVSCONTROLLER_BIN_DIR   = $${PROJECT_BINARY_DIR}
-CVSCONTROLLER_FILES = $${CVSCONTROLLER_BIN_DIR}/cvscontroller.dll
-LIBS +=          -L$${CVSCONTROLLER_LIB_DIR}/ -lcvscontroller
+unset(MY_TARGET)
+unset(MY_FILES)
+MY_TARGET = cvscontroller
+MY_FILES  = $${PROJECT_BINARY_DIR}/$${MY_TARGET}.dll
+CVSCONTROLLER_FILES = $${MY_FILES}
 
-INCLUDEPATH += $${PROJECT_ROOT}/cvscontroller/src
-PRE_TARGETDEPS += $${CVSCONTROLLER_LIB_DIR}/libcvscontroller.a
+
+LIBS           += -L$${PROJECT_LIBRARY_DIR}/ -l$${MY_TARGET}
+INCLUDEPATH    += $${PROJECT_ROOT}/$${MY_TARGET}/src
+PRE_TARGETDEPS += $${PROJECT_LIBRARY_DIR}/lib$${MY_TARGET}.a
 
 # register dlls to module/external
-DEP_DLLS_MODULE.files += $${CVSCONTROLLER_FILES}
+DEP_DLLS_MODULE.files += $${MY_FILES}
 #DEP_DLLS_EXTERNAL.files += $${}
 
 # load self dependencies
-include(cvscontroller_dep.pri)
+include($${MY_TARGET}_dep.pri)

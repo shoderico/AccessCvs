@@ -18,9 +18,11 @@ enum ObjectType
     Report,
     Macro,
     Module,
-    TableData,
+//    TableData,
     Relation,
-    Reference
+    Reference,
+    ProjectFile,
+    VBProject
 };
 
 enum GitStatus
@@ -63,7 +65,7 @@ enum ObjectDifference
 
 }
 
-class CVSMODELSHARED_EXPORT ObjectItem : public QObject
+class CVSMODEL_SHARED_EXPORT ObjectItem : public QObject
 {
     Q_OBJECT
 public:

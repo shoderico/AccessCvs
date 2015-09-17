@@ -13,7 +13,7 @@ class Application;
 }
 
 
-class CVSMODELSHARED_EXPORT ObjectModel : public QAbstractItemModel
+class CVSMODEL_SHARED_EXPORT ObjectModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
@@ -99,7 +99,9 @@ public:
         MacroObjectType = 16,
         ModuleObjectType = 32,
         ReferenceObjectType = 64,
-        AllObjectTypes      = 127,
+        ProjectFileType = 128,
+        VBProjectType = 256,
+        AllObjectTypes = 511,
     };
     Q_DECLARE_FLAGS(SelectObjectTypes, SelectObjectType)
 

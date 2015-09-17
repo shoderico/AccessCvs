@@ -10,7 +10,7 @@ class QRegularExpression;
 
 class CodecInfo;
 
-class CVSMODELSHARED_EXPORT TableDataSanitizeSetting : public QObject
+class CVSMODEL_SHARED_EXPORT TableDataSanitizeSetting : public QObject
 {
     Q_OBJECT
 public:

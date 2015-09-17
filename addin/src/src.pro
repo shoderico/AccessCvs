@@ -27,7 +27,6 @@ HEADERS += \
     addin/interface/msaddndr.h \
     addin/interface/ribbon.h \
     addin/interface/ribboncallback.h \
-    addin/addincontroller.h \
     addin/addincontrollerimpl.h \
     addin/windowwidgetmanager.h
 

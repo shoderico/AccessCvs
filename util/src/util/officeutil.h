@@ -5,7 +5,7 @@
 
 #include <QString>
 
-class UTILSHARED_EXPORT OfficeUtil
+class UTIL_SHARED_EXPORT OfficeUtil
 {
 public:
     OfficeUtil(){}

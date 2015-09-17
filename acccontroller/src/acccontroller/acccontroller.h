@@ -1,9 +1,9 @@
-#ifndef ACCESSUTILCONTROLLER_H
-#define ACCESSUTILCONTROLLER_H
+#ifndef ACCCONTROLLER_H
+#define ACCCONTROLLER_H
 
-#include "accessutilcontroller_global.h"
+#include "acccontroller_global.h"
 
-#include "addin/addincontroller.h"
+#include "addinutil/addincontroller.h"
 
 #include <QObject>
 
@@ -15,14 +15,14 @@ namespace Access {
 class Application;
 } // namespace Access
 
-class ACCESSUTILCONTROLLERSHARED_EXPORT AccessUtilController : public QObject, public AddInController
+class ACCCONTROLLER_SHARED_EXPORT AccController : public QObject, public AddInController
 {
     Q_OBJECT
 //    Q_PLUGIN_METADATA(IID "com.shoderitz.addin.AddInController" FILE "basictools.json")
     Q_INTERFACES(AddInController)
 public:
-    explicit AccessUtilController(QObject *parent = 0);
-    ~AccessUtilController();
+    explicit AccController(QObject *parent = 0);
+    ~AccController();
 
     void initialize(Access::Application *application, QWidget *parentWidget);
     QString ribbonXml();
@@ -51,4 +51,4 @@ private:
     ThreadedInvoker *m_threadedInvoker;
 };
 
-#endif // ACCESSUTILCONTROLLER_H
+#endif // ACCCONTROLLER_H

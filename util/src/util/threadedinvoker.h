@@ -7,7 +7,7 @@
 
 class QThread;
 
-class UTILSHARED_EXPORT ThreadedInvoker : public QObject
+class UTIL_SHARED_EXPORT ThreadedInvoker : public QObject
 {
     Q_OBJECT
 public:

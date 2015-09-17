@@ -4,7 +4,7 @@
 #include "cvscontroller_global.h"
 
 #include <QObject>
-#include "addin/addincontroller.h"
+#include "addinutil/addincontroller.h"
 
 class MainDialog;
 
@@ -12,7 +12,7 @@ namespace Access {
 class Application;
 } // namespace Access
 
-class CVSCONTROLLERSHARED_EXPORT CvsController : public QObject, public AddInController
+class CVSCONTROLLER_SHARED_EXPORT CvsController : public QObject, public AddInController
 {
     Q_OBJECT
 //    Q_PLUGIN_METADATA(IID "com.shoderitz.addin.AddInController" FILE "basictools.json")

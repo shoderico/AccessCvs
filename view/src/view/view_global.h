@@ -4,9 +4,9 @@
 #include <QtCore/qglobal.h>
 
 #if defined(VIEW_LIBRARY)
-#  define VIEWSHARED_EXPORT Q_DECL_EXPORT
+#  define VIEW_SHARED_EXPORT Q_DECL_EXPORT
 #else
-#  define VIEWSHARED_EXPORT Q_DECL_IMPORT
+#  define VIEW_SHARED_EXPORT Q_DECL_IMPORT
 #endif
 
 #endif // VIEW_GLOBAL_H

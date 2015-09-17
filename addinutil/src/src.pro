@@ -12,6 +12,7 @@ SOURCES += \
 
 HEADERS += \
     addinutil/addinutil.h \
+    addinutil/addincontroller.h \
     addinutil/addinutil_global.h
 
 include(../../common.pri)

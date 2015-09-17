@@ -5,7 +5,7 @@
 
 #include <QObject>
 
-class UTILSHARED_EXPORT CodecInfo : public QObject
+class UTIL_SHARED_EXPORT CodecInfo : public QObject
 {
     Q_OBJECT
 public:

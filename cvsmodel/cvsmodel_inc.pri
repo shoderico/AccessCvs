@@ -1,15 +1,18 @@
 # cvsmodel
-CVSMODEL_LIB_DIR   = $${PROJECT_LIBRARY_DIR}
-CVSMODEL_BIN_DIR   = $${PROJECT_BINARY_DIR}
-CVSMODEL_FILES = $${CVSMODEL_BIN_DIR}/cvsmodel.dll
-LIBS +=          -L$${CVSMODEL_LIB_DIR}/ -lcvsmodel
+unset(MY_TARGET)
+unset(MY_FILES)
+MY_TARGET = cvsmodel
+MY_FILES  = $${PROJECT_BINARY_DIR}/$${MY_TARGET}.dll
+CVSMODEL_FILES = $${MY_FILES}
 
-INCLUDEPATH += $${PROJECT_ROOT}/cvsmodel/src
-PRE_TARGETDEPS += $${CVSMODEL_LIB_DIR}/libcvsmodel.a
+
+LIBS           += -L$${PROJECT_LIBRARY_DIR}/ -l$${MY_TARGET}
+INCLUDEPATH    += $${PROJECT_ROOT}/$${MY_TARGET}/src
+PRE_TARGETDEPS += $${PROJECT_LIBRARY_DIR}/lib$${MY_TARGET}.a
 
 # register dlls to module/external
-DEP_DLLS_MODULE.files += $${CVSMODEL_FILES}
+DEP_DLLS_MODULE.files += $${MY_FILES}
 #DEP_DLLS_EXTERNAL.files += $${}
 
 # load self dependencies
-include(cvsmodel_dep.pri)
+include($${MY_TARGET}_dep.pri)

@@ -7,21 +7,21 @@
 QT -= gui
 QT += axcontainer
 
-TARGET = accessutil
+TARGET = accmodel
 TEMPLATE = lib
 
 CONFIG += dll
 
 LIBS += -loleacc
 
-DEFINES += ACCESSUTIL_LIBRARY
+DEFINES += ACCMODEL_LIBRARY
 
 SOURCES += \
-    accessutil/accessutil.cpp
+    accmodel/accmodel.cpp
 
 HEADERS += \
-    accessutil/accessutil_global.h \
-    accessutil/accessutil.h
+    accmodel/accmodel_global.h \
+    accmodel/accmodel.h
 
 include(../../common.pri)
 include(../../submodule.pri)

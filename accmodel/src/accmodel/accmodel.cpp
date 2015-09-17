@@ -1,4 +1,4 @@
-#include "accessutil.h"
+#include "accmodel.h"
 
 #include "util/officeutil.h"
 #include "util/getcomobject.h"
@@ -80,7 +80,7 @@ HWND GetWindowHandle(const DWORD TargetID)
     return NULL;
 }
 
-bool AccessUtil::decompile(const QString &fileName, quint64 threadIdForAttachInput)
+bool AccModel::decompile(const QString &fileName, quint64 threadIdForAttachInput)
 {
     if (!QFile(fileName).exists())
         return false;
@@ -215,7 +215,7 @@ bool AccessUtil::decompile(const QString &fileName, quint64 threadIdForAttachInp
     return true;
 }
 
-bool AccessUtil::compactRepair(Access::Application *application, const QString &fileName, const int repeatCount)
+bool AccModel::compactRepair(Access::Application *application, const QString &fileName, const int repeatCount)
 {
     if (!QFile(fileName).exists())
         return false;
@@ -257,7 +257,7 @@ bool AccessUtil::compactRepair(Access::Application *application, const QString &
     return true;
 }
 
-bool AccessUtil::openCurrentDatabase(Access::Application *application, const QString &fileName)
+bool AccModel::openCurrentDatabase(Access::Application *application, const QString &fileName)
 {
     HWND targetHwnd = (HWND)application->hWndAccessApp();
     DWORD targetProcessId = 0;
@@ -302,7 +302,7 @@ bool AccessUtil::openCurrentDatabase(Access::Application *application, const QSt
     return true;
 }
 
-quint64 AccessUtil::getAccessThreadId(Access::Application *application)
+quint64 AccModel::getAccessThreadId(Access::Application *application)
 {
     HWND currentHwnd = (HWND)application->hWndAccessApp();
     DWORD currentProcessId = 0;
@@ -311,13 +311,13 @@ quint64 AccessUtil::getAccessThreadId(Access::Application *application)
     return currentThreadId;
 }
 
-Access::Application *AccessUtil::createAccessApplication(QObject *parent)
+Access::Application *AccModel::createAccessApplication(QObject *parent)
 {
     Access::Application *application = new Access::Application(parent);
     return application;
 }
 
-void AccessUtil::quitAndDeleteApplication(Access::Application *application)
+void AccModel::quitAndDeleteApplication(Access::Application *application)
 {
     application->Quit();
     delete application;

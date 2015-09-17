@@ -11,7 +11,7 @@
 #include "officelib_global.h"
 // Define this symbol to __declspec(dllexport) or __declspec(dllimport)
 #ifndef DAO_EXPORT
-#define DAO_EXPORT OFFICELIBSHARED_EXPORT
+#define DAO_EXPORT OFFICELIB_SHARED_EXPORT
 #endif
 
 //#ifndef QAX_DUMPCPP_DAO_H

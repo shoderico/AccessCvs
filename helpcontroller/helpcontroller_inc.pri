@@ -1,15 +1,18 @@
 # helpcontroller
-HELPCONTROLLER_LIB_DIR   = $${PROJECT_LIBRARY_DIR}
-HELPCONTROLLER_BIN_DIR   = $${PROJECT_BINARY_DIR}
-HELPCONTROLLER_FILES = $${HELPCONTROLLER_BIN_DIR}/helpcontroller.dll
-LIBS +=          -L$${HELPCONTROLLER_LIB_DIR}/ -lhelpcontroller
+unset(MY_TARGET)
+unset(MY_FILES)
+MY_TARGET = helpcontroller
+MY_FILES  = $${PROJECT_BINARY_DIR}/$${MY_TARGET}.dll
+HELPCONTROLLER_FILES = $${MY_FILES}
 
-INCLUDEPATH += $${PROJECT_ROOT}/helpcontroller/src
-PRE_TARGETDEPS += $${HELPCONTROLLER_LIB_DIR}/libhelpcontroller.a
+
+LIBS           += -L$${PROJECT_LIBRARY_DIR}/ -l$${MY_TARGET}
+INCLUDEPATH    += $${PROJECT_ROOT}/$${MY_TARGET}/src
+PRE_TARGETDEPS += $${PROJECT_LIBRARY_DIR}/lib$${MY_TARGET}.a
 
 # register dlls to module/external
-DEP_DLLS_MODULE.files += $${HELPCONTROLLER_FILES}
+DEP_DLLS_MODULE.files += $${MY_FILES}
 #DEP_DLLS_EXTERNAL.files += $${}
 
 # load self dependencies
-include(helpcontroller_dep.pri)
+include($${MY_TARGET}_dep.pri)

@@ -7,7 +7,7 @@
 #include <QString>
 #include "objectitem.h"
 
-class CVSMODELSHARED_EXPORT ObjectItems : public QMap< Model::ObjectType, QMap< QString, ObjectItem* > >
+class CVSMODEL_SHARED_EXPORT ObjectItems : public QMap< Model::ObjectType, QMap< QString, ObjectItem* > >
 {
 public:
     ObjectItems();

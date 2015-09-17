@@ -11,7 +11,7 @@
 #include "officelib_global.h"
 // Define this symbol to __declspec(dllexport) or __declspec(dllimport)
 #ifndef VBIDE_EXPORT
-#define VBIDE_EXPORT OFFICELIBSHARED_EXPORT
+#define VBIDE_EXPORT OFFICELIB_SHARED_EXPORT
 #endif
 
 #include <qaxobject.h>
