@@ -1907,14 +1907,14 @@ bool ReferenceSetting::importFromTempDirToProject(QAxObject *object, const QStri
 ProjectFileSetting::ProjectFileSetting(ProjectSetting *parent)
     : ProjectLevelObjectSetting(parent)
 {
-    m_objectName          = "ProjectFile";
+    m_objectName          = "AccessProject";
 
     m_objectType          = Model::ProjectFile;
     m_accessObjectType    = -1;
     m_objectPathName      = "";
     m_containerName       = "";
 
-    m_tempFileExtension   = "proj";
+    m_tempFileExtension   = "accproj";
     m_designFileExtension = m_tempFileExtension;
     m_moduleFileExtension = "";
     m_existCheckExtension = m_tempFileExtension;
@@ -2123,14 +2123,14 @@ void ProjectFileSetting::loadProperties(QMap<QString, ProjectFileSetting::Projec
 VBProjectSetting::VBProjectSetting(ProjectSetting *parent)
     : ProjectLevelObjectSetting(parent)
 {
-    m_objectName          = "VBProject";
+    m_objectName          = "VBEProject";
 
     m_objectType          = Model::VBProject;
     m_accessObjectType    = -1;
     m_objectPathName      = "";
     m_containerName       = "";
 
-    m_tempFileExtension   = "vbproj";
+    m_tempFileExtension   = "vbeproj";
     m_designFileExtension = m_tempFileExtension;
     m_moduleFileExtension = "";
     m_existCheckExtension = m_tempFileExtension;
