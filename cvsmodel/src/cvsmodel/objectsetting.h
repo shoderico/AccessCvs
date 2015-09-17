@@ -68,6 +68,7 @@ public:
 
     virtual bool exportFromProjectToTempDir(QAxObject* object, const QString &objectName) = 0;
     virtual bool importFromTempDirToProject(QAxObject* object, const QString &objectName) = 0;
+    virtual bool afterImportFromTempDirToProject(QAxObject* object, const QString &objectName);
 
     virtual bool sanitizeTempDir(QAxObject* object, const QString &objectName) = 0;
     virtual bool desanitizeTempDir(QAxObject* object, const QString &objectName) = 0;
@@ -269,7 +270,7 @@ public:
     virtual bool        prepareItemCollection();
     virtual int         itemCount();
     virtual QAxObject  *itemUnsafePtr(const QVariant &index);
-    virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
+    virtual bool        afterImportFromTempDirToProject(QAxObject* object, const QString &objectName);
 protected:
     virtual bool afterSanitizeTempDir(QAxObject *object, const QString &objectName, SanitizeSetting *sanitizer);
     ComPtr<Access::AllReports> m_objects;

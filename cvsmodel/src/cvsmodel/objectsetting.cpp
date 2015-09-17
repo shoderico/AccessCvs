@@ -69,6 +69,13 @@ ObjectItem *ObjectSetting::createItemFromSourceDir(QFileInfo &fileInfo, QObject 
     return item;
 }
 
+bool ObjectSetting::afterImportFromTempDirToProject(QAxObject *object, const QString &objectName)
+{
+    Q_UNUSED(object)
+    Q_UNUSED(objectName)
+    return true;
+}
+
 bool ObjectSetting::copyFromTempDirToSourceDir(const QString &objectName)
 {
     deleteAllFileFromSourceDir(objectName);
@@ -1337,10 +1344,9 @@ QAxObject *ReportSetting::itemUnsafePtr(const QVariant &index)
     return m_objects->Item(index);
 }
 
-bool ReportSetting::importFromTempDirToProject(QAxObject *object, const QString &objectName)
+bool ReportSetting::afterImportFromTempDirToProject(QAxObject *object, const QString &objectName)
 {
-    if ( !AccessDesignObjectSetting::importFromTempDirToProject(object, objectName) )
-        return false;
+    Q_UNUSED(object)
 
     // if report-prop-file doesn't exist, return true (it's normal)
     if ( !QFile( filePath( TempDir, ReportPropFile, objectName ) ).exists() )
