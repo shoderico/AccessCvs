@@ -129,6 +129,8 @@ QVariant ObjectModel::data(const QModelIndex &index, int role) const
             case Model::Macro:      return QIcon( ":/images/script.png" );
             case Model::Module:     return QIcon( ":/images/page.png" );
             case Model::Reference:  return QIcon( ":/images/page_link.png" );
+            case Model::ProjectFile: return QIcon( ":/images/page_link.png" );
+            case Model::VBProject:   return QIcon( ":/images/page_link.png" );
 
         default:
             break;
@@ -675,6 +677,8 @@ void ObjectModel::getItems(ObjectItems *pItems, ItemsTypes itemsType, SelectObje
             case Model::Macro:      if ( !(objectTypes & ObjectModel::MacroObjectType    ) ) continue; break;
             case Model::Module:     if ( !(objectTypes & ObjectModel::ModuleObjectType   ) ) continue; break;
             case Model::Reference:  if ( !(objectTypes & ObjectModel::ReferenceObjectType) ) continue; break;
+            case Model::ProjectFile:  if ( !(objectTypes & ObjectModel::ProjectFileType) ) continue; break;
+            case Model::VBProject:  if ( !(objectTypes & ObjectModel::VBProjectType) ) continue; break;
             default: break;
         }
 
@@ -1697,19 +1701,40 @@ void ObjectModel::importFromTempDirToProject(ObjectItems *allTargets)
 
         QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
         QStringList objectNames = targets.keys();
-        ProgressNotifier subProg(mainProg.type(), objectNames.count(), this);
 
-        for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
+        // main process
         {
-            subProg.next();
-            ObjectItem *item = targets[ (*it) ];
-            if (item->inProject() == Model::Present)
+            ProgressNotifier subProg(mainProg.type(), objectNames.count(), this);
+
+            for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
             {
-                ComPtr<QAxObject> object = os->itemUnsafePtr( (*it) );
-                os->importFromTempDirToProject(object.ptr(), (*it));
+                subProg.next();
+                ObjectItem *item = targets[ (*it) ];
+                if (item->inProject() == Model::Present)
+                {
+                    ComPtr<QAxObject> object = os->itemUnsafePtr( (*it) );
+                    os->importFromTempDirToProject(object.ptr(), (*it));
+                }
+                else
+                    os->importFromTempDirToProject( NULL, (*it) );
             }
-            else
-                os->importFromTempDirToProject( NULL, (*it) );
+        }
+        // post process
+        {
+            ProgressNotifier subProg(mainProg.type(), objectNames.count(), this);
+
+            for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
+            {
+                subProg.next();
+                ObjectItem *item = targets[ (*it) ];
+                if (item->inProject() == Model::Present)
+                {
+                    ComPtr<QAxObject> object = os->itemUnsafePtr( (*it) );
+                    os->afterImportFromTempDirToProject(object.ptr(), (*it));
+                }
+                else
+                    os->afterImportFromTempDirToProject( NULL, (*it) );
+            }
         }
     }
 }

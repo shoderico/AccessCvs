@@ -7,6 +7,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <QSettings>
+#include <QRegularExpression>
+#include <QUuid>
 
 #include "officelib/officelib.h"
 
@@ -65,6 +67,13 @@ ObjectItem *ObjectSetting::createItemFromSourceDir(QFileInfo &fileInfo, QObject 
     item->setInSourceDir( Model::Present );
 
     return item;
+}
+
+bool ObjectSetting::afterImportFromTempDirToProject(QAxObject *object, const QString &objectName)
+{
+    Q_UNUSED(object)
+    Q_UNUSED(objectName)
+    return true;
 }
 
 bool ObjectSetting::copyFromTempDirToSourceDir(const QString &objectName)
@@ -1335,10 +1344,9 @@ QAxObject *ReportSetting::itemUnsafePtr(const QVariant &index)
     return m_objects->Item(index);
 }
 
-bool ReportSetting::importFromTempDirToProject(QAxObject *object, const QString &objectName)
+bool ReportSetting::afterImportFromTempDirToProject(QAxObject *object, const QString &objectName)
 {
-    if ( !AccessDesignObjectSetting::importFromTempDirToProject(object, objectName) )
-        return false;
+    Q_UNUSED(object)
 
     // if report-prop-file doesn't exist, return true (it's normal)
     if ( !QFile( filePath( TempDir, ReportPropFile, objectName ) ).exists() )
@@ -1676,30 +1684,30 @@ void ModuleSetting::determineCodecForProject()
 
 
 //=============================================================================
-// Reference
+// ProjectLevelObject : virtual
 
-ReferenceSetting::ReferenceSetting(ProjectSetting *parent)
+ProjectLevelObjectSetting::ProjectLevelObjectSetting(ProjectSetting *parent)
     : ObjectSetting(parent)
-    , m_objectName("Reference")
+//    , m_objectName("Reference")
 {
-    m_objectType          = Model::Reference;
-    m_accessObjectType    = -1;
-    m_objectPathName      = "";
-    m_containerName       = "";
+//    m_objectType          = Model::Reference;
+//    m_accessObjectType    = -1;
+//    m_objectPathName      = "";
+//    m_containerName       = "";
 
-    m_tempFileExtension   = "ref";
-    m_designFileExtension = m_tempFileExtension;
-    m_moduleFileExtension = "";
-    m_existCheckExtension = m_tempFileExtension;
+//    m_tempFileExtension   = "ref";
+//    m_designFileExtension = m_tempFileExtension;
+//    m_moduleFileExtension = "";
+//    m_existCheckExtension = m_tempFileExtension;
 }
 
-bool ReferenceSetting::isTargetObject(QAxObject *object) const
+bool ProjectLevelObjectSetting::isTargetObject(QAxObject *object) const
 {
     Q_UNUSED(object)
     return true;
 }
 
-ObjectItem *ReferenceSetting::createItemFromProject(QAxObject *object, QObject *parent)
+ObjectItem *ProjectLevelObjectSetting::createItemFromProject(QAxObject *object, QObject *parent)
 {
     Q_UNUSED(object)
     ObjectItem *item = new ObjectItem(parent);
@@ -1714,11 +1722,74 @@ ObjectItem *ReferenceSetting::createItemFromProject(QAxObject *object, QObject *
     return item;
 }
 
+bool ProjectLevelObjectSetting::sanitizeTempDir(QAxObject *object, const QString &objectName)
+{
+    Q_UNUSED(object)
+    Q_UNUSED(objectName)
+    // no sanitization required
+    return true;
+}
+
+bool ProjectLevelObjectSetting::desanitizeTempDir(QAxObject *object, const QString &objectName)
+{
+    Q_UNUSED(object)
+    Q_UNUSED(objectName)
+    // no sanitization required
+    return true;
+}
+
+bool ProjectLevelObjectSetting::prepareItemCollection()
+{
+    // different from others.
+    if (m_projectSetting->isMDB() || m_projectSetting->isADP())
+        return true;
+    return false;
+}
+
+int ProjectLevelObjectSetting::itemCount()
+{
+    // different from others.
+    if (m_projectSetting->isMDB() || m_projectSetting->isADP())
+        return 1;
+    return 0;
+}
+
+QAxObject *ProjectLevelObjectSetting::itemUnsafePtr(const QVariant &index)
+{
+    Q_UNUSED(index)
+    // different from others.
+    if (m_projectSetting->isMDB() || m_projectSetting->isADP())
+        return NULL; // unused
+    return 0;
+}
+
+
+
+//=============================================================================
+// Reference
+
+ReferenceSetting::ReferenceSetting(ProjectSetting *parent)
+    : ProjectLevelObjectSetting(parent)
+{
+    m_objectName          = "Reference";
+
+    m_objectType          = Model::Reference;
+    m_accessObjectType    = -1;
+    m_objectPathName      = "";
+    m_containerName       = "";
+
+    m_tempFileExtension   = "ref";
+    m_designFileExtension = m_tempFileExtension;
+    m_moduleFileExtension = "";
+    m_existCheckExtension = m_tempFileExtension;
+}
+
 bool ReferenceSetting::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
+    Q_UNUSED(objectName)
 
-    deleteAllFileFromTempDir(objectName);
+    deleteAllFileFromTempDir(m_objectName);
 
     ComPtr<Access::References> references = m_projectSetting->application()->References();
     int nCount = references->Count();
@@ -1818,46 +1889,307 @@ bool ReferenceSetting::importFromTempDirToProject(QAxObject *object, const QStri
     return true;
 }
 
-bool ReferenceSetting::sanitizeTempDir(QAxObject *object, const QString &objectName)
+
+
+//=============================================================================
+// ProjectFile
+
+ProjectFileSetting::ProjectFileSetting(ProjectSetting *parent)
+    : ProjectLevelObjectSetting(parent)
+{
+    m_objectName          = "ProjectFile";
+
+    m_objectType          = Model::ProjectFile;
+    m_accessObjectType    = -1;
+    m_objectPathName      = "";
+    m_containerName       = "";
+
+    m_tempFileExtension   = "proj";
+    m_designFileExtension = m_tempFileExtension;
+    m_moduleFileExtension = "";
+    m_existCheckExtension = m_tempFileExtension;
+}
+
+bool ProjectFileSetting::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
-    // no sanitization required
+
+    deleteAllFileFromTempDir(m_objectName);
+
+    QMap<QString, ProjectFileProperty*> propMap;
+    loadProperties(propMap);
+
+    QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
+    settings.setIniCodec( m_codecForCvs->codec() );
+    QStringList propNames( propMap.keys() );
+    propNames.sort(Qt::CaseSensitive);
+    foreach (const QString propName, propNames)
+    {
+        ProjectFileProperty *prop = propMap.value(propName);
+
+        //[ANSI%20Query%20Mode]
+        //Name=ANSI Query Mode
+        //Type=4
+        //Value=0
+        settings.beginGroup(prop->Name);
+        settings.setValue( "Name", prop->Name );
+        if (prop->Type != -1 )
+            settings.setValue( "Type", prop->Type );
+        settings.setValue( "Value", prop->Value );
+        settings.endGroup();
+
+    }
+
     return true;
 }
 
-bool ReferenceSetting::desanitizeTempDir(QAxObject *object, const QString &objectName)
+bool ProjectFileSetting::importFromTempDirToProject(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
-    // no sanitization required
-    return true;
-}
 
-bool ReferenceSetting::prepareItemCollection()
-{
-    // different from others.
-    if (m_projectSetting->isMDB() || m_projectSetting->isADP())
+    if ( !QFile( filePath(TempDir, TempFile, m_objectName) ).exists())
         return true;
-    return false;
+
+    // properties in tempdir
+    QMap<QString, ProjectFileProperty*> propMapTempDir;
+    QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
+    settings.setIniCodec( m_codecForCvs->codec() );
+    QStringList propNames = settings.childGroups();
+    foreach ( const QString propName, propNames )
+    {
+        settings.beginGroup(propName);
+        propMapTempDir.insert( propName, new ProjectFileProperty(propName, settings.value( "Type", -1 ).toInt(), settings.value("Value")) );
+        settings.endGroup();
+    }
+
+    // properties in project
+    QMap<QString, ProjectFileProperty*> propMapProject;
+    loadProperties(propMapProject);
+
+    QList<ProjectFileProperty*> inBoth;
+    QList<ProjectFileProperty*> inProjectOnly;
+    QList<ProjectFileProperty*> inTempDirOnly;
+
+    // both exists
+    foreach ( const QString &propName, propMapTempDir.keys() )
+        if ( propMapProject.contains( propName ))
+            inBoth << propMapTempDir.value(propName);
+
+    // exists in project only
+    foreach ( const QString &propName, propMapProject.keys() )
+        if ( !propMapTempDir.contains( propName ))
+            inProjectOnly << propMapProject.value(propName);
+
+    // exists in tempdir only
+    foreach ( const QString &propName, propMapTempDir.keys() )
+        if ( !propMapProject.contains( propName ))
+            inTempDirOnly << propMapTempDir.value(propName);
+
+
+    if (m_projectSetting->isMDB())
+    {
+        ComPtr<DAO::Database> currentDb = m_projectSetting->application()->CurrentDb();
+        ComPtr<DAO::Properties> props = currentDb->Properties();
+
+        // both exists : update
+        foreach ( ProjectFileProperty *prop , inBoth )
+        {
+            ComPtr<DAO::Property> p = props->Item( prop->Name );
+            p->SetValue( prop->Value );
+        }
+
+        // exists in project only : remove
+        foreach ( ProjectFileProperty *prop , inProjectOnly )
+        {
+            props->Delete( prop->Name );
+        }
+
+        // exists in tempdir only : insert
+        foreach ( ProjectFileProperty *prop , inTempDirOnly )
+        {
+            ComPtr<DAO::Property> p = currentDb->CreateProperty( prop->Name, prop->Type, prop->Value );
+            IDispatch *idisp = 0;
+            p->queryInterface( QUuid(IID_IDispatch), (void**)&idisp);
+            if (idisp)
+            {
+                props->Append( idisp );
+                idisp->Release();
+            }
+        }
+    }
+    else if (m_projectSetting->isADP())
+    {
+        ComPtr<Access::CurrentProject> currentProject = m_projectSetting->application()->CurrentProject();
+        ComPtr<Access::AccessObjectProperties> props = currentProject->Properties();
+
+        // both exists : update
+        foreach ( ProjectFileProperty *prop , inBoth )
+        {
+            ComPtr<Access::AccessObjectProperty> p = props->Item( prop->Name );
+            p->SetValue( prop->Value );
+        }
+
+        // exists in project only : remove
+        foreach ( ProjectFileProperty *prop , inProjectOnly )
+        {
+            props->Remove( prop->Name );
+        }
+
+        // exists in tempdir only : insert
+        foreach ( ProjectFileProperty *prop , inTempDirOnly )
+        {
+            props->Add( prop->Name, prop->Value );
+        }
+    }
+
+    return true;
 }
 
-int ReferenceSetting::itemCount()
+void ProjectFileSetting::loadProperties(QMap<QString, ProjectFileSetting::ProjectFileProperty *> &propMap)
 {
-    // different from others.
-    if (m_projectSetting->isMDB() || m_projectSetting->isADP())
-        return 1;
-    return 0;
+    QString pattern;
+    pattern  = "^(";
+    // DAO.Property : Read-Only
+    pattern += "CollatingOrder";
+    pattern += "|Connect";
+    pattern += "|Connection";
+    pattern += "|DesignMasterID";
+    pattern += "|Name";
+    pattern += "|QueryTimeout";
+    pattern += "|RecordsAffected";
+    pattern += "|ReplicaID";
+    pattern += "|Transactions";
+    pattern += "|Updatable";
+    pattern += "|Version";
+    // Application Properties : Read-Only
+    pattern += "|AccessVersion";
+    pattern += "|Build";
+    pattern += "|ProjVer";
+    pattern += "|HasOfflineLists";
+    pattern += "|NavPane .*";
+    pattern += "";
+    pattern += ")$";
+    QRegularExpression regExp;
+    regExp.setPattern( pattern );
+
+    if ( m_projectSetting->isMDB() )
+    {
+        ComPtr<DAO::Database> currentDb = m_projectSetting->application()->CurrentDb();
+        ComPtr<DAO::Properties> props = currentDb->Properties();
+        for ( int i = 0 ; i < props->Count() ; ++i )
+        {
+            ComPtr<DAO::Property> prop = props->Item(i);
+            if (!regExp.match(prop->Name()).hasMatch())
+            {
+                // write Name, Type, Value
+                propMap.insert( prop->Name(), new ProjectFileProperty(prop->Name(), prop->Type(), prop->Value()) );
+            }
+        }
+    }
+    else if (m_projectSetting->isADP())
+    {
+        ComPtr<Access::CurrentProject> currentProject = m_projectSetting->application()->CurrentProject();
+        ComPtr<Access::AccessObjectProperties> props = currentProject->Properties();
+
+        for ( int i = 0 ; i < props->Count() ; ++i )
+        {
+            ComPtr<Access::AccessObjectProperty> prop = props->Item(i);
+            if (!regExp.match(prop->Name()).hasMatch())
+            {
+                propMap.insert( prop->Name(), new ProjectFileProperty(prop->Name(), -1, prop->Value()));
+            }
+        }
+    }
 }
 
-QAxObject *ReferenceSetting::itemUnsafePtr(const QVariant &index)
+
+
+
+//=============================================================================
+// VBProject
+
+VBProjectSetting::VBProjectSetting(ProjectSetting *parent)
+    : ProjectLevelObjectSetting(parent)
 {
-    Q_UNUSED(index)
-    // different from others.
-    if (m_projectSetting->isMDB() || m_projectSetting->isADP())
-        return m_projectSetting->application()->References();
-    return 0;
+    m_objectName          = "VBProject";
+
+    m_objectType          = Model::VBProject;
+    m_accessObjectType    = -1;
+    m_objectPathName      = "";
+    m_containerName       = "";
+
+    m_tempFileExtension   = "vbproj";
+    m_designFileExtension = m_tempFileExtension;
+    m_moduleFileExtension = "";
+    m_existCheckExtension = m_tempFileExtension;
 }
+
+bool VBProjectSetting::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
+{
+    Q_UNUSED(object)
+    Q_UNUSED(objectName)
+
+    deleteAllFileFromTempDir(m_objectName);
+
+    QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
+    settings.setIniCodec( m_codecForCvs->codec() );
+
+    ComPtr<VBIDE::VBProject> vbProject = currentVBProject();
+    if (vbProject.is())
+    {
+        settings.setValue("Name",           vbProject->Name());
+        settings.setValue("Description",    vbProject->Description());
+        settings.setValue("HelpContextID",  vbProject->HelpContextID());
+        settings.setValue("HelpFile",       vbProject->HelpFile());
+    }
+
+    return true;
+}
+
+bool VBProjectSetting::importFromTempDirToProject(QAxObject *object, const QString &objectName)
+{
+    Q_UNUSED(object)
+    Q_UNUSED(objectName)
+
+    if ( !QFile( filePath(TempDir, TempFile, m_objectName) ).exists())
+        return true;
+
+    QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
+    settings.setIniCodec( m_codecForCvs->codec() );
+
+    ComPtr<VBIDE::VBE> vbe = m_projectSetting->application()->VBE();
+    ComPtr<VBIDE::VBProject> vbProject = currentVBProject();
+    if (vbProject.is())
+    {
+        vbProject->SetName(             settings.value("Name",          QString()).toString() );
+        vbProject->SetDescription(      settings.value("Description",   QString()).toString() );
+        vbProject->SetHelpContextID(    settings.value("HelpContextID", 0).toInt() );
+        vbProject->SetHelpFile(         settings.value("HelpFile",      QString()).toString() );
+    }
+
+    return true;
+}
+
+VBIDE::VBProject *VBProjectSetting::currentVBProject()
+{
+    ComPtr<Access::CurrentProject> currentProject = m_projectSetting->application()->CurrentProject();
+    QString fileName = currentProject->FullName();
+
+    ComPtr<VBIDE::VBE> vbe = m_projectSetting->application()->VBE();
+    ComPtr<VBIDE::VBProjects> vbProjects = vbe->VBProjects();
+    for ( int i = 1 ; i <= vbProjects->Count(); ++i )
+    {
+        ComPtr<VBIDE::VBProject> vbp = vbProjects->Item(i);
+        if (vbp->FileName() == fileName)
+        {
+            return vbProjects->Item(i);
+        }
+    }
+    return NULL;
+}
+
 
 
 

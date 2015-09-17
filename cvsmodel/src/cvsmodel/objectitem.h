@@ -20,7 +20,9 @@ enum ObjectType
     Module,
 //    TableData,
     Relation,
-    Reference
+    Reference,
+    ProjectFile,
+    VBProject
 };
 
 enum GitStatus
