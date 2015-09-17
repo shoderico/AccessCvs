@@ -353,6 +353,16 @@ ObjectItem *TableDefSetting::createItemFromProject(QAxObject *object, QObject *p
     return item;
 }
 
+ObjectItem *TableDefSetting::createItemFromSourceDir(QFileInfo &fileInfo, QObject *parent)
+{
+    ObjectItem *item = ObjectSetting::createItemFromSourceDir(fileInfo, parent);
+    if (item)
+    {
+        item->setHasData( m_tableDataTargets.contains( item->name() ) );
+    }
+    return item;
+}
+
 bool TableDefSetting::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
 {
     deleteAllFileFromTempDir(objectName);
