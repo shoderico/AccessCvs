@@ -2062,11 +2062,7 @@ void ProjectFileSetting::loadProperties(QMap<QString, ProjectFileSetting::Projec
     pattern += "|Build";
     pattern += "|ProjVer";
     pattern += "|HasOfflineLists";
-    pattern += "|NavPane Category";
-    pattern += "|NavPane Closed";
-    pattern += "|NavPane Width";
-    pattern += "|NavPane View";
-    pattern += "|NavPane Sort";
+    pattern += "|NavPane .*";
     pattern += "";
     pattern += ")$";
     QRegularExpression regExp;
