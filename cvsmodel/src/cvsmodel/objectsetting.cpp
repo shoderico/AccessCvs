@@ -576,6 +576,10 @@ QAxObject *TableDefSetting::itemUnsafePtr(const QVariant &index)
 
 void TableDefSetting::loadSettings(QSettings *settings)
 {
+    Q_UNUSED(settings)
+
+    // QSettings
+    /*
     // FIXME: groupName, keyName must be class level
     settings->beginGroup("TableDef");
     {
@@ -591,10 +595,65 @@ void TableDefSetting::loadSettings(QSettings *settings)
         settings->endArray();
     }
     settings->endGroup();
+    */
+
+    // Implement Own
+    QString settingsFilePath = m_projectSetting->sourcePath() + "\\" + "TableDef.settings";
+
+    m_tableDataTargets.clear();
+
+    QFile file(settingsFilePath);
+    if (!file.exists())
+        return;
+
+    file.open(QIODevice::ReadOnly);
+    QTextStream stream( &file );
+    stream.setGenerateByteOrderMark( m_codecForCvs->bom() );
+    stream.setCodec( m_codecForCvs->codec() );
+
+    QRegularExpression regExpBegin;
+    regExpBegin.setPattern("^\\s*Begin (.*)$");
+    QRegularExpression regExpEnd;
+    regExpEnd.setPattern("^\\s*End$");
+    QRegularExpression regExpKeyValue;
+    regExpKeyValue.setPattern("^\\s*([^=]+) =(.*)$");
+
+    while (!stream.atEnd())
+    {
+        QString line = stream.readLine();
+        QRegularExpressionMatch matchBegin = regExpBegin.match(line);
+        if (matchBegin.hasMatch())
+        {
+            QString elementName = matchBegin.captured(1);
+            if (elementName == "TableData")
+            {
+                while (!stream.atEnd())
+                {
+                    line = stream.readLine();
+
+                    if (regExpEnd.match(line).hasMatch())
+                        break;
+
+                    QRegularExpressionMatch matchKeyValue = regExpKeyValue.match(line);
+                    if (matchKeyValue.hasMatch())
+                    {
+                        QString value = matchKeyValue.captured(2);
+                        m_tableDataTargets.append(value);
+                    }
+                }
+            }
+        }
+    }
+
+    file.close();
 }
 
 void TableDefSetting::saveSettings(QSettings *settings)
 {
+    Q_UNUSED(settings)
+
+    // QSettings
+    /*
     // FIXME: groupName, keyName must be class level
     settings->beginGroup("TableDef");
     {
@@ -609,6 +668,33 @@ void TableDefSetting::saveSettings(QSettings *settings)
         settings->endArray();
     }
     settings->endGroup();
+    */
+
+    // Implement Own
+    QString settingsFilePath = m_projectSetting->sourcePath() + "\\" + "TableDef.settings";
+
+    if (QFile(settingsFilePath).exists())
+        QFile(settingsFilePath).remove();
+
+    QFile file(settingsFilePath);
+    file.open(QIODevice::WriteOnly);
+    QTextStream stream( &file );
+    stream.setGenerateByteOrderMark( m_codecForCvs->bom() );
+    stream.setCodec( m_codecForCvs->codec() );
+    QString lineEnd = m_codecForCvs->lineEnd();
+
+    stream << "Begin TableData" << lineEnd;
+    {
+        QStringList tableNames = m_tableDataTargets;
+        tableNames.sort(Qt::CaseSensitive);
+        for ( QStringList::iterator it = tableNames.begin() ; it != tableNames.end() ; ++it )
+        {
+            stream << "    " << "TableName" << " =" << (*it) << lineEnd;
+        }
+    }
+    stream << "End" << lineEnd;
+
+    file.close();
 }
 
 void TableDefSetting::setTableDataTargets(QStringList *newTargets)
@@ -1804,6 +1890,8 @@ bool ReferenceSetting::exportFromProjectToTempDir(QAxObject *object, const QStri
     ComPtr<Access::References> references = m_projectSetting->application()->References();
     int nCount = references->Count();
 
+    // QSettings
+    /*
     QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
     settings.setIniCodec( m_codecForCvs->codec() );
 
@@ -1833,6 +1921,43 @@ bool ReferenceSetting::exportFromProjectToTempDir(QAxObject *object, const QStri
 
     }
     settings.endArray();
+    */
+
+    // Implement Own
+    QFile file( filePath(TempDir, TempFile, m_objectName) );
+    file.open(QIODevice::WriteOnly);
+    QTextStream stream( &file );
+    stream.setGenerateByteOrderMark( m_codecForCvs->bom() );
+    stream.setCodec( m_codecForCvs->codec() );
+    QString lineEnd = m_codecForCvs->lineEnd();
+
+    for ( int i = 1 ; i <= nCount ; ++i )
+    {
+        ComPtr<Access::Reference> reference = references->Item( i );
+
+        QString name     = reference->Name();
+        bool    builtIn  = reference->BuiltIn();
+        QString guid     = reference->Guid();
+        int     major    = reference->Major();
+        int     minor    = reference->Minor();
+        QString fullPath = reference->FullPath();
+
+        if ( !guid.isEmpty() )
+            fullPath = "";
+
+        stream << "Begin Reference" << lineEnd;
+
+        stream << "    " << "BuildIn"   << " =" << (builtIn ? "true" : "false") << lineEnd;
+        stream << "    " << "Name"      << " =" << name                         << lineEnd;
+        stream << "    " << "Guid"      << " =" << guid                         << lineEnd;
+        stream << "    " << "Major"     << " =" << QString::number(major)       << lineEnd;
+        stream << "    " << "Minor"     << " =" << QString::number(minor)       << lineEnd;
+        stream << "    " << "FullPath"  << " =" << fullPath                     << lineEnd;
+
+        stream << "End" << lineEnd;
+    }
+
+    file.close();
 
     return true;
 }
@@ -1863,6 +1988,8 @@ bool ReferenceSetting::importFromTempDirToProject(QAxObject *object, const QStri
     }
 
 
+    // QSettings
+    /*
     QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
     settings.setIniCodec( m_codecForCvs->codec() );
 
@@ -1895,6 +2022,87 @@ bool ReferenceSetting::importFromTempDirToProject(QAxObject *object, const QStri
         }
     }
     settings.endArray();
+    */
+
+    // Implement Own
+    QFile file( filePath(TempDir, TempFile, m_objectName) );
+    file.open(QIODevice::ReadOnly);
+    QTextStream stream( &file );
+    stream.setGenerateByteOrderMark( m_codecForCvs->bom() );
+    stream.setCodec( m_codecForCvs->codec() );
+
+    QRegularExpression regExpBegin;
+    regExpBegin.setPattern("^\\s*Begin (.*)$");
+    QRegularExpression regExpEnd;
+    regExpEnd.setPattern("^\\s*End$");
+    QRegularExpression regExpKeyValue;
+    regExpKeyValue.setPattern("^\\s*([^=]+) =(.*)$");
+
+    while (!stream.atEnd())
+    {
+        QString line = stream.readLine();
+
+        QRegularExpressionMatch matchBegin = regExpBegin.match(line);
+        if (matchBegin.hasMatch())
+        {
+            QString element = matchBegin.captured(1);
+            if (element == "Reference")
+            {
+                QString name     ;
+                bool    builtIn  = true;
+                QString guid     ;
+                int     major    = 0;
+                int     minor    = 0;
+                QString fullPath ;
+
+                while (!stream.atEnd())
+                {
+                    line = stream.readLine();
+
+                    if (regExpEnd.match(line).hasMatch())
+                        break;
+
+                    QRegularExpressionMatch matchKeyValue = regExpKeyValue.match(line);
+                    if (matchKeyValue.hasMatch())
+                    {
+                        QString key = matchKeyValue.captured(1);
+                        QString value = matchKeyValue.captured(2);
+
+                        if (key == "Name")
+                            name = value;
+                        else if (key == "BuiltIn")
+                            builtIn = ( (value == "true") ? true : false );
+                        else if (key == "Guid")
+                            guid = value;
+                        else if (key == "Major")
+                            major = value.toInt();
+                        else if (key == "Minor")
+                            minor = value.toInt();
+                        else if (key == "FullPath")
+                            fullPath = value;
+                    }
+                }
+
+                if ( !builtIn )
+                {
+                    if ( !guid.isEmpty() )
+                    {
+                        ComPtr<Access::Reference> reference = references->AddFromGuid(guid, major, minor);
+                        Q_UNUSED(reference)
+                        // NOTE: error 32813 may occur : The reference is already present in the access project
+                    }
+                    else
+                    {
+                        ComPtr<Access::Reference> reference = references->AddFromFile(fullPath);
+                        Q_UNUSED(reference)
+                    }
+                }
+
+            }
+        }
+    }
+
+    file.close();
 
     return true;
 }
@@ -1930,26 +2138,31 @@ bool ProjectFileSetting::exportFromProjectToTempDir(QAxObject *object, const QSt
     QMap<QString, ProjectFileProperty*> propMap;
     loadProperties(propMap);
 
-    QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
-    settings.setIniCodec( m_codecForCvs->codec() );
-    QStringList propNames( propMap.keys() );
-    propNames.sort(Qt::CaseSensitive);
-    foreach (const QString propName, propNames)
+    // QSettings
     {
-        ProjectFileProperty *prop = propMap.value(propName);
+        QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
+        settings.setIniCodec( m_codecForCvs->codec() );
+        QStringList propNames( propMap.keys() );
+        propNames.sort(Qt::CaseSensitive);
+        foreach (const QString propName, propNames)
+        {
+            ProjectFileProperty *prop = propMap.value(propName);
 
-        //[ANSI%20Query%20Mode]
-        //Name=ANSI Query Mode
-        //Type=4
-        //Value=0
-        settings.beginGroup(prop->Name);
-        settings.setValue( "Name", prop->Name );
-        if (prop->Type != -1 )
-            settings.setValue( "Type", prop->Type );
-        settings.setValue( "Value", prop->Value );
-        settings.endGroup();
+            //[ANSI%20Query%20Mode]
+            //Name=ANSI Query Mode
+            //Type=4
+            //Value=0
+            settings.beginGroup(prop->Name);
+            settings.setValue( "Name", prop->Name );
+            if (prop->Type != -1 )
+                settings.setValue( "Type", prop->Type );
+            settings.setValue( "Value", prop->Value );
+            settings.endGroup();
 
+        }
     }
+    // Implement Own
+
 
     return true;
 }
@@ -1964,15 +2177,19 @@ bool ProjectFileSetting::importFromTempDirToProject(QAxObject *object, const QSt
 
     // properties in tempdir
     QMap<QString, ProjectFileProperty*> propMapTempDir;
-    QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
-    settings.setIniCodec( m_codecForCvs->codec() );
-    QStringList propNames = settings.childGroups();
-    foreach ( const QString propName, propNames )
+    // QSettings
     {
-        settings.beginGroup(propName);
-        propMapTempDir.insert( propName, new ProjectFileProperty(propName, settings.value( "Type", -1 ).toInt(), settings.value("Value")) );
-        settings.endGroup();
+        QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
+        settings.setIniCodec( m_codecForCvs->codec() );
+        QStringList propNames = settings.childGroups();
+        foreach ( const QString propName, propNames )
+        {
+            settings.beginGroup(propName);
+            propMapTempDir.insert( propName, new ProjectFileProperty(propName, settings.value( "Type", -1 ).toInt(), settings.value("Value")) );
+            settings.endGroup();
+        }
     }
+    // Implement Own
 
     // properties in project
     QMap<QString, ProjectFileProperty*> propMapProject;
@@ -2143,6 +2360,7 @@ bool VBProjectSetting::exportFromProjectToTempDir(QAxObject *object, const QStri
 
     deleteAllFileFromTempDir(m_objectName);
 
+    // QSettings
     QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
     settings.setIniCodec( m_codecForCvs->codec() );
 
@@ -2155,6 +2373,8 @@ bool VBProjectSetting::exportFromProjectToTempDir(QAxObject *object, const QStri
         settings.setValue("HelpFile",       vbProject->HelpFile());
     }
 
+    // Implement Own
+
     return true;
 }
 
@@ -2166,6 +2386,7 @@ bool VBProjectSetting::importFromTempDirToProject(QAxObject *object, const QStri
     if ( !QFile( filePath(TempDir, TempFile, m_objectName) ).exists())
         return true;
 
+    // QSettings
     QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
     settings.setIniCodec( m_codecForCvs->codec() );
 
@@ -2178,6 +2399,8 @@ bool VBProjectSetting::importFromTempDirToProject(QAxObject *object, const QStri
         vbProject->SetHelpContextID(    settings.value("HelpContextID", 0).toInt() );
         vbProject->SetHelpFile(         settings.value("HelpFile",      QString()).toString() );
     }
+
+    // Implement Own
 
     return true;
 }
