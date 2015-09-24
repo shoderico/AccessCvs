@@ -20,6 +20,7 @@
 #include "sanitizesetting.h"
 #include "tabledefsanitizesetting.h"
 #include "tabledatasanitizesetting.h"
+#include "setting.h"
 
 #include <windows.h>
 #include <wingdi.h>
@@ -598,6 +599,7 @@ void TableDefSetting::loadSettings(QSettings *settings)
     */
 
     // Implement Own
+    /*
     QString settingsFilePath = m_projectSetting->sourcePath() + "\\" + "TableDef.settings";
 
     m_tableDataTargets.clear();
@@ -646,6 +648,25 @@ void TableDefSetting::loadSettings(QSettings *settings)
     }
 
     file.close();
+    */
+
+    // Setting
+    Setting setting(m_projectSetting->sourcePath() + "\\" + "TableDef.settings", m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());
+    if (setting.load())
+    {
+        SettingElement *element = setting.at(0)->toElement();
+        Q_ASSERT(element != NULL);
+        Q_ASSERT(element->name() == "TableData");
+        for ( int i = 0 ; i < element->count() ; ++i )
+        {
+            SettingKeyValue *keyValue = element->at(i)->toKeyValue();
+            Q_ASSERT(keyValue != NULL);
+            Q_ASSERT(keyValue->key() == "TableName");
+            Q_ASSERT(keyValue->value().isNull() == false);
+            Q_ASSERT(keyValue->value().toString().isEmpty() == false);
+            m_tableDataTargets.append( keyValue->value().toString() );
+        }
+    }
 }
 
 void TableDefSetting::saveSettings(QSettings *settings)
@@ -671,6 +692,7 @@ void TableDefSetting::saveSettings(QSettings *settings)
     */
 
     // Implement Own
+    /*
     QString settingsFilePath = m_projectSetting->sourcePath() + "\\" + "TableDef.settings";
 
     if (QFile(settingsFilePath).exists())
@@ -695,6 +717,20 @@ void TableDefSetting::saveSettings(QSettings *settings)
     stream << "End" << lineEnd;
 
     file.close();
+    */
+
+    // Setting
+    Setting setting(m_projectSetting->sourcePath() + "\\" + "TableDef.settings", m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());
+    SettingElement *element = setting.append("TableData");
+    {
+        QStringList tableNames = m_tableDataTargets;
+        tableNames.sort(Qt::CaseSensitive);
+        for ( QStringList::iterator it = tableNames.begin() ; it != tableNames.end() ; ++it )
+        {
+            element->append("TableName", (*it) );
+        }
+    }
+    setting.save();
 }
 
 void TableDefSetting::setTableDataTargets(QStringList *newTargets)
@@ -1924,6 +1960,7 @@ bool ReferenceSetting::exportFromProjectToTempDir(QAxObject *object, const QStri
     */
 
     // Implement Own
+    /*
     QFile file( filePath(TempDir, TempFile, m_objectName) );
     file.open(QIODevice::WriteOnly);
     QTextStream stream( &file );
@@ -1958,6 +1995,34 @@ bool ReferenceSetting::exportFromProjectToTempDir(QAxObject *object, const QStri
     }
 
     file.close();
+    */
+
+    // Setting
+    Setting setting(filePath(TempDir, TempFile, m_objectName), m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());
+    for ( int i = 1 ; i <= nCount ; ++i )
+    {
+        ComPtr<Access::Reference> reference = references->Item( i );
+
+        QString name     = reference->Name();
+        bool    builtIn  = reference->BuiltIn();
+        QString guid     = reference->Guid();
+        int     major    = reference->Major();
+        int     minor    = reference->Minor();
+        QString fullPath = reference->FullPath();
+
+        if ( !guid.isEmpty() )
+            fullPath = "";
+
+        SettingElement *element = setting.append("Reference");
+        element->append( "BuiltIn",     builtIn );
+        element->append( "Name",        name );
+        element->append( "Guid",        guid );
+        element->append( "Major",       major );
+        element->append( "Minor",       minor );
+        element->append( "FullPath",    fullPath );
+    }
+    setting.save();
+
 
     return true;
 }
@@ -2025,6 +2090,7 @@ bool ReferenceSetting::importFromTempDirToProject(QAxObject *object, const QStri
     */
 
     // Implement Own
+    /*
     QFile file( filePath(TempDir, TempFile, m_objectName) );
     file.open(QIODevice::ReadOnly);
     QTextStream stream( &file );
@@ -2103,6 +2169,40 @@ bool ReferenceSetting::importFromTempDirToProject(QAxObject *object, const QStri
     }
 
     file.close();
+    */
+
+    // Setting
+    Setting setting(filePath(TempDir, TempFile, m_objectName), m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());
+    if (!setting.load())
+        return false;
+    for ( int i = 0 ; i < setting.count() ; ++i )
+    {
+        SettingElement *element = setting.at(i)->toElement();
+        Q_ASSERT(element != NULL);
+        Q_ASSERT(element->name() == "Rerefence");
+
+        QString name     = element->value("Name"        ).toString();
+        bool    builtIn  = element->value("BuiltIn"     ).toBool();
+        QString guid     = element->value("Guid"        ).toString();
+        int     major    = element->value("Major"       ).toInt();
+        int     minor    = element->value("Minor"       ).toInt();
+        QString fullPath = element->value("FullPath"    ).toString();
+
+        if ( !builtIn )
+        {
+            if ( !guid.isEmpty() )
+            {
+                ComPtr<Access::Reference> reference = references->AddFromGuid(guid, major, minor);
+                Q_UNUSED(reference)
+                // NOTE: error 32813 may occur : The reference is already present in the access project
+            }
+            else
+            {
+                ComPtr<Access::Reference> reference = references->AddFromFile(fullPath);
+                Q_UNUSED(reference)
+            }
+        }
+    }
 
     return true;
 }
