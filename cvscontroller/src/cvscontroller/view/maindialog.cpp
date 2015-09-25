@@ -179,6 +179,7 @@ void MainDialog::showAsAutoExport(const bool clearCache)
 
     if (clearCache)
     {
+        m_model->refreshItems();
         m_model->selectItems(ObjectModel::AllItems, true /*selected*/, true /*resetSelection*/ );
         m_model->clearItemsCache();
     }
@@ -198,6 +199,7 @@ void MainDialog::showAsAutoImport(const bool clearCache)
 
     if (clearCache)
     {
+        m_model->refreshItems();
         m_model->selectItems(ObjectModel::AllItems, true /*selected*/, true /*resetSelection*/ );
         m_model->clearItemsCache();
     }
