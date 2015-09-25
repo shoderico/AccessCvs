@@ -20,6 +20,7 @@
 #include "sanitizesetting.h"
 #include "tabledefsanitizesetting.h"
 #include "tabledatasanitizesetting.h"
+#include "setting.h"
 
 #include <windows.h>
 #include <wingdi.h>
@@ -576,6 +577,10 @@ QAxObject *TableDefSetting::itemUnsafePtr(const QVariant &index)
 
 void TableDefSetting::loadSettings(QSettings *settings)
 {
+    Q_UNUSED(settings)
+
+    // QSettings
+    /*
     // FIXME: groupName, keyName must be class level
     settings->beginGroup("TableDef");
     {
@@ -591,10 +596,85 @@ void TableDefSetting::loadSettings(QSettings *settings)
         settings->endArray();
     }
     settings->endGroup();
+    */
+
+    // Implement Own
+    /*
+    QString settingsFilePath = m_projectSetting->sourcePath() + "\\" + "TableDef.settings";
+
+    m_tableDataTargets.clear();
+
+    QFile file(settingsFilePath);
+    if (!file.exists())
+        return;
+
+    file.open(QIODevice::ReadOnly);
+    QTextStream stream( &file );
+    stream.setGenerateByteOrderMark( m_codecForCvs->bom() );
+    stream.setCodec( m_codecForCvs->codec() );
+
+    QRegularExpression regExpBegin;
+    regExpBegin.setPattern("^\\s*Begin (.*)$");
+    QRegularExpression regExpEnd;
+    regExpEnd.setPattern("^\\s*End$");
+    QRegularExpression regExpKeyValue;
+    regExpKeyValue.setPattern("^\\s*([^=]+) =(.*)$");
+
+    while (!stream.atEnd())
+    {
+        QString line = stream.readLine();
+        QRegularExpressionMatch matchBegin = regExpBegin.match(line);
+        if (matchBegin.hasMatch())
+        {
+            QString elementName = matchBegin.captured(1);
+            if (elementName == "TableData")
+            {
+                while (!stream.atEnd())
+                {
+                    line = stream.readLine();
+
+                    if (regExpEnd.match(line).hasMatch())
+                        break;
+
+                    QRegularExpressionMatch matchKeyValue = regExpKeyValue.match(line);
+                    if (matchKeyValue.hasMatch())
+                    {
+                        QString value = matchKeyValue.captured(2);
+                        m_tableDataTargets.append(value);
+                    }
+                }
+            }
+        }
+    }
+
+    file.close();
+    */
+
+    // Setting
+    Setting setting(m_projectSetting->sourcePath() + "\\" + "TableDef.settings", m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());
+    if (setting.load())
+    {
+        SettingElement *element = setting.at(0)->toElement();
+        Q_ASSERT(element != NULL);
+        Q_ASSERT(element->name() == "TableData");
+        for ( int i = 0 ; i < element->count() ; ++i )
+        {
+            SettingKeyValue *keyValue = element->at(i)->toKeyValue();
+            Q_ASSERT(keyValue != NULL);
+            Q_ASSERT(keyValue->key() == "TableName");
+            Q_ASSERT(keyValue->value().isNull() == false);
+            Q_ASSERT(keyValue->value().toString().isEmpty() == false);
+            m_tableDataTargets.append( keyValue->value().toString() );
+        }
+    }
 }
 
 void TableDefSetting::saveSettings(QSettings *settings)
 {
+    Q_UNUSED(settings)
+
+    // QSettings
+    /*
     // FIXME: groupName, keyName must be class level
     settings->beginGroup("TableDef");
     {
@@ -609,6 +689,48 @@ void TableDefSetting::saveSettings(QSettings *settings)
         settings->endArray();
     }
     settings->endGroup();
+    */
+
+    // Implement Own
+    /*
+    QString settingsFilePath = m_projectSetting->sourcePath() + "\\" + "TableDef.settings";
+
+    if (QFile(settingsFilePath).exists())
+        QFile(settingsFilePath).remove();
+
+    QFile file(settingsFilePath);
+    file.open(QIODevice::WriteOnly);
+    QTextStream stream( &file );
+    stream.setGenerateByteOrderMark( m_codecForCvs->bom() );
+    stream.setCodec( m_codecForCvs->codec() );
+    QString lineEnd = m_codecForCvs->lineEnd();
+
+    stream << "Begin TableData" << lineEnd;
+    {
+        QStringList tableNames = m_tableDataTargets;
+        tableNames.sort(Qt::CaseSensitive);
+        for ( QStringList::iterator it = tableNames.begin() ; it != tableNames.end() ; ++it )
+        {
+            stream << "    " << "TableName" << " =" << (*it) << lineEnd;
+        }
+    }
+    stream << "End" << lineEnd;
+
+    file.close();
+    */
+
+    // Setting
+    Setting setting(m_projectSetting->sourcePath() + "\\" + "TableDef.settings", m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());
+    SettingElement *element = setting.append("TableData");
+    {
+        QStringList tableNames = m_tableDataTargets;
+        tableNames.sort(Qt::CaseSensitive);
+        for ( QStringList::iterator it = tableNames.begin() ; it != tableNames.end() ; ++it )
+        {
+            element->append("TableName", (*it) );
+        }
+    }
+    setting.save();
 }
 
 void TableDefSetting::setTableDataTargets(QStringList *newTargets)
@@ -1407,8 +1529,9 @@ bool ReportSetting::afterImportFromTempDirToProject(QAxObject *object, const QSt
     */
 
     // Implement own : faster
+    /*
     QFile file( filePath( TempDir, ReportPropFile, objectName ) );
-    file.open( QIODevice::ReadOnly /*| QFile::Text*/ );
+    file.open( QIODevice::ReadOnly / *| QFile::Text* / );
     QTextStream stream( &file );
     stream.setCodec( m_codecForCvs->codec() );
 
@@ -1462,6 +1585,52 @@ bool ReportSetting::afterImportFromTempDirToProject(QAxObject *object, const QSt
     }
 
     file.close();
+    */
+
+    // Setting
+    Setting setting( filePath( TempDir, ReportPropFile, objectName ), m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd() );
+    if (!setting.load())
+        return false;
+    SettingElement *element = setting.at(0)->toElement();
+    Q_ASSERT(element != NULL);
+    Q_ASSERT(element->name() == "PrtDevMode");
+    if (element->value("HasPrtDevMode", false).toBool())
+    {
+        DEVMODEA dmTemp;
+        dmTemp.dmOrientation = element->value("dmOrientation")  .toString().toShort();
+        dmTemp.dmPaperSize   = element->value("dmPaperSize")    .toString().toShort();
+        dmTemp.dmPaperLength = element->value("dmPaperLength")  .toString().toShort();
+        dmTemp.dmPaperWidth  = element->value("dmPaperWidth")   .toString().toShort();
+        dmTemp.dmScale       = element->value("dmScale")        .toString().toShort();
+        dmTemp.dmColor       = element->value("dmColor")        .toString().toShort();
+
+        // open target report in design view
+        ComPtr<Access::DoCmd> doCmd = m_projectSetting->application()->DoCmd();
+        doCmd->OpenReport( objectName, Access::acViewDesign );
+        ComPtr<Access::Reports> reports = m_projectSetting->application()->Reports();
+        ComPtr<Access::Report> report = reports->Item( objectName );
+
+        // retreive PrtDevMode
+        QByteArray prtDevModeDataSrc = report->PrtDevMode().toByteArray();
+
+        // consturct new PrtDevMode
+        DEVMODEA dm;
+        mempcpy( &dm, (const void*)prtDevModeDataSrc.constData(), sizeof(dm) );
+        dm.dmOrientation = dmTemp.dmOrientation;
+        dm.dmPaperSize   = dmTemp.dmPaperSize;
+        dm.dmPaperLength = dmTemp.dmPaperLength;
+        dm.dmPaperWidth  = dmTemp.dmPaperWidth;
+        dm.dmScale       = dmTemp.dmScale;
+        dm.dmColor       = dmTemp.dmColor;
+
+        QByteArray prtDevModeDataDst( (const char *)&dm, sizeof(dm) );
+
+        // set new PrtDevMode to report
+        report->SetPrtDevMode( prtDevModeDataDst );
+
+        // save report
+        doCmd->Close( Access::acReport, objectName, Access::acSaveYes );
+    }
 
     return true;
 }
@@ -1508,8 +1677,9 @@ bool ReportSetting::afterSanitizeTempDir(QAxObject *object, const QString &objec
 
 
     // Implement own
+    /*
     QFile file( filePath( TempDir, ReportPropFile, objectName ) );
-    file.open( QIODevice::WriteOnly /*| QFile::Text*/ );
+    file.open( QIODevice::WriteOnly / *| QFile::Text* / );
     QTextStream stream( &file );
     stream.setCodec( m_codecForCvs->codec() );
     stream.setGenerateByteOrderMark( m_codecForCvs->bom() );
@@ -1540,6 +1710,33 @@ bool ReportSetting::afterSanitizeTempDir(QAxObject *object, const QString &objec
 
 
     file.close();
+    */
+
+    // Setting
+    Setting setting( filePath( TempDir, ReportPropFile, objectName ), m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd() );
+    SettingElement *element = setting.append("PrtDevMode");
+    QByteArray prtDevModeData = sanitizer->blockData( "PrtDevMode" );
+    if (prtDevModeData.size() > 0)
+    {
+        const void *pprtDevModeData = (const void*)prtDevModeData.constData();
+        const DEVMODEA *pdm = static_cast<const DEVMODEA*>(pprtDevModeData);
+
+        element->append("HasPrtDevMode", true);
+
+        element->append("dmOrientation",    pdm->dmOrientation);
+        element->append("dmPaperSize",      pdm->dmPaperSize);
+        element->append("dmPaperLength",    pdm->dmPaperLength);
+        element->append("dmPaperWidth",     pdm->dmPaperWidth);
+        element->append("dmScale",          pdm->dmScale);
+        element->append("dmColor",          pdm->dmColor);
+
+
+    }
+    else
+    {
+        element->append("HasPrtDevMode", false);
+    }
+    setting.save();
 
 
     return true;
@@ -1804,6 +2001,8 @@ bool ReferenceSetting::exportFromProjectToTempDir(QAxObject *object, const QStri
     ComPtr<Access::References> references = m_projectSetting->application()->References();
     int nCount = references->Count();
 
+    // QSettings
+    /*
     QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
     settings.setIniCodec( m_codecForCvs->codec() );
 
@@ -1833,6 +2032,73 @@ bool ReferenceSetting::exportFromProjectToTempDir(QAxObject *object, const QStri
 
     }
     settings.endArray();
+    */
+
+    // Implement Own
+    /*
+    QFile file( filePath(TempDir, TempFile, m_objectName) );
+    file.open(QIODevice::WriteOnly);
+    QTextStream stream( &file );
+    stream.setGenerateByteOrderMark( m_codecForCvs->bom() );
+    stream.setCodec( m_codecForCvs->codec() );
+    QString lineEnd = m_codecForCvs->lineEnd();
+
+    for ( int i = 1 ; i <= nCount ; ++i )
+    {
+        ComPtr<Access::Reference> reference = references->Item( i );
+
+        QString name     = reference->Name();
+        bool    builtIn  = reference->BuiltIn();
+        QString guid     = reference->Guid();
+        int     major    = reference->Major();
+        int     minor    = reference->Minor();
+        QString fullPath = reference->FullPath();
+
+        if ( !guid.isEmpty() )
+            fullPath = "";
+
+        stream << "Begin Reference" << lineEnd;
+
+        stream << "    " << "BuildIn"   << " =" << (builtIn ? "true" : "false") << lineEnd;
+        stream << "    " << "Name"      << " =" << name                         << lineEnd;
+        stream << "    " << "Guid"      << " =" << guid                         << lineEnd;
+        stream << "    " << "Major"     << " =" << QString::number(major)       << lineEnd;
+        stream << "    " << "Minor"     << " =" << QString::number(minor)       << lineEnd;
+        stream << "    " << "FullPath"  << " =" << fullPath                     << lineEnd;
+
+        stream << "End" << lineEnd;
+    }
+
+    file.close();
+    */
+
+    // Setting
+    Setting setting(filePath(TempDir, TempFile, m_objectName), m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());
+    SettingElement *refsElement = setting.append("References");
+    for ( int i = 1 ; i <= nCount ; ++i )
+    {
+        ComPtr<Access::Reference> reference = references->Item( i );
+
+        QString name     = reference->Name();
+        bool    builtIn  = reference->BuiltIn();
+        QString guid     = reference->Guid();
+        int     major    = reference->Major();
+        int     minor    = reference->Minor();
+        QString fullPath = reference->FullPath();
+
+        if ( !guid.isEmpty() )
+            fullPath = "";
+
+        SettingElement *element = refsElement->append("Reference");
+        element->append( "BuiltIn",     builtIn );
+        element->append( "Name",        name );
+        element->append( "Guid",        guid );
+        element->append( "Major",       major );
+        element->append( "Minor",       minor );
+        element->append( "FullPath",    fullPath );
+    }
+    setting.save();
+
 
     return true;
 }
@@ -1863,6 +2129,8 @@ bool ReferenceSetting::importFromTempDirToProject(QAxObject *object, const QStri
     }
 
 
+    // QSettings
+    /*
     QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
     settings.setIniCodec( m_codecForCvs->codec() );
 
@@ -1895,6 +2163,125 @@ bool ReferenceSetting::importFromTempDirToProject(QAxObject *object, const QStri
         }
     }
     settings.endArray();
+    */
+
+    // Implement Own
+    /*
+    QFile file( filePath(TempDir, TempFile, m_objectName) );
+    file.open(QIODevice::ReadOnly);
+    QTextStream stream( &file );
+    stream.setGenerateByteOrderMark( m_codecForCvs->bom() );
+    stream.setCodec( m_codecForCvs->codec() );
+
+    QRegularExpression regExpBegin;
+    regExpBegin.setPattern("^\\s*Begin (.*)$");
+    QRegularExpression regExpEnd;
+    regExpEnd.setPattern("^\\s*End$");
+    QRegularExpression regExpKeyValue;
+    regExpKeyValue.setPattern("^\\s*([^=]+) =(.*)$");
+
+    while (!stream.atEnd())
+    {
+        QString line = stream.readLine();
+
+        QRegularExpressionMatch matchBegin = regExpBegin.match(line);
+        if (matchBegin.hasMatch())
+        {
+            QString element = matchBegin.captured(1);
+            if (element == "Reference")
+            {
+                QString name     ;
+                bool    builtIn  = true;
+                QString guid     ;
+                int     major    = 0;
+                int     minor    = 0;
+                QString fullPath ;
+
+                while (!stream.atEnd())
+                {
+                    line = stream.readLine();
+
+                    if (regExpEnd.match(line).hasMatch())
+                        break;
+
+                    QRegularExpressionMatch matchKeyValue = regExpKeyValue.match(line);
+                    if (matchKeyValue.hasMatch())
+                    {
+                        QString key = matchKeyValue.captured(1);
+                        QString value = matchKeyValue.captured(2);
+
+                        if (key == "Name")
+                            name = value;
+                        else if (key == "BuiltIn")
+                            builtIn = ( (value == "true") ? true : false );
+                        else if (key == "Guid")
+                            guid = value;
+                        else if (key == "Major")
+                            major = value.toInt();
+                        else if (key == "Minor")
+                            minor = value.toInt();
+                        else if (key == "FullPath")
+                            fullPath = value;
+                    }
+                }
+
+                if ( !builtIn )
+                {
+                    if ( !guid.isEmpty() )
+                    {
+                        ComPtr<Access::Reference> reference = references->AddFromGuid(guid, major, minor);
+                        Q_UNUSED(reference)
+                        // NOTE: error 32813 may occur : The reference is already present in the access project
+                    }
+                    else
+                    {
+                        ComPtr<Access::Reference> reference = references->AddFromFile(fullPath);
+                        Q_UNUSED(reference)
+                    }
+                }
+
+            }
+        }
+    }
+
+    file.close();
+    */
+
+    // Setting
+    Setting setting(filePath(TempDir, TempFile, m_objectName), m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());
+    if (!setting.load())
+        return false;
+    SettingElement *refsElement = setting.at(0)->toElement();
+    Q_ASSERT(refsElement != NULL);
+    Q_ASSERT(refsElement->name() == "References");
+    for ( int i = 0 ; i < refsElement->count() ; ++i )
+    {
+        SettingElement *element = refsElement->at(i)->toElement();
+        Q_ASSERT(element != NULL);
+        Q_ASSERT(element->name() == "Rerefence");
+
+        QString name     = element->value("Name"            ).toString();
+        bool    builtIn  = element->value("BuiltIn" , true  ).toBool();
+        QString guid     = element->value("Guid"            ).toString();
+        int     major    = element->value("Major"   , 0     ).toInt();
+        int     minor    = element->value("Minor"   , 0     ).toInt();
+        QString fullPath = element->value("FullPath"        ).toString();
+
+        if ( !builtIn )
+        {
+            if ( !guid.isEmpty() )
+            {
+                ComPtr<Access::Reference> reference = references->AddFromGuid(guid, major, minor);
+                Q_UNUSED(reference)
+                // NOTE: error 32813 may occur : The reference is already present in the access project
+            }
+            else
+            {
+                ComPtr<Access::Reference> reference = references->AddFromFile(fullPath);
+                Q_UNUSED(reference)
+            }
+        }
+    }
 
     return true;
 }
@@ -1930,26 +2317,50 @@ bool ProjectFileSetting::exportFromProjectToTempDir(QAxObject *object, const QSt
     QMap<QString, ProjectFileProperty*> propMap;
     loadProperties(propMap);
 
-    QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
-    settings.setIniCodec( m_codecForCvs->codec() );
+    // QSettings
+    /*
+    {
+        QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
+        settings.setIniCodec( m_codecForCvs->codec() );
+        QStringList propNames( propMap.keys() );
+        propNames.sort(Qt::CaseSensitive);
+        foreach (const QString propName, propNames)
+        {
+            ProjectFileProperty *prop = propMap.value(propName);
+
+            //[ANSI%20Query%20Mode]
+            //Name=ANSI Query Mode
+            //Type=4
+            //Value=0
+            settings.beginGroup(prop->Name);
+            settings.setValue( "Name", prop->Name );
+            if (prop->Type != -1 )
+                settings.setValue( "Type", prop->Type );
+            settings.setValue( "Value", prop->Value );
+            settings.endGroup();
+
+        }
+    }
+    */
+
+    // Implement Own
+
+    // Setting
+    Setting setting( filePath(TempDir, TempFile, m_objectName), m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd() );
     QStringList propNames( propMap.keys() );
     propNames.sort(Qt::CaseSensitive);
+    SettingElement *propsElement = setting.append("Properties");
     foreach (const QString propName, propNames)
     {
         ProjectFileProperty *prop = propMap.value(propName);
 
-        //[ANSI%20Query%20Mode]
-        //Name=ANSI Query Mode
-        //Type=4
-        //Value=0
-        settings.beginGroup(prop->Name);
-        settings.setValue( "Name", prop->Name );
-        if (prop->Type != -1 )
-            settings.setValue( "Type", prop->Type );
-        settings.setValue( "Value", prop->Value );
-        settings.endGroup();
-
+        SettingElement *element = propsElement->append("Property");
+        element->append("Name", prop->Name);
+        if (prop->Type != -1)
+            element->append("Type", prop->Type);
+        element->append("Value", prop->Value);
     }
+    setting.save();
 
     return true;
 }
@@ -1964,15 +2375,39 @@ bool ProjectFileSetting::importFromTempDirToProject(QAxObject *object, const QSt
 
     // properties in tempdir
     QMap<QString, ProjectFileProperty*> propMapTempDir;
-    QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
-    settings.setIniCodec( m_codecForCvs->codec() );
-    QStringList propNames = settings.childGroups();
-    foreach ( const QString propName, propNames )
+    // QSettings
+    /*
     {
-        settings.beginGroup(propName);
-        propMapTempDir.insert( propName, new ProjectFileProperty(propName, settings.value( "Type", -1 ).toInt(), settings.value("Value")) );
-        settings.endGroup();
+        QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
+        settings.setIniCodec( m_codecForCvs->codec() );
+        QStringList propNames = settings.childGroups();
+        foreach ( const QString propName, propNames )
+        {
+            settings.beginGroup(propName);
+            propMapTempDir.insert( propName, new ProjectFileProperty(propName, settings.value( "Type", -1 ).toInt(), settings.value("Value")) );
+            settings.endGroup();
+        }
     }
+    */
+    // Implement Own
+
+    // Setting
+    Setting setting( filePath(TempDir, TempFile, m_objectName), m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd() );
+    if (!setting.load())
+        return false;
+    SettingElement *propsElement = setting.at(0)->toElement();
+    Q_ASSERT(propsElement != NULL);
+    Q_ASSERT(propsElement->name() == "Properties");
+    for ( int i = 0 ; i < propsElement->count() ; ++i )
+    {
+        SettingElement *element = propsElement->at(i)->toElement();
+        Q_ASSERT(element != NULL);
+        Q_ASSERT(element->name() == "Property");
+        QString propName = element->value("Name").toString();
+        propMapTempDir.insert( propName, new ProjectFileProperty(propName, element->value("Type", -1).toInt(), element->value("Value")) );
+    }
+
+
 
     // properties in project
     QMap<QString, ProjectFileProperty*> propMapProject;
@@ -2143,6 +2578,8 @@ bool VBProjectSetting::exportFromProjectToTempDir(QAxObject *object, const QStri
 
     deleteAllFileFromTempDir(m_objectName);
 
+    // QSettings
+    /*
     QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
     settings.setIniCodec( m_codecForCvs->codec() );
 
@@ -2154,6 +2591,22 @@ bool VBProjectSetting::exportFromProjectToTempDir(QAxObject *object, const QStri
         settings.setValue("HelpContextID",  vbProject->HelpContextID());
         settings.setValue("HelpFile",       vbProject->HelpFile());
     }
+    */
+
+    // Implement Own
+
+    // Setting
+    Setting setting( filePath(TempDir, TempFile, m_objectName), m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd() );
+    ComPtr<VBIDE::VBProject> vbProject = currentVBProject();
+    if (vbProject.is())
+    {
+        SettingElement *element = setting.append("VBProject");
+        element->append("Name",             vbProject->Name());
+        element->append("Description",      vbProject->Description());
+        element->append("HelpContextID",    vbProject->HelpContextID());
+        element->append("HelpFile",         vbProject->HelpFile());
+    }
+    setting.save();
 
     return true;
 }
@@ -2166,6 +2619,8 @@ bool VBProjectSetting::importFromTempDirToProject(QAxObject *object, const QStri
     if ( !QFile( filePath(TempDir, TempFile, m_objectName) ).exists())
         return true;
 
+    // QSettings
+    /*
     QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
     settings.setIniCodec( m_codecForCvs->codec() );
 
@@ -2177,6 +2632,27 @@ bool VBProjectSetting::importFromTempDirToProject(QAxObject *object, const QStri
         vbProject->SetDescription(      settings.value("Description",   QString()).toString() );
         vbProject->SetHelpContextID(    settings.value("HelpContextID", 0).toInt() );
         vbProject->SetHelpFile(         settings.value("HelpFile",      QString()).toString() );
+    }
+    */
+
+    // Implement Own
+
+    // Setting
+    Setting setting( filePath(TempDir, TempFile, m_objectName), m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd() );
+    if (!setting.load())
+        return false;
+
+    SettingElement *element = setting.at(0)->toElement();
+    Q_ASSERT(element != NULL);
+    Q_ASSERT(element->name() == "VBProject");
+
+    ComPtr<VBIDE::VBProject> vbProject = currentVBProject();
+    if (vbProject.is())
+    {
+        vbProject->SetName(             element->value("Name"            ).toString() );
+        vbProject->SetDescription(      element->value("Description"     ).toString() );
+        vbProject->SetHelpContextID(    element->value("HelpContextID", 0).toInt() );
+        vbProject->SetHelpFile(         element->value("HelpFile"        ).toString() );
     }
 
     return true;
