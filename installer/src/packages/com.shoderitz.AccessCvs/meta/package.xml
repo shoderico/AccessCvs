@@ -3,8 +3,8 @@
     <DisplayName>AccessCvs</DisplayName>
     <Description>This is AccessCvs package.</Description>
         <Description xml:lang="ja_JP">AccessCvs パッケージです。</Description>
-    <ReleaseDate>2015-09-17</ReleaseDate>
-    <Version>1.0.3</Version>
+    <ReleaseDate>2015-09-25</ReleaseDate>
+    <Version>1.0.4</Version>
     <Default>true</Default>
         <ForcedInstallation>true</ForcedInstallation>
     <Script>installscript.qs</Script>

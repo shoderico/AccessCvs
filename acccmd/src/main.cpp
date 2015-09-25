@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 
     // version
     parser.addVersionOption();
-    app.setApplicationVersion("1.0.3");
+    app.setApplicationVersion("1.0.4");
 
     // decompile
     QCommandLineOption optDecompile(QStringList() << "d" << "decompile", QCoreApplication::translate("main", "Decompile"));
