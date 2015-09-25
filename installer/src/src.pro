@@ -30,7 +30,7 @@ SRC_REPOS_DIR    = $${PWD}/repository
 DST_REPOS_DIR    = $${BUILD_DIR}/repository
 
 PKG_ACCESSCVS_DIR = com.shoderitz.AccessCvs
-PKG_ACCESSCVS_VER = 1.0.3
+PKG_ACCESSCVS_VER = 1.0.4
 
 
 #----------------------------------------------------------------------------------------------
