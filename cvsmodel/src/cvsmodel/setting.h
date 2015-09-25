@@ -63,7 +63,7 @@ public:
 
     int count() const;
     SettingNode *at(const int i) const;
-    QVariant value(const QString &key);
+    QVariant value(const QString &key, const QVariant &defaultValue = QVariant());
 
 private:
     QString m_name;

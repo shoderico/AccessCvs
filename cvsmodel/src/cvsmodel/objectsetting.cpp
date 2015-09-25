@@ -1529,8 +1529,9 @@ bool ReportSetting::afterImportFromTempDirToProject(QAxObject *object, const QSt
     */
 
     // Implement own : faster
+    /*
     QFile file( filePath( TempDir, ReportPropFile, objectName ) );
-    file.open( QIODevice::ReadOnly /*| QFile::Text*/ );
+    file.open( QIODevice::ReadOnly / *| QFile::Text* / );
     QTextStream stream( &file );
     stream.setCodec( m_codecForCvs->codec() );
 
@@ -1584,6 +1585,52 @@ bool ReportSetting::afterImportFromTempDirToProject(QAxObject *object, const QSt
     }
 
     file.close();
+    */
+
+    // Setting
+    Setting setting( filePath( TempDir, ReportPropFile, objectName ), m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd() );
+    if (!setting.load())
+        return false;
+    SettingElement *element = setting.at(0)->toElement();
+    Q_ASSERT(element != NULL);
+    Q_ASSERT(element->name() == "PrtDevMode");
+    if (element->value("HasPrtDevMode", false).toBool())
+    {
+        DEVMODEA dmTemp;
+        dmTemp.dmOrientation = element->value("dmOrientation")  .toString().toShort();
+        dmTemp.dmPaperSize   = element->value("dmPaperSize")    .toString().toShort();
+        dmTemp.dmPaperLength = element->value("dmPaperLength")  .toString().toShort();
+        dmTemp.dmPaperWidth  = element->value("dmPaperWidth")   .toString().toShort();
+        dmTemp.dmScale       = element->value("dmScale")        .toString().toShort();
+        dmTemp.dmColor       = element->value("dmColor")        .toString().toShort();
+
+        // open target report in design view
+        ComPtr<Access::DoCmd> doCmd = m_projectSetting->application()->DoCmd();
+        doCmd->OpenReport( objectName, Access::acViewDesign );
+        ComPtr<Access::Reports> reports = m_projectSetting->application()->Reports();
+        ComPtr<Access::Report> report = reports->Item( objectName );
+
+        // retreive PrtDevMode
+        QByteArray prtDevModeDataSrc = report->PrtDevMode().toByteArray();
+
+        // consturct new PrtDevMode
+        DEVMODEA dm;
+        mempcpy( &dm, (const void*)prtDevModeDataSrc.constData(), sizeof(dm) );
+        dm.dmOrientation = dmTemp.dmOrientation;
+        dm.dmPaperSize   = dmTemp.dmPaperSize;
+        dm.dmPaperLength = dmTemp.dmPaperLength;
+        dm.dmPaperWidth  = dmTemp.dmPaperWidth;
+        dm.dmScale       = dmTemp.dmScale;
+        dm.dmColor       = dmTemp.dmColor;
+
+        QByteArray prtDevModeDataDst( (const char *)&dm, sizeof(dm) );
+
+        // set new PrtDevMode to report
+        report->SetPrtDevMode( prtDevModeDataDst );
+
+        // save report
+        doCmd->Close( Access::acReport, objectName, Access::acSaveYes );
+    }
 
     return true;
 }
@@ -1630,8 +1677,9 @@ bool ReportSetting::afterSanitizeTempDir(QAxObject *object, const QString &objec
 
 
     // Implement own
+    /*
     QFile file( filePath( TempDir, ReportPropFile, objectName ) );
-    file.open( QIODevice::WriteOnly /*| QFile::Text*/ );
+    file.open( QIODevice::WriteOnly / *| QFile::Text* / );
     QTextStream stream( &file );
     stream.setCodec( m_codecForCvs->codec() );
     stream.setGenerateByteOrderMark( m_codecForCvs->bom() );
@@ -1662,6 +1710,33 @@ bool ReportSetting::afterSanitizeTempDir(QAxObject *object, const QString &objec
 
 
     file.close();
+    */
+
+    // Setting
+    Setting setting( filePath( TempDir, ReportPropFile, objectName ), m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd() );
+    SettingElement *element = setting.append("PrtDevMode");
+    QByteArray prtDevModeData = sanitizer->blockData( "PrtDevMode" );
+    if (prtDevModeData.size() > 0)
+    {
+        const void *pprtDevModeData = (const void*)prtDevModeData.constData();
+        const DEVMODEA *pdm = static_cast<const DEVMODEA*>(pprtDevModeData);
+
+        element->append("HasPrtDevMode", true);
+
+        element->append("dmOrientation",    pdm->dmOrientation);
+        element->append("dmPaperSize",      pdm->dmPaperSize);
+        element->append("dmPaperLength",    pdm->dmPaperLength);
+        element->append("dmPaperWidth",     pdm->dmPaperWidth);
+        element->append("dmScale",          pdm->dmScale);
+        element->append("dmColor",          pdm->dmColor);
+
+
+    }
+    else
+    {
+        element->append("HasPrtDevMode", false);
+    }
+    setting.save();
 
 
     return true;
@@ -1999,6 +2074,7 @@ bool ReferenceSetting::exportFromProjectToTempDir(QAxObject *object, const QStri
 
     // Setting
     Setting setting(filePath(TempDir, TempFile, m_objectName), m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());
+    SettingElement *refsElement = setting.append("References");
     for ( int i = 1 ; i <= nCount ; ++i )
     {
         ComPtr<Access::Reference> reference = references->Item( i );
@@ -2013,7 +2089,7 @@ bool ReferenceSetting::exportFromProjectToTempDir(QAxObject *object, const QStri
         if ( !guid.isEmpty() )
             fullPath = "";
 
-        SettingElement *element = setting.append("Reference");
+        SettingElement *element = refsElement->append("Reference");
         element->append( "BuiltIn",     builtIn );
         element->append( "Name",        name );
         element->append( "Guid",        guid );
@@ -2175,18 +2251,21 @@ bool ReferenceSetting::importFromTempDirToProject(QAxObject *object, const QStri
     Setting setting(filePath(TempDir, TempFile, m_objectName), m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());
     if (!setting.load())
         return false;
-    for ( int i = 0 ; i < setting.count() ; ++i )
+    SettingElement *refsElement = setting.at(0)->toElement();
+    Q_ASSERT(refsElement != NULL);
+    Q_ASSERT(refsElement->name() == "References");
+    for ( int i = 0 ; i < refsElement->count() ; ++i )
     {
-        SettingElement *element = setting.at(i)->toElement();
+        SettingElement *element = refsElement->at(i)->toElement();
         Q_ASSERT(element != NULL);
         Q_ASSERT(element->name() == "Rerefence");
 
-        QString name     = element->value("Name"        ).toString();
-        bool    builtIn  = element->value("BuiltIn"     ).toBool();
-        QString guid     = element->value("Guid"        ).toString();
-        int     major    = element->value("Major"       ).toInt();
-        int     minor    = element->value("Minor"       ).toInt();
-        QString fullPath = element->value("FullPath"    ).toString();
+        QString name     = element->value("Name"            ).toString();
+        bool    builtIn  = element->value("BuiltIn" , true  ).toBool();
+        QString guid     = element->value("Guid"            ).toString();
+        int     major    = element->value("Major"   , 0     ).toInt();
+        int     minor    = element->value("Minor"   , 0     ).toInt();
+        QString fullPath = element->value("FullPath"        ).toString();
 
         if ( !builtIn )
         {
@@ -2239,6 +2318,7 @@ bool ProjectFileSetting::exportFromProjectToTempDir(QAxObject *object, const QSt
     loadProperties(propMap);
 
     // QSettings
+    /*
     {
         QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
         settings.setIniCodec( m_codecForCvs->codec() );
@@ -2261,8 +2341,26 @@ bool ProjectFileSetting::exportFromProjectToTempDir(QAxObject *object, const QSt
 
         }
     }
+    */
+
     // Implement Own
 
+    // Setting
+    Setting setting( filePath(TempDir, TempFile, m_objectName), m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd() );
+    QStringList propNames( propMap.keys() );
+    propNames.sort(Qt::CaseSensitive);
+    SettingElement *propsElement = setting.append("Properties");
+    foreach (const QString propName, propNames)
+    {
+        ProjectFileProperty *prop = propMap.value(propName);
+
+        SettingElement *element = propsElement->append("Property");
+        element->append("Name", prop->Name);
+        if (prop->Type != -1)
+            element->append("Type", prop->Type);
+        element->append("Value", prop->Value);
+    }
+    setting.save();
 
     return true;
 }
@@ -2278,6 +2376,7 @@ bool ProjectFileSetting::importFromTempDirToProject(QAxObject *object, const QSt
     // properties in tempdir
     QMap<QString, ProjectFileProperty*> propMapTempDir;
     // QSettings
+    /*
     {
         QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
         settings.setIniCodec( m_codecForCvs->codec() );
@@ -2289,7 +2388,26 @@ bool ProjectFileSetting::importFromTempDirToProject(QAxObject *object, const QSt
             settings.endGroup();
         }
     }
+    */
     // Implement Own
+
+    // Setting
+    Setting setting( filePath(TempDir, TempFile, m_objectName), m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd() );
+    if (!setting.load())
+        return false;
+    SettingElement *propsElement = setting.at(0)->toElement();
+    Q_ASSERT(propsElement != NULL);
+    Q_ASSERT(propsElement->name() == "Properties");
+    for ( int i = 0 ; i < propsElement->count() ; ++i )
+    {
+        SettingElement *element = propsElement->at(i)->toElement();
+        Q_ASSERT(element != NULL);
+        Q_ASSERT(element->name() == "Property");
+        QString propName = element->value("Name").toString();
+        propMapTempDir.insert( propName, new ProjectFileProperty(propName, element->value("Type", -1).toInt(), element->value("Value")) );
+    }
+
+
 
     // properties in project
     QMap<QString, ProjectFileProperty*> propMapProject;
@@ -2461,6 +2579,7 @@ bool VBProjectSetting::exportFromProjectToTempDir(QAxObject *object, const QStri
     deleteAllFileFromTempDir(m_objectName);
 
     // QSettings
+    /*
     QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
     settings.setIniCodec( m_codecForCvs->codec() );
 
@@ -2472,8 +2591,22 @@ bool VBProjectSetting::exportFromProjectToTempDir(QAxObject *object, const QStri
         settings.setValue("HelpContextID",  vbProject->HelpContextID());
         settings.setValue("HelpFile",       vbProject->HelpFile());
     }
+    */
 
     // Implement Own
+
+    // Setting
+    Setting setting( filePath(TempDir, TempFile, m_objectName), m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd() );
+    ComPtr<VBIDE::VBProject> vbProject = currentVBProject();
+    if (vbProject.is())
+    {
+        SettingElement *element = setting.append("VBProject");
+        element->append("Name",             vbProject->Name());
+        element->append("Description",      vbProject->Description());
+        element->append("HelpContextID",    vbProject->HelpContextID());
+        element->append("HelpFile",         vbProject->HelpFile());
+    }
+    setting.save();
 
     return true;
 }
@@ -2487,6 +2620,7 @@ bool VBProjectSetting::importFromTempDirToProject(QAxObject *object, const QStri
         return true;
 
     // QSettings
+    /*
     QSettings settings( filePath(TempDir, TempFile, m_objectName), QSettings::IniFormat, this );
     settings.setIniCodec( m_codecForCvs->codec() );
 
@@ -2499,8 +2633,27 @@ bool VBProjectSetting::importFromTempDirToProject(QAxObject *object, const QStri
         vbProject->SetHelpContextID(    settings.value("HelpContextID", 0).toInt() );
         vbProject->SetHelpFile(         settings.value("HelpFile",      QString()).toString() );
     }
+    */
 
     // Implement Own
+
+    // Setting
+    Setting setting( filePath(TempDir, TempFile, m_objectName), m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd() );
+    if (!setting.load())
+        return false;
+
+    SettingElement *element = setting.at(0)->toElement();
+    Q_ASSERT(element != NULL);
+    Q_ASSERT(element->name() == "VBProject");
+
+    ComPtr<VBIDE::VBProject> vbProject = currentVBProject();
+    if (vbProject.is())
+    {
+        vbProject->SetName(             element->value("Name"            ).toString() );
+        vbProject->SetDescription(      element->value("Description"     ).toString() );
+        vbProject->SetHelpContextID(    element->value("HelpContextID", 0).toInt() );
+        vbProject->SetHelpFile(         element->value("HelpFile"        ).toString() );
+    }
 
     return true;
 }

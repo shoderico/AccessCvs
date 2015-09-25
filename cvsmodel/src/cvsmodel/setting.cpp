@@ -1,5 +1,6 @@
 #include "setting.h"
 
+#include <QFile>
 
 SettingNode::SettingNode(SettingNode::NodeType nodeType)
     : m_nodeType(nodeType)
@@ -101,7 +102,7 @@ SettingNode *SettingElement::at(const int i) const
     return m_nodes.at(i);
 }
 
-QVariant SettingElement::value(const QString &key)
+QVariant SettingElement::value(const QString &key, const QVariant &defaultValue)
 {
     for (int i = 0 ; i < m_nodes.count() ; ++i)
     {
@@ -111,11 +112,8 @@ QVariant SettingElement::value(const QString &key)
             return node->toKeyValue()->value();
         }
     }
-    return QVariant();
+    return defaultValue;
 }
-
-
-#include <QFile>
 
 Setting::Setting(const QString &fileName, QTextCodec *codec, const bool bom, const QString &lineEnd)
     : SettingElement("")
@@ -210,7 +208,6 @@ void Setting::read(SettingElement *parent, QTextStream &stream)
 
 void Setting::write(SettingElement *parent, QTextStream &stream, int depth)
 {
-//    QString indentString = QString(" ", depth * m_indent);
     QString indentString = QString(depth * m_indent, ' ');
     for (int i = 0 ; i < parent->count() ; ++i )
     {
