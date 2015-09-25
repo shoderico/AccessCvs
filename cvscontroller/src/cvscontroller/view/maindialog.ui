@@ -152,14 +152,14 @@
        <item>
         <widget class="QCheckBox" name="showProjectFileCheckBox">
          <property name="text">
-          <string>ProjectFile</string>
+          <string>AccessProject</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QCheckBox" name="showVBProjectCheckBox">
          <property name="text">
-          <string>VBProject</string>
+          <string>VBEProject</string>
          </property>
         </widget>
        </item>
@@ -253,14 +253,14 @@
        <item>
         <widget class="QCheckBox" name="selectProjectFileCheckBox">
          <property name="text">
-          <string>ProjectFile</string>
+          <string>AccessProject</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QCheckBox" name="selectVBProjectCheckBox">
          <property name="text">
-          <string>VBProject</string>
+          <string>VBEProject</string>
          </property>
         </widget>
        </item>

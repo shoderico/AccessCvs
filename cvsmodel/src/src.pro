@@ -18,7 +18,8 @@ SOURCES += \
     cvsmodel/projectsetting.cpp \
     cvsmodel/sanitizesetting.cpp \
     cvsmodel/tabledatasanitizesetting.cpp \
-    cvsmodel/tabledefsanitizesetting.cpp
+    cvsmodel/tabledefsanitizesetting.cpp \
+    cvsmodel/setting.cpp
 
 HEADERS += \
     cvsmodel/cvsmodel_global.h \
@@ -30,7 +31,8 @@ HEADERS += \
     cvsmodel/projectsetting.h \
     cvsmodel/sanitizesetting.h \
     cvsmodel/tabledatasanitizesetting.h \
-    cvsmodel/tabledefsanitizesetting.h
+    cvsmodel/tabledefsanitizesetting.h \
+    cvsmodel/setting.h
 
 include(../../common.pri)
 include(../../submodule.pri)

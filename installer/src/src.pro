@@ -2,6 +2,8 @@ TEMPLATE = aux
 
 # installer name
 INSTALLER = AccessCvsInstaller
+INSTALLER_ONLINE = $${INSTALLER}_online
+INSTALLER_OFFLINE = $${INSTALLER}_offline
 TARGET    = installer
 
 include(../../common.pri)
@@ -28,7 +30,7 @@ SRC_REPOS_DIR    = $${PWD}/repository
 DST_REPOS_DIR    = $${BUILD_DIR}/repository
 
 PKG_ACCESSCVS_DIR = com.shoderitz.AccessCvs
-PKG_ACCESSCVS_VER = 1.0.3
+PKG_ACCESSCVS_VER = 1.0.4
 
 
 #----------------------------------------------------------------------------------------------
@@ -55,17 +57,21 @@ QMAKE_EXTRA_TARGETS += copy_files
 INPUT = $${SRC_CONFIG_FILE} \
         $${SRC_PACKAGES_DIR}
 
-INSTALLER_OPTION = --online-only
-#INSTALLER_OPTION = --offline-only
+installer_online.input     = INPUT
+installer_online.output    = $${INSTALLER_ONLINE}
+installer_online.commands += $${IFW_BIN_DIR}/binarycreator --online-only -c $${SRC_CONFIG_FILE} -p $${DST_PACKAGE_DIR} $${BUILD_TYPE}/${QMAKE_FILE_OUT}
+installer_online.CONFIG   += combine no_link target_predeps
+installer_online.depends  += copy_files copy_configs
 
-installer.input     = INPUT
-installer.output    = $${INSTALLER}
-#installer.commands = C:/Qt/QtIFW2.0.1/bin/binarycreator --offline-only -c $$PWD/config/config.xml -p $$PWD/packages ${QMAKE_FILE_OUT}
-installer.commands += $${IFW_BIN_DIR}/binarycreator $${INSTALLER_OPTION} -c $${SRC_CONFIG_FILE} -p $${DST_PACKAGE_DIR} $${BUILD_TYPE}/${QMAKE_FILE_OUT}
-installer.CONFIG   += combine no_link target_predeps
-installer.depends  += copy_files copy_configs
+QMAKE_EXTRA_COMPILERS += installer_online
 
-QMAKE_EXTRA_COMPILERS += installer
+installer_offline.input     = INPUT
+installer_offline.output    = $${INSTALLER_OFFLINE}
+installer_offline.commands += $${IFW_BIN_DIR}/binarycreator --offline-only -c $${SRC_CONFIG_FILE} -p $${DST_PACKAGE_DIR} $${BUILD_TYPE}/${QMAKE_FILE_OUT}
+installer_offline.CONFIG   += combine no_link target_predeps
+installer_offline.depends  += copy_files copy_configs
+
+QMAKE_EXTRA_COMPILERS += installer_offline
 
 
 #----------------------------------------------------------------------------------------------
@@ -93,7 +99,8 @@ QMAKE_EXTRA_COMPILERS += repository
 #--remove               : Force removal of existing target directory before generating it again.
 
 
-QMAKE_POST_LINK += $(COPY) \"$$system_path($${OUT_PWD}/$${BUILD_TYPE}/$${INSTALLER}.exe)\" \"$$system_path($${BUILD_DIR})\"$$escape_expand(\n\t)
+QMAKE_POST_LINK += $(COPY) \"$$system_path($${OUT_PWD}/$${BUILD_TYPE}/$${INSTALLER_ONLINE}.exe)\" \"$$system_path($${BUILD_DIR})\"$$escape_expand(\n\t)
+QMAKE_POST_LINK += $(COPY) \"$$system_path($${OUT_PWD}/$${BUILD_TYPE}/$${INSTALLER_OFFLINE}.exe)\" \"$$system_path($${BUILD_DIR})\"$$escape_expand(\n\t)
 
 
 # other files

@@ -8,7 +8,7 @@
 #include "cvsmodel/objectproxymodel.h"
 
 #include "view/checkboxitemdelegate.h"
-#include "view/boolcheckboxitemdelegate.h"
+#include "hasdatacolumnitemdelegate.h"
 
 #include "util/comptr.h"
 
@@ -38,7 +38,7 @@ MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
     ui->treeView->setItemDelegateForColumn( ObjectModel::InProjectColumn,     new CheckBoxItemDelegate(Model::State_NoChange, Model::State_On, Model::State_Off) );
     ui->treeView->setItemDelegateForColumn( ObjectModel::InSourceDirColumn,   new CheckBoxItemDelegate(Model::State_NoChange, Model::State_On, Model::State_Off) );
     ui->treeView->setItemDelegateForColumn( ObjectModel::DifferentColumn,     new CheckBoxItemDelegate(Model::State_NoChange, Model::State_On, Model::State_Off) );
-    ui->treeView->setItemDelegateForColumn( ObjectModel::HasDataColumn,       new BoolCheckBoxItemDelegate() );
+    ui->treeView->setItemDelegateForColumn( ObjectModel::HasDataColumn,       new HasDataColumnItemDelegate() );
     ui->treeView->setColumnWidth(ObjectModel::InProjectColumn,    35);
     ui->treeView->setColumnWidth(ObjectModel::InSourceDirColumn, 35);
     ui->treeView->setColumnWidth(ObjectModel::DifferentColumn,    35);
@@ -179,6 +179,7 @@ void MainDialog::showAsAutoExport(const bool clearCache)
 
     if (clearCache)
     {
+        m_model->refreshItems();
         m_model->selectItems(ObjectModel::AllItems, true /*selected*/, true /*resetSelection*/ );
         m_model->clearItemsCache();
     }
@@ -198,6 +199,7 @@ void MainDialog::showAsAutoImport(const bool clearCache)
 
     if (clearCache)
     {
+        m_model->refreshItems();
         m_model->selectItems(ObjectModel::AllItems, true /*selected*/, true /*resetSelection*/ );
         m_model->clearItemsCache();
     }
