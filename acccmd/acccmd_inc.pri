@@ -1,3 +1,4 @@
+# inc.pri : final module
 # acccmd
 unset(MY_TARGET)
 unset(MY_FILES)

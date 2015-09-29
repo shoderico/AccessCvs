@@ -1,3 +1,4 @@
+# inc.pri : external module
 # QtSolutions
 QTSOLUTIONS_DIR     = $${LIBRARY_ROOT}/QtSolutions/qtwinmigrate
 QTSOLUTIONS_BIN_DIR = $${QTSOLUTIONS_DIR}/lib

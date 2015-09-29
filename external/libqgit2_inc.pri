@@ -1,3 +1,4 @@
+# inc.pri : external module
 # LibQGit2
 LIBQGIT_DIR     = $${LIBRARY_ROOT}/LibQGit2/install
 LIBQGIT_LIB_DIR = $${LIBQGIT_DIR}/lib

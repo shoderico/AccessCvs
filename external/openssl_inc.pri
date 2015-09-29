@@ -1,3 +1,4 @@
+# inc.pri : external module
 # OpenSSL
 OPENSSL_BIN_DIR = C:/OpenSSL-Win32
 OPENSSL_FILES   = $${OPENSSL_BIN_DIR}/libeay32.dll \

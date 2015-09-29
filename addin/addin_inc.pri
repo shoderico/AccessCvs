@@ -1,3 +1,4 @@
+# inc.pri : static module
 # addin
 unset(MY_TARGET)
 unset(MY_FILES)

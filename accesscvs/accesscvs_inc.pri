@@ -1,3 +1,4 @@
+# inc.pri : final module
 # accesscvs
 unset(MY_TARGET)
 unset(MY_FILES)

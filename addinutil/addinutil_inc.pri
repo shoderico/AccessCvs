@@ -1,3 +1,4 @@
+# inc.pri : normal module
 # addinutil
 unset(MY_TARGET)
 unset(MY_FILES)

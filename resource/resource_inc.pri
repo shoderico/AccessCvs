@@ -1,3 +1,4 @@
+# inc.pri : normal module
 # resource
 unset(MY_TARGET)
 unset(MY_FILES)
