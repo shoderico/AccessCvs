@@ -104,6 +104,82 @@ defineTest(installDlls) {
     copyFiles(toBeCopied)
 }
 
+#----------------------------------------------------------------
+# inc.pri helper
+defineTest(includeSharedLib) {
+    unset(myTARGET)
+    myTARGET = $$1
+    myFILES  = $${PROJECT_BINARY_DIR}/$${myTARGET}.dll
+
+    LIBS           += -L$${PROJECT_LIBRARY_DIR}/ -l$${myTARGET}
+    INCLUDEPATH    += $${PROJECT_ROOT}/$${myTARGET}/src
+    PRE_TARGETDEPS += $${PROJECT_LIBRARY_DIR}/lib$${myTARGET}.a
+    export(LIBS)
+    export(INCLUDEPATH)
+    export(PRE_TARGETDEPS)
+
+    # register dlls to module/external
+    DEP_DLLS_MODULE.files += $${myFILES}
+    #DEP_DLLS_EXTERNAL.files += $${myFILES}
+    export(DEP_DLLS_MODULE.files)
+
+    # load self dependencies
+    include($${PROJECT_ROOT}/$${myTARGET}/$${myTARGET}_dep.pri)
+
+    # export <MyTARGET>_FILES
+    MyTARGET = $$upper($${myTARGET})
+    eval($${MyTARGET}_FILES = $${myFILES})
+    export($${MyTARGET}_FILES)
+}
+#----------------------------------------------------------------
+defineTest(includeStaticLib) {
+    unset(myTARGET)
+    myTARGET = $$1
+
+    LIBS           += -L$${PROJECT_LIBRARY_DIR}/ -l$${myTARGET}
+    INCLUDEPATH    += $${PROJECT_ROOT}/$${myTARGET}/src
+    PRE_TARGETDEPS += $${PROJECT_LIBRARY_DIR}/lib$${myTARGET}.a
+    export(LIBS)
+    export(INCLUDEPATH)
+    export(PRE_TARGETDEPS)
+
+    # load self dependencies
+    include($${PROJECT_ROOT}/$${myTARGET}/$${myTARGET}_dep.pri)
+}
+#----------------------------------------------------------------
+defineTest(includeFinalModule) {
+    unset(myTARGET)
+    unset(myEXT)
+    myTARGET = $$1
+    myEXT    = $$2
+    myFILES  = $${PROJECT_BINARY_DIR}/$${myTARGET}.$${myEXT}
+
+    #LIBS          += -L$${PROJECT_LIBRARY_DIR}/ -l$${myTARGET}
+    INCLUDEPATH    += $${PROJECT_ROOT}/$${myTARGET}/src
+    PRE_TARGETDEPS += $${PROJECT_BINARY_DIR}/$${myTARGET}.$${myEXT} # spacial case
+    export(INCLUDEPATH)
+    export(PRE_TARGETDEPS)
+
+    # register dlls to module/external
+    DEP_DLLS_MODULE.files += $${myFILES}
+    #DEP_DLLS_EXTERNAL.files += $${}
+    export(DEP_DLLS_MODULE.files)
+
+    # load self dependencies
+    include($${PROJECT_ROOT}/$${myTARGET}/$${myTARGET}_dep.pri)
+
+    # export <MyTARGET>_FILES
+    MyTARGET = $$upper($${myTARGET})
+    eval($${MyTARGET}_FILES = $${myFILES})
+    export($${MyTARGET}_FILES)
+}
 
 
 
+#----------------------------------------------------------------
+# dep.pri helper
+defineTest(includeDepModule) {
+    unset(myTARGET)
+    myTARGET = $$1
+    include($${PROJECT_ROOT}/$${myTARGET}/$${myTARGET}_inc.pri)
+}
