@@ -1,8 +1,9 @@
 # directly dependent libraries for this module
-include($${PROJECT_ROOT}/view/view_inc.pri)
-include($${PROJECT_ROOT}/addinutil/addinutil_inc.pri)
+includeDepModule( view )
+includeDepModule( addinutil )
+includeDepModule( cvsmodel )
 include($${PROJECT_ROOT}/external/libqgit2_inc.pri)
-include($${PROJECT_ROOT}/cvsmodel/cvsmodel_inc.pri)
+
 
 # directly dependent qt dlls for this module
 #DEP_DLLS_QT.files +=

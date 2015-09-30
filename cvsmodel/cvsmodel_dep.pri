@@ -1,6 +1,7 @@
 # directly dependent libraries for this module
-include($${PROJECT_ROOT}/officelib/officelib_inc.pri)
-include($${PROJECT_ROOT}/util/util_inc.pri)
+includeDepModule( officelib )
+includeDepModule( util )
+
 
 # directly dependent qt dlls for this module
 #DEP_DLLS_QT.files +=

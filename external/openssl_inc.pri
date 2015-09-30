@@ -6,6 +6,7 @@ OPENSSL_FILES   = $${OPENSSL_BIN_DIR}/libeay32.dll \
 
 # register this module dll files to dependent external files
 DEP_DLLS_EXTERNAL.files += $${OPENSSL_FILES}
+export(DEP_DLLS_EXTERNAL.files)
 
 # load self dependencies
 include(openssl_dep.pri)

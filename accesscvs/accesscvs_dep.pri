@@ -1,11 +1,12 @@
 # directly dependent libraries for this module
-include($${PROJECT_ROOT}/resource/resource_inc.pri)
-include($${PROJECT_ROOT}/addin/addin_inc.pri)
+includeDepModule( resource )
+includeDepModule( addin )
 # controllers
-include($${PROJECT_ROOT}/acccontroller/acccontroller_inc.pri)
-include($${PROJECT_ROOT}/cvscontroller/cvscontroller_inc.pri)
-include($${PROJECT_ROOT}/gitcontroller/gitcontroller_inc.pri)
-include($${PROJECT_ROOT}/helpcontroller/helpcontroller_inc.pri)
+includeDepModule( acccontroller )
+includeDepModule( cvscontroller )
+includeDepModule( gitcontroller )
+includeDepModule( helpcontroller )
+
 
 # directly dependent qt dlls for for this module
 DEP_DLLS_QT.files += \
@@ -18,3 +19,5 @@ DEP_DLLS_QT.files += \
 DEP_DLLS_QT_PLATFORMS.files += \
     $$[QT_INSTALL_PLUGINS]/platforms/qwindows.dll
 
+export(DEP_DLLS_QT.files)
+export(DEP_DLLS_QT_PLATFORMS.files)
