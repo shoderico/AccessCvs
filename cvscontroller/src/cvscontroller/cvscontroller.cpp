@@ -1,14 +1,18 @@
 #include "cvscontroller.h"
 
 #include "view/maindialog.h"
+#include "view/cvsprogressdialog.h"
 #include "officelib/officelib.h"
 #include "addinutil/addinutil.h"
+#include "cvsmodel/objectmodel.h"
 
 CvsController::CvsController(QObject *parent)
     : QObject(parent)
     , m_application(0)
     , m_parentWidget(0)
     , m_dlg(0)
+    , m_progressDlg(0)
+    , m_model(0)
 {
 }
 
@@ -19,6 +23,11 @@ CvsController::~CvsController()
         m_dlg->close();
         delete m_dlg;
         m_dlg = 0;
+    }
+
+    if (m_progressDlg)
+    {
+        delete m_progressDlg;
     }
 }
 
@@ -128,29 +137,92 @@ void CvsController::manual()
 
 void CvsController::autoImport()
 {
+//    m_dlg->showAsAutoImport(false);
+
+    // model owner change
+    prepare(Import, false /*clearCache*/);
+    if ( m_model->selectedRowCount() == 0)
+        return;
     m_dlg->showAsAutoImport(false);
 }
 
 void CvsController::autoExport()
 {
+//    m_dlg->showAsAutoExport(false);
+
+    // model owner change
+    prepare(Export, false /*clearCache*/);
+    if ( m_model->selectedRowCount() == 0)
+        return;
     m_dlg->showAsAutoExport(false);
 }
 
 void CvsController::clearCacheAndImport()
 {
-    m_dlg->showAsAutoImport(true);
+//    m_dlg->showAsAutoImport(true);
+
+    // model owner change
+    prepare(Import, true /*clearCache*/);
+    if ( m_model->selectedRowCount() == 0)
+        return;
+    m_dlg->showAsAutoImport(false);
 }
 
 void CvsController::clearCacheAndExport()
 {
-    m_dlg->showAsAutoExport(true);
+//    m_dlg->showAsAutoExport(true);
+
+    // model owner change
+    prepare(Export, true /*clearCache*/);
+    if ( m_model->selectedRowCount() == 0)
+        return;
+    m_dlg->showAsAutoExport(false);
 }
 
 void CvsController::init()
 {
+    if (!m_model)
+    {
+        m_model = new ObjectModel(this);
+        m_model->setApplication(m_application);
+    }
+
     if (!m_dlg)
     {
-        m_dlg = new MainDialog( m_application, m_parentWidget );
+        m_dlg = new MainDialog( m_application, m_model, m_parentWidget );
     }
+
+    if (!m_progressDlg)
+    {
+        m_progressDlg = new CvsProgressDialog( m_model, m_parentWidget );
+    }
+}
+
+void CvsController::prepare(const CvsController::PrepareType prepareType, const bool clearCache)
+{
+    Q_UNUSED(prepareType)
+    // this must be shown in tiny progress dialog
+
+    QString title;
+    switch (prepareType) {
+        case Export: title = tr("Exporting..."); break;
+        case Import: title = tr("Importing..."); break;
+    }
+
+    m_progressDlg->setWindowTitle(title);
+    m_progressDlg->show();
+    m_progressDlg->beginBatch();
+
+    if (clearCache)
+    {
+        m_model->refreshItems();
+        m_model->selectItems(ObjectModel::AllItems, true /*selected*/, true /*resetSelection*/ );
+        m_model->clearItemsCache();
+    }
+    m_model->refreshItems();
+    m_model->selectItemsForProcess( true/*selected*/, true/*resetSelection*/ );
+
+    m_progressDlg->endBatch();
+    m_progressDlg->hide();
 }
 

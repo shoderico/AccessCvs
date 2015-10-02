@@ -7,6 +7,8 @@
 #include "addinutil/addincontroller.h"
 
 class MainDialog;
+class CvsProgressDialog;
+class ObjectModel;
 
 namespace Access {
 class Application;
@@ -40,10 +42,19 @@ public slots:
 private:
     void init();
 
+    enum PrepareType
+    {
+        Import
+        ,Export
+    };
+    void prepare(const PrepareType prepareType, const bool clearCache);
+
 private:
     Access::Application *m_application;
     QWidget *m_parentWidget;
     MainDialog *m_dlg;
+    CvsProgressDialog *m_progressDlg;
+    ObjectModel *m_model;
 };
 
 #endif // CVSCONTROLLER_H

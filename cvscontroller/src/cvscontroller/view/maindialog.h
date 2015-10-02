@@ -15,6 +15,7 @@ class Application;
 
 class ObjectModel;
 class ObjectProxyModel;
+class ProgressHelper;
 
 
 class MainDialog : public QDialog
@@ -22,7 +23,7 @@ class MainDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit MainDialog(Access::Application *application,  QWidget *parent = 0);
+    explicit MainDialog(Access::Application *application, ObjectModel *model, QWidget *parent = 0);
     ~MainDialog();
 
     void showAsManual();
@@ -61,24 +62,14 @@ private slots:
     void showCheckStateChanged(int state);
     void showSelectedOnly(int state);
 
-    void onTimeout();
-
-    void progressStart(int type, int count);
-    void progressChange(int type, int value);
-    void progressEnd(int type);
-
-    void setProcessTypeName(int type);
-
 private:
     Ui::MainDialog *ui;
     Access::Application *m_application;
     ObjectModel *m_model;
     ObjectProxyModel *m_proxyModel;
     ShowModes m_showMode;
-    QTime m_progressTime;
-    QTimer m_progressTimer;
-    QMap<int, QString> m_processTypeNames;
 
+    ProgressHelper *m_progressHelper;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(MainDialog::ShowModes)

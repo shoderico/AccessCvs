@@ -113,6 +113,8 @@ public:
     };
     Q_DECLARE_FLAGS(ObjectDifferenceTypes, ObjectDifferenceType)
 
+    int selectedRowCount() const;
+
     void getItems(ObjectItems *pItems, ItemsTypes itemsType, bool selectedOnly /*= true*/, bool modifiedOnly /*= false*/) const;
     void getItems(ObjectItems *pItems, ItemsTypes itemsType, SelectObjectTypes objectTypes, bool selectedOnly /*= true*/, bool modifiedOnly /*= false*/) const;
 

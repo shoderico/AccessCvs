@@ -9,6 +9,7 @@
 
 #include "view/checkboxitemdelegate.h"
 #include "hasdatacolumnitemdelegate.h"
+#include "progresshelper.h"
 
 #include "util/comptr.h"
 
@@ -19,17 +20,19 @@
 
 using namespace Access;
 
-MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
+MainDialog::MainDialog(Access::Application *application, ObjectModel *model, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::MainDialog)
   , m_application(application)
+  , m_model(model)
+  , m_proxyModel(0)
   , m_showMode( UnkownMode )
+  , m_progressHelper( new ProgressHelper(this) )
 {
     ui->setupUi(this);
 
     // FIXME: to be canceled
 
-    m_model = new ObjectModel(this);
     m_proxyModel = new ObjectProxyModel(this);
     m_proxyModel->setSourceModel(m_model);
 
@@ -85,13 +88,14 @@ MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
     connect( ui->showProjectFileCheckBox, SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
     connect( ui->showVBProjectCheckBox,   SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
 
-    connect( &m_progressTimer, SIGNAL(timeout()), this, SLOT(onTimeout()) );
 
-
-
-    connect( m_model, SIGNAL(progressStart(int,int)), this, SLOT(progressStart(int,int)) );
-    connect( m_model, SIGNAL(progressChange(int,int)), this, SLOT(progressChange(int,int)) );
-    connect( m_model, SIGNAL(progressEnd(int)), this, SLOT(progressEnd(int)) );
+    m_progressHelper->initialize(
+                  ui->elapsedTimeLabel
+                , ui->processTypeNameLabel
+                , ui->progressCountLabel
+                , ui->progressBar
+                , m_model
+                );
 
     // default value
     ui->showAllCheckBox->setChecked(true);
@@ -107,9 +111,6 @@ MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
     ui->showSelectedOnlyCheckBox->setChecked(true);
 
 
-    ui->progressBar->reset();
-
-
     bool c;
     c = connect( m_application, SIGNAL(exception(int,QString,QString,QString)), this, SLOT(exception(int,QString,QString,QString)) );
     if (!c) QMessageBox::information(this, "", "connect exception failed");
@@ -118,35 +119,8 @@ MainDialog::MainDialog(Access::Application *application, QWidget *parent) :
     c = connect( m_application, SIGNAL(signal(QString,int,void*)), this, SLOT(signal(QString,int,void*)) );
     if (!c) QMessageBox::information(this, "", "connect signal failed");
 
-    m_model->setApplication(m_application);
     m_proxyModel->setFilterShowObjectType( ObjectModel::AllObjectTypes );
     m_proxyModel->setFilterShowSelectedOnly( true/*selected*/ );
-
-    m_processTypeNames[ ObjectModel::RefreshProcess ] = tr("RefreshProcess");
-    m_processTypeNames[ ObjectModel::ExportProcess ] = tr("ExportProcess");
-    m_processTypeNames[ ObjectModel::ImportProcess ] = tr("ImportProcess");
-    m_processTypeNames[ ObjectModel::LoadItemFromProjectProcess ] = tr("LoadItemFromProjectProcess");
-    m_processTypeNames[ ObjectModel::LoadItemFromSourceDirProcess ] = tr("LoadItemFromSourceDirProcess");
-    m_processTypeNames[ ObjectModel::ExportFromProjectToTempDirProcess ] = tr("ExportFromProjectToTempDirProcess");
-    m_processTypeNames[ ObjectModel::ImportFromTempDirToProjectProcess ] = tr("ImportFromTempDirToProjectProcess");
-    m_processTypeNames[ ObjectModel::CopyFromTempDirToSourceDirProcess ] = tr("CopyFromTempDirToSourceDirProcess");
-    m_processTypeNames[ ObjectModel::CopyFromSourceDirToTempDirProcess ] = tr("CopyFromSourceDirToTempDirProcess");
-    m_processTypeNames[ ObjectModel::SanitizeTempDirProcess ] = tr("SanitizeTempDirProcess");
-    m_processTypeNames[ ObjectModel::DesanitizeTempDirProcess ] = tr("DesanitizeTempDirProcess");
-    m_processTypeNames[ ObjectModel::CompareTempDirProcess ] = tr("CompareTempDirProcess");
-    m_processTypeNames[ ObjectModel::DeleteFromSourceDirProcess ] = tr("DeleteFromSourceDirProcess");
-    m_processTypeNames[ ObjectModel::DeleteFromProjectProcess ] = tr("DeleteFromProjectProcess");
-    m_processTypeNames[ ObjectModel::DeleteFromTempDirProcess ] = tr("DeleteFromTempDirProcess");
-    m_processTypeNames[ ObjectModel::UpdateItemsDifferenceByFileTimeProcess ] = tr("UpdateItemsDifferenceByFileTimeProcess");
-    m_processTypeNames[ ObjectModel::UpdateFileTimeInTempDirByExportDateProcess ] = tr("UpdateFileTimeInTempDirByExportDateProcess");
-    m_processTypeNames[ ObjectModel::UpdateItemsExportDateProcess ] = tr("UpdateItemsExportDateProcess");
-    m_processTypeNames[ ObjectModel::UpdateFileTimeInTempDirProcess ] = tr("UpdateFileTimeInTempDirProcess");
-    m_processTypeNames[ ObjectModel::UpdateItemsInProjectProcess ] = tr("UpdateItemsInProjectProcess");
-    m_processTypeNames[ ObjectModel::UpdateItemsInSourceDirProcess ] = tr("UpdateItemsInSourceDirProcess");
-    m_processTypeNames[ ObjectModel::UpdateItemsDifferenceProcess ] = tr("UpdateItemsDifferenceProcess");
-    m_processTypeNames[ ObjectModel::UpdateItemsDifferenceAsIsProcess ] = tr("UpdateItemsDifferenceAsIsProcess");
-    m_processTypeNames[ ObjectModel::DeleteItemsProcess ] = tr("DeleteItemsProcess");
-    m_processTypeNames[ ObjectModel::UpdateItemsCreateUpdateDateFromProjectProcess ] = tr("UpdateItemsCreateUpdateDateFromProjectProcess");
 }
 
 MainDialog::~MainDialog()
@@ -166,6 +140,7 @@ void MainDialog::showAsManual()
     ui->executeExportButton->show();
     ui->executeImportButton->show();
     ui->okButton->setText(tr("OK"));
+    setWindowTitle(tr("Manual"));
     show();
 }
 
@@ -175,18 +150,8 @@ void MainDialog::showAsAutoExport(const bool clearCache)
     ui->executeExportButton->hide();
     ui->executeImportButton->hide();
     ui->okButton->setText(tr("Export"));
+    setWindowTitle(tr("Export"));
     show();
-
-    if (clearCache)
-    {
-        m_model->refreshItems();
-        m_model->selectItems(ObjectModel::AllItems, true /*selected*/, true /*resetSelection*/ );
-        m_model->clearItemsCache();
-    }
-    prepareExport();
-
-    if (m_proxyModel->rowCount() == 0)
-        accept();
 }
 
 void MainDialog::showAsAutoImport(const bool clearCache)
@@ -195,18 +160,8 @@ void MainDialog::showAsAutoImport(const bool clearCache)
     ui->executeExportButton->hide();
     ui->executeImportButton->hide();
     ui->okButton->setText(tr("Import"));
+    setWindowTitle(tr("Import"));
     show();
-
-    if (clearCache)
-    {
-        m_model->refreshItems();
-        m_model->selectItems(ObjectModel::AllItems, true /*selected*/, true /*resetSelection*/ );
-        m_model->clearItemsCache();
-    }
-    prepareImport();
-
-    if (m_proxyModel->rowCount() == 0)
-        accept();
 }
 
 void MainDialog::exception(int code, const QString &source, const QString &desc, const QString &help)
@@ -320,18 +275,12 @@ void MainDialog::prepareImport()
 
 void MainDialog::beginBatch()
 {
-    m_progressTime.restart();
-    m_progressTimer.start(250);
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    ui->progressCountLabel->setText(tr("( 0000 / 0000 )"));
+    m_progressHelper->beginBatch();
 }
 
 void MainDialog::endBatch()
 {
-    m_progressTimer.stop();
-    onTimeout();
-    QApplication::restoreOverrideCursor();
-    ui->progressCountLabel->setText(tr("( 0000 / 0000 )"));
+    m_progressHelper->endBatch();
 }
 
 void MainDialog::selectAuto()
@@ -440,55 +389,3 @@ void MainDialog::showSelectedOnly(int state)
 
     m_proxyModel->setFilterShowSelectedOnly( selected );
 }
-
-void MainDialog::onTimeout()
-{
-    int msecs = m_progressTime.elapsed() % 1000;
-    int secs = m_progressTime.elapsed() / 1000;
-    int mins = (secs / 60) % 60;
-    int hours = (secs / 3600);
-    secs = secs % 60;
-
-    ui->elapsedTimeLabel->setText(
-                QString("%1:%2:%3.%4")
-                .arg(hours, 2, 10, QLatin1Char('0'))
-                .arg(mins, 2, 10, QLatin1Char('0'))
-                .arg(secs, 2, 10, QLatin1Char('0'))
-                .arg(msecs, 3, 10, QLatin1Char('0'))
-                );
-}
-
-void MainDialog::progressStart(int type, int count)
-{
-    ui->progressBar->setRange(0, count);
-    ui->progressBar->setValue(0);
-    setProcessTypeName(type);
-    //QApplication::processEvents();
-}
-
-void MainDialog::progressChange(int type, int value)
-{
-    Q_UNUSED(type);
-    ui->progressBar->setValue(value);
-    ui->progressCountLabel->setText(QString("( %1 / %2 )")
-                                    .arg(value, 4, 10, QLatin1Char('0'))
-                                    .arg(ui->progressBar->maximum(), 4, 10, QLatin1Char('0'))
-                                    );
-    setProcessTypeName(type);
-    QApplication::processEvents();
-}
-
-void MainDialog::progressEnd(int type)
-{
-    Q_UNUSED(type);
-    ui->progressBar->setValue(0);
-    ui->progressBar->setMaximum(1);
-    ui->progressBar->reset();
-    ui->processTypeNameLabel->setText("");
-}
-
-void MainDialog::setProcessTypeName(int type)
-{
-    ui->processTypeNameLabel->setText(QString("%1 ...").arg( m_processTypeNames.value(type) ));
-}
-

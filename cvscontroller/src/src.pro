@@ -12,16 +12,23 @@ DEFINES += CVSCONTROLLER_LIBRARY
 SOURCES += \
     cvscontroller/cvscontroller.cpp \
     cvscontroller/view/maindialog.cpp \
-    cvscontroller/view/hasdatacolumnitemdelegate.cpp
+    cvscontroller/view/hasdatacolumnitemdelegate.cpp \
+    cvscontroller/view/cvsprogressdialog.cpp \
+    cvscontroller/view/processtypenames.cpp \
+    cvscontroller/view/progresshelper.cpp
 
 HEADERS += \
     cvscontroller/cvscontroller_global.h \
     cvscontroller/cvscontroller.h \
     cvscontroller/view/maindialog.h \
-    cvscontroller/view/hasdatacolumnitemdelegate.h
+    cvscontroller/view/hasdatacolumnitemdelegate.h \
+    cvscontroller/view/cvsprogressdialog.h \
+    cvscontroller/view/processtypenames.h \
+    cvscontroller/view/progresshelper.h
 
 FORMS += \
-    cvscontroller/view/maindialog.ui
+    cvscontroller/view/maindialog.ui \
+    cvscontroller/view/cvsprogressdialog.ui
 
 include(../../common.pri)
 include(../../submodule.pri)

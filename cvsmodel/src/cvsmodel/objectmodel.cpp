@@ -619,6 +619,17 @@ bool ObjectModel::checkProjectState()
     return true;
 }
 
+int ObjectModel::selectedRowCount() const
+{
+    int count  = 0;
+    for ( QList<ObjectItem*>::const_iterator it = m_items.begin() ; it != m_items.end() ; ++it )
+    {
+        if ((*it)->isSelected())
+            ++count;
+    }
+    return count;
+}
+
 
 
 
