@@ -18,12 +18,17 @@ static const char ClassName[]     = "AddInMain";
 CvsAddInFactory::CvsAddInFactory(const QUuid &app, const QUuid &lib)
     : AddInFactory(app, lib)
 {
+    setRegistryRoot( QLatin1String("HKEY_CURRENT_USER\\Software") );
+    setRegistryPath( QLatin1String("\\Microsoft\\Office\\Access\\Addins") );
+
     setClassId( ClassID );
     setInterfaceId( InterfaceID );
     setEventsId( EventsID );
     setClassName( ClassName );
 
     // FIXME: proper friendlyName and description
+    setLoadBehavior( 3 );
+    setCommandLineSafe( 0 );
     setFriendlyName( tr("FriendlyName") );
     setDescription( tr("Description"));
 
@@ -40,6 +45,8 @@ CvsAddInFactory::~CvsAddInFactory()
 QAxAggregated *CvsAddInFactory::createAggregate(QObject *parent)
 {
     AddInControllerImpl *addInImpl = new AddInControllerImpl(this, parent);
+    addInImpl->setRibbonTabId("AccessCvs");
+    addInImpl->setRibbonTabLabel("AccessCvs");
     addInImpl->appendController( new CvsController(this) );
     addInImpl->appendController( new AccController(this) );
     addInImpl->appendController( new HelpController(this) );

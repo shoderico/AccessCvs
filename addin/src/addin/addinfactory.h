@@ -29,10 +29,14 @@ public:
     virtual void onAfterDisconnectionEvent();
 
 protected:
+    void setRegistryRoot(const QString &registryRoot);
+    void setRegistryPath(const QString &registryPath);
     void setClassName(const QString &className);
     void setClassId(const QString &classId);
     void setInterfaceId(const QString &interfaceId);
     void setEventsId(const QString &eventsId);
+    void setLoadBehavior(const int loadBehavior);
+    void setCommandLineSafe(const int commandLineSafe);
     void setFriendlyName(const QString &friendlyName);
     void setDescription(const QString &description);
 
@@ -42,6 +46,8 @@ private:
     QString m_interfaceId;
     QString m_eventsId;
 
+    int m_loadBehavior;
+    int m_commandLineSafe;
     QString m_friendlyName;
     QString m_description;
 

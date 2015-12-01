@@ -10,9 +10,8 @@ extern QAxFactory *qax_instantiate();
 
 AddInFactory::AddInFactory(const QUuid &app, const QUuid &lib)
     : QAxFactory(app, lib)
-//  , m_registryRoot( QLatin1String("HKEY_LOCAL_MACHINE\\SOFTWARE") )
-    , m_registryRoot( QLatin1String("HKEY_CURRENT_USER\\Software") )
-    , m_registryPath( QLatin1String("\\Microsoft\\Office\\Access\\Addins") )
+    , m_loadBehavior(3)
+    , m_commandLineSafe(0)
 {
 }
 
@@ -88,6 +87,16 @@ void AddInFactory::onAfterDisconnectionEvent()
 
 }
 
+void AddInFactory::setRegistryRoot(const QString &registryRoot)
+{
+    m_registryRoot = registryRoot;
+}
+
+void AddInFactory::setRegistryPath(const QString &registryPath)
+{
+    m_registryPath = registryPath;
+}
+
 void AddInFactory::setClassName(const QString &className)
 {
     m_className = className;
@@ -106,6 +115,16 @@ void AddInFactory::setInterfaceId(const QString &interfaceId)
 void AddInFactory::setEventsId(const QString &eventsId)
 {
     m_eventsId = eventsId;
+}
+
+void AddInFactory::setLoadBehavior(const int loadBehavior)
+{
+    m_loadBehavior = loadBehavior;
+}
+
+void AddInFactory::setCommandLineSafe(const int commandLineSafe)
+{
+    m_commandLineSafe = commandLineSafe;
 }
 
 void AddInFactory::setFriendlyName(const QString &friendlyName)
@@ -148,8 +167,8 @@ void AddInFactory::registerClassInternal(const QString &key, AddInFactory::WordS
     if ( key == m_className )
     {
         QScopedPointer<QSettings> st( new QSettings( registryPath(ws) , QSettings::NativeFormat));
-        st->setValue("/" + progID() + "/LoadBehavior",      3);
-        st->setValue("/" + progID() + "/CommandLineSafe",   0);
+        st->setValue("/" + progID() + "/LoadBehavior",      m_loadBehavior);
+        st->setValue("/" + progID() + "/CommandLineSafe",   m_commandLineSafe);
         st->setValue("/" + progID() + "/FriendlyName",      m_friendlyName);
         st->setValue("/" + progID() + "/Description",       m_description);
     }

@@ -18,6 +18,16 @@ void AddInControllerImpl::appendController(AddInController *controller)
     m_controllers.append( controller );
 }
 
+void AddInControllerImpl::setRibbonTabId(const QString &tabId)
+{
+    m_ribbonTabId = tabId;
+}
+
+void AddInControllerImpl::setRibbonTabLabel(const QString &tabLabel)
+{
+    m_ribbonTabLabel = tabLabel;
+}
+
 void AddInControllerImpl::onConnectionEvent()
 {
     m_winWidgetManager = new WindowWidgetManager(application(), this);
@@ -44,7 +54,7 @@ QString AddInControllerImpl::ribbomXml()
     content += "<customUI xmlns=\"http://schemas.microsoft.com/office/2006/01/customui\">";
     content += "<ribbon>";
     content += "<tabs>";
-    content += "<tab id=\"AccessCvs\" label=\"AccessCvs\">";
+    content += QString("<tab id=\"%1\" label=\"%2\">").arg(m_ribbonTabId).arg(m_ribbonTabLabel);
 
     foreach (AddInController *c, m_controllers)
         content += c->ribbonXml();
