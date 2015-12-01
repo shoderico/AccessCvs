@@ -12,7 +12,6 @@ SUBDIRS += \
     addin \
     acccontroller \
     cvscontroller \
-    gitcontroller \
     view \
     addinutil \
     comutil \
@@ -25,14 +24,13 @@ accmodel.depends += util officelib
 
 # controller layer
 cvscontroller.depends        += view addinutil cvsmodel
-gitcontroller.depends        += view addinutil cvsmodel
 acccontroller.depends        += view addinutil accmodel
 helpcontroller.depends       +=      addinutil comutil
 
 # addin layer
 addin.depends     += officelib comutil addinutil
 accesscvs.depends += resource addin \
-                     cvscontroller gitcontroller acccontroller helpcontroller
+                     cvscontroller acccontroller helpcontroller
 
 
 # cli layer

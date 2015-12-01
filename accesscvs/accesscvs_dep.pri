@@ -4,7 +4,6 @@ includeDepModule( addin )
 # controllers
 includeDepModule( acccontroller )
 includeDepModule( cvscontroller )
-includeDepModule( gitcontroller )
 includeDepModule( helpcontroller )
 
 

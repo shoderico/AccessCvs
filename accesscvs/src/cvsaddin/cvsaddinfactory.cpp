@@ -5,7 +5,6 @@
 #include "addin/addincontrollerimpl.h"
 
 #include "cvscontroller/cvscontroller.h"
-#include "gitcontroller/gitcontroller.h"
 #include "acccontroller/acccontroller.h"
 #include "helpcontroller/helpcontroller.h"
 
@@ -42,7 +41,6 @@ QAxAggregated *CvsAddInFactory::createAggregate(QObject *parent)
 {
     AddInControllerImpl *addInImpl = new AddInControllerImpl(this, parent);
     addInImpl->appendController( new CvsController(this) );
-    addInImpl->appendController( new GitController(this) );
     addInImpl->appendController( new AccController(this) );
     addInImpl->appendController( new HelpController(this) );
     return addInImpl;
