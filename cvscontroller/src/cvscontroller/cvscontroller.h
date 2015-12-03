@@ -23,7 +23,7 @@ public:
     explicit CvsController(QObject *parent = 0);
     ~CvsController();
 
-    void initialize(Access::Application *application, QWidget *parentWidget);
+    void initialize(QAxObject *application, QWidget *parentWidget);
     QString ribbonXml();
     bool imagePath(const QString &controlId, QString &imagePath, QSize &size);
     bool handleButtonClick(const QString &controlId);

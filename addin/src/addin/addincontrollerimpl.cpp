@@ -2,6 +2,7 @@
 
 #include "comutil/comutil.h"
 
+#include "addinfactory.h"
 #include "addinutil/addincontroller.h"
 #include "windowwidgetmanager.h"
 
@@ -30,10 +31,10 @@ void AddInControllerImpl::setRibbonTabLabel(const QString &tabLabel)
 
 void AddInControllerImpl::onConnectionEvent()
 {
-    m_winWidgetManager = new WindowWidgetManager(application(), this);
+    m_winWidgetManager = new WindowWidgetManager(factory()->applicationHwnd(), this);
 
     foreach (AddInController *c, m_controllers)
-        c->initialize(application(), m_winWidgetManager->widget());
+        c->initialize(factory()->application(), m_winWidgetManager->widget());
 }
 
 void AddInControllerImpl::onDisconnectionEvent()

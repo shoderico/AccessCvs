@@ -6,6 +6,7 @@
 #include <QAxFactory>
 
 class QAxAggregated;
+class QAxObject;
 
 class ADDIN_SHARED_EXPORT AddInFactory : public QAxFactory
 {
@@ -25,6 +26,10 @@ public:
     void unregisterClass(const QString &key, QSettings *settings) const;
 
     virtual QAxAggregated *createAggregate(QObject *parent = 0) = 0;
+    virtual void setApplication(IDispatch *application) = 0;
+    virtual void releaseApplication() = 0;
+    virtual QAxObject *application() const = 0;
+    virtual int applicationHwnd() = 0;
     virtual void onBeforeConnectionEvent();
     virtual void onAfterDisconnectionEvent();
 

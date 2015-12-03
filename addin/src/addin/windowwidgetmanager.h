@@ -5,21 +5,16 @@
 
 class QWinWidget;
 
-namespace Access {
-class Application;
-} // namespace Access
-
 class WindowWidgetManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit WindowWidgetManager(Access::Application *application, QObject *parent = 0);
+    explicit WindowWidgetManager(int applicationHwnd, QObject *parent = 0);
     ~WindowWidgetManager();
     QWidget *widget() const;
 
 
 private:
-    Access::Application *m_application;
     QWinWidget *m_winWidget;
 };
 

@@ -13,7 +13,7 @@ public:
     explicit HelpController(QObject *parent = 0);
     ~HelpController();
 
-    void initialize(Access::Application *application, QWidget *parentWidget);
+    void initialize(QAxObject *application, QWidget *parentWidget);
     QString ribbonXml();
     bool imagePath(const QString &controlId, QString &imagePath, QSize &size);
     bool handleButtonClick(const QString &controlId);
@@ -22,7 +22,7 @@ private slots:
     void about();
 
 private:
-    Access::Application *m_application;
+    QAxObject *m_application;
     QWidget *m_parentWidget;
 };
 

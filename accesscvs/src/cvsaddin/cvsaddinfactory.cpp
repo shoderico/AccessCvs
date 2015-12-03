@@ -3,6 +3,7 @@
 #include "util/logfile.h"
 //#include "cvsaddinimpl.h"
 #include "addin/addincontrollerimpl.h"
+#include "officelib/officelib.h"
 
 #include "cvscontroller/cvscontroller.h"
 #include "acccontroller/acccontroller.h"
@@ -17,6 +18,7 @@ static const char ClassName[]     = "AddInMain";
 
 CvsAddInFactory::CvsAddInFactory(const QUuid &app, const QUuid &lib)
     : AddInFactory(app, lib)
+    , m_application(0)
 {
     setRegistryRoot( QLatin1String("HKEY_CURRENT_USER\\Software") );
     setRegistryPath( QLatin1String("\\Microsoft\\Office\\Access\\Addins") );
@@ -51,6 +53,31 @@ QAxAggregated *CvsAddInFactory::createAggregate(QObject *parent)
     addInImpl->appendController( new AccController(this) );
     addInImpl->appendController( new HelpController(this) );
     return addInImpl;
+}
+
+void CvsAddInFactory::setApplication(IDispatch *application)
+{
+    Access::_Application *_application = new Access::_Application(application/*, this*/);
+    m_application = new Access::Application(_application);
+}
+
+void CvsAddInFactory::releaseApplication()
+{
+    if (m_application)
+    {
+        delete m_application;
+        m_application = NULL;
+    }
+}
+
+QAxObject *CvsAddInFactory::application() const
+{
+    return m_application;
+}
+
+int CvsAddInFactory::applicationHwnd()
+{
+    return m_application->hWndAccessApp();
 }
 
 void CvsAddInFactory::onBeforeConnectionEvent()

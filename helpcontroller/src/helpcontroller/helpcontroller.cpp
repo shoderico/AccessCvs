@@ -15,7 +15,7 @@ HelpController::~HelpController()
 {
 }
 
-void HelpController::initialize(Access::Application *application, QWidget *parentWidget)
+void HelpController::initialize(QAxObject *application, QWidget *parentWidget)
 {
     m_application = application;
     m_parentWidget = parentWidget;

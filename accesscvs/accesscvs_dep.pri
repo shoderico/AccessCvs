@@ -1,4 +1,5 @@
 # directly dependent libraries for this module
+includeDepModule( officelib )
 includeDepModule( resource )
 includeDepModule( addin )
 # controllers

@@ -1,5 +1,4 @@
 # directly dependent libraries for this module
-includeDepModule( officelib )
 includeDepModule( comutil )
 includeDepModule( addinutil )
 include($${PROJECT_ROOT}/external/qtsolutions_inc.pri)

@@ -12,10 +12,6 @@
 
 class AddInFactory;
 
-namespace Access {
-class Application;
-} // namespace Access
-
 class ADDIN_SHARED_EXPORT AddInImpl
         : public QObject
         , public QAxAggregated
@@ -98,7 +94,7 @@ protected:
     virtual IPictureDisp *buttonImage(const QString &controlId) = 0;
     virtual HRESULT onButtonClicked(const QString &controlId) = 0;
 
-    Access::Application *application() const;
+    AddInFactory *factory() const;
 
 private:
     ITypeInfo *m_pTypeInfo;
@@ -106,7 +102,6 @@ private:
     IDispatch *m_applicationIDisp;
     IDispatch *m_addInInstIDisp;
 
-    Access::Application *m_application;
     AddInFactory *m_factory;
 };
 

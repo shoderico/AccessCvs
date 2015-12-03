@@ -31,9 +31,9 @@ CvsController::~CvsController()
     }
 }
 
-void CvsController::initialize(Access::Application *application, QWidget *parentWidget)
+void CvsController::initialize(QAxObject *application, QWidget *parentWidget)
 {
-    m_application = application;
+    m_application = static_cast<Access::Application*>(application);
     m_parentWidget = parentWidget;
     init();
 }

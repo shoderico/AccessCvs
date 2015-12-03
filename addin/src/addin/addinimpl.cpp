@@ -4,8 +4,6 @@
 #include <QUuid>
 #include <QDebug>
 
-#include "officelib/officelib.h"
-
 #include "addinfactory.h"
 
 //#include <comdef.h>
@@ -16,7 +14,6 @@ AddInImpl::AddInImpl(AddInFactory *factory, QObject *parent)
     : QObject(parent)
     , m_applicationIDisp(0)
     , m_addInInstIDisp(0)
-    , m_application(0)
     , m_factory(factory)
 {
     HRESULT hr;
@@ -135,9 +132,7 @@ HRESULT AddInImpl::OnConnection(IDispatch *Application, ext_ConnectMode ConnectM
     m_addInInstIDisp = AddInInst;
     m_addInInstIDisp->AddRef();
 
-    Access::_Application *_application = new Access::_Application(m_applicationIDisp/*, this*/);
-    m_application = new Access::Application(_application);
-
+    m_factory->setApplication(m_applicationIDisp);
     m_factory->onBeforeConnectionEvent();
     onConnectionEvent();
 
@@ -169,12 +164,7 @@ HRESULT AddInImpl::OnDisconnection(ext_DisconnectMode RemoveMode, SAFEARRAY **cu
 
    onDisconnectionEvent();
    m_factory->onAfterDisconnectionEvent();
-
-   if (m_application)
-   {
-       delete m_application;
-       m_application = NULL;
-   }
+   m_factory->releaseApplication();
 
    // Release the pointer...
    if (NULL != m_applicationIDisp) {
@@ -314,7 +304,7 @@ HRESULT AddInImpl::GetButtonImage(IDispatch *ribbonControl, IPictureDisp **pictu
     return S_OK;
 }
 
-Access::Application *AddInImpl::application() const
+AddInFactory *AddInImpl::factory() const
 {
-    return m_application;
+    return m_factory;
 }

@@ -1,14 +1,11 @@
 #include "windowwidgetmanager.h"
 
-#include "officelib/officelib.h"
-
 #include <QWinWidget>
 
-WindowWidgetManager::WindowWidgetManager(Access::Application *application, QObject *parent)
+WindowWidgetManager::WindowWidgetManager(int applicationHwnd, QObject *parent)
     : QObject(parent)
-    , m_application(application)
 {
-    m_winWidget = new QWinWidget( (HWND)m_application->hWndAccessApp() );
+    m_winWidget = new QWinWidget( (HWND)applicationHwnd );
     m_winWidget->showCentered();
 }
 

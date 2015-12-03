@@ -30,9 +30,9 @@ AccController::~AccController()
     delete m_threadedInvoker;
 }
 
-void AccController::initialize(Access::Application *application, QWidget *parentWidget)
+void AccController::initialize(QAxObject *application, QWidget *parentWidget)
 {
-    m_application = application;
+    m_application = static_cast<Access::Application*>(application);
     m_parentWidget = parentWidget;
     m_threadedInvoker = new ThreadedInvoker(100, this);
 
