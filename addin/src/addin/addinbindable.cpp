@@ -1,4 +1,4 @@
-#include "addinmain.h"
+#include "addinbindable.h"
 
 #include "addinfactory.h"
 

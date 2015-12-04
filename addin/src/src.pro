@@ -12,23 +12,23 @@ DEFINES += ADDIN_LIBRARY
 SOURCES += \
     addin/addinfactory.cpp \
     addin/addinimpl.cpp \
-    addin/addinmain.cpp \
     addin/interface/msaddndr_i.c \
     addin/interface/ribbon_i.c \
     addin/interface/ribboncallback_i.c \
     addin/addincontrollerimpl.cpp \
-    addin/windowwidgetmanager.cpp
+    addin/windowwidgetmanager.cpp \
+    addin/addinbindable.cpp
 
 HEADERS += \
     addin/addin_global.h \
     addin/addinfactory.h \
     addin/addinimpl.h \
-    addin/addinmain.h \
     addin/interface/msaddndr.h \
     addin/interface/ribbon.h \
     addin/interface/ribboncallback.h \
     addin/addincontrollerimpl.h \
-    addin/windowwidgetmanager.h
+    addin/windowwidgetmanager.h \
+    addin/addinbindable.h
 
 OTHER_FILES += \
     addin/distfile/addin.def \
