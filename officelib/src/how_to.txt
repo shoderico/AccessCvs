@@ -1,4 +1,6 @@
-Qt付属の dumpcpp.exe を使って、QAx＊＊ベースのクラスファイルを生成する
+﻿1) Qt付属の dumpcpp.exe を使って、QAx＊＊ベースのクラスファイルを生成する
+
+C:\Qt\5.5\mingw492_32\bin\dumpcpp.exe
 
 guid がいる
 
@@ -22,5 +24,18 @@ ADODB,0,{00000201-0000-0010-8000-00AA006D2EA4},2,1
 VBIDE,{0002E157-0000-0000-C000-000000000046},5,3
 	OK
 
+Excel,{00024500-0000-0000-C000-000000000046}
+	error
+		dumpcpp.exe "C:\Program Files (x86)\Microsoft Office\Office12\EXCEL.EXE"
 
 
+2) ヘッダに __declspec(dllexport) or __declspec(dllimport) の定義を追加する
+
+#include "officelib_global.h"
+// Define this symbol to __declspec(dllexport) or __declspec(dllimport)
+#ifndef VBIDE_EXPORT
+#define VBIDE_EXPORT OFFICELIB_SHARED_EXPORT
+#endif
+
+
+3) Q_DECLARE_OPAQUE_POINTER をコメントアウト？
