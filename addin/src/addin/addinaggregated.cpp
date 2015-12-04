@@ -1,4 +1,4 @@
-#include "addinimpl.h"
+#include "addinaggregated.h"
 
 #include <QAxFactory>
 #include <QUuid>

@@ -3,7 +3,7 @@
 
 #include "addin_global.h"
 
-#include "addinimpl.h"
+#include "addinaggregated.h"
 
 class WindowWidgetManager;
 class AddInController;
