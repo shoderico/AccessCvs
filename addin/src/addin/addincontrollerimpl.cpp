@@ -7,7 +7,7 @@
 #include "windowwidgetmanager.h"
 
 AddInControllerImpl::AddInControllerImpl(AddInFactory *factory, QObject *parent)
-    : AddInImpl(factory, parent)
+    : AddInAggregated(factory, parent)
     , m_winWidgetManager(0)
 {
 

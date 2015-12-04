@@ -10,7 +10,7 @@
 //_COM_SMARTPTR_TYPEDEF(ITypeInfo, __uuidof(ITypeInfo));
 
 
-AddInImpl::AddInImpl(AddInFactory *factory, QObject *parent)
+AddInAggregated::AddInAggregated(AddInFactory *factory, QObject *parent)
     : QObject(parent)
     , m_applicationIDisp(0)
     , m_addInInstIDisp(0)
@@ -35,7 +35,7 @@ AddInImpl::AddInImpl(AddInFactory *factory, QObject *parent)
     m_pTypeInfo = pTypeInfo;
 }
 
-long AddInImpl::queryInterface(const QUuid &iid, void **iface)
+long AddInAggregated::queryInterface(const QUuid &iid, void **iface)
 {
     *iface = 0;
 
@@ -59,7 +59,7 @@ long AddInImpl::queryInterface(const QUuid &iid, void **iface)
 // http://www.codeproject.com/Articles/3173/A-simple-yet-debuggable-COM-skeleton-code
 
 // IDispatch
-HRESULT AddInImpl::GetTypeInfoCount(UINT *pctinfo)
+HRESULT AddInAggregated::GetTypeInfoCount(UINT *pctinfo)
 {
     if ( pctinfo == NULL )
         return E_INVALIDARG;
@@ -68,7 +68,7 @@ HRESULT AddInImpl::GetTypeInfoCount(UINT *pctinfo)
     return S_OK;
 }
 
-HRESULT AddInImpl::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo)
+HRESULT AddInAggregated::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo)
 {
     Q_UNUSED(lcid); //Q_UNUSED(iTInfo);  Q_UNUSED(ppTInfo);
 
@@ -85,14 +85,14 @@ HRESULT AddInImpl::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo)
     return S_OK;
 }
 
-HRESULT AddInImpl::GetIDsOfNames(const IID &riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId)
+HRESULT AddInAggregated::GetIDsOfNames(const IID &riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId)
 {
     Q_UNUSED(riid); Q_UNUSED(lcid); // Q_UNUSED(rgszNames); Q_UNUSED(cNames); Q_UNUSED(lcid); Q_UNUSED(rgDispId);
 
     return m_pTypeInfo->GetIDsOfNames(rgszNames, cNames, rgDispId);
 }
 
-HRESULT AddInImpl::Invoke(DISPID dispIdMember, const IID &riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
+HRESULT AddInAggregated::Invoke(DISPID dispIdMember, const IID &riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
 {
     Q_UNUSED(riid); Q_UNUSED(lcid); //Q_UNUSED(dispIdMember); Q_UNUSED(wFlags); Q_UNUSED(pDispParams); Q_UNUSED(pVarResult); Q_UNUSED(pExcepInfo); Q_UNUSED(puArgErr);
 
@@ -119,7 +119,7 @@ HRESULT AddInImpl::Invoke(DISPID dispIdMember, const IID &riid, LCID lcid, WORD 
  *  The pointers should be released when OnDisconnection is called.
  *
  ******************************************************************/
-HRESULT AddInImpl::OnConnection(IDispatch *Application, ext_ConnectMode ConnectMode, IDispatch *AddInInst, SAFEARRAY **custom)
+HRESULT AddInAggregated::OnConnection(IDispatch *Application, ext_ConnectMode ConnectMode, IDispatch *AddInInst, SAFEARRAY **custom)
 {
     Q_UNUSED(Application); Q_UNUSED(ConnectMode); Q_UNUSED(AddInInst); Q_UNUSED(custom);
 
@@ -153,7 +153,7 @@ HRESULT AddInImpl::OnConnection(IDispatch *Application, ext_ConnectMode ConnectM
  *  by the end user (1) or the application is shutting down (0).
  *
  ******************************************************************/
-HRESULT AddInImpl::OnDisconnection(ext_DisconnectMode RemoveMode, SAFEARRAY **custom)
+HRESULT AddInAggregated::OnDisconnection(ext_DisconnectMode RemoveMode, SAFEARRAY **custom)
 {
     Q_UNUSED(RemoveMode); Q_UNUSED(custom);
 
@@ -185,7 +185,7 @@ HRESULT AddInImpl::OnDisconnection(ext_DisconnectMode RemoveMode, SAFEARRAY **cu
  *  Notifies the Addin that the Addins collection has been changed.
  *
  ******************************************************************/
-HRESULT AddInImpl::OnAddInsUpdate(SAFEARRAY **custom)
+HRESULT AddInAggregated::OnAddInsUpdate(SAFEARRAY **custom)
 {
     //QMessageBox::information(0, QString(""), QString("OnAddInsUpdate"));
     Q_UNUSED(custom);
@@ -202,7 +202,7 @@ HRESULT AddInImpl::OnAddInsUpdate(SAFEARRAY **custom)
  *  is loaded.
  *
  ******************************************************************/
-HRESULT AddInImpl::OnStartupComplete(SAFEARRAY **custom)
+HRESULT AddInAggregated::OnStartupComplete(SAFEARRAY **custom)
 {
     Q_UNUSED(custom);
     return S_OK;
@@ -214,7 +214,7 @@ HRESULT AddInImpl::OnStartupComplete(SAFEARRAY **custom)
  *  Called just before the host application is about to shut down.
  *
  ******************************************************************/
-HRESULT AddInImpl::OnBeginShutdown(SAFEARRAY **custom)
+HRESULT AddInAggregated::OnBeginShutdown(SAFEARRAY **custom)
 {
     Q_UNUSED(custom);
     return S_OK;
@@ -228,7 +228,7 @@ HRESULT AddInImpl::OnBeginShutdown(SAFEARRAY **custom)
 
 
 // IRibbonExtensibility
-HRESULT AddInImpl::GetCustomUI(BSTR RibbonID, BSTR *RibbonXml)
+HRESULT AddInAggregated::GetCustomUI(BSTR RibbonID, BSTR *RibbonXml)
 {
     Q_UNUSED(RibbonID);
 
@@ -252,7 +252,7 @@ HRESULT AddInImpl::GetCustomUI(BSTR RibbonID, BSTR *RibbonXml)
 
 
 // IRibbonCallback
-HRESULT AddInImpl::ButtonClicked(IDispatch *ribbonControl)
+HRESULT AddInAggregated::ButtonClicked(IDispatch *ribbonControl)
 {
     HRESULT hr;
 
@@ -275,7 +275,7 @@ HRESULT AddInImpl::ButtonClicked(IDispatch *ribbonControl)
     return onButtonClicked( controlId );
 }
 
-HRESULT AddInImpl::GetButtonImage(IDispatch *ribbonControl, IPictureDisp **picture)
+HRESULT AddInAggregated::GetButtonImage(IDispatch *ribbonControl, IPictureDisp **picture)
 {
     HRESULT hr;
 
@@ -304,7 +304,7 @@ HRESULT AddInImpl::GetButtonImage(IDispatch *ribbonControl, IPictureDisp **pictu
     return S_OK;
 }
 
-AddInFactory *AddInImpl::factory() const
+AddInFactory *AddInAggregated::factory() const
 {
     return m_factory;
 }
