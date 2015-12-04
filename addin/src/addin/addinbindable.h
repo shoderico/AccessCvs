@@ -1,5 +1,5 @@
-#ifndef ADDINMAIN_H
-#define ADDINMAIN_H
+#ifndef ADDINBINDABLE_H
+#define ADDINBINDABLE_H
 
 #include "addin_global.h"
 
@@ -8,14 +8,14 @@
 
 class AddInFactory;
 
-class ADDIN_SHARED_EXPORT AddInMain : public QObject, public QAxBindable
+class ADDIN_SHARED_EXPORT AddInBindable : public QObject, public QAxBindable
 {
     Q_OBJECT
 public:
-    explicit AddInMain(AddInFactory *factory, QObject *parent = 0);
+    explicit AddInBindable(AddInFactory *factory, QObject *parent = 0);
     QAxAggregated *createAggregate();
 private:
     AddInFactory *m_factory;
 };
 
-#endif // ADDINMAIN_H
+#endif // ADDINBINDABLE_H
