@@ -1,4 +1,4 @@
-#include "cvsaddinfactory.h"
+#include "accesscvsaddinfactory.h"
 
 #include "util/logfile.h"
 //#include "cvsaddinimpl.h"
