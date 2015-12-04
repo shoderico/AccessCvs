@@ -1,5 +1,5 @@
-#ifndef CVSADDINFACTORY_H
-#define CVSADDINFACTORY_H
+#ifndef ACCESSCVSADDINFACTORY_H
+#define ACCESSCVSADDINFACTORY_H
 
 #include "addin/addinfactory.h"
 
@@ -7,12 +7,12 @@ namespace Access {
 class Application;
 } // namespace Access
 
-class CvsAddInFactory : public AddInFactory
+class AccessCvsAddInFactory : public AddInFactory
 {
     Q_OBJECT
 public:
-    CvsAddInFactory(const QUuid &app, const QUuid &lib);
-    ~CvsAddInFactory();
+    AccessCvsAddInFactory(const QUuid &app, const QUuid &lib);
+    ~AccessCvsAddInFactory();
 
     virtual QAxAggregated *createAggregate(QObject *parent = 0);
     virtual void setApplication(IDispatch *application);
@@ -27,4 +27,4 @@ private:
 
 };
 
-#endif // CVSADDINFACTORY_H
+#endif // ACCESSCVSADDINFACTORY_H

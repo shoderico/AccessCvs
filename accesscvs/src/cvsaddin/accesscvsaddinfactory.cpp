@@ -16,7 +16,7 @@ static const char InterfaceID[]   = "{f3341da4-35a3-4b45-af98-ca5dac0930c4}";
 static const char EventsID[]      = "{4296ce0f-1bd1-495e-ae1a-f7f10f5ccbee}";
 static const char ClassName[]     = "AddInMain";
 
-CvsAddInFactory::CvsAddInFactory(const QUuid &app, const QUuid &lib)
+AccessCvsAddInFactory::AccessCvsAddInFactory(const QUuid &app, const QUuid &lib)
     : AddInFactory(app, lib)
     , m_application(0)
 {
@@ -39,12 +39,12 @@ CvsAddInFactory::CvsAddInFactory(const QUuid &app, const QUuid &lib)
     qInstallMessageHandler(LogFile::MessageOutput);
 }
 
-CvsAddInFactory::~CvsAddInFactory()
+AccessCvsAddInFactory::~AccessCvsAddInFactory()
 {
     delete LogFile::instance();
 }
 
-QAxAggregated *CvsAddInFactory::createAggregate(QObject *parent)
+QAxAggregated *AccessCvsAddInFactory::createAggregate(QObject *parent)
 {
     AddInControllerImpl *addInImpl = new AddInControllerImpl(this, parent);
     addInImpl->setRibbonTabId("AccessCvs");
@@ -55,13 +55,13 @@ QAxAggregated *CvsAddInFactory::createAggregate(QObject *parent)
     return addInImpl;
 }
 
-void CvsAddInFactory::setApplication(IDispatch *application)
+void AccessCvsAddInFactory::setApplication(IDispatch *application)
 {
     Access::_Application *_application = new Access::_Application(application/*, this*/);
     m_application = new Access::Application(_application);
 }
 
-void CvsAddInFactory::releaseApplication()
+void AccessCvsAddInFactory::releaseApplication()
 {
     if (m_application)
     {
@@ -70,22 +70,22 @@ void CvsAddInFactory::releaseApplication()
     }
 }
 
-QAxObject *CvsAddInFactory::application() const
+QAxObject *AccessCvsAddInFactory::application() const
 {
     return m_application;
 }
 
-int CvsAddInFactory::applicationHwnd()
+int AccessCvsAddInFactory::applicationHwnd()
 {
     return m_application->hWndAccessApp();
 }
 
-void CvsAddInFactory::onBeforeConnectionEvent()
+void AccessCvsAddInFactory::onBeforeConnectionEvent()
 {
     Q_INIT_RESOURCE(resource);
 }
 
-void CvsAddInFactory::onAfterDisconnectionEvent()
+void AccessCvsAddInFactory::onAfterDisconnectionEvent()
 {
     Q_CLEANUP_RESOURCE(resource);
 }
@@ -94,4 +94,4 @@ void CvsAddInFactory::onAfterDisconnectionEvent()
 
 // onAddInImplDisconnection : release Resource
 
-QAXFACTORY_EXPORT(CvsAddInFactory, LibraryID, ApplicationID)
+QAXFACTORY_EXPORT(AccessCvsAddInFactory, LibraryID, ApplicationID)
