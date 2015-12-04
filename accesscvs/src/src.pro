@@ -16,11 +16,11 @@ DEFINES += ACCESSCVS_LIBRARY
 DEFINES += QT_MESSAGELOGCONTEXT
 
 SOURCES += \
-    cvsaddin/cvsaddinfactory.cpp
+    cvsaddin/accesscvsaddinfactory.cpp
 #    cvsaddin/cvsaddinimpl.cpp
 
-HEADERS +=\
-    cvsaddin/cvsaddinfactory.h
+HEADERS += \
+    cvsaddin/accesscvsaddinfactory.h
 #    cvsaddin/cvsaddinimpl.h
 
 OTHER_FILES += \

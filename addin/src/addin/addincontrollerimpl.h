@@ -3,13 +3,13 @@
 
 #include "addin_global.h"
 
-#include "addinimpl.h"
+#include "addinaggregated.h"
 
 class WindowWidgetManager;
 class AddInController;
 class AddInFactory;
 
-class ADDIN_SHARED_EXPORT AddInControllerImpl : public AddInImpl
+class ADDIN_SHARED_EXPORT AddInControllerImpl : public AddInAggregated
 {
     Q_OBJECT
 public:

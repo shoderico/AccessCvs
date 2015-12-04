@@ -1,6 +1,6 @@
 #include "addinfactory.h"
 
-#include "addinmain.h"
+#include "addinbindable.h"
 
 #include <QDebug>
 #include <QSettings>
@@ -29,14 +29,14 @@ QStringList AddInFactory::featureList() const
 const QMetaObject *AddInFactory::metaObject(const QString &key) const
 {
     if (key == m_className)
-        return &AddInMain::staticMetaObject;
+        return &AddInBindable::staticMetaObject;
     return 0;
 }
 
 QObject *AddInFactory::createObject(const QString &key)
 {
     if (key == m_className)
-        return  new AddInMain(this, this);
+        return  new AddInBindable(this, this);
     return 0;
 }
 

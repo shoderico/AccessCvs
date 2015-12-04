@@ -12,7 +12,7 @@
 
 class AddInFactory;
 
-class ADDIN_SHARED_EXPORT AddInImpl
+class ADDIN_SHARED_EXPORT AddInAggregated
         : public QObject
         , public QAxAggregated
         , public IDTExtensibility2
@@ -21,7 +21,7 @@ class ADDIN_SHARED_EXPORT AddInImpl
 {
     Q_OBJECT
 public:
-    explicit AddInImpl(AddInFactory *factory, QObject *parent = 0);
+    explicit AddInAggregated(AddInFactory *factory, QObject *parent = 0);
 
     long queryInterface(const QUuid &iid, void **iface);
 
