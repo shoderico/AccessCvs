@@ -2,7 +2,7 @@
 
 #include "view/maindialog.h"
 #include "view/cvsprogressdialog.h"
-#include "officelib/officelib.h"
+#include "accesslib/accesslib.h"
 #include "addinutil/addinutil.h"
 #include "cvsmodel/objectmodel.h"
 

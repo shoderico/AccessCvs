@@ -3,7 +3,7 @@
 #include "util/logfile.h"
 //#include "cvsaddinimpl.h"
 #include "addin/addincontrollerimpl.h"
-#include "officelib/officelib.h"
+#include "accesslib/accesslib.h"
 
 #include "cvscontroller/cvscontroller.h"
 #include "acccontroller/acccontroller.h"

@@ -8,7 +8,7 @@
 
 #include <QtConcurrent>
 
-#include "officelib/officelib.h"
+#include "accesslib/accesslib.h"
 #include "util/comptr.h"
 #include "util/progressnotifier.h"
 #include "util/datachangedhelper.h"
