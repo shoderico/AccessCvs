@@ -1,6 +1,6 @@
 # directly dependent libraries for this module
 includeDepModule( util )
-includeDepModule( officelib )
+includeDepModule( accesslib )
 
 
 # directly dependent qt dlls for this module

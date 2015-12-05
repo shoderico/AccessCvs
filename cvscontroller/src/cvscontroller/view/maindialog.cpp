@@ -1,7 +1,7 @@
 #include "maindialog.h"
 #include "ui_maindialog.h"
 
-#include "officelib/officelib.h"
+#include "accesslib/accesslib.h"
 
 #include "cvsmodel/objectmodel.h"
 #include "cvsmodel/objectitem.h"

@@ -4,7 +4,7 @@
 #include <QSettings>
 #include <QDir>
 
-#include "officelib/officelib.h"
+#include "accesslib/accesslib.h"
 #include "util/comptr.h"
 #include "util/fileutil.h"
 

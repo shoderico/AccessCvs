@@ -10,7 +10,7 @@
 #include <QRegularExpression>
 #include <QUuid>
 
-#include "officelib/officelib.h"
+#include "accesslib/accesslib.h"
 
 #include "util/comptr.h"
 #include "util/codecinfo.h"

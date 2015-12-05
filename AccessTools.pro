@@ -2,6 +2,8 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     officelib \
+    accesslib \
+    excellib \
     util \
     accesscvs \
     acccmd \
@@ -18,9 +20,13 @@ SUBDIRS += \
     installer \
     helpcontroller
 
+# office lib layer
+accesslib.depends += officelib
+excellib.depends += officelib
+
 # model layer
-cvsmodel.depends   += util officelib
-accmodel.depends += util officelib
+cvsmodel.depends   += util accesslib
+accmodel.depends += util accesslib
 
 # controller layer
 cvscontroller.depends        += view addinutil cvsmodel
@@ -28,7 +34,7 @@ acccontroller.depends        += view addinutil accmodel
 helpcontroller.depends       +=      addinutil comutil
 
 # addin layer
-addin.depends     += officelib comutil addinutil
+addin.depends     += comutil addinutil
 accesscvs.depends += resource addin \
                      cvscontroller acccontroller helpcontroller
 

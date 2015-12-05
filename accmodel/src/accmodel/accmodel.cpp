@@ -2,7 +2,7 @@
 
 #include "util/officeutil.h"
 #include "util/getcomobject.h"
-#include "officelib/officelib.h"
+#include "accesslib/accesslib.h"
 
 #include <QDebug>
 #include <QProcess>
