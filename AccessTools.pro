@@ -3,6 +3,7 @@ TEMPLATE = subdirs
 SUBDIRS += \
     officelib \
     accesslib \
+    excellib \
     util \
     accesscvs \
     acccmd \
@@ -21,6 +22,7 @@ SUBDIRS += \
 
 # office lib layer
 accesslib.depends += officelib
+excellib.depends += officelib
 
 # model layer
 cvsmodel.depends   += util accesslib

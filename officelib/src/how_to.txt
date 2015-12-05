@@ -32,11 +32,11 @@ Excel,{00024500-0000-0000-C000-000000000046}
 2) ヘッダに __declspec(dllexport) or __declspec(dllimport) の定義を追加する
 
 例）
-#include "officelib_global.h"
-// Define this symbol to __declspec(dllexport) or __declspec(dllimport)
-#ifndef VBIDE_EXPORT
-#define VBIDE_EXPORT OFFICELIB_SHARED_EXPORT
-#endif
+    #include "officelib_global.h"
+    // Define this symbol to __declspec(dllexport) or __declspec(dllimport)
+    #ifndef VBIDE_EXPORT
+    #define VBIDE_EXPORT OFFICELIB_SHARED_EXPORT
+    #endif
 
 
 3) Mingwの場合：
@@ -47,12 +47,15 @@ Excel,{00024500-0000-0000-C000-000000000046}
 
 3-1) ヘッダーhの Q_DECLARE_OPAQUE_POINTER をコメントアウト
         access.h
+        excel.h
 
 3-2) ソースcppに #include <enum が定義されたヘッダ> を、自身のinclude 前に追加
         access.cpp
-            #include "adodb.h"
-            #include "office.h"
-            #include "vbide.h"
+            #include "officelib/officelib.h"
+            #include "access.h"
+        excel.cpp
+            #include "officelib/officelib.h"
+            #include "excel.h"
 
 
 
