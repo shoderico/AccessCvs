@@ -20,10 +20,9 @@
 
 using namespace Access;
 
-MainDialog::MainDialog(Access::Application *application, ObjectModel *model, QWidget *parent) :
+MainDialog::MainDialog(ObjectModel *model, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::MainDialog)
-  , m_application(application)
   , m_model(model)
   , m_proxyModel(0)
   , m_showMode( UnkownMode )
@@ -111,14 +110,6 @@ MainDialog::MainDialog(Access::Application *application, ObjectModel *model, QWi
     ui->showSelectedOnlyCheckBox->setChecked(true);
 
 
-    bool c;
-    c = connect( m_application, SIGNAL(exception(int,QString,QString,QString)), this, SLOT(exception(int,QString,QString,QString)) );
-    if (!c) QMessageBox::information(this, "", "connect exception failed");
-    c = connect( m_application, SIGNAL(propertyChanged(QString)), this, SLOT(propertyChanged(QString)) );
-    if (!c) QMessageBox::information(this, "", "connect propertyChanged failed");
-    c = connect( m_application, SIGNAL(signal(QString,int,void*)), this, SLOT(signal(QString,int,void*)) );
-    if (!c) QMessageBox::information(this, "", "connect signal failed");
-
     m_proxyModel->setFilterShowObjectType( ObjectModel::AllObjectTypes );
     m_proxyModel->setFilterShowSelectedOnly( true/*selected*/ );
 }
@@ -126,12 +117,6 @@ MainDialog::MainDialog(Access::Application *application, ObjectModel *model, QWi
 MainDialog::~MainDialog()
 {
     delete ui;
-    if (m_application)
-    {
-        disconnect( m_application, SIGNAL(exception(int,QString,QString,QString)), this, SLOT(exception(int,QString,QString,QString)) );
-        disconnect( m_application, SIGNAL(propertyChanged(QString)), this, SLOT(propertyChanged(QString)) );
-        disconnect( m_application, SIGNAL(signal(QString,int,void*)), this, SLOT(signal(QString,int,void*)) );
-    }
 }
 
 void MainDialog::showAsManual()
@@ -162,22 +147,6 @@ void MainDialog::showAsAutoImport(const bool clearCache)
     ui->okButton->setText(tr("Import"));
     setWindowTitle(tr("Import"));
     show();
-}
-
-void MainDialog::exception(int code, const QString &source, const QString &desc, const QString &help)
-{
-    QMessageBox::information(this, "", QString().setNum(code) + "\n" + source + "\n" + desc + "\n" + help );
-}
-
-void MainDialog::propertyChanged(const QString &name)
-{
-    QMessageBox::information(this, "", QString("propertyChanged ") + name);
-}
-
-void MainDialog::signal(const QString &name, int argc, void *argv)
-{
-    Q_UNUSED(argc) Q_UNUSED(argv)
-            QMessageBox::information(this, "", QString("propertyChanged ") + name);
 }
 
 void MainDialog::onAccepted()

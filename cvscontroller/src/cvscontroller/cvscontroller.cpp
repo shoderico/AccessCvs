@@ -189,7 +189,7 @@ void CvsController::init()
 
     if (!m_dlg)
     {
-        m_dlg = new MainDialog( m_application, m_model, m_parentWidget );
+        m_dlg = new MainDialog( m_model, m_parentWidget );
     }
 
     if (!m_progressDlg)

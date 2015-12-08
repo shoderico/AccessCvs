@@ -23,7 +23,7 @@ class MainDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit MainDialog(Access::Application *application, ObjectModel *model, QWidget *parent = 0);
+    explicit MainDialog(ObjectModel *model, QWidget *parent = 0);
     ~MainDialog();
 
     void showAsManual();
@@ -37,11 +37,6 @@ public:
         UnkownMode,
     };
     Q_DECLARE_FLAGS(ShowModes, ShowMode)
-
-public slots:
-    void exception(int code, const QString & source, const QString & desc, const QString & help);
-    void	propertyChanged(const QString & name);
-    void	signal(const QString & name, int argc, void * argv);
 
 private slots:
     void onAccepted();
@@ -64,7 +59,6 @@ private slots:
 
 private:
     Ui::MainDialog *ui;
-    Access::Application *m_application;
     ObjectModel *m_model;
     ObjectProxyModel *m_proxyModel;
     ShowModes m_showMode;
