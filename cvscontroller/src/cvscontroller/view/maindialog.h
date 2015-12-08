@@ -46,8 +46,8 @@ private slots:
     void refreshItems();
     void executeExport();
     void executeImport();
-    void prepareExport();
-    void prepareImport();
+//    void prepareExport();
+//    void prepareImport();
 
     void beginBatch();
     void endBatch();

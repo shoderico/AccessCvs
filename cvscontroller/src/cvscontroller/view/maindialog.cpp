@@ -218,30 +218,6 @@ void MainDialog::executeImport()
     endBatch();
 }
 
-void MainDialog::prepareExport()
-{
-    beginBatch();
-
-    m_model->refreshItems();
-    m_model->selectItemsForProcess( true/*selected*/, true/*resetSelection*/ );
-    m_proxyModel->setFilterShowObjectType( ObjectModel::AllObjectTypes );
-    m_proxyModel->setFilterShowSelectedOnly( true/*selected*/ );
-
-    endBatch();
-}
-
-void MainDialog::prepareImport()
-{
-    beginBatch();
-
-    m_model->refreshItems();
-    m_model->selectItemsForProcess( true/*selected*/, true/*resetSelection*/ );
-    m_proxyModel->setFilterShowObjectType( ObjectModel::AllObjectTypes );
-    m_proxyModel->setFilterShowSelectedOnly( true/*selected*/ );
-
-    endBatch();
-}
-
 void MainDialog::beginBatch()
 {
     m_progressHelper->beginBatch();
