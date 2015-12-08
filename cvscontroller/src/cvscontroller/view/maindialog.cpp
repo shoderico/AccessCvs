@@ -129,7 +129,7 @@ void MainDialog::showAsManual()
     show();
 }
 
-void MainDialog::showAsAutoExport(const bool clearCache)
+void MainDialog::showAsAutoExport()
 {
     m_showMode = AutoExportMode;
     ui->executeExportButton->hide();
@@ -139,7 +139,7 @@ void MainDialog::showAsAutoExport(const bool clearCache)
     show();
 }
 
-void MainDialog::showAsAutoImport(const bool clearCache)
+void MainDialog::showAsAutoImport()
 {
     m_showMode = AutoImportMode;
     ui->executeExportButton->hide();

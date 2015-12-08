@@ -143,7 +143,7 @@ void CvsController::autoImport()
     prepare(Import, false /*clearCache*/);
     if ( m_model->selectedRowCount() == 0)
         return;
-    m_dlg->showAsAutoImport(false);
+    m_dlg->showAsAutoImport();
 }
 
 void CvsController::autoExport()
@@ -154,7 +154,7 @@ void CvsController::autoExport()
     prepare(Export, false /*clearCache*/);
     if ( m_model->selectedRowCount() == 0)
         return;
-    m_dlg->showAsAutoExport(false);
+    m_dlg->showAsAutoExport();
 }
 
 void CvsController::clearCacheAndImport()
@@ -165,7 +165,7 @@ void CvsController::clearCacheAndImport()
     prepare(Import, true /*clearCache*/);
     if ( m_model->selectedRowCount() == 0)
         return;
-    m_dlg->showAsAutoImport(false);
+    m_dlg->showAsAutoImport();
 }
 
 void CvsController::clearCacheAndExport()
@@ -176,7 +176,7 @@ void CvsController::clearCacheAndExport()
     prepare(Export, true /*clearCache*/);
     if ( m_model->selectedRowCount() == 0)
         return;
-    m_dlg->showAsAutoExport(false);
+    m_dlg->showAsAutoExport();
 }
 
 void CvsController::init()

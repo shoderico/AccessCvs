@@ -27,8 +27,8 @@ public:
     ~MainDialog();
 
     void showAsManual();
-    void showAsAutoExport(const bool clearCache);
-    void showAsAutoImport(const bool clearCache);
+    void showAsAutoExport();
+    void showAsAutoImport();
     enum ShowMode
     {
         ManualMode,
@@ -46,8 +46,6 @@ private slots:
     void refreshItems();
     void executeExport();
     void executeImport();
-//    void prepareExport();
-//    void prepareImport();
 
     void beginBatch();
     void endBatch();
