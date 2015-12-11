@@ -168,6 +168,11 @@ void CvsController::clearCacheAndImport()
     m_dlg->showAsAutoImport();
 }
 
+void CvsController::selectAuto()
+{
+    m_model->selectItemsForProcess( true/*selected*/, true/*resetSelection*/ );
+}
+
 void CvsController::clearCacheAndExport()
 {
 //    m_dlg->showAsAutoExport(true);
@@ -196,6 +201,8 @@ void CvsController::init()
     {
         m_progressDlg = new CvsProgressDialog( m_model, m_parentWidget );
     }
+
+    connect(m_dlg, SIGNAL(selectAuto()), this, SLOT(selectAuto()) );
 }
 
 void CvsController::prepare(const CvsController::PrepareType prepareType, const bool clearCache)

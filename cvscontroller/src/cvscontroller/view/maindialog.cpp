@@ -60,7 +60,7 @@ MainDialog::MainDialog(ObjectModel *model, QWidget *parent) :
     connect( ui->clearCacheButton, SIGNAL(clicked(bool)), this, SLOT(clearCache()) );
     connect( ui->executeExportButton, SIGNAL(clicked(bool)), this, SLOT(executeExport()) );
     connect( ui->executeImportButton, SIGNAL(clicked(bool)), this, SLOT(executeImport()) );
-    connect( ui->selectAutoButton,    SIGNAL(clicked(bool)), this, SLOT(selectAuto()) );
+    connect( ui->selectAutoButton,    SIGNAL(clicked(bool)), this, SIGNAL(selectAuto()) );
 
     connect( ui->selectAllCheckBox,         SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
     connect( ui->selectTableCheckBox,       SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
@@ -226,11 +226,6 @@ void MainDialog::beginBatch()
 void MainDialog::endBatch()
 {
     m_progressHelper->endBatch();
-}
-
-void MainDialog::selectAuto()
-{
-    m_model->selectItemsForProcess( true, true );
 }
 
 void MainDialog::selectCheckStateChanged(int state)

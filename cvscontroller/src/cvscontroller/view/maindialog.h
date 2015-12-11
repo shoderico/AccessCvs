@@ -38,6 +38,9 @@ public:
     };
     Q_DECLARE_FLAGS(ShowModes, ShowMode)
 
+signals:
+    void selectAuto();
+
 private slots:
     void onAccepted();
     void onRejected();
@@ -50,7 +53,6 @@ private slots:
     void beginBatch();
     void endBatch();
 
-    void selectAuto();
     void selectCheckStateChanged(int state);
     void showCheckStateChanged(int state);
     void showSelectedOnly(int state);
