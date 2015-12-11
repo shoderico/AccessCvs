@@ -40,12 +40,12 @@ public:
 
 signals:
     void selectAuto();
+    void clearCache();
 
 private slots:
     void onAccepted();
     void onRejected();
 
-    void clearCache();
     void refreshItems();
     void executeExport();
     void executeImport();

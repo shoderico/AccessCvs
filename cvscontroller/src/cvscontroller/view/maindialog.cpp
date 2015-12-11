@@ -57,7 +57,7 @@ MainDialog::MainDialog(ObjectModel *model, QWidget *parent) :
     connect( ui->cancelButton, SIGNAL(clicked(bool)), this, SLOT(onRejected()) );
 
     connect( ui->refreshItemsButton,  SIGNAL(clicked(bool)), this, SLOT(refreshItems()) );
-    connect( ui->clearCacheButton, SIGNAL(clicked(bool)), this, SLOT(clearCache()) );
+    connect( ui->clearCacheButton,    SIGNAL(clicked(bool)), this, SIGNAL(clearCache()) );
     connect( ui->executeExportButton, SIGNAL(clicked(bool)), this, SLOT(executeExport()) );
     connect( ui->executeImportButton, SIGNAL(clicked(bool)), this, SLOT(executeImport()) );
     connect( ui->selectAutoButton,    SIGNAL(clicked(bool)), this, SIGNAL(selectAuto()) );
@@ -184,11 +184,6 @@ void MainDialog::onRejected()
 {
     endBatch();
     reject();
-}
-
-void MainDialog::clearCache()
-{
-    m_model->clearItemsCache();
 }
 
 void MainDialog::refreshItems()

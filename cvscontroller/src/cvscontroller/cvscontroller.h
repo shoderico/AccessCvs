@@ -39,6 +39,7 @@ signals:
 
 public slots:
     void selectAuto();
+    void clearCache();
 
 private:
     void init();

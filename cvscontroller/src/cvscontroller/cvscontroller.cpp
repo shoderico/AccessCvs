@@ -173,6 +173,11 @@ void CvsController::selectAuto()
     m_model->selectItemsForProcess( true/*selected*/, true/*resetSelection*/ );
 }
 
+void CvsController::clearCache()
+{
+    m_model->clearItemsCache();
+}
+
 void CvsController::clearCacheAndExport()
 {
 //    m_dlg->showAsAutoExport(true);
@@ -203,6 +208,7 @@ void CvsController::init()
     }
 
     connect(m_dlg, SIGNAL(selectAuto()), this, SLOT(selectAuto()) );
+    connect(m_dlg, SIGNAL(clearCache()), this, SLOT(clearCache()) );
 }
 
 void CvsController::prepare(const CvsController::PrepareType prepareType, const bool clearCache)
