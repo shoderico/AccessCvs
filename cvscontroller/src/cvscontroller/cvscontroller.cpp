@@ -180,6 +180,15 @@ void CvsController::showSelectedOnly(bool selectedOnly)
     m_proxyModel->setFilterShowSelectedOnly( selectedOnly );
 }
 
+void CvsController::showAllObject(bool show)
+{
+    int objectTypes = show ? ObjectModel::AllObjectTypes : 0 ;
+    m_proxyModel->setFilterShowObjectType( objectTypes );
+    // TODO : update view's check state
+    // model emit the signal for filter changed.
+    // view slot handle it and update checkstate itself
+}
+
 void CvsController::clearCache()
 {
     m_model->clearItemsCache();
@@ -246,6 +255,8 @@ void CvsController::init()
     connect(m_dlg, SIGNAL(refreshItems()), this, SLOT(refreshItems()) );
     connect(m_dlg, SIGNAL(executeExport()), this, SLOT(executeExport()) );
     connect(m_dlg, SIGNAL(executeImport()), this, SLOT(executeImport()) );
+    connect(m_dlg, SIGNAL(showSelectedOnly(bool)), this, SLOT(showSelectedOnly(bool)) );
+    connect(m_dlg, SIGNAL(showAllObject(bool)), this, SLOT(showAllObject(bool)) );
 }
 
 void CvsController::prepare(const CvsController::PrepareType prepareType, const bool clearCache)

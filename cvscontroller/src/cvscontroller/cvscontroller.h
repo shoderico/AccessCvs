@@ -41,6 +41,7 @@ signals:
 public slots:
     void selectAuto();
     void showSelectedOnly(bool selectedOnly);
+    void showAllObject(bool show);
     void clearCache();
     void refreshItems();
     void executeExport();

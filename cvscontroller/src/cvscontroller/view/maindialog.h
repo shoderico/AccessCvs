@@ -43,6 +43,7 @@ public:
 
 signals:
     void selectAuto();
+    void showAllObject(bool show);
     void showSelectedOnly(bool selectedOnly);
     void clearCache();
     void refreshItems();
@@ -56,6 +57,7 @@ private slots:
 
 
     void selectCheckStateChanged(int state);
+    void showAllCheckStateChanged(int state);
     void showCheckStateChanged(int state);
     void showSelectedOnly(int state);
 

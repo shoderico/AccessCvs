@@ -73,7 +73,7 @@ MainDialog::MainDialog(ObjectModel *model, ObjectProxyModel *proxyModel, QWidget
 
     connect( ui->showSelectedOnlyCheckBox, SIGNAL(stateChanged(int)), this, SLOT(showSelectedOnly(int)) );
 
-    connect( ui->showAllCheckBox,         SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
+    connect( ui->showAllCheckBox,         SIGNAL(stateChanged(int)), this, SLOT(showAllCheckStateChanged(int)) );
     connect( ui->showTableCheckBox,       SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
     connect( ui->showQueryCheckBox,       SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
     connect( ui->showFormCheckBox,        SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
@@ -251,6 +251,12 @@ void MainDialog::selectCheckStateChanged(int state)
     {
         m_model->selectItemsByObjectType( ObjectModel::VBProjectType, selected, false );
     }
+}
+
+void MainDialog::showAllCheckStateChanged(int state)
+{
+    bool selected = (state == Qt::Checked);
+    emit showAllObject(selected);
 }
 
 void MainDialog::showCheckStateChanged(int state)
