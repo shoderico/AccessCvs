@@ -20,20 +20,17 @@
 
 using namespace Access;
 
-MainDialog::MainDialog(ObjectModel *model, QWidget *parent) :
+MainDialog::MainDialog(ObjectModel *model, ObjectProxyModel *proxyModel, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::MainDialog)
   , m_model(model)
-  , m_proxyModel(0)
+  , m_proxyModel(proxyModel)
   , m_showMode( UnkownMode )
   , m_progressHelper( new ProgressHelper(this) )
 {
     ui->setupUi(this);
 
     // FIXME: to be canceled
-
-    m_proxyModel = new ObjectProxyModel(this);
-    m_proxyModel->setSourceModel(m_model);
 
     ui->treeView->setModel(m_proxyModel);
     ui->treeView->setIndentation(0);

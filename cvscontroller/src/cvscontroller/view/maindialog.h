@@ -23,7 +23,7 @@ class MainDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit MainDialog(ObjectModel *model, QWidget *parent = 0);
+    explicit MainDialog(ObjectModel *model, ObjectProxyModel *proxyModel, QWidget *parent = 0);
     ~MainDialog();
 
     void showAsManual();

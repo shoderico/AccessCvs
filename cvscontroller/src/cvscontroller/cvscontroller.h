@@ -9,6 +9,7 @@
 class MainDialog;
 class CvsProgressDialog;
 class ObjectModel;
+class ObjectProxyModel;
 
 namespace Access {
 class Application;
@@ -60,6 +61,7 @@ private:
     MainDialog *m_dlg;
     CvsProgressDialog *m_progressDlg;
     ObjectModel *m_model;
+    ObjectProxyModel *m_proxyModel;
 };
 
 #endif // CVSCONTROLLER_H
