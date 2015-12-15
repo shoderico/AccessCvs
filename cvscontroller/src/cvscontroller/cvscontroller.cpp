@@ -178,6 +178,27 @@ void CvsController::clearCache()
     m_model->clearItemsCache();
 }
 
+void CvsController::refreshItems()
+{
+    m_dlg->beginBatch();
+    m_model->refreshItems();
+    m_dlg->endBatch();
+}
+
+void CvsController::executeExport()
+{
+    m_dlg->beginBatch();
+    m_model->executeExport();
+    m_dlg->endBatch();
+}
+
+void CvsController::executeImport()
+{
+    m_dlg->beginBatch();
+    m_model->executeImport();
+    m_dlg->endBatch();
+}
+
 void CvsController::clearCacheAndExport()
 {
 //    m_dlg->showAsAutoExport(true);
@@ -209,6 +230,9 @@ void CvsController::init()
 
     connect(m_dlg, SIGNAL(selectAuto()), this, SLOT(selectAuto()) );
     connect(m_dlg, SIGNAL(clearCache()), this, SLOT(clearCache()) );
+    connect(m_dlg, SIGNAL(refreshItems()), this, SLOT(refreshItems()) );
+    connect(m_dlg, SIGNAL(executeExport()), this, SLOT(executeExport()) );
+    connect(m_dlg, SIGNAL(executeImport()), this, SLOT(executeImport()) );
 }
 
 void CvsController::prepare(const CvsController::PrepareType prepareType, const bool clearCache)

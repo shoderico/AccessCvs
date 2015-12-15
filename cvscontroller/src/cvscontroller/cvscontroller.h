@@ -40,6 +40,9 @@ signals:
 public slots:
     void selectAuto();
     void clearCache();
+    void refreshItems();
+    void executeExport();
+    void executeImport();
 
 private:
     void init();

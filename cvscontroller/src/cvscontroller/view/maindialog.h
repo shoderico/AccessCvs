@@ -38,20 +38,21 @@ public:
     };
     Q_DECLARE_FLAGS(ShowModes, ShowMode)
 
+    void beginBatch();
+    void endBatch();
+
 signals:
     void selectAuto();
     void clearCache();
+    void refreshItems();
+    void executeExport();
+    void executeImport();
 
 private slots:
     void onAccepted();
     void onRejected();
 
-    void refreshItems();
-    void executeExport();
-    void executeImport();
 
-    void beginBatch();
-    void endBatch();
 
     void selectCheckStateChanged(int state);
     void showCheckStateChanged(int state);

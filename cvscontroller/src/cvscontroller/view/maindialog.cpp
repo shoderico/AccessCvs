@@ -56,10 +56,10 @@ MainDialog::MainDialog(ObjectModel *model, QWidget *parent) :
     connect( ui->okButton,     SIGNAL(clicked(bool)), this, SLOT(onAccepted()) );
     connect( ui->cancelButton, SIGNAL(clicked(bool)), this, SLOT(onRejected()) );
 
-    connect( ui->refreshItemsButton,  SIGNAL(clicked(bool)), this, SLOT(refreshItems()) );
+    connect( ui->refreshItemsButton,  SIGNAL(clicked(bool)), this, SIGNAL(refreshItems()) );
     connect( ui->clearCacheButton,    SIGNAL(clicked(bool)), this, SIGNAL(clearCache()) );
-    connect( ui->executeExportButton, SIGNAL(clicked(bool)), this, SLOT(executeExport()) );
-    connect( ui->executeImportButton, SIGNAL(clicked(bool)), this, SLOT(executeImport()) );
+    connect( ui->executeExportButton, SIGNAL(clicked(bool)), this, SIGNAL(executeExport()) );
+    connect( ui->executeImportButton, SIGNAL(clicked(bool)), this, SIGNAL(executeImport()) );
     connect( ui->selectAutoButton,    SIGNAL(clicked(bool)), this, SIGNAL(selectAuto()) );
 
     connect( ui->selectAllCheckBox,         SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
@@ -160,14 +160,14 @@ void MainDialog::onAccepted()
 
         case AutoExportMode:
         {
-            executeExport();
+            emit executeExport();
             accept();
             break;
         }
 
         case AutoImportMode:
         {
-            executeImport();
+            emit executeImport();
             accept();
             break;
         }
@@ -184,33 +184,6 @@ void MainDialog::onRejected()
 {
     endBatch();
     reject();
-}
-
-void MainDialog::refreshItems()
-{
-    beginBatch();
-
-    m_model->refreshItems();
-
-    endBatch();
-}
-
-void MainDialog::executeExport()
-{
-    beginBatch();
-
-    m_model->executeExport();
-
-    endBatch();
-}
-
-void MainDialog::executeImport()
-{
-    beginBatch();
-
-    m_model->executeImport();
-
-    endBatch();
 }
 
 void MainDialog::beginBatch()
