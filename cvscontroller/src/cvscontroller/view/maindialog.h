@@ -43,6 +43,7 @@ public:
 
 signals:
     void selectAuto();
+    void showSelectedOnly(bool selectedOnly);
     void clearCache();
     void refreshItems();
     void executeExport();

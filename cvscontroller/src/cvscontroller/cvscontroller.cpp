@@ -175,6 +175,11 @@ void CvsController::selectAuto()
     m_model->selectItemsForProcess( true/*selected*/, true/*resetSelection*/ );
 }
 
+void CvsController::showSelectedOnly(bool selectedOnly)
+{
+    m_proxyModel->setFilterShowSelectedOnly( selectedOnly );
+}
+
 void CvsController::clearCache()
 {
     m_model->clearItemsCache();

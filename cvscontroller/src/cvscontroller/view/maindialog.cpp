@@ -291,6 +291,5 @@ void MainDialog::showCheckStateChanged(int state)
 void MainDialog::showSelectedOnly(int state)
 {
     bool selected = (state == Qt::Checked);
-
-    m_proxyModel->setFilterShowSelectedOnly( selected );
+    emit showSelectedOnly(selected);
 }
