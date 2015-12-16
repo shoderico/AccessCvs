@@ -189,6 +189,16 @@ void CvsController::showAllObject(bool show)
     // view slot handle it and update checkstate itself
 }
 
+void CvsController::showObject(int objectType, bool show)
+{
+    int objectTypes = m_proxyModel->showObjectType();
+    if (show)
+        objectTypes |= objectType;
+    else
+        objectTypes &= ~(objectType);
+    m_proxyModel->setFilterShowObjectType( objectTypes );
+}
+
 void CvsController::clearCache()
 {
     m_model->clearItemsCache();
@@ -257,6 +267,7 @@ void CvsController::init()
     connect(m_dlg, SIGNAL(executeImport()), this, SLOT(executeImport()) );
     connect(m_dlg, SIGNAL(showSelectedOnly(bool)), this, SLOT(showSelectedOnly(bool)) );
     connect(m_dlg, SIGNAL(showAllObject(bool)), this, SLOT(showAllObject(bool)) );
+    connect(m_dlg, SIGNAL(showObject(int,bool)), this, SLOT(showObject(int,bool)) );
 }
 
 void CvsController::prepare(const CvsController::PrepareType prepareType, const bool clearCache)
