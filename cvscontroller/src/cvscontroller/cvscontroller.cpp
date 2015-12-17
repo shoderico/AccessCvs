@@ -175,6 +175,16 @@ void CvsController::selectAuto()
     m_model->selectItemsForProcess( true/*selected*/, true/*resetSelection*/ );
 }
 
+void CvsController::selectAllObject(bool select)
+{
+    m_model->selectItems( ObjectModel::AllItems, select, true/*resetSelection*/ );
+}
+
+void CvsController::selectObject(int objectType, bool select)
+{
+    m_model->selectItemsByObjectType( (ObjectModel::SelectObjectType)objectType, select, false /*resetSelection*/ );
+}
+
 void CvsController::showSelectedOnly(bool selectedOnly)
 {
     m_proxyModel->setFilterShowSelectedOnly( selectedOnly );
@@ -268,6 +278,8 @@ void CvsController::init()
     connect(m_dlg, SIGNAL(showSelectedOnly(bool)), this, SLOT(showSelectedOnly(bool)) );
     connect(m_dlg, SIGNAL(showAllObject(bool)), this, SLOT(showAllObject(bool)) );
     connect(m_dlg, SIGNAL(showObject(int,bool)), this, SLOT(showObject(int,bool)) );
+    connect(m_dlg, SIGNAL(selectAllObject(bool)), this, SLOT(selectAllObject(bool)) );
+    connect(m_dlg, SIGNAL(selectObject(int,bool)), this, SLOT(selectObject(int,bool)) );
 }
 
 void CvsController::prepare(const CvsController::PrepareType prepareType, const bool clearCache)

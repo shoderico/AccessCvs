@@ -121,6 +121,7 @@ public:
     void selectItemsForProcess(bool selected, bool resetSelection /*= true*/);
     void selectItems(ItemsTypes itemsType, bool selected, bool resetSelection /*= true*/);
     void selectItemsByObjectType(SelectObjectTypes objectTypes, bool selected, bool resetSelection /*= true*/);
+    void emitSelectionChanged();
 
     void updateItemsExportDate(ObjectItems *allTargets, const QDateTime &exportDate, const ObjectDifferenceTypes differenceTypes);
     void updateItemsInProject(ObjectItems *allTargets, Model::ObjectExistence existence);
@@ -211,6 +212,7 @@ signals:
     void progressEnd(int type);
     void progressChange(int type, int position);
 
+    void selectionChanged(int objectTypes);
 
 private:
     QList<ObjectItem*> m_items;

@@ -40,6 +40,8 @@ signals:
 
 public slots:
     void selectAuto();
+    void selectAllObject(bool select);
+    void selectObject(int objectType, bool select);
     void showSelectedOnly(bool selectedOnly);
     void showAllObject(bool show);
     void showObject(int objectType, bool show);

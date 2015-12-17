@@ -180,6 +180,7 @@ bool ObjectModel::setData(const QModelIndex &index, const QVariant &value, int r
             {
                 item->setSelected( value.toBool() );
                 emit dataChanged(index, index);
+                emitSelectionChanged();
                 return true;
             }
                 break;
@@ -781,6 +782,8 @@ void ObjectModel::selectItems(ObjectModel::ItemsTypes itemsType, bool selected, 
 
     if (helper.isChanged())
         emit dataChanged( createIndex(helper.first(), NameColumn), createIndex(helper.last(), NameColumn) );
+
+    emitSelectionChanged();
 }
 
 void ObjectModel::selectItemsByObjectType(SelectObjectTypes objectTypes, bool selected, bool resetSelection)
@@ -809,6 +812,36 @@ void ObjectModel::selectItemsByObjectType(SelectObjectTypes objectTypes, bool se
 
     if (helper.isChanged())
         emit dataChanged( createIndex(helper.first(), NameColumn), createIndex(helper.last(), NameColumn) );
+
+    emitSelectionChanged();
+}
+
+void ObjectModel::emitSelectionChanged()
+{
+    int objectTypes = 0;
+    foreach( const Model::ObjectType &objectType, m_mapItems.keys() )
+    {
+       foreach( const ObjectItem *item, m_mapItems[ objectType ].values() )
+       {
+           if (item->isSelected())
+           {
+               switch (objectType)
+               {
+                   case Model::TableDef:    objectTypes |= TableObjectType;     break;
+                   case Model::Query:       objectTypes |= QueryObjectType;     break;
+                   case Model::Form:        objectTypes |= FormObjectType;      break;
+                   case Model::Report:      objectTypes |= ReportObjectType;    break;
+                   case Model::Macro:       objectTypes |= MacroObjectType;     break;
+                   case Model::Module:      objectTypes |= ModuleObjectType;    break;
+                   case Model::Reference:   objectTypes |= ReferenceObjectType; break;
+                   case Model::ProjectFile: objectTypes |= ProjectFileType;     break;
+                   case Model::VBProject:   objectTypes |= VBProjectType;       break;
+               }
+               break;
+           }
+       }
+    }
+    emit selectionChanged( objectTypes );
 }
 
 

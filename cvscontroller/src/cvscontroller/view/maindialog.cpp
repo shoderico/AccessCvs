@@ -59,7 +59,8 @@ MainDialog::MainDialog(ObjectModel *model, ObjectProxyModel *proxyModel, QWidget
     connect( ui->executeImportButton, SIGNAL(clicked(bool)), this, SIGNAL(executeImport()) );
     connect( ui->selectAutoButton,    SIGNAL(clicked(bool)), this, SIGNAL(selectAuto()) );
 
-    connect( ui->selectAllCheckBox,         SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
+    connect( ui->selectAllCheckBox,         SIGNAL(stateChanged(int)), this, SLOT(selectAllCheckStateChanged(int)) );
+
     connect( ui->selectTableCheckBox,       SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
     connect( ui->selectQueryCheckBox,       SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
     connect( ui->selectFormCheckBox,        SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
@@ -74,6 +75,7 @@ MainDialog::MainDialog(ObjectModel *model, ObjectProxyModel *proxyModel, QWidget
     connect( ui->showSelectedOnlyCheckBox, SIGNAL(stateChanged(int)), this, SLOT(showSelectedOnlyCheckStateChanged(int)) );
 
     connect( ui->showAllCheckBox,         SIGNAL(stateChanged(int)), this, SLOT(showAllCheckStateChanged(int)) );
+
     connect( ui->showTableCheckBox,       SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
     connect( ui->showQueryCheckBox,       SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
     connect( ui->showFormCheckBox,        SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
@@ -113,6 +115,7 @@ MainDialog::MainDialog(ObjectModel *model, ObjectProxyModel *proxyModel, QWidget
     connect(m_proxyModel, SIGNAL(showSelectedOnlyChanged(bool)), ui->showSelectedOnlyCheckBox, SLOT(setChecked(bool)) );
     connect(m_proxyModel, SIGNAL(showObjectTypeChanged(int)), this, SLOT(setShownObjectType(int)) );
 
+    connect(m_model, SIGNAL(selectionChanged(int)), this, SLOT(setSelectObjectType(int)) );
 }
 
 MainDialog::~MainDialog()
@@ -187,6 +190,12 @@ void MainDialog::onRejected()
     reject();
 }
 
+void MainDialog::selectAllCheckStateChanged(int state)
+{
+    bool selected = (state == Qt::Checked);
+    emit selectAllObject(selected);
+}
+
 void MainDialog::beginBatch()
 {
     m_progressHelper->beginBatch();
@@ -204,57 +213,8 @@ void MainDialog::selectCheckStateChanged(int state)
         return;
 
     bool selected = (state == Qt::Checked);
-
-    if (checkBox == ui->selectAllCheckBox)
-    {
-        m_model->selectItems( ObjectModel::AllItems, selected , true );
-
-        ui->selectTableCheckBox->setChecked( selected );
-        ui->selectQueryCheckBox->setChecked( selected );
-        ui->selectFormCheckBox->setChecked( selected );
-        ui->selectReportCheckBox->setChecked( selected );
-        ui->selectMacroCheckBox->setChecked( selected );
-        ui->selectModuleCheckBox->setChecked( selected );
-        ui->selectReferenceCheckBox->setChecked( selected );
-        ui->selectProjectFileCheckBox->setChecked( selected );
-        ui->selectVBProjectCheckBox->setChecked( selected );
-    }
-    else if (checkBox == ui->selectTableCheckBox)
-    {
-        m_model->selectItemsByObjectType( ObjectModel::TableObjectType, selected, false );
-    }
-    else if (checkBox == ui->selectQueryCheckBox)
-    {
-        m_model->selectItemsByObjectType( ObjectModel::QueryObjectType, selected, false );
-    }
-    else if (checkBox == ui->selectFormCheckBox)
-    {
-        m_model->selectItemsByObjectType( ObjectModel::FormObjectType, selected, false );
-    }
-    else if (checkBox == ui->selectReportCheckBox)
-    {
-        m_model->selectItemsByObjectType( ObjectModel::ReportObjectType, selected, false );
-    }
-    else if (checkBox == ui->selectMacroCheckBox)
-    {
-        m_model->selectItemsByObjectType( ObjectModel::MacroObjectType, selected, false );
-    }
-    else if (checkBox == ui->selectModuleCheckBox)
-    {
-        m_model->selectItemsByObjectType( ObjectModel::ModuleObjectType, selected, false );
-    }
-    else if (checkBox == ui->selectReferenceCheckBox)
-    {
-        m_model->selectItemsByObjectType( ObjectModel::ReferenceObjectType, selected, false );
-    }
-    else if (checkBox == ui->selectProjectFileCheckBox)
-    {
-        m_model->selectItemsByObjectType( ObjectModel::ProjectFileType, selected, false );
-    }
-    else if (checkBox == ui->selectVBProjectCheckBox)
-    {
-        m_model->selectItemsByObjectType( ObjectModel::VBProjectType, selected, false );
-    }
+    int objectType = checkBoxToObjectType(checkBox);
+    emit selectObject(objectType, selected);
 }
 
 void MainDialog::showAllCheckStateChanged(int state)
@@ -270,43 +230,7 @@ void MainDialog::showCheckStateChanged(int state)
         return;
     bool selected = (state == Qt::Checked);
 
-//    if (checkBox == ui->showAllCheckBox)
-//    {
-//        ui->showTableCheckBox->setChecked( selected );
-//        ui->showQueryCheckBox->setChecked( selected );
-//        ui->showFormCheckBox->setChecked( selected );
-//        ui->showReportCheckBox->setChecked( selected );
-//        ui->showMacroCheckBox->setChecked( selected );
-//        ui->showModuleCheckBox->setChecked( selected );
-//        ui->showReferenceCheckBox->setChecked( selected );
-//        ui->showProjectFileCheckBox->setChecked( selected );
-//        ui->showVBProjectCheckBox->setChecked( selected );
-//    }
-
-//    int objectTypes = 0;
-
-//    if (ui->showTableCheckBox->checkState() == Qt::Checked)     objectTypes |= ObjectModel::TableObjectType;
-//    if (ui->showQueryCheckBox->checkState() == Qt::Checked)     objectTypes |= ObjectModel::QueryObjectType;
-//    if (ui->showFormCheckBox->checkState() == Qt::Checked)      objectTypes |= ObjectModel::FormObjectType;
-//    if (ui->showReportCheckBox->checkState() == Qt::Checked)    objectTypes |= ObjectModel::ReportObjectType;
-//    if (ui->showMacroCheckBox->checkState() == Qt::Checked)     objectTypes |= ObjectModel::MacroObjectType;
-//    if (ui->showModuleCheckBox->checkState() == Qt::Checked)    objectTypes |= ObjectModel::ModuleObjectType;
-//    if (ui->showReferenceCheckBox->checkState() == Qt::Checked) objectTypes |= ObjectModel::ReferenceObjectType;
-//    if (ui->showProjectFileCheckBox->checkState() == Qt::Checked) objectTypes |= ObjectModel::ProjectFileType;
-//    if (ui->showVBProjectCheckBox->checkState() == Qt::Checked) objectTypes |= ObjectModel::VBProjectType;
-
-//    m_proxyModel->setFilterShowObjectType( objectTypes );
-
-    int objectType = 0;
-    if (ui->showTableCheckBox        == checkBox) objectType = ObjectModel::TableObjectType;
-    if (ui->showQueryCheckBox        == checkBox) objectType = ObjectModel::QueryObjectType;
-    if (ui->showFormCheckBox         == checkBox) objectType = ObjectModel::FormObjectType;
-    if (ui->showReportCheckBox       == checkBox) objectType = ObjectModel::ReportObjectType;
-    if (ui->showMacroCheckBox        == checkBox) objectType = ObjectModel::MacroObjectType;
-    if (ui->showModuleCheckBox       == checkBox) objectType = ObjectModel::ModuleObjectType;
-    if (ui->showReferenceCheckBox    == checkBox) objectType = ObjectModel::ReferenceObjectType;
-    if (ui->showProjectFileCheckBox  == checkBox) objectType = ObjectModel::ProjectFileType;
-    if (ui->showVBProjectCheckBox    == checkBox) objectType = ObjectModel::VBProjectType;
+    int objectType = checkBoxToObjectType(checkBox);
     emit showObject(objectType, selected);
 }
 
@@ -329,4 +253,45 @@ void MainDialog::setShownObjectType(int objectTypes)
     ui->showReferenceCheckBox   ->setChecked( objectTypes & ObjectModel::ReferenceObjectType );
     ui->showProjectFileCheckBox ->setChecked( objectTypes & ObjectModel::ProjectFileType );
     ui->showVBProjectCheckBox   ->setChecked( objectTypes & ObjectModel::VBProjectType );
+}
+
+void MainDialog::setSelectObjectType(int objectTypes)
+{
+    ui->selectAllCheckBox         ->setChecked( objectTypes == ObjectModel::AllObjectTypes );
+
+    ui->selectTableCheckBox       ->setChecked( objectTypes & ObjectModel::TableObjectType );
+    ui->selectQueryCheckBox       ->setChecked( objectTypes & ObjectModel::QueryObjectType );
+    ui->selectFormCheckBox        ->setChecked( objectTypes & ObjectModel::FormObjectType );
+    ui->selectReportCheckBox      ->setChecked( objectTypes & ObjectModel::ReportObjectType );
+    ui->selectMacroCheckBox       ->setChecked( objectTypes & ObjectModel::MacroObjectType );
+    ui->selectModuleCheckBox      ->setChecked( objectTypes & ObjectModel::ModuleObjectType );
+    ui->selectReferenceCheckBox   ->setChecked( objectTypes & ObjectModel::ReferenceObjectType );
+    ui->selectProjectFileCheckBox ->setChecked( objectTypes & ObjectModel::ProjectFileType );
+    ui->selectVBProjectCheckBox   ->setChecked( objectTypes & ObjectModel::VBProjectType );
+}
+
+int MainDialog::checkBoxToObjectType(QCheckBox *checkBox) const
+{
+    int objectType = 0;
+    if (ui->showTableCheckBox        == checkBox) objectType = ObjectModel::TableObjectType;
+    if (ui->showQueryCheckBox        == checkBox) objectType = ObjectModel::QueryObjectType;
+    if (ui->showFormCheckBox         == checkBox) objectType = ObjectModel::FormObjectType;
+    if (ui->showReportCheckBox       == checkBox) objectType = ObjectModel::ReportObjectType;
+    if (ui->showMacroCheckBox        == checkBox) objectType = ObjectModel::MacroObjectType;
+    if (ui->showModuleCheckBox       == checkBox) objectType = ObjectModel::ModuleObjectType;
+    if (ui->showReferenceCheckBox    == checkBox) objectType = ObjectModel::ReferenceObjectType;
+    if (ui->showProjectFileCheckBox  == checkBox) objectType = ObjectModel::ProjectFileType;
+    if (ui->showVBProjectCheckBox    == checkBox) objectType = ObjectModel::VBProjectType;
+
+    if (ui->selectTableCheckBox        == checkBox) objectType = ObjectModel::TableObjectType;
+    if (ui->selectQueryCheckBox        == checkBox) objectType = ObjectModel::QueryObjectType;
+    if (ui->selectFormCheckBox         == checkBox) objectType = ObjectModel::FormObjectType;
+    if (ui->selectReportCheckBox       == checkBox) objectType = ObjectModel::ReportObjectType;
+    if (ui->selectMacroCheckBox        == checkBox) objectType = ObjectModel::MacroObjectType;
+    if (ui->selectModuleCheckBox       == checkBox) objectType = ObjectModel::ModuleObjectType;
+    if (ui->selectReferenceCheckBox    == checkBox) objectType = ObjectModel::ReferenceObjectType;
+    if (ui->selectProjectFileCheckBox  == checkBox) objectType = ObjectModel::ProjectFileType;
+    if (ui->selectVBProjectCheckBox    == checkBox) objectType = ObjectModel::VBProjectType;
+
+    return objectType;
 }

@@ -17,6 +17,7 @@ class ObjectModel;
 class ObjectProxyModel;
 class ProgressHelper;
 
+class QCheckBox;
 
 class MainDialog : public QDialog
 {
@@ -43,6 +44,8 @@ public:
 
 signals:
     void selectAuto();
+    void selectAllObject(bool select);
+    void selectObject(int objectType, bool select);
     void showAllObject(bool show);
     void showObject(int objectType, bool show);
     void showSelectedOnly(bool selectedOnly);
@@ -56,13 +59,17 @@ private slots:
     void onRejected();
 
 
-
+    void selectAllCheckStateChanged(int state);
     void selectCheckStateChanged(int state);
     void showAllCheckStateChanged(int state);
     void showCheckStateChanged(int state);
     void showSelectedOnlyCheckStateChanged(int state);
 
     void setShownObjectType(int objectTypes);
+    void setSelectObjectType(int objectTypes);
+
+private:
+    int checkBoxToObjectType(QCheckBox *checkBox) const;
 
 private:
     Ui::MainDialog *ui;
