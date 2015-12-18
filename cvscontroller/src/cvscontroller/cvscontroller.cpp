@@ -280,6 +280,9 @@ void CvsController::init()
     connect(m_dlg, SIGNAL(showObject(int,bool)), this, SLOT(showObject(int,bool)) );
     connect(m_dlg, SIGNAL(selectAllObject(bool)), this, SLOT(selectAllObject(bool)) );
     connect(m_dlg, SIGNAL(selectObject(int,bool)), this, SLOT(selectObject(int,bool)) );
+
+    m_proxyModel->setFilterShowObjectType( ObjectModel::AllObjectTypes );
+    m_proxyModel->setFilterShowSelectedOnly( true/*selected*/ );
 }
 
 void CvsController::prepare(const CvsController::PrepareType prepareType, const bool clearCache)

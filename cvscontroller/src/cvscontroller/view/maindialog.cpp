@@ -17,6 +17,7 @@
 
 #include <QMetaMethod>
 #include <QApplication>
+#include <QSignalBlocker>
 
 using namespace Access;
 
@@ -50,6 +51,7 @@ MainDialog::MainDialog(ObjectModel *model, ObjectProxyModel *proxyModel, QWidget
     ui->treeView->setSortingEnabled(true);
     ui->treeView->sortByColumn(ObjectModel::NameColumn, Qt::AscendingOrder);
 
+    // command
     connect( ui->okButton,     SIGNAL(clicked(bool)), this, SLOT(onAccepted()) );
     connect( ui->cancelButton, SIGNAL(clicked(bool)), this, SLOT(onRejected()) );
 
@@ -57,6 +59,8 @@ MainDialog::MainDialog(ObjectModel *model, ObjectProxyModel *proxyModel, QWidget
     connect( ui->clearCacheButton,    SIGNAL(clicked(bool)), this, SIGNAL(clearCache()) );
     connect( ui->executeExportButton, SIGNAL(clicked(bool)), this, SIGNAL(executeExport()) );
     connect( ui->executeImportButton, SIGNAL(clicked(bool)), this, SIGNAL(executeImport()) );
+
+    // selection
     connect( ui->selectAutoButton,    SIGNAL(clicked(bool)), this, SIGNAL(selectAuto()) );
 
     connect( ui->selectAllCheckBox,         SIGNAL(stateChanged(int)), this, SLOT(selectAllCheckStateChanged(int)) );
@@ -71,7 +75,7 @@ MainDialog::MainDialog(ObjectModel *model, ObjectProxyModel *proxyModel, QWidget
     connect( ui->selectProjectFileCheckBox, SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
     connect( ui->selectVBProjectCheckBox,   SIGNAL(stateChanged(int)), this, SLOT(selectCheckStateChanged(int)) );
 
-
+    // filter
     connect( ui->showSelectedOnlyCheckBox, SIGNAL(stateChanged(int)), this, SLOT(showSelectedOnlyCheckStateChanged(int)) );
 
     connect( ui->showAllCheckBox,         SIGNAL(stateChanged(int)), this, SLOT(showAllCheckStateChanged(int)) );
@@ -86,7 +90,6 @@ MainDialog::MainDialog(ObjectModel *model, ObjectProxyModel *proxyModel, QWidget
     connect( ui->showProjectFileCheckBox, SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
     connect( ui->showVBProjectCheckBox,   SIGNAL(stateChanged(int)), this, SLOT(showCheckStateChanged(int)) );
 
-
     m_progressHelper->initialize(
                   ui->elapsedTimeLabel
                 , ui->processTypeNameLabel
@@ -94,23 +97,6 @@ MainDialog::MainDialog(ObjectModel *model, ObjectProxyModel *proxyModel, QWidget
                 , ui->progressBar
                 , m_model
                 );
-
-    // default value
-    ui->showAllCheckBox->setChecked(true);
-    ui->showTableCheckBox->setChecked(true);
-    ui->showQueryCheckBox->setChecked(true);
-    ui->showFormCheckBox->setChecked(true);
-    ui->showReportCheckBox->setChecked(true);
-    ui->showMacroCheckBox->setChecked(true);
-    ui->showModuleCheckBox->setChecked(true);
-    ui->showReferenceCheckBox->setChecked(true);
-    ui->showProjectFileCheckBox->setChecked(true);
-    ui->showVBProjectCheckBox->setChecked(true);
-    ui->showSelectedOnlyCheckBox->setChecked(true);
-
-
-    m_proxyModel->setFilterShowObjectType( ObjectModel::AllObjectTypes );
-    m_proxyModel->setFilterShowSelectedOnly( true/*selected*/ );
 
     connect(m_proxyModel, SIGNAL(showSelectedOnlyChanged(bool)), ui->showSelectedOnlyCheckBox, SLOT(setChecked(bool)) );
     connect(m_proxyModel, SIGNAL(showObjectTypeChanged(int)), this, SLOT(setShownObjectType(int)) );
@@ -242,6 +228,17 @@ void MainDialog::showSelectedOnlyCheckStateChanged(int state)
 
 void MainDialog::setShownObjectType(int objectTypes)
 {
+    const QSignalBlocker blockAll( ui->showAllCheckBox );
+    const QSignalBlocker blockTable( ui->showTableCheckBox );
+    const QSignalBlocker blockQuery( ui->showQueryCheckBox );
+    const QSignalBlocker blockForm( ui->showFormCheckBox );
+    const QSignalBlocker blockReport( ui->showReportCheckBox );
+    const QSignalBlocker blockMacro( ui->showMacroCheckBox );
+    const QSignalBlocker blockModule( ui->showModuleCheckBox );
+    const QSignalBlocker blockReference( ui->showReferenceCheckBox );
+    const QSignalBlocker blockProjectFile( ui->showProjectFileCheckBox );
+    const QSignalBlocker blockVBProject( ui->showVBProjectCheckBox );
+
     ui->showAllCheckBox         ->setChecked( objectTypes == ObjectModel::AllObjectTypes );
 
     ui->showTableCheckBox       ->setChecked( objectTypes & ObjectModel::TableObjectType );
@@ -257,6 +254,17 @@ void MainDialog::setShownObjectType(int objectTypes)
 
 void MainDialog::setSelectObjectType(int objectTypes)
 {
+    const QSignalBlocker blockAll( ui->selectAllCheckBox );
+    const QSignalBlocker blockTable( ui->selectTableCheckBox );
+    const QSignalBlocker blockQuery( ui->selectQueryCheckBox );
+    const QSignalBlocker blockForm( ui->selectFormCheckBox );
+    const QSignalBlocker blockReport( ui->selectReportCheckBox );
+    const QSignalBlocker blockMacro( ui->selectMacroCheckBox );
+    const QSignalBlocker blockModule( ui->selectModuleCheckBox );
+    const QSignalBlocker blockReference( ui->selectReferenceCheckBox );
+    const QSignalBlocker blockProjectFile( ui->selectProjectFileCheckBox );
+    const QSignalBlocker blockVBProject( ui->selectVBProjectCheckBox );
+
     ui->selectAllCheckBox         ->setChecked( objectTypes == ObjectModel::AllObjectTypes );
 
     ui->selectTableCheckBox       ->setChecked( objectTypes & ObjectModel::TableObjectType );
