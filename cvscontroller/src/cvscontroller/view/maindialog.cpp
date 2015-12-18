@@ -1,25 +1,14 @@
 #include "maindialog.h"
 #include "ui_maindialog.h"
 
-#include "accesslib/accesslib.h"
-
 #include "cvsmodel/objectmodel.h"
-#include "cvsmodel/objectitem.h"
 #include "cvsmodel/objectproxymodel.h"
 
 #include "view/checkboxitemdelegate.h"
 #include "hasdatacolumnitemdelegate.h"
 #include "progresshelper.h"
 
-#include "util/comptr.h"
-
-#include <QMessageBox>
-
-#include <QMetaMethod>
-#include <QApplication>
 #include <QSignalBlocker>
-
-using namespace Access;
 
 MainDialog::MainDialog(ObjectModel *model, ObjectProxyModel *proxyModel, QWidget *parent) :
     QDialog(parent),

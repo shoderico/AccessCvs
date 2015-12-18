@@ -2,8 +2,6 @@
 #define MAINDIALOG_H
 
 #include <QDialog>
-#include <QTimer>
-#include "cvsmodel/objectmodel.h"
 
 namespace Ui {
 class MainDialog;
