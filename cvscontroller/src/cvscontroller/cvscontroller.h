@@ -29,12 +29,12 @@ public:
     bool imagePath(const QString &controlId, QString &imagePath, QSize &size);
     bool handleButtonClick(const QString &controlId);
 
-    void manual();
-    void autoImport();
-    void autoExport();
+    void prepareManual();
+    void prepareImport();
+    void prepareExport();
 
-    void clearCacheAndExport();
-    void clearCacheAndImport();
+    void clearCacheAndPrepareExport();
+    void clearCacheAndPrepareImport();
 
 signals:
 

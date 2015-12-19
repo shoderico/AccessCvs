@@ -118,56 +118,55 @@ bool CvsController::imagePath(const QString &controlId, QString &imagePath, QSiz
 bool CvsController::handleButtonClick(const QString &controlId)
 {
     if (controlId == "StandardManualButton")
-        manual();
+        prepareManual();
     else if (controlId == "StandardExportButton")
-        autoExport();
+        prepareExport();
     else if (controlId == "StandardImportButton")
-        autoImport();
+        prepareImport();
     else if (controlId == "StandardClearCacheAndExportButton")
-        clearCacheAndExport();
+        clearCacheAndPrepareExport();
     else if (controlId == "StandardClearCacheAndImportButton")
-        clearCacheAndImport();
+        clearCacheAndPrepareImport();
     else
         return false;
     return true;
 }
 
-void CvsController::manual()
+void CvsController::prepareManual()
 {
     m_dlg->showAsManual();
 }
 
-void CvsController::autoImport()
+void CvsController::prepareImport()
 {
-//    m_dlg->showAsAutoImport(false);
-
-    // model owner change
     prepare(Import, false /*clearCache*/);
     if ( m_model->selectedRowCount() == 0)
         return;
     m_dlg->showAsAutoImport();
 }
 
-void CvsController::autoExport()
+void CvsController::prepareExport()
 {
-//    m_dlg->showAsAutoExport(false);
-
-    // model owner change
     prepare(Export, false /*clearCache*/);
     if ( m_model->selectedRowCount() == 0)
         return;
     m_dlg->showAsAutoExport();
 }
 
-void CvsController::clearCacheAndImport()
+void CvsController::clearCacheAndPrepareImport()
 {
-//    m_dlg->showAsAutoImport(true);
-
-    // model owner change
     prepare(Import, true /*clearCache*/);
     if ( m_model->selectedRowCount() == 0)
         return;
     m_dlg->showAsAutoImport();
+}
+
+void CvsController::clearCacheAndPrepareExport()
+{
+    prepare(Export, true /*clearCache*/);
+    if ( m_model->selectedRowCount() == 0)
+        return;
+    m_dlg->showAsAutoExport();
 }
 
 void CvsController::selectAuto()
@@ -233,17 +232,6 @@ void CvsController::executeImport()
     m_dlg->beginBatch();
     m_model->executeImport();
     m_dlg->endBatch();
-}
-
-void CvsController::clearCacheAndExport()
-{
-//    m_dlg->showAsAutoExport(true);
-
-    // model owner change
-    prepare(Export, true /*clearCache*/);
-    if ( m_model->selectedRowCount() == 0)
-        return;
-    m_dlg->showAsAutoExport();
 }
 
 void CvsController::init()
