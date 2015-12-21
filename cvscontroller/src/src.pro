@@ -15,7 +15,8 @@ SOURCES += \
     cvscontroller/view/hasdatacolumnitemdelegate.cpp \
     cvscontroller/view/cvsprogressdialog.cpp \
     cvscontroller/view/processtypenames.cpp \
-    cvscontroller/view/progresshelper.cpp
+    cvscontroller/view/progresshelper.cpp \
+    cvscontroller/view/appsignalhandler.cpp
 
 HEADERS += \
     cvscontroller/cvscontroller_global.h \
@@ -24,7 +25,8 @@ HEADERS += \
     cvscontroller/view/hasdatacolumnitemdelegate.h \
     cvscontroller/view/cvsprogressdialog.h \
     cvscontroller/view/processtypenames.h \
-    cvscontroller/view/progresshelper.h
+    cvscontroller/view/progresshelper.h \
+    cvscontroller/view/appsignalhandler.h
 
 FORMS += \
     cvscontroller/view/maindialog.ui \

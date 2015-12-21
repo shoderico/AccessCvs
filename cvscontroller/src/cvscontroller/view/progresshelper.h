@@ -32,9 +32,9 @@ public slots:
 
     void onTimeout();
 
-    void progressStart(int type, int count);
-    void progressChange(int type, int value);
-    void progressEnd(int type);
+    void onProgressStart(int type, int count);
+    void onProgressChange(int type, int value);
+    void onProgressEnd(int type);
 
     void setProcessTypeName(int type);
 

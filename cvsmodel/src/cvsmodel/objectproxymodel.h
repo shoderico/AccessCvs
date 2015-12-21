@@ -18,7 +18,12 @@ public:
     void setFilterShowSelectedOnly(const bool selectedOnly);
     void setFilterShowObjectType(const int objectTypes);
 
+    bool isShowSelectedOnly() const;
+    int showObjectType() const;
+
 signals:
+    void showSelectedOnlyChanged(bool selectedOnly);
+    void showObjectTypeChanged(int objectTypes);
 
 public slots:
 

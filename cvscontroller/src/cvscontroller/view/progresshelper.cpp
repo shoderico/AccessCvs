@@ -21,9 +21,9 @@ void ProgressHelper::initialize(QLabel *elapsedTimeLabel, QLabel *processTypeNam
     m_progressCountLabel = progressCountLabel;
     m_progressBar = progressBar;
 
-    connect( model, SIGNAL(progressStart(int,int)),  this, SLOT(progressStart(int,int)) );
-    connect( model, SIGNAL(progressChange(int,int)), this, SLOT(progressChange(int,int)) );
-    connect( model, SIGNAL(progressEnd(int)),        this, SLOT(progressEnd(int)) );
+    connect( model, SIGNAL(progressStart(int,int)),  this, SLOT(onProgressStart(int,int)) );
+    connect( model, SIGNAL(progressChange(int,int)), this, SLOT(onProgressChange(int,int)) );
+    connect( model, SIGNAL(progressEnd(int)),        this, SLOT(onProgressEnd(int)) );
 
     m_progressBar->reset();
 }
@@ -61,14 +61,14 @@ void ProgressHelper::onTimeout()
                 );
 }
 
-void ProgressHelper::progressStart(int type, int count)
+void ProgressHelper::onProgressStart(int type, int count)
 {
     m_progressBar->setRange(0, count);
     m_progressBar->setValue(0);
     setProcessTypeName(type);
 }
 
-void ProgressHelper::progressChange(int type, int value)
+void ProgressHelper::onProgressChange(int type, int value)
 {
     Q_UNUSED(type);
     m_progressBar->setValue(value);
@@ -80,7 +80,7 @@ void ProgressHelper::progressChange(int type, int value)
     QApplication::processEvents();
 }
 
-void ProgressHelper::progressEnd(int type)
+void ProgressHelper::onProgressEnd(int type)
 {
     Q_UNUSED(type);
     m_progressBar->setValue(0);

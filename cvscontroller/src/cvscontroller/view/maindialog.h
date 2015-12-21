@@ -2,8 +2,6 @@
 #define MAINDIALOG_H
 
 #include <QDialog>
-#include <QTimer>
-#include "cvsmodel/objectmodel.h"
 
 namespace Ui {
 class MainDialog;
@@ -17,18 +15,19 @@ class ObjectModel;
 class ObjectProxyModel;
 class ProgressHelper;
 
+class QCheckBox;
 
 class MainDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit MainDialog(Access::Application *application, ObjectModel *model, QWidget *parent = 0);
+    explicit MainDialog(ObjectModel *model, ObjectProxyModel *proxyModel, QWidget *parent = 0);
     ~MainDialog();
 
     void showAsManual();
-    void showAsAutoExport(const bool clearCache);
-    void showAsAutoImport(const bool clearCache);
+    void showAsAutoExport();
+    void showAsAutoImport();
     enum ShowMode
     {
         ManualMode,
@@ -38,33 +37,40 @@ public:
     };
     Q_DECLARE_FLAGS(ShowModes, ShowMode)
 
-public slots:
-    void exception(int code, const QString & source, const QString & desc, const QString & help);
-    void	propertyChanged(const QString & name);
-    void	signal(const QString & name, int argc, void * argv);
+    void beginBatch();
+    void endBatch();
+
+signals:
+    void selectAuto();
+    void selectAllObject(bool select);
+    void selectObject(int objectType, bool select);
+    void showAllObject(bool show);
+    void showObject(int objectType, bool show);
+    void showSelectedOnly(bool selectedOnly);
+    void clearCache();
+    void refreshItems();
+    void executeExport();
+    void executeImport();
 
 private slots:
     void onAccepted();
     void onRejected();
 
-    void clearCache();
-    void refreshItems();
-    void executeExport();
-    void executeImport();
-    void prepareExport();
-    void prepareImport();
 
-    void beginBatch();
-    void endBatch();
-
-    void selectAuto();
+    void selectAllCheckStateChanged(int state);
     void selectCheckStateChanged(int state);
+    void showAllCheckStateChanged(int state);
     void showCheckStateChanged(int state);
-    void showSelectedOnly(int state);
+    void showSelectedOnlyCheckStateChanged(int state);
+
+    void setShownObjectType(int objectTypes);
+    void setSelectObjectType(int objectTypes);
+
+private:
+    int checkBoxToObjectType(QCheckBox *checkBox) const;
 
 private:
     Ui::MainDialog *ui;
-    Access::Application *m_application;
     ObjectModel *m_model;
     ObjectProxyModel *m_proxyModel;
     ShowModes m_showMode;

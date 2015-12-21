@@ -5,6 +5,7 @@
 #include "accesslib/accesslib.h"
 #include "addinutil/addinutil.h"
 #include "cvsmodel/objectmodel.h"
+#include "cvsmodel/objectproxymodel.h"
 
 CvsController::CvsController(QObject *parent)
     : QObject(parent)
@@ -13,6 +14,7 @@ CvsController::CvsController(QObject *parent)
     , m_dlg(0)
     , m_progressDlg(0)
     , m_model(0)
+    , m_proxyModel(0)
 {
 }
 
@@ -116,67 +118,120 @@ bool CvsController::imagePath(const QString &controlId, QString &imagePath, QSiz
 bool CvsController::handleButtonClick(const QString &controlId)
 {
     if (controlId == "StandardManualButton")
-        manual();
+        prepareManual();
     else if (controlId == "StandardExportButton")
-        autoExport();
+        prepareExport();
     else if (controlId == "StandardImportButton")
-        autoImport();
+        prepareImport();
     else if (controlId == "StandardClearCacheAndExportButton")
-        clearCacheAndExport();
+        clearCacheAndPrepareExport();
     else if (controlId == "StandardClearCacheAndImportButton")
-        clearCacheAndImport();
+        clearCacheAndPrepareImport();
     else
         return false;
     return true;
 }
 
-void CvsController::manual()
+void CvsController::prepareManual()
 {
     m_dlg->showAsManual();
 }
 
-void CvsController::autoImport()
+void CvsController::prepareImport()
 {
-//    m_dlg->showAsAutoImport(false);
-
-    // model owner change
     prepare(Import, false /*clearCache*/);
     if ( m_model->selectedRowCount() == 0)
         return;
-    m_dlg->showAsAutoImport(false);
+    m_dlg->showAsAutoImport();
 }
 
-void CvsController::autoExport()
+void CvsController::prepareExport()
 {
-//    m_dlg->showAsAutoExport(false);
-
-    // model owner change
     prepare(Export, false /*clearCache*/);
     if ( m_model->selectedRowCount() == 0)
         return;
-    m_dlg->showAsAutoExport(false);
+    m_dlg->showAsAutoExport();
 }
 
-void CvsController::clearCacheAndImport()
+void CvsController::clearCacheAndPrepareImport()
 {
-//    m_dlg->showAsAutoImport(true);
-
-    // model owner change
     prepare(Import, true /*clearCache*/);
     if ( m_model->selectedRowCount() == 0)
         return;
-    m_dlg->showAsAutoImport(false);
+    m_dlg->showAsAutoImport();
 }
 
-void CvsController::clearCacheAndExport()
+void CvsController::clearCacheAndPrepareExport()
 {
-//    m_dlg->showAsAutoExport(true);
-
-    // model owner change
     prepare(Export, true /*clearCache*/);
     if ( m_model->selectedRowCount() == 0)
         return;
-    m_dlg->showAsAutoExport(false);
+    m_dlg->showAsAutoExport();
+}
+
+void CvsController::selectAuto()
+{
+    m_model->selectItemsForProcess( true/*selected*/, true/*resetSelection*/ );
+}
+
+void CvsController::selectAllObject(bool select)
+{
+    m_model->selectItems( ObjectModel::AllItems, select, true/*resetSelection*/ );
+}
+
+void CvsController::selectObject(int objectType, bool select)
+{
+    m_model->selectItemsByObjectType( (ObjectModel::SelectObjectType)objectType, select, false /*resetSelection*/ );
+}
+
+void CvsController::showSelectedOnly(bool selectedOnly)
+{
+    m_proxyModel->setFilterShowSelectedOnly( selectedOnly );
+}
+
+void CvsController::showAllObject(bool show)
+{
+    int objectTypes = show ? ObjectModel::AllObjectTypes : 0 ;
+    m_proxyModel->setFilterShowObjectType( objectTypes );
+    // TODO : update view's check state
+    // model emit the signal for filter changed.
+    // view slot handle it and update checkstate itself
+}
+
+void CvsController::showObject(int objectType, bool show)
+{
+    int objectTypes = m_proxyModel->showObjectType();
+    if (show)
+        objectTypes |= objectType;
+    else
+        objectTypes &= ~(objectType);
+    m_proxyModel->setFilterShowObjectType( objectTypes );
+}
+
+void CvsController::clearCache()
+{
+    m_model->clearItemsCache();
+}
+
+void CvsController::refreshItems()
+{
+    m_dlg->beginBatch();
+    m_model->refreshItems();
+    m_dlg->endBatch();
+}
+
+void CvsController::executeExport()
+{
+    m_dlg->beginBatch();
+    m_model->executeExport();
+    m_dlg->endBatch();
+}
+
+void CvsController::executeImport()
+{
+    m_dlg->beginBatch();
+    m_model->executeImport();
+    m_dlg->endBatch();
 }
 
 void CvsController::init()
@@ -187,15 +242,35 @@ void CvsController::init()
         m_model->setApplication(m_application);
     }
 
+    if (!m_proxyModel)
+    {
+        m_proxyModel = new ObjectProxyModel(this);
+        m_proxyModel->setSourceModel(m_model);
+    }
+
     if (!m_dlg)
     {
-        m_dlg = new MainDialog( m_application, m_model, m_parentWidget );
+        m_dlg = new MainDialog( m_model, m_proxyModel, m_parentWidget );
     }
 
     if (!m_progressDlg)
     {
         m_progressDlg = new CvsProgressDialog( m_model, m_parentWidget );
     }
+
+    connect(m_dlg, SIGNAL(selectAuto()), this, SLOT(selectAuto()) );
+    connect(m_dlg, SIGNAL(clearCache()), this, SLOT(clearCache()) );
+    connect(m_dlg, SIGNAL(refreshItems()), this, SLOT(refreshItems()) );
+    connect(m_dlg, SIGNAL(executeExport()), this, SLOT(executeExport()) );
+    connect(m_dlg, SIGNAL(executeImport()), this, SLOT(executeImport()) );
+    connect(m_dlg, SIGNAL(showSelectedOnly(bool)), this, SLOT(showSelectedOnly(bool)) );
+    connect(m_dlg, SIGNAL(showAllObject(bool)), this, SLOT(showAllObject(bool)) );
+    connect(m_dlg, SIGNAL(showObject(int,bool)), this, SLOT(showObject(int,bool)) );
+    connect(m_dlg, SIGNAL(selectAllObject(bool)), this, SLOT(selectAllObject(bool)) );
+    connect(m_dlg, SIGNAL(selectObject(int,bool)), this, SLOT(selectObject(int,bool)) );
+
+    m_proxyModel->setFilterShowObjectType( ObjectModel::AllObjectTypes );
+    m_proxyModel->setFilterShowSelectedOnly( true/*selected*/ );
 }
 
 void CvsController::prepare(const CvsController::PrepareType prepareType, const bool clearCache)

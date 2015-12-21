@@ -82,6 +82,7 @@ void ObjectProxyModel::setFilterShowSelectedOnly(const bool selectedOnly)
 {
     m_showSelectedOnly = selectedOnly;
     invalidateFilter();
+    emit showSelectedOnlyChanged(selectedOnly);
 }
 
 void ObjectProxyModel::setFilterShowObjectType(const int objectTypes)
@@ -96,5 +97,26 @@ void ObjectProxyModel::setFilterShowObjectType(const int objectTypes)
     m_showObjectTypes[ Model::ProjectFile ] = ( objectTypes & ObjectModel::ProjectFileType ) ;
     m_showObjectTypes[ Model::VBProject] = ( objectTypes & ObjectModel::VBProjectType ) ;
     invalidateFilter();
+    emit showObjectTypeChanged( showObjectType() );
+}
+
+bool ObjectProxyModel::isShowSelectedOnly() const
+{
+    return m_showSelectedOnly;
+}
+
+int ObjectProxyModel::showObjectType() const
+{
+    int objectType = 0;
+    objectType |= m_showObjectTypes[ Model::TableDef    ] ? ObjectModel::TableObjectType : 0;
+    objectType |= m_showObjectTypes[ Model::Query       ] ? ObjectModel::QueryObjectType : 0;
+    objectType |= m_showObjectTypes[ Model::Form        ] ? ObjectModel::FormObjectType : 0;
+    objectType |= m_showObjectTypes[ Model::Report      ] ? ObjectModel::ReportObjectType : 0;
+    objectType |= m_showObjectTypes[ Model::Macro       ] ? ObjectModel::MacroObjectType : 0;
+    objectType |= m_showObjectTypes[ Model::Module      ] ? ObjectModel::ModuleObjectType : 0;
+    objectType |= m_showObjectTypes[ Model::Reference   ] ? ObjectModel::ReferenceObjectType : 0;
+    objectType |= m_showObjectTypes[ Model::ProjectFile ] ? ObjectModel::ProjectFileType : 0;
+    objectType |= m_showObjectTypes[ Model::VBProject   ] ? ObjectModel::VBProjectType : 0;
+    return objectType;
 }
 

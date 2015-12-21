@@ -9,6 +9,7 @@
 class MainDialog;
 class CvsProgressDialog;
 class ObjectModel;
+class ObjectProxyModel;
 
 namespace Access {
 class Application;
@@ -28,16 +29,26 @@ public:
     bool imagePath(const QString &controlId, QString &imagePath, QSize &size);
     bool handleButtonClick(const QString &controlId);
 
-    void manual();
-    void autoImport();
-    void autoExport();
+    void prepareManual();
+    void prepareImport();
+    void prepareExport();
 
-    void clearCacheAndExport();
-    void clearCacheAndImport();
+    void clearCacheAndPrepareExport();
+    void clearCacheAndPrepareImport();
 
 signals:
 
 public slots:
+    void selectAuto();
+    void selectAllObject(bool select);
+    void selectObject(int objectType, bool select);
+    void showSelectedOnly(bool selectedOnly);
+    void showAllObject(bool show);
+    void showObject(int objectType, bool show);
+    void clearCache();
+    void refreshItems();
+    void executeExport();
+    void executeImport();
 
 private:
     void init();
@@ -55,6 +66,7 @@ private:
     MainDialog *m_dlg;
     CvsProgressDialog *m_progressDlg;
     ObjectModel *m_model;
+    ObjectProxyModel *m_proxyModel;
 };
 
 #endif // CVSCONTROLLER_H
