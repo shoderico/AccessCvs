@@ -11,8 +11,9 @@ TableDataSanitizeSetting::TableDataSanitizeSetting(QObject *parent) : QObject(pa
     // line
     m_reLine = new QRegularExpression();
     // <dataroot xmlns:od="urn:schemas-microsoft-com:officedata" generated="2015-08-12T09:17:53">
+    // <dataroot xmlns:od="urn:schemas-microsoft-com:officedata" generated="2015-12-21T22:23:50"/>
     sPattern = "^\\s*";
-    sPattern += "<dataroot xmlns:od=\"urn:schemas-microsoft-com:officedata\" generated=\"([^\"]*)\">";
+    sPattern += "<dataroot xmlns:od=\"urn:schemas-microsoft-com:officedata\" generated=\"(?:[^\"]*)\"(/*)>";
     sPattern += "\\s*$";
     m_reLine->setPattern( sPattern );
 
@@ -41,7 +42,8 @@ void TableDataSanitizeSetting::sanitize(QTextStream &streamSrc, QTextStream &str
         matchesLine = m_reLine->match(txt);
         if ( matchesLine.hasMatch() )
         {
-            txt = "<dataroot xmlns:od=\"urn:schemas-microsoft-com:officedata\" generated=\"\">";
+            QString endSlash = matchesLine.captured(1);
+            txt = "<dataroot xmlns:od=\"urn:schemas-microsoft-com:officedata\" generated=\"\"" + endSlash + ">";
             goto write_line;
         }
 
