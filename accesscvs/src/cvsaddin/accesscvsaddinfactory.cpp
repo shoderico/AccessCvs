@@ -35,7 +35,7 @@ AccessCvsAddInFactory::AccessCvsAddInFactory(const QUuid &app, const QUuid &lib)
     setDescription( tr("Description"));
 
     // log qDebug() output
-    (void)new LogFile( serverDirPath() + "\\log", "log_", false );
+    (void)new LogFile( serverDirPath() + "\\log", "log_access_", false );
     qInstallMessageHandler(LogFile::MessageOutput);
 }
 

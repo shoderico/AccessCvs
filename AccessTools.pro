@@ -18,7 +18,8 @@ SUBDIRS += \
     addinutil \
     comutil \
     installer \
-    helpcontroller
+    helpcontroller \
+    excelcvs
 
 # office lib layer
 accesslib.depends += officelib
@@ -37,6 +38,8 @@ helpcontroller.depends       +=      addinutil comutil
 addin.depends     += comutil addinutil
 accesscvs.depends += resource addin \
                      cvscontroller acccontroller helpcontroller
+accesscvs.depends += resource addin \
+                     helpcontroller
 
 
 # cli layer
