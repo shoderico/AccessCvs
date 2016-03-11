@@ -15,11 +15,6 @@ ProjectSetting::ProjectSetting(QObject *parent)
     : QObject(parent)
     , m_projectType(-1)
 {
-    m_sourcePathName = "source";
-    m_tempPathName   = ".accesscvs";
-
-    m_settingsFileName = "project.settings";
-
     m_objectSettings.insert( Model::TableDef,   new TableDefSetting (this) );
 //  m_objectSettings.insert( Model::TableData,  new TableDataSetting(this) );
 //  m_objectSettings.insert( Model::Relation,   new RelationSetting (this) );
@@ -51,7 +46,7 @@ void ProjectSetting::initialize(Access::Application *application)
     if (currentProject.is())
     {
         QString projectPath = currentProject->Path();
-        QString projectConfigFileName = currentProject->Name() + ".accesscvs";
+        QString projectConfigFileName = currentProject->Name() + ".config";
         QString projectConfigFilePath = projectPath + "\\" + projectConfigFileName;
         qDebug() << projectConfigFilePath;
         if ( QFile::exists( projectConfigFilePath ) )
@@ -59,22 +54,28 @@ void ProjectSetting::initialize(Access::Application *application)
             qDebug() << " projectConfigFilePath exists ";
             // read projectConfig file
             //-----------------------------------
-            // sourcePathName
-            // tempPathName
-            // settingFileName
-            // projectPath : relative to currentProject->Path()
+            // SourcePathName  : default 'source'
+            // TempPathName    : default '.accesscvs'
+            // SettingFileName : default 'project.settings'
+            // ProjectPath     : relative to currentProject->Path(). default currentProject->Path().
             QSettings *config = new QSettings( projectConfigFilePath, QSettings::IniFormat, this);
             config->setIniCodec( "UTF-8" );
-            m_sourcePathName = config->value( "SourcePathName", "source" ).toString();
-            m_tempPathName   = config->value( "TempPathName", ".accesscvs" ).toString();
+            m_sourcePathName   = config->value( "SourcePathName",  "source"           ).toString();
+            m_tempPathName     = config->value( "TempPathName",    ".accesscvs"       ).toString();
             m_settingsFileName = config->value( "SettingFileName", "project.settings" ).toString();
             m_projectPath = QDir::cleanPath( QDir( projectPath ).filePath( config->value( "ProjectPath", "." ).toString() ) );
-            qDebug() << " m_projectPath : " + m_projectPath;
+            qDebug() << "m_projectPath : " << m_projectPath;
+            qDebug() << "m_sourcePathName : " << m_sourcePathName;
+            qDebug() << "m_tempPathName : " << m_tempPathName;
+            qDebug() << "m_settingFileName : " << m_settingsFileName;
         }
         else
         {
             qDebug() << " projectConfigFilePath NOT exists ";
-            m_projectPath = currentProject->Path();
+            m_sourcePathName   = "source";
+            m_tempPathName     = ".accesscvs";
+            m_settingsFileName = "project.settings";
+            m_projectPath      = currentProject->Path();
         }
 
         m_projectType = currentProject->ProjectType();
@@ -107,10 +108,10 @@ QString ProjectSetting::tempPath() const
     return m_projectPath + "\\" + m_tempPathName;
 }
 
-//QString ProjectSetting::projectPath() const
-//{
-//    return m_projectPath;
-//}
+QString ProjectSetting::settingsFilePath() const
+{
+    return sourcePath() + "\\" + m_settingsFileName;
+}
 
 ObjectSetting *ProjectSetting::operator[](Model::ObjectType objectType)
 {
@@ -164,8 +165,4 @@ QSettings *ProjectSetting::createSettings()
     return settings;
 }
 
-QString ProjectSetting::settingsFilePath() const
-{
-    return sourcePath() + "\\" + m_settingsFileName;
-}
 
