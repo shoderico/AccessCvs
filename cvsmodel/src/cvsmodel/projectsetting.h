@@ -33,7 +33,7 @@ public:
 
     QString sourcePath() const;
     QString tempPath() const;
-    QString projectPath() const;
+//    QString projectPath() const;
 
     ObjectSetting* operator[](Model::ObjectType objectType);
 

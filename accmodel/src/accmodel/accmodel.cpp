@@ -116,8 +116,8 @@ bool AccModel::decompile(const QString &fileName, quint64 threadIdForAttachInput
             {
                 targetHwnd = GetWindowHandle(targetProcessId);
                 // this cause virus detection
-                //if (targetHwnd == NULL)
-                //    qDebug() << "GetWindowHandle(targetProcessId) failed. try again";
+                if (targetHwnd == NULL)
+                    qDebug() << "GetWindowHandle(targetProcessId) failed. try again";
             }
         }
         // find from hWnd
@@ -131,6 +131,7 @@ bool AccModel::decompile(const QString &fileName, quint64 threadIdForAttachInput
         DWORD currentThreadId = threadIdForAttachInput;
         if (!currentThreadId)
         {
+            qDebug() << "currentThreadId == NULL";
             currentThreadId = GetCurrentThreadId();
         }
 
@@ -174,14 +175,28 @@ bool AccModel::decompile(const QString &fileName, quint64 threadIdForAttachInput
                         bool found = false;
                         while (!found)
                         {
+                            qDebug() << "CurrentProject() is calling ...";
                             QAxObject *currentProject = application->querySubObject("CurrentProject()");
+                            qDebug() << "CurrentProject() has been called";
                             if (currentProject)
                             {
+                                qDebug() << "FullName is calling ...";
                                 QString fullName = currentProject->property("FullName").toString();
+                                qDebug() << "FullName has been called";
+
                                 delete currentProject;
 
                                 if (fullName.toUpper() == fileName.toUpper())
+                                {
                                     found = true;
+                                    qDebug() << "fullName == fileName";
+                                }
+                                else
+                                    qDebug() << "fullName != fileName";
+                            }
+                            else
+                            {
+                                qDebug() << "currentProject == NULL";
                             }
                         } // while (!found)
                     }

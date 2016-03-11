@@ -50,7 +50,33 @@ void ProjectSetting::initialize(Access::Application *application)
     ComPtr<Access::CurrentProject> currentProject = application->CurrentProject();
     if (currentProject.is())
     {
-        m_projectPath = currentProject->Path();
+        QString projectPath = currentProject->Path();
+        QString projectConfigFileName = currentProject->Name() + ".accesscvs";
+        QString projectConfigFilePath = projectPath + "\\" + projectConfigFileName;
+        qDebug() << projectConfigFilePath;
+        if ( QFile::exists( projectConfigFilePath ) )
+        {
+            qDebug() << " projectConfigFilePath exists ";
+            // read projectConfig file
+            //-----------------------------------
+            // sourcePathName
+            // tempPathName
+            // settingFileName
+            // projectPath : relative to currentProject->Path()
+            QSettings *config = new QSettings( projectConfigFilePath, QSettings::IniFormat, this);
+            config->setIniCodec( "UTF-8" );
+            m_sourcePathName = config->value( "SourcePathName", "source" ).toString();
+            m_tempPathName   = config->value( "TempPathName", ".accesscvs" ).toString();
+            m_settingsFileName = config->value( "SettingFileName", "project.settings" ).toString();
+            m_projectPath = QDir::cleanPath( QDir( projectPath ).filePath( config->value( "ProjectPath", "." ).toString() ) );
+            qDebug() << " m_projectPath : " + m_projectPath;
+        }
+        else
+        {
+            qDebug() << " projectConfigFilePath NOT exists ";
+            m_projectPath = currentProject->Path();
+        }
+
         m_projectType = currentProject->ProjectType();
         loadSettings();
     }
@@ -81,10 +107,10 @@ QString ProjectSetting::tempPath() const
     return m_projectPath + "\\" + m_tempPathName;
 }
 
-QString ProjectSetting::projectPath() const
-{
-    return m_projectPath;
-}
+//QString ProjectSetting::projectPath() const
+//{
+//    return m_projectPath;
+//}
 
 ObjectSetting *ProjectSetting::operator[](Model::ObjectType objectType)
 {
