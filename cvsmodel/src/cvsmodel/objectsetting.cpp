@@ -2089,6 +2089,21 @@ bool ReferenceSetting::exportFromProjectToTempDir(QAxObject *object, const QStri
         if ( !guid.isEmpty() )
             fullPath = "";
 
+        // project file reference : make it relative path
+        if ( !fullPath.isEmpty() )
+        {
+            if ( fullPath.endsWith( ".accdb", Qt::CaseInsensitive )
+                 || fullPath.endsWith( ".mdb", Qt::CaseInsensitive )
+                 || fullPath.endsWith( ".adp", Qt::CaseInsensitive )
+                 )
+            {
+                ComPtr<Access::CurrentProject> currentPoject = m_projectSetting->application()->CurrentProject();
+                QDir dir( currentPoject->Path() );
+
+                fullPath = dir.relativeFilePath( fullPath );
+            }
+        }
+
         SettingElement *element = refsElement->append("Reference");
         element->append( "BuiltIn",     builtIn );
         element->append( "Name",        name );
@@ -2277,6 +2292,17 @@ bool ReferenceSetting::importFromTempDirToProject(QAxObject *object, const QStri
             }
             else
             {
+                // project file : relative path to absolute path
+                if ( fullPath.endsWith( ".accdb", Qt::CaseInsensitive )
+                     || fullPath.endsWith( ".mdb", Qt::CaseInsensitive )
+                     || fullPath.endsWith( ".adp", Qt::CaseInsensitive )
+                     )
+                {
+                    ComPtr<Access::CurrentProject> currentPoject = m_projectSetting->application()->CurrentProject();
+                    QDir dir( currentPoject->Path() );
+                    fullPath = QDir::cleanPath( dir.filePath( fullPath ) );
+                }
+
                 ComPtr<Access::Reference> reference = references->AddFromFile(fullPath);
                 Q_UNUSED(reference)
             }
