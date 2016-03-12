@@ -43,7 +43,7 @@ int GetProcessIdList(QList<DWORD> &processIdList, const QString &targetExeName)
 {
     PROCESSENTRY32 pe;
     HANDLE hSnap;
-    WINBOOL bResult;
+    BOOL bResult;
 
     processIdList.clear();
 
