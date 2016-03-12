@@ -28,6 +28,13 @@ OUT_PWD_WNT ~= s,/,\\,g
 PWD_WNT = $${_PRO_FILE_PWD_}
 PWD_WNT ~= s,/,\\,g
 
+win32-msvc* {
+    LIB_EXT = lib
+}
+win32-g++ {
+    LIB_EXT = a
+}
+
 # message($${PWD}) # return this file's dir
 # message($${OUT_PWD}) # return caller's dir
 # message($$_PRO_FILE_PWD_) # return caller's pro dir
@@ -113,7 +120,7 @@ defineTest(includeSharedLib) {
 
     LIBS           += -L$${PROJECT_LIBRARY_DIR}/ -l$${myTARGET}
     INCLUDEPATH    += $${PROJECT_ROOT}/$${myTARGET}/src
-    PRE_TARGETDEPS += $${PROJECT_LIBRARY_DIR}/lib$${myTARGET}.a
+    PRE_TARGETDEPS += $${PROJECT_LIBRARY_DIR}/lib$${myTARGET}.$${LIB_EXT}
     export(LIBS)
     export(INCLUDEPATH)
     export(PRE_TARGETDEPS)
@@ -138,7 +145,7 @@ defineTest(includeStaticLib) {
 
     LIBS           += -L$${PROJECT_LIBRARY_DIR}/ -l$${myTARGET}
     INCLUDEPATH    += $${PROJECT_ROOT}/$${myTARGET}/src
-    PRE_TARGETDEPS += $${PROJECT_LIBRARY_DIR}/lib$${myTARGET}.a
+    PRE_TARGETDEPS += $${PROJECT_LIBRARY_DIR}/lib$${myTARGET}.$${LIB_EXT}
     export(LIBS)
     export(INCLUDEPATH)
     export(PRE_TARGETDEPS)
