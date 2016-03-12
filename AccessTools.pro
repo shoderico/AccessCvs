@@ -40,7 +40,10 @@ accesscvs.depends += resource addin \
                      cvscontroller acccontroller helpcontroller
 accesscvs.depends += resource addin \
                      helpcontroller
-
+excelcvs.depends += resource addin \
+                    excellib \
+                    util \
+                    helpcontroller
 
 # cli layer
 acccmd.depends += accmodel
