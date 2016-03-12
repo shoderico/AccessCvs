@@ -45,7 +45,7 @@
     <!--
     -->
     <StartMenuDir>AccessCvs</StartMenuDir>
-    <TargetDir>@ApplicationsDir@/AccessCvs</TargetDir>
+    <TargetDir>@RootDir@/ProgramData/AccessCvs</TargetDir>
 
     <RemoteRepositories>
         <Repository>
