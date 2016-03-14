@@ -1,4 +1,4 @@
-#include "sanitizesetting.h"
+#include "accessdesignobjectsanitizer.h"
 
 #include <QDebug>
 #include <QRegularExpression>
@@ -10,7 +10,7 @@
 #include <QByteArray>
 
 
-SanitizeSetting::SanitizeSetting(QObject *parent) : QObject(parent)
+AccessDesignObjectSanitizer::AccessDesignObjectSanitizer(QObject *parent) : QObject(parent)
 {
     QString sPattern;
 
@@ -81,14 +81,14 @@ SanitizeSetting::SanitizeSetting(QObject *parent) : QObject(parent)
     m_deviceSrc = NULL;
 }
 
-SanitizeSetting::~SanitizeSetting()
+AccessDesignObjectSanitizer::~AccessDesignObjectSanitizer()
 {
     delete m_reBlock;
     delete m_reSingleLine;
     delete m_reMultiLine;
 }
 
-void SanitizeSetting::sanitize(QTextStream &streamSrc, CodecInfo *codecSrc, QTextStream &streamDstDesign, QTextStream &streamDstModule, CodecInfo *codecDst)
+void AccessDesignObjectSanitizer::sanitize(QTextStream &streamSrc, CodecInfo *codecSrc, QTextStream &streamDstDesign, QTextStream &streamDstModule, CodecInfo *codecDst)
 {
 
     // TODO: remove trailing spaces
@@ -278,7 +278,7 @@ end_of_while:
 
 }
 
-QByteArray SanitizeSetting::blockData(const QString &elementName)
+QByteArray AccessDesignObjectSanitizer::blockData(const QString &elementName)
 {
     QByteArray data;
     if ( m_blockData.contains(elementName) )
@@ -289,7 +289,7 @@ QByteArray SanitizeSetting::blockData(const QString &elementName)
     return data;
 }
 
-QString SanitizeSetting::readLine()
+QString AccessDesignObjectSanitizer::readLine()
 {
 
     QString line;
@@ -309,7 +309,7 @@ QString SanitizeSetting::readLine()
     return line;
 }
 
-void SanitizeSetting::writeLine( QTextStream &stDesign, QTextStream &stModule, bool isCodeBehind, QString &txt, const QString &lineEnd)
+void AccessDesignObjectSanitizer::writeLine( QTextStream &stDesign, QTextStream &stModule, bool isCodeBehind, QString &txt, const QString &lineEnd)
 {
     if ( !isCodeBehind )
         stDesign << txt << lineEnd;
@@ -322,7 +322,7 @@ void SanitizeSetting::writeLine( QTextStream &stDesign, QTextStream &stModule, b
     }
 }
 
-bool SanitizeSetting::atEnd()
+bool AccessDesignObjectSanitizer::atEnd()
 {
     if (m_codecInfoSrc->codec()->name() == "Shift_JIS")
         return m_deviceSrc->atEnd();

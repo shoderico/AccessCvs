@@ -13,9 +13,9 @@
 #include "util/comptr.h"
 
 class ProjectSetting;
-class SanitizeSetting;
-class TableDefSanitizeSetting;
-class TableDataSanitizeSetting;
+class AccessDesignObjectSanitizer;
+class TableDefSanitizer;
+class TableDataSanitizer;
 class CodecInfo;
 
 class QAxObject;
@@ -170,8 +170,8 @@ public:
 protected:
     ComPtr<DAO::TableDefs> m_tableDefs;
     QStringList m_tableDataTargets;
-    TableDefSanitizeSetting *m_tableDefSanitizer;
-    TableDataSanitizeSetting *m_tableDataSanitizer;
+    TableDefSanitizer *m_tableDefSanitizer;
+    TableDataSanitizer *m_tableDataSanitizer;
 };
 
 //class TableDataSetting : public ObjectSetting
@@ -246,8 +246,8 @@ public:
     virtual void determineCodecForProject();
 
 protected:
-    virtual bool afterSanitizeTempDir(QAxObject* object, const QString &objectName, SanitizeSetting *sanitizer);
-    SanitizeSetting *m_sanitizer;
+    virtual bool afterSanitizeTempDir(QAxObject* object, const QString &objectName, AccessDesignObjectSanitizer *sanitizer);
+    AccessDesignObjectSanitizer *m_sanitizer;
 };
 
 
@@ -273,7 +273,7 @@ public:
     virtual QAxObject  *itemUnsafePtr(const QVariant &index);
     virtual bool        afterImportFromTempDirToProject(QAxObject* object, const QString &objectName);
 protected:
-    virtual bool afterSanitizeTempDir(QAxObject *object, const QString &objectName, SanitizeSetting *sanitizer);
+    virtual bool afterSanitizeTempDir(QAxObject *object, const QString &objectName, AccessDesignObjectSanitizer *sanitizer);
     ComPtr<Access::AllReports> m_objects;
     QReadWriteLock m_lock;
 };

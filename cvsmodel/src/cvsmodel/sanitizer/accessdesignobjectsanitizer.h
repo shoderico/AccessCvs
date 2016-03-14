@@ -1,7 +1,7 @@
-#ifndef SANITIZESETTING_H
-#define SANITIZESETTING_H
+#ifndef ACCESSDESIGNOBJECTSANITIZER_H
+#define ACCESSDESIGNOBJECTSANITIZER_H
 
-#include "cvsmodel_global.h"
+#include "../cvsmodel_global.h"
 
 #include <QObject>
 #include <QTextStream>
@@ -12,12 +12,12 @@ class QTextEncoder;
 
 class CodecInfo;
 
-class CVSMODEL_SHARED_EXPORT SanitizeSetting : public QObject
+class CVSMODEL_SHARED_EXPORT AccessDesignObjectSanitizer : public QObject
 {
     Q_OBJECT
 public:
-    explicit SanitizeSetting(QObject *parent = 0);
-    ~SanitizeSetting();
+    explicit AccessDesignObjectSanitizer(QObject *parent = 0);
+    ~AccessDesignObjectSanitizer();
 
     void sanitize(QTextStream &streamSrc, CodecInfo *codecSrc, QTextStream &streamDstDesign, QTextStream &streamDstModule, CodecInfo *codecDst);
     QByteArray blockData( const QString &elementName);
@@ -42,4 +42,4 @@ private:
     QMap<QString, QString> m_blockData;
 };
 
-#endif // SANITIZESETTING_H
+#endif // ACCESSDESIGNOBJECTSANITIZER_H

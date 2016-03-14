@@ -1,10 +1,10 @@
-#include "tabledatasanitizesetting.h"
+#include "tabledatasanitizer.h"
 
 #include <QRegularExpression>
 
 #include "util/codecinfo.h"
 
-TableDataSanitizeSetting::TableDataSanitizeSetting(QObject *parent) : QObject(parent)
+TableDataSanitizer::TableDataSanitizer(QObject *parent) : QObject(parent)
 {
     QString sPattern;
 
@@ -19,12 +19,12 @@ TableDataSanitizeSetting::TableDataSanitizeSetting(QObject *parent) : QObject(pa
 
 }
 
-TableDataSanitizeSetting::~TableDataSanitizeSetting()
+TableDataSanitizer::~TableDataSanitizer()
 {
     delete m_reLine;
 }
 
-void TableDataSanitizeSetting::sanitize(QTextStream &streamSrc, QTextStream &streamDst, CodecInfo *codecDst)
+void TableDataSanitizer::sanitize(QTextStream &streamSrc, QTextStream &streamDst, CodecInfo *codecDst)
 {
     bool getLine = true;
     QString txt;

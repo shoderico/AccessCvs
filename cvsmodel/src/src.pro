@@ -16,10 +16,10 @@ SOURCES += \
     cvsmodel/objectproxymodel.cpp \
     cvsmodel/objectsetting.cpp \
     cvsmodel/projectsetting.cpp \
-    cvsmodel/sanitizesetting.cpp \
-    cvsmodel/tabledatasanitizesetting.cpp \
-    cvsmodel/tabledefsanitizesetting.cpp \
-    cvsmodel/setting.cpp
+    cvsmodel/setting.cpp \
+    cvsmodel/sanitizer/accessdesignobjectsanitizer.cpp \
+    cvsmodel/sanitizer/tabledatasanitizer.cpp \
+    cvsmodel/sanitizer/tabledefsanitizer.cpp
 
 HEADERS += \
     cvsmodel/cvsmodel_global.h \
@@ -29,10 +29,10 @@ HEADERS += \
     cvsmodel/objectproxymodel.h \
     cvsmodel/objectsetting.h \
     cvsmodel/projectsetting.h \
-    cvsmodel/sanitizesetting.h \
-    cvsmodel/tabledatasanitizesetting.h \
-    cvsmodel/tabledefsanitizesetting.h \
-    cvsmodel/setting.h
+    cvsmodel/setting.h \
+    cvsmodel/sanitizer/accessdesignobjectsanitizer.h \
+    cvsmodel/sanitizer/tabledatasanitizer.h \
+    cvsmodel/sanitizer/tabledefsanitizer.h
 
 include(../../common.pri)
 include(../../submodule.pri)

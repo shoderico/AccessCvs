@@ -17,9 +17,9 @@
 #include "util/fileutil.h"
 
 #include "projectsetting.h"
-#include "sanitizesetting.h"
-#include "tabledefsanitizesetting.h"
-#include "tabledatasanitizesetting.h"
+#include "sanitizer/accessdesignobjectsanitizer.h"
+#include "sanitizer/tabledefsanitizer.h"
+#include "sanitizer/tabledatasanitizer.h"
 #include "setting.h"
 
 #include <windows.h>
@@ -307,8 +307,8 @@ void ObjectSetting::mkpathObjectPath(ObjectSetting::DirectoryType dirType)
 
 TableDefSetting::TableDefSetting(ProjectSetting *parent)
     : ObjectSetting(parent)
-    , m_tableDefSanitizer(new TableDefSanitizeSetting(this))
-    , m_tableDataSanitizer(new TableDataSanitizeSetting(this))
+    , m_tableDefSanitizer(new TableDefSanitizer(this))
+    , m_tableDataSanitizer(new TableDataSanitizer(this))
 {
     m_objectType          = Model::TableDef;
     m_accessObjectType    = Access::acTable;
@@ -1078,7 +1078,7 @@ QAxObject *AccessObjectSetting::itemUnsafePtr(const QVariant &index)
 
 AccessDesignObjectSetting::AccessDesignObjectSetting(ProjectSetting *parent)
     : AccessObjectSetting(parent)
-    , m_sanitizer(new SanitizeSetting(this))
+    , m_sanitizer(new AccessDesignObjectSanitizer(this))
 {
 }
 
@@ -1136,7 +1136,7 @@ bool AccessDesignObjectSetting::sanitizeTempDir(QAxObject *object, const QString
 
 
     // sanitize
-    SanitizeSetting sanitizer;
+    AccessDesignObjectSanitizer sanitizer;
     sanitizer.sanitize( streamSrc, m_codecForProject, streamDstDesign, streamDstModule, m_codecForCvs );
     //m_sanitizer->sanitize( streamSrc, m_codecForProject, streamDstDesign, streamDstModule, m_codecForCvs );
 
@@ -1368,7 +1368,7 @@ void AccessDesignObjectSetting::determineCodecForProject()
     }
 }
 
-bool AccessDesignObjectSetting::afterSanitizeTempDir(QAxObject *object, const QString &objectName, SanitizeSetting *sanitizer)
+bool AccessDesignObjectSetting::afterSanitizeTempDir(QAxObject *object, const QString &objectName, AccessDesignObjectSanitizer *sanitizer)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
@@ -1635,7 +1635,7 @@ bool ReportSetting::afterImportFromTempDirToProject(QAxObject *object, const QSt
     return true;
 }
 
-bool ReportSetting::afterSanitizeTempDir(QAxObject *object, const QString &objectName, SanitizeSetting *sanitizer)
+bool ReportSetting::afterSanitizeTempDir(QAxObject *object, const QString &objectName, AccessDesignObjectSanitizer *sanitizer)
 {
     Q_UNUSED(object);
 
