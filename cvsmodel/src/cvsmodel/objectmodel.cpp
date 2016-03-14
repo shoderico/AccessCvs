@@ -15,7 +15,7 @@
 #include "util/concurrentmaphelper.h"
 
 #include "projectsetting.h"
-#include "processor/objectsetting.h"
+#include "processor/objectprocessor.h"
 
 
 ObjectModel::ObjectModel(QObject * parent)

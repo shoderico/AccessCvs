@@ -384,18 +384,4 @@ private:
 };
 
 
-
-
-class VBProjectProcessor : public ProjectLevelObjectProcessor
-{
-public:
-    explicit VBProjectProcessor(ProjectSetting *parent);
-    virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
-    virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
-
-private:
-    VBIDE::VBProject *currentVBProject();
-};
-
-
 #endif // OBJECTSETTING_H

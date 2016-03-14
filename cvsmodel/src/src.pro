@@ -14,12 +14,13 @@ SOURCES += \
     cvsmodel/objectitems.cpp \
     cvsmodel/objectmodel.cpp \
     cvsmodel/objectproxymodel.cpp \
-    cvsmodel/processor/objectsetting.cpp \
     cvsmodel/projectsetting.cpp \
     cvsmodel/setting.cpp \
     cvsmodel/sanitizer/accessdesignobjectsanitizer.cpp \
     cvsmodel/sanitizer/tabledatasanitizer.cpp \
-    cvsmodel/sanitizer/tabledefsanitizer.cpp
+    cvsmodel/sanitizer/tabledefsanitizer.cpp \
+    cvsmodel/processor/objectprocessor.cpp \
+    cvsmodel/processor/vbprojectprocessor.cpp
 
 HEADERS += \
     cvsmodel/cvsmodel_global.h \
@@ -27,12 +28,13 @@ HEADERS += \
     cvsmodel/objectitems.h \
     cvsmodel/objectmodel.h \
     cvsmodel/objectproxymodel.h \
-    cvsmodel/processor/objectsetting.h \
     cvsmodel/projectsetting.h \
     cvsmodel/setting.h \
     cvsmodel/sanitizer/accessdesignobjectsanitizer.h \
     cvsmodel/sanitizer/tabledatasanitizer.h \
-    cvsmodel/sanitizer/tabledefsanitizer.h
+    cvsmodel/sanitizer/tabledefsanitizer.h \
+    cvsmodel/processor/objectprocessor.h \
+    cvsmodel/processor/vbprojectprocessor.h
 
 include(../../common.pri)
 include(../../submodule.pri)

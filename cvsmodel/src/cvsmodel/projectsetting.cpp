@@ -8,7 +8,8 @@
 #include "util/comptr.h"
 #include "util/fileutil.h"
 
-#include "processor/objectsetting.h"
+#include "processor/objectprocessor.h"
+#include "processor/vbprojectprocessor.h"
 
 
 ProjectSetting::ProjectSetting(QObject *parent)
