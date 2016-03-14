@@ -8,25 +8,25 @@
 #include "util/comptr.h"
 #include "util/fileutil.h"
 
-#include "objectsetting.h"
+#include "processor/objectsetting.h"
 
 
 ProjectSetting::ProjectSetting(QObject *parent)
     : QObject(parent)
     , m_projectType(-1)
 {
-    m_objectSettings.insert( Model::TableDef,   new TableDefSetting (this) );
+    m_objectSettings.insert( Model::TableDef,   new TableDefProcessor (this) );
 //  m_objectSettings.insert( Model::TableData,  new TableDataSetting(this) );
-//  m_objectSettings.insert( Model::Relation,   new RelationSetting (this) );
-    m_objectSettings.insert( Model::Query,      new QueryAsSqlSetting    (this) );
+//  m_objectSettings.insert( Model::Relation,   new RelationProcessor (this) );
+    m_objectSettings.insert( Model::Query,      new QueryAsSqlProcessor    (this) );
 //  m_objectSettings.insert( Model::Query,      new QueryObjectSetting(this) );
-    m_objectSettings.insert( Model::Form,       new FormSetting     (this) );
-    m_objectSettings.insert( Model::Report,     new ReportSetting   (this) );
-    m_objectSettings.insert( Model::Macro,      new MacroSetting    (this) );
-    m_objectSettings.insert( Model::Module,     new ModuleSetting   (this) );
+    m_objectSettings.insert( Model::Form,       new FormProcessor     (this) );
+    m_objectSettings.insert( Model::Report,     new ReportProcessor   (this) );
+    m_objectSettings.insert( Model::Macro,      new MacroProcessor    (this) );
+    m_objectSettings.insert( Model::Module,     new ModuleProcessor   (this) );
     m_objectSettings.insert( Model::Reference,  new ReferenceSetting(this) );
-    m_objectSettings.insert( Model::ProjectFile,  new ProjectFileSetting(this) );
-    m_objectSettings.insert( Model::VBProject,  new VBProjectSetting(this) );
+    m_objectSettings.insert( Model::ProjectFile,  new ProjectFileProcessor(this) );
+    m_objectSettings.insert( Model::VBProject,  new VBProjectProcessor(this) );
 }
 
 ProjectSetting::~ProjectSetting()
@@ -113,7 +113,7 @@ QString ProjectSetting::settingsFilePath() const
     return sourcePath() + "\\" + m_settingsFileName;
 }
 
-ObjectSetting *ProjectSetting::operator[](Model::ObjectType objectType)
+ObjectProcessor *ProjectSetting::operator[](Model::ObjectType objectType)
 {
     return m_objectSettings[ objectType ];
 }

@@ -11,7 +11,7 @@
 
 class QSettings;
 
-class ObjectSetting;
+class ObjectProcessor;
 //#include "objectsetting.h"
 
 namespace Access {
@@ -34,7 +34,7 @@ public:
     QString sourcePath() const;
     QString tempPath() const;
 
-    ObjectSetting* operator[](Model::ObjectType objectType);
+    ObjectProcessor* operator[](Model::ObjectType objectType);
 
     Access::Application *application() const;
 
@@ -51,7 +51,7 @@ private:
     QString settingsFilePath() const;
 
 private:
-    QMap<Model::ObjectType, ObjectSetting*> m_objectSettings;
+    QMap<Model::ObjectType, ObjectProcessor*> m_objectSettings;
     Access::Application *m_application;
     int m_projectType;
     QString m_projectPath;

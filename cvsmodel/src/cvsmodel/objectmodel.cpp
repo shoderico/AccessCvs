@@ -15,7 +15,7 @@
 #include "util/concurrentmaphelper.h"
 
 #include "projectsetting.h"
-#include "objectsetting.h"
+#include "processor/objectsetting.h"
 
 
 ObjectModel::ObjectModel(QObject * parent)
@@ -219,7 +219,7 @@ void ObjectModel::saveSettigs()
 {
     // save settings
     ProjectSetting setting(this);
-    ObjectSetting *os;
+    ObjectProcessor *os;
     setting.initialize(m_application);
 
     {
@@ -232,7 +232,7 @@ void ObjectModel::saveSettigs()
         }
 
         os = setting[ Model::TableDef ];
-        TableDefSetting *tableDataSetting = static_cast<TableDefSetting*>(os);
+        TableDefProcessor *tableDataSetting = static_cast<TableDefProcessor*>(os);
         tableDataSetting->setTableDataTargets( &tableDataTargets );
     }
 
@@ -1192,7 +1192,7 @@ void ObjectModel::updateItemsDifferenceByFileTime(ObjectItems *allTargets)
 
 struct UpdateItemsDifferenceAsIsFunctionObject : public BaseFunctionObject
 {
-    UpdateItemsDifferenceAsIsFunctionObject(ObjectSetting *os, Model::ObjectDifference difference, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
+    UpdateItemsDifferenceAsIsFunctionObject(ObjectProcessor *os, Model::ObjectDifference difference, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
         : BaseFunctionObject(dataChangedHelper, items)
         , m_os(os)
         , m_difference(difference)
@@ -1218,7 +1218,7 @@ struct UpdateItemsDifferenceAsIsFunctionObject : public BaseFunctionObject
         registerChanged( item );
     }
 
-    ObjectSetting *m_os;
+    ObjectProcessor *m_os;
     Model::ObjectDifference m_difference;
 };
 
@@ -1229,7 +1229,7 @@ void ObjectModel::updateItemsDifferenceAsIs(ObjectItems *allTargets)
     DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(UpdateItemsDifferenceAsIsProcess, this);
     ProjectSetting setting(this);
-    ObjectSetting *os;
+    ObjectProcessor *os;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
@@ -1281,7 +1281,7 @@ void ObjectModel::updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets
     DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(UpdateItemsCreateUpdateDateFromProjectProcess, this);
     ProjectSetting setting(this);
-    ObjectSetting *os;
+    ObjectProcessor *os;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
@@ -1315,7 +1315,7 @@ void ObjectModel::updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets
 
 struct UpdateFileTimeInTempDirFunctionObject : public BaseFunctionObject
 {
-    UpdateFileTimeInTempDirFunctionObject(ObjectSetting *os, const QDateTime &fileTime, const ObjectModel::ObjectDifferenceTypes differenceTypes, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
+    UpdateFileTimeInTempDirFunctionObject(ObjectProcessor *os, const QDateTime &fileTime, const ObjectModel::ObjectDifferenceTypes differenceTypes, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
         : BaseFunctionObject(dataChangedHelper, items)
         , m_os(os)
         , m_fileTime(fileTime)
@@ -1338,7 +1338,7 @@ struct UpdateFileTimeInTempDirFunctionObject : public BaseFunctionObject
         registerChanged( item );
     }
 
-    ObjectSetting *m_os;
+    ObjectProcessor *m_os;
     QDateTime m_fileTime;
     ObjectModel::ObjectDifferenceTypes m_differenceTypes;
 };
@@ -1349,7 +1349,7 @@ void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTi
     // non-blocking
     ProgressNotifier mainProg(UpdateFileTimeInTempDirProcess, this);
     ProjectSetting setting(this);
-    ObjectSetting *os;
+    ObjectProcessor *os;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
@@ -1414,7 +1414,7 @@ void ObjectModel::deleteItems(ObjectItems *allTargets)
 
 struct UpdateFileTimeInTempDirByExportDateFunctionObject : public BaseFunctionObject
 {
-    UpdateFileTimeInTempDirByExportDateFunctionObject(ObjectSetting *os, const ObjectModel::ObjectDifferenceTypes differenceTypes, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
+    UpdateFileTimeInTempDirByExportDateFunctionObject(ObjectProcessor *os, const ObjectModel::ObjectDifferenceTypes differenceTypes, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
         : BaseFunctionObject(dataChangedHelper, items)
         , m_os(os)
         , m_differenceTypes(differenceTypes)
@@ -1444,7 +1444,7 @@ struct UpdateFileTimeInTempDirByExportDateFunctionObject : public BaseFunctionOb
         }
     }
 
-    ObjectSetting *m_os;
+    ObjectProcessor *m_os;
     ObjectModel::ObjectDifferenceTypes m_differenceTypes;
 };
 
@@ -1454,7 +1454,7 @@ void ObjectModel::updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, c
     DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(UpdateFileTimeInTempDirByExportDateProcess, this);
     ProjectSetting setting(this);
-    ObjectSetting *os;
+    ObjectProcessor *os;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
@@ -1514,7 +1514,7 @@ void ObjectModel::loadItemsFromProject(QList<ObjectItem*> *items)
     // BLOCKING, cannot be async
     ProgressNotifier mainProg(LoadItemFromProjectProcess, this);
     ProjectSetting setting(this);
-    ObjectSetting *os;
+    ObjectProcessor *os;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes() )
@@ -1544,7 +1544,7 @@ void ObjectModel::loadItemsFromSourceDir(QList<ObjectItem*> *items)
     // FIXME: non-blocking, can be async ? require append ?
     ProgressNotifier mainProg(LoadItemFromSourceDirProcess, this);
     ProjectSetting setting(this);
-    ObjectSetting *os;
+    ObjectProcessor *os;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes() )
@@ -1703,7 +1703,7 @@ void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
 
     ProgressNotifier mainProg(ExportFromProjectToTempDirProcess, this);
     ProjectSetting setting(this);
-    ObjectSetting *os;
+    ObjectProcessor *os;
     setting.initialize(m_application);
 
     foreach ( const Model::ObjectType &objectType, setting.objectTypes() )
@@ -1733,7 +1733,7 @@ void ObjectModel::importFromTempDirToProject(ObjectItems *allTargets)
 
     ProgressNotifier mainProg(ImportFromTempDirToProjectProcess, this);
     ProjectSetting setting(this);
-    ObjectSetting *os;
+    ObjectProcessor *os;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
@@ -1787,7 +1787,7 @@ void ObjectModel::importFromTempDirToProject(ObjectItems *allTargets)
 
 struct CopyFromTempDirToSourceDirFunctionObject
 {
-    CopyFromTempDirToSourceDirFunctionObject(ObjectSetting *os)
+    CopyFromTempDirToSourceDirFunctionObject(ObjectProcessor *os)
         : m_os(os)
     {
     }
@@ -1799,7 +1799,7 @@ struct CopyFromTempDirToSourceDirFunctionObject
         m_os->copyFromTempDirToSourceDir(objectName);
     }
 
-    ObjectSetting *m_os;
+    ObjectProcessor *m_os;
 };
 
 
@@ -1808,7 +1808,7 @@ void ObjectModel::copyFromTempDirToSourceDir(ObjectItems *allTargets)
     // non-blocking
     ProgressNotifier mainProg(CopyFromTempDirToSourceDirProcess, this);
     ProjectSetting setting(this);
-    ObjectSetting *os;
+    ObjectProcessor *os;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
@@ -1846,7 +1846,7 @@ void ObjectModel::copyFromTempDirToSourceDir(ObjectItems *allTargets)
 
 struct CopyFromSourceDirToTempDirFunctionObject
 {
-    CopyFromSourceDirToTempDirFunctionObject(ObjectSetting *os)
+    CopyFromSourceDirToTempDirFunctionObject(ObjectProcessor *os)
         : m_os(os)
     {
     }
@@ -1858,7 +1858,7 @@ struct CopyFromSourceDirToTempDirFunctionObject
         m_os->copyFromSourceDirToTempDir(objectName);
     }
 
-    ObjectSetting *m_os;
+    ObjectProcessor *m_os;
 };
 
 void ObjectModel::copyFromSourceDirToTempDir(ObjectItems *allTargets)
@@ -1866,7 +1866,7 @@ void ObjectModel::copyFromSourceDirToTempDir(ObjectItems *allTargets)
     // non-blocking
     ProgressNotifier mainProg(CopyFromSourceDirToTempDirProcess, this);
     ProjectSetting setting(this);
-    ObjectSetting *os;
+    ObjectProcessor *os;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
@@ -1903,7 +1903,7 @@ void ObjectModel::copyFromSourceDirToTempDir(ObjectItems *allTargets)
 
 struct SanitizeTempDirFunctionObject
 {
-    SanitizeTempDirFunctionObject(ObjectSetting *os)
+    SanitizeTempDirFunctionObject(ObjectProcessor *os)
         : m_os(os)
     {
     }
@@ -1915,7 +1915,7 @@ struct SanitizeTempDirFunctionObject
         m_os->sanitizeTempDir(NULL, objectName);
     }
 
-    ObjectSetting *m_os;
+    ObjectProcessor *m_os;
 };
 
 void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
@@ -1923,7 +1923,7 @@ void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
     // non-blocking
     ProgressNotifier mainProg(SanitizeTempDirProcess, this);
     ProjectSetting setting(this);
-    ObjectSetting *os;
+    ObjectProcessor *os;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
@@ -1959,7 +1959,7 @@ void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
 
 struct DesanitizeTempDirFunctionObject
 {
-    DesanitizeTempDirFunctionObject(ObjectSetting *os)
+    DesanitizeTempDirFunctionObject(ObjectProcessor *os)
         : m_os(os)
     {
     }
@@ -1971,7 +1971,7 @@ struct DesanitizeTempDirFunctionObject
         m_os->desanitizeTempDir(NULL, objectName);
     }
 
-    ObjectSetting *m_os;
+    ObjectProcessor *m_os;
 };
 
 void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
@@ -1979,7 +1979,7 @@ void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
     // non-blocking
     ProgressNotifier mainProg(DesanitizeTempDirProcess, this);
     ProjectSetting setting(this);
-    ObjectSetting *os;
+    ObjectProcessor *os;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
@@ -2018,7 +2018,7 @@ void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
 
 struct CompareTempDirFunctionObject : public BaseFunctionObject
 {
-    CompareTempDirFunctionObject(ObjectSetting *os, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
+    CompareTempDirFunctionObject(ObjectProcessor *os, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
         : BaseFunctionObject(dataChangedHelper, items)
         , m_os(os)
     {
@@ -2043,7 +2043,7 @@ struct CompareTempDirFunctionObject : public BaseFunctionObject
         }
     }
 
-    ObjectSetting *m_os;
+    ObjectProcessor *m_os;
 };
 
 
@@ -2053,7 +2053,7 @@ void ObjectModel::compareTempDir(ObjectItems *allTargets)
     DataChangedHelper helper( m_items.count() );
     ProgressNotifier mainProg(CompareTempDirProcess, this);
     ProjectSetting setting(this);
-    ObjectSetting *os;
+    ObjectProcessor *os;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
@@ -2109,7 +2109,7 @@ void ObjectModel::compareTempDir(ObjectItems *allTargets)
 
 struct DeleteFromSourceDirFunctionObject
 {
-    DeleteFromSourceDirFunctionObject(ObjectSetting *os)
+    DeleteFromSourceDirFunctionObject(ObjectProcessor *os)
         : m_os(os)
     {
     }
@@ -2121,7 +2121,7 @@ struct DeleteFromSourceDirFunctionObject
         m_os->deleteFromSourceDir(objectName);
     }
 
-    ObjectSetting *m_os;
+    ObjectProcessor *m_os;
 };
 
 
@@ -2130,7 +2130,7 @@ void ObjectModel::deleteFromSourceDir(ObjectItems *allTargets)
     // non-blocking
     ProgressNotifier mainProg(DeleteFromSourceDirProcess, this);
     ProjectSetting setting(this);
-    ObjectSetting *os;
+    ObjectProcessor *os;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
@@ -2169,7 +2169,7 @@ void ObjectModel::deleteFromProject(ObjectItems *allTargets)
 
     ProgressNotifier mainProg(DeleteFromProjectProcess, this);
     ProjectSetting setting(this);
-    ObjectSetting *os;
+    ObjectProcessor *os;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
@@ -2192,7 +2192,7 @@ void ObjectModel::deleteFromProject(ObjectItems *allTargets)
 
 struct DeleteFromTempDirFunctionObject
 {
-    DeleteFromTempDirFunctionObject(ObjectSetting *os)
+    DeleteFromTempDirFunctionObject(ObjectProcessor *os)
         : m_os(os)
     {
     }
@@ -2204,7 +2204,7 @@ struct DeleteFromTempDirFunctionObject
         m_os->deleteFromTempDir(objectName);
     }
 
-    ObjectSetting *m_os;
+    ObjectProcessor *m_os;
 };
 
 void ObjectModel::deleteFromTempDir(ObjectItems *allTargets)
@@ -2212,7 +2212,7 @@ void ObjectModel::deleteFromTempDir(ObjectItems *allTargets)
     // non-blocking
     ProgressNotifier mainProg(DeleteFromTempDirProcess, this);
     ProjectSetting setting(this);
-    ObjectSetting *os;
+    ObjectProcessor *os;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())

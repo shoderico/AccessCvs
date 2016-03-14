@@ -16,16 +16,16 @@
 #include "util/codecinfo.h"
 #include "util/fileutil.h"
 
-#include "projectsetting.h"
-#include "sanitizer/accessdesignobjectsanitizer.h"
-#include "sanitizer/tabledefsanitizer.h"
-#include "sanitizer/tabledatasanitizer.h"
-#include "setting.h"
+#include "cvsmodel/projectsetting.h"
+#include "cvsmodel/sanitizer/accessdesignobjectsanitizer.h"
+#include "cvsmodel/sanitizer/tabledefsanitizer.h"
+#include "cvsmodel/sanitizer/tabledatasanitizer.h"
+#include "cvsmodel/setting.h"
 
 #include <windows.h>
 #include <wingdi.h>
 
-ObjectSetting::ObjectSetting(ProjectSetting *parent)
+ObjectProcessor::ObjectProcessor(ProjectSetting *parent)
     : QObject(parent)
     , m_projectSetting(parent)
     , m_codecForCvs(new CodecInfo(this))
@@ -37,29 +37,29 @@ ObjectSetting::ObjectSetting(ProjectSetting *parent)
 }
 
 
-QString ObjectSetting::sourceObjectPath() const
+QString ObjectProcessor::sourceObjectPath() const
 {
     return objectPath(SourceDir);
 }
 
-QString ObjectSetting::tempObjectPath() const
+QString ObjectProcessor::tempObjectPath() const
 {
     return objectPath(TempDir);
 }
 
-void ObjectSetting::mkdirTempObjectPath()
+void ObjectProcessor::mkdirTempObjectPath()
 {
     mkpathObjectPath(TempDir);
 }
 
-void ObjectSetting::mkdirSourceObjectPath()
+void ObjectProcessor::mkdirSourceObjectPath()
 {
     mkpathObjectPath(SourceDir);
 }
 
 
 
-ObjectItem *ObjectSetting::createItemFromSourceDir(QFileInfo &fileInfo, QObject *parent)
+ObjectItem *ObjectProcessor::createItemFromSourceDir(QFileInfo &fileInfo, QObject *parent)
 {
     ObjectItem *item = new ObjectItem(parent);
 
@@ -70,14 +70,14 @@ ObjectItem *ObjectSetting::createItemFromSourceDir(QFileInfo &fileInfo, QObject 
     return item;
 }
 
-bool ObjectSetting::afterImportFromTempDirToProject(QAxObject *object, const QString &objectName)
+bool ObjectProcessor::afterImportFromTempDirToProject(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
     return true;
 }
 
-bool ObjectSetting::copyFromTempDirToSourceDir(const QString &objectName)
+bool ObjectProcessor::copyFromTempDirToSourceDir(const QString &objectName)
 {
     deleteAllFileFromSourceDir(objectName);
     copyFile(TempDir, SourceDir, DesignFile, objectName);
@@ -87,7 +87,7 @@ bool ObjectSetting::copyFromTempDirToSourceDir(const QString &objectName)
     return true;
 }
 
-bool ObjectSetting::copyFromSourceDirToTempDir(const QString &objectName)
+bool ObjectProcessor::copyFromSourceDirToTempDir(const QString &objectName)
 {
     deleteAllFileFromTempDir(objectName);
     copyFile(SourceDir, TempDir, DesignFile, objectName);
@@ -97,7 +97,7 @@ bool ObjectSetting::copyFromSourceDirToTempDir(const QString &objectName)
     return true;
 }
 
-bool ObjectSetting::compareTempDir(const QString &objectName, bool *pisDifferent)
+bool ObjectProcessor::compareTempDir(const QString &objectName, bool *pisDifferent)
 {
     bool isSame = true;
 
@@ -135,13 +135,13 @@ bool ObjectSetting::compareTempDir(const QString &objectName, bool *pisDifferent
     return true;
 }
 
-bool ObjectSetting::deleteFromSourceDir(const QString &objectName)
+bool ObjectProcessor::deleteFromSourceDir(const QString &objectName)
 {
     deleteAllFileFromSourceDir(objectName);
     return true;
 }
 
-bool ObjectSetting::deleteFromProject(const QString &objectName)
+bool ObjectProcessor::deleteFromProject(const QString &objectName)
 {
     // TODO: cache DoCmd object
     if (m_accessObjectType != -1)
@@ -152,27 +152,27 @@ bool ObjectSetting::deleteFromProject(const QString &objectName)
     return true;
 }
 
-bool ObjectSetting::deleteFromTempDir(const QString &objectName)
+bool ObjectProcessor::deleteFromTempDir(const QString &objectName)
 {
     deleteAllFileFromTempDir(objectName);
     return true;
 }
 
-bool ObjectSetting::prepareItemCollection()
+bool ObjectProcessor::prepareItemCollection()
 {
     // in subclass, override this function
     // and prepare collection object to call Count() and Item().
     return true;
 }
 
-int ObjectSetting::itemCount()
+int ObjectProcessor::itemCount()
 {
     // in subclass, override this function
     // and return the value of Count().
     return 0;
 }
 
-QAxObject *ObjectSetting::itemUnsafePtr(const QVariant &index)
+QAxObject *ObjectProcessor::itemUnsafePtr(const QVariant &index)
 {
     // in subclass, override this function
     // and return QAxObject pointer.
@@ -181,19 +181,19 @@ QAxObject *ObjectSetting::itemUnsafePtr(const QVariant &index)
     return NULL;
 }
 
-void ObjectSetting::updateFileTimeInTempDir(const QString &objectName, const QDateTime &fileTime)
+void ObjectProcessor::updateFileTimeInTempDir(const QString &objectName, const QDateTime &fileTime)
 {
     FileUtil::setFileTime( filePath(TempDir, TempFile,     objectName), fileTime, fileTime );
     FileUtil::setFileTime( filePath(TempDir, DataTempFile, objectName), fileTime, fileTime );
 }
 
-void ObjectSetting::determineCodecForProject()
+void ObjectProcessor::determineCodecForProject()
 {
     // do nothing here.
     // if m_codecForProject is requred, override this function in subclass
 }
 
-bool ObjectSetting::deleteCvsFileFromTempDir(const QString &objectName)
+bool ObjectProcessor::deleteCvsFileFromTempDir(const QString &objectName)
 {
     deleteFile(TempDir, DesignFile, objectName);
     deleteFile(TempDir, ModuleFile, objectName);
@@ -202,21 +202,21 @@ bool ObjectSetting::deleteCvsFileFromTempDir(const QString &objectName)
     return true;
 }
 
-bool ObjectSetting::deleteTempFileFromTempDir(const QString &objectName)
+bool ObjectProcessor::deleteTempFileFromTempDir(const QString &objectName)
 {
     deleteFile(TempDir, TempFile,     objectName);
     deleteFile(TempDir, DataTempFile, objectName);
     return true;
 }
 
-bool ObjectSetting::deleteAllFileFromTempDir(const QString &objectName)
+bool ObjectProcessor::deleteAllFileFromTempDir(const QString &objectName)
 {
     deleteTempFileFromTempDir(objectName);
     deleteCvsFileFromTempDir(objectName);
     return true;
 }
 
-bool ObjectSetting::deleteAllFileFromSourceDir(const QString &objectName)
+bool ObjectProcessor::deleteAllFileFromSourceDir(const QString &objectName)
 {
     deleteFile(SourceDir, DesignFile, objectName);
     deleteFile(SourceDir, ModuleFile, objectName);
@@ -229,7 +229,7 @@ bool ObjectSetting::deleteAllFileFromSourceDir(const QString &objectName)
 
 
 
-bool ObjectSetting::copyFile(ObjectSetting::DirectoryType dirTypeSrc, ObjectSetting::DirectoryType dirTypeDst, ObjectSetting::FileType fileType, const QString &objectName)
+bool ObjectProcessor::copyFile(ObjectProcessor::DirectoryType dirTypeSrc, ObjectProcessor::DirectoryType dirTypeDst, ObjectProcessor::FileType fileType, const QString &objectName)
 {
     if (!fileExtension(fileType).isEmpty())
     {
@@ -243,7 +243,7 @@ bool ObjectSetting::copyFile(ObjectSetting::DirectoryType dirTypeSrc, ObjectSett
     return true;
 }
 
-bool ObjectSetting::deleteFile(ObjectSetting::DirectoryType dirType, ObjectSetting::FileType fileType, const QString &objectName)
+bool ObjectProcessor::deleteFile(ObjectProcessor::DirectoryType dirType, ObjectProcessor::FileType fileType, const QString &objectName)
 {
     if (!fileExtension(fileType).isEmpty())
         FileUtil::deleteFile( filePath(dirType, fileType, objectName) );
@@ -258,7 +258,7 @@ bool ObjectSetting::deleteFile(ObjectSetting::DirectoryType dirType, ObjectSetti
 
 
 
-QString ObjectSetting::rootPath(ObjectSetting::DirectoryType dirType) const
+QString ObjectProcessor::rootPath(ObjectProcessor::DirectoryType dirType) const
 {
     switch (dirType)
     {
@@ -268,7 +268,7 @@ QString ObjectSetting::rootPath(ObjectSetting::DirectoryType dirType) const
     return QString();
 }
 
-QString ObjectSetting::objectPath(ObjectSetting::DirectoryType dirType) const
+QString ObjectProcessor::objectPath(ObjectProcessor::DirectoryType dirType) const
 {
     QString path = rootPath(dirType);
     if ( !m_objectPathName.isEmpty() )
@@ -276,7 +276,7 @@ QString ObjectSetting::objectPath(ObjectSetting::DirectoryType dirType) const
     return path;
 }
 
-QString ObjectSetting::fileExtension(ObjectSetting::FileType fileType) const
+QString ObjectProcessor::fileExtension(ObjectProcessor::FileType fileType) const
 {
     switch (fileType)
     {
@@ -290,12 +290,12 @@ QString ObjectSetting::fileExtension(ObjectSetting::FileType fileType) const
     return QString();
 }
 
-QString ObjectSetting::filePath(ObjectSetting::DirectoryType dirType, ObjectSetting::FileType fileType, const QString &objectName) const
+QString ObjectProcessor::filePath(ObjectProcessor::DirectoryType dirType, ObjectProcessor::FileType fileType, const QString &objectName) const
 {
     return objectPath(dirType) + "\\" + objectName + "." + fileExtension(fileType);
 }
 
-void ObjectSetting::mkpathObjectPath(ObjectSetting::DirectoryType dirType)
+void ObjectProcessor::mkpathObjectPath(ObjectProcessor::DirectoryType dirType)
 {
     QDir dir( objectPath(dirType) );
     dir.mkpath(".");
@@ -305,8 +305,8 @@ void ObjectSetting::mkpathObjectPath(ObjectSetting::DirectoryType dirType)
 //=============================================================================
 // TableDef
 
-TableDefSetting::TableDefSetting(ProjectSetting *parent)
-    : ObjectSetting(parent)
+TableDefProcessor::TableDefProcessor(ProjectSetting *parent)
+    : ObjectProcessor(parent)
     , m_tableDefSanitizer(new TableDefSanitizer(this))
     , m_tableDataSanitizer(new TableDataSanitizer(this))
 {
@@ -324,7 +324,7 @@ TableDefSetting::TableDefSetting(ProjectSetting *parent)
     m_dataFileExtension     = "dat";
 }
 
-bool TableDefSetting::isTargetObject(QAxObject *object) const
+bool TableDefProcessor::isTargetObject(QAxObject *object) const
 {
     DAO::TableDef *tableDef = dynamic_cast<DAO::TableDef*>(object);
     if (tableDef)
@@ -335,7 +335,7 @@ bool TableDefSetting::isTargetObject(QAxObject *object) const
     return false;
 }
 
-ObjectItem *TableDefSetting::createItemFromProject(QAxObject *object, QObject *parent)
+ObjectItem *TableDefProcessor::createItemFromProject(QAxObject *object, QObject *parent)
 {
     ObjectItem *item = new ObjectItem(parent);
 
@@ -354,9 +354,9 @@ ObjectItem *TableDefSetting::createItemFromProject(QAxObject *object, QObject *p
     return item;
 }
 
-ObjectItem *TableDefSetting::createItemFromSourceDir(QFileInfo &fileInfo, QObject *parent)
+ObjectItem *TableDefProcessor::createItemFromSourceDir(QFileInfo &fileInfo, QObject *parent)
 {
-    ObjectItem *item = ObjectSetting::createItemFromSourceDir(fileInfo, parent);
+    ObjectItem *item = ObjectProcessor::createItemFromSourceDir(fileInfo, parent);
     if (item)
     {
         item->setHasData( m_tableDataTargets.contains( item->name() ) );
@@ -364,7 +364,7 @@ ObjectItem *TableDefSetting::createItemFromSourceDir(QFileInfo &fileInfo, QObjec
     return item;
 }
 
-bool TableDefSetting::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
+bool TableDefProcessor::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
 {
     deleteAllFileFromTempDir(objectName);
 
@@ -407,7 +407,7 @@ bool TableDefSetting::exportFromProjectToTempDir(QAxObject *object, const QStrin
     return false;
 }
 
-bool TableDefSetting::importFromTempDirToProject(QAxObject *object, const QString &objectName)
+bool TableDefProcessor::importFromTempDirToProject(QAxObject *object, const QString &objectName)
 {
     if (object)
     {
@@ -441,7 +441,7 @@ bool TableDefSetting::importFromTempDirToProject(QAxObject *object, const QStrin
     return false;
 }
 
-bool TableDefSetting::sanitizeTempDir(QAxObject *object, const QString &objectName)
+bool TableDefProcessor::sanitizeTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
 
@@ -525,7 +525,7 @@ bool TableDefSetting::sanitizeTempDir(QAxObject *object, const QString &objectNa
     return true;
 }
 
-bool TableDefSetting::desanitizeTempDir(QAxObject *object, const QString &objectName)
+bool TableDefProcessor::desanitizeTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
 
@@ -548,7 +548,7 @@ bool TableDefSetting::desanitizeTempDir(QAxObject *object, const QString &object
     return true;
 }
 
-bool TableDefSetting::prepareItemCollection()
+bool TableDefProcessor::prepareItemCollection()
 {
     if (!m_projectSetting->isMDB())
         return false;
@@ -561,21 +561,21 @@ bool TableDefSetting::prepareItemCollection()
     return m_tableDefs.is();
 }
 
-int TableDefSetting::itemCount()
+int TableDefProcessor::itemCount()
 {
     if (!m_tableDefs.is())
         return 0;
     return m_tableDefs->Count();
 }
 
-QAxObject *TableDefSetting::itemUnsafePtr(const QVariant &index)
+QAxObject *TableDefProcessor::itemUnsafePtr(const QVariant &index)
 {
     if (!m_tableDefs.is())
         return 0;
     return m_tableDefs->Item(index);
 }
 
-void TableDefSetting::loadSettings(QSettings *settings)
+void TableDefProcessor::loadSettings(QSettings *settings)
 {
     Q_UNUSED(settings)
 
@@ -669,7 +669,7 @@ void TableDefSetting::loadSettings(QSettings *settings)
     }
 }
 
-void TableDefSetting::saveSettings(QSettings *settings)
+void TableDefProcessor::saveSettings(QSettings *settings)
 {
     Q_UNUSED(settings)
 
@@ -733,14 +733,14 @@ void TableDefSetting::saveSettings(QSettings *settings)
     setting.save();
 }
 
-void TableDefSetting::setTableDataTargets(QStringList *newTargets)
+void TableDefProcessor::setTableDataTargets(QStringList *newTargets)
 {
     m_tableDataTargets.clear();
     for ( QStringList::iterator it = newTargets->begin() ; it != newTargets->end() ; ++it )
         m_tableDataTargets.append( (*it) );
 }
 
-void TableDefSetting::determineCodecForProject()
+void TableDefProcessor::determineCodecForProject()
 {
     if (!m_codecForProject)
     {
@@ -775,8 +775,8 @@ void TableDefSetting::determineCodecForProject()
 // Relation
 // TODO: imeplement relationship export/import
 
-RelationSetting::RelationSetting(ProjectSetting *parent)
-    : ObjectSetting(parent)
+RelationProcessor::RelationProcessor(ProjectSetting *parent)
+    : ObjectProcessor(parent)
 {
     m_objectType          = Model::Relation;
     m_accessObjectType    = -1;
@@ -791,10 +791,10 @@ RelationSetting::RelationSetting(ProjectSetting *parent)
 
 
 //=============================================================================
-// QueryAsSqlSetting
+// QueryAsSqlProcessor
 
-QueryAsSqlSetting::QueryAsSqlSetting(ProjectSetting *parent)
-    : ObjectSetting(parent)
+QueryAsSqlProcessor::QueryAsSqlProcessor(ProjectSetting *parent)
+    : ObjectProcessor(parent)
 {
     m_objectType          = Model::Query;
     m_accessObjectType    = Access::acQuery;
@@ -807,7 +807,7 @@ QueryAsSqlSetting::QueryAsSqlSetting(ProjectSetting *parent)
     m_existCheckExtension = m_tempFileExtension;
 }
 
-bool QueryAsSqlSetting::isTargetObject(QAxObject *object) const
+bool QueryAsSqlProcessor::isTargetObject(QAxObject *object) const
 {
     DAO::QueryDef *queryDef = dynamic_cast<DAO::QueryDef*>(object);
     if (queryDef)
@@ -817,7 +817,7 @@ bool QueryAsSqlSetting::isTargetObject(QAxObject *object) const
     return false;
 }
 
-ObjectItem *QueryAsSqlSetting::createItemFromProject(QAxObject *object, QObject *parent)
+ObjectItem *QueryAsSqlProcessor::createItemFromProject(QAxObject *object, QObject *parent)
 {
     ObjectItem *item = new ObjectItem(parent);
 
@@ -835,7 +835,7 @@ ObjectItem *QueryAsSqlSetting::createItemFromProject(QAxObject *object, QObject 
     return item;
 }
 
-bool QueryAsSqlSetting::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
+bool QueryAsSqlProcessor::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
 {
     deleteAllFileFromTempDir(objectName);
 
@@ -850,7 +850,7 @@ bool QueryAsSqlSetting::exportFromProjectToTempDir(QAxObject *object, const QStr
     return false;
 }
 
-bool QueryAsSqlSetting::importFromTempDirToProject(QAxObject *object, const QString &objectName)
+bool QueryAsSqlProcessor::importFromTempDirToProject(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
@@ -880,7 +880,7 @@ bool QueryAsSqlSetting::importFromTempDirToProject(QAxObject *object, const QStr
     return true;
 }
 
-bool QueryAsSqlSetting::sanitizeTempDir(QAxObject *object, const QString &objectName)
+bool QueryAsSqlProcessor::sanitizeTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
@@ -888,7 +888,7 @@ bool QueryAsSqlSetting::sanitizeTempDir(QAxObject *object, const QString &object
     return true;
 }
 
-bool QueryAsSqlSetting::desanitizeTempDir(QAxObject *object, const QString &objectName)
+bool QueryAsSqlProcessor::desanitizeTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
@@ -896,7 +896,7 @@ bool QueryAsSqlSetting::desanitizeTempDir(QAxObject *object, const QString &obje
     return true;
 }
 
-bool QueryAsSqlSetting::prepareItemCollection()
+bool QueryAsSqlProcessor::prepareItemCollection()
 {
     if (!m_projectSetting->isMDB())
         return false;
@@ -909,14 +909,14 @@ bool QueryAsSqlSetting::prepareItemCollection()
     return m_queryDefs.is();
 }
 
-int QueryAsSqlSetting::itemCount()
+int QueryAsSqlProcessor::itemCount()
 {
     if (!m_queryDefs.is())
         return 0;
     return m_queryDefs->Count();
 }
 
-QAxObject *QueryAsSqlSetting::itemUnsafePtr(const QVariant &index)
+QAxObject *QueryAsSqlProcessor::itemUnsafePtr(const QVariant &index)
 {
     if (!m_queryDefs.is())
         return 0;
@@ -926,7 +926,7 @@ QAxObject *QueryAsSqlSetting::itemUnsafePtr(const QVariant &index)
 
 
 //=============================================================================
-// QueryAsObjectSetting
+// QueryAsObjectProcessor
 // NOTE: this class is export/import by SaveAsText/LoadFromText.
 //       this class is implemented to solve the problem that
 //       "join-on criterias are always different between import and export".
@@ -938,12 +938,12 @@ QAxObject *QueryAsSqlSetting::itemUnsafePtr(const QVariant &index)
 //        this problem cannot be solved simply.
 //        we set it as Known Issue.
 //
-QueryAsObjectSetting::QueryAsObjectSetting(ProjectSetting *parent)
-    : QueryAsSqlSetting(parent)
+QueryAsObjectProcessor::QueryAsObjectProcessor(ProjectSetting *parent)
+    : QueryAsSqlProcessor(parent)
 {
 }
 
-bool QueryAsObjectSetting::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
+bool QueryAsObjectProcessor::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
 {
     deleteAllFileFromTempDir(objectName);
 
@@ -954,7 +954,7 @@ bool QueryAsObjectSetting::exportFromProjectToTempDir(QAxObject *object, const Q
     }
 }
 
-bool QueryAsObjectSetting::importFromTempDirToProject(QAxObject *object, const QString &objectName)
+bool QueryAsObjectProcessor::importFromTempDirToProject(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     {
@@ -969,12 +969,12 @@ bool QueryAsObjectSetting::importFromTempDirToProject(QAxObject *object, const Q
 //=============================================================================
 // AccessObject
 
-AccessObjectSetting::AccessObjectSetting(ProjectSetting *parent)
-    : ObjectSetting(parent)
+AccessObjectProcessor::AccessObjectProcessor(ProjectSetting *parent)
+    : ObjectProcessor(parent)
 {
 }
 
-bool AccessObjectSetting::isTargetObject(QAxObject *object) const
+bool AccessObjectProcessor::isTargetObject(QAxObject *object) const
 {
     DAO::Document *document = dynamic_cast<DAO::Document*>(object);
     if (document)
@@ -991,7 +991,7 @@ bool AccessObjectSetting::isTargetObject(QAxObject *object) const
     return false;
 }
 
-ObjectItem *AccessObjectSetting::createItemFromProject(QAxObject *object, QObject *parent)
+ObjectItem *AccessObjectProcessor::createItemFromProject(QAxObject *object, QObject *parent)
 {
     ObjectItem *item = new ObjectItem(parent);
 
@@ -1020,7 +1020,7 @@ ObjectItem *AccessObjectSetting::createItemFromProject(QAxObject *object, QObjec
     return item;
 }
 
-bool AccessObjectSetting::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
+bool AccessObjectProcessor::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
 {
     deleteAllFileFromTempDir(objectName);
 
@@ -1032,7 +1032,7 @@ bool AccessObjectSetting::exportFromProjectToTempDir(QAxObject *object, const QS
     return false;
 }
 
-bool AccessObjectSetting::importFromTempDirToProject(QAxObject *object, const QString &objectName)
+bool AccessObjectProcessor::importFromTempDirToProject(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     {
@@ -1043,7 +1043,7 @@ bool AccessObjectSetting::importFromTempDirToProject(QAxObject *object, const QS
     return true;
 }
 
-bool AccessObjectSetting::prepareItemCollection()
+bool AccessObjectProcessor::prepareItemCollection()
 {
     if (!m_projectSetting->isMDB())
         return false;
@@ -1058,14 +1058,14 @@ bool AccessObjectSetting::prepareItemCollection()
     return m_documents.is();
 }
 
-int AccessObjectSetting::itemCount()
+int AccessObjectProcessor::itemCount()
 {
     if (!m_documents.is())
         return 0;
     return m_documents->Count();
 }
 
-QAxObject *AccessObjectSetting::itemUnsafePtr(const QVariant &index)
+QAxObject *AccessObjectProcessor::itemUnsafePtr(const QVariant &index)
 {
     if (!m_documents.is())
         return 0;
@@ -1074,15 +1074,15 @@ QAxObject *AccessObjectSetting::itemUnsafePtr(const QVariant &index)
 
 
 //=============================================================================
-// AccessDesignObjectSetting
+// AccessDesignObjectProcessor
 
-AccessDesignObjectSetting::AccessDesignObjectSetting(ProjectSetting *parent)
-    : AccessObjectSetting(parent)
+AccessDesignObjectProcessor::AccessDesignObjectProcessor(ProjectSetting *parent)
+    : AccessObjectProcessor(parent)
     , m_sanitizer(new AccessDesignObjectSanitizer(this))
 {
 }
 
-bool AccessDesignObjectSetting::sanitizeTempDir(QAxObject *object, const QString &objectName)
+bool AccessDesignObjectProcessor::sanitizeTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
@@ -1181,7 +1181,7 @@ bool AccessDesignObjectSetting::sanitizeTempDir(QAxObject *object, const QString
     return true;
 }
 
-bool AccessDesignObjectSetting::desanitizeTempDir(QAxObject *object, const QString &objectName)
+bool AccessDesignObjectProcessor::desanitizeTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
@@ -1301,7 +1301,7 @@ bool AccessDesignObjectSetting::desanitizeTempDir(QAxObject *object, const QStri
     return true;
 }
 
-void AccessDesignObjectSetting::determineCodecForProject()
+void AccessDesignObjectProcessor::determineCodecForProject()
 {
     if (!m_codecForProject)
     {
@@ -1368,7 +1368,7 @@ void AccessDesignObjectSetting::determineCodecForProject()
     }
 }
 
-bool AccessDesignObjectSetting::afterSanitizeTempDir(QAxObject *object, const QString &objectName, AccessDesignObjectSanitizer *sanitizer)
+bool AccessDesignObjectProcessor::afterSanitizeTempDir(QAxObject *object, const QString &objectName, AccessDesignObjectSanitizer *sanitizer)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
@@ -1380,8 +1380,8 @@ bool AccessDesignObjectSetting::afterSanitizeTempDir(QAxObject *object, const QS
 //=============================================================================
 // Form
 
-FormSetting::FormSetting(ProjectSetting *parent)
-    : AccessDesignObjectSetting(parent)
+FormProcessor::FormProcessor(ProjectSetting *parent)
+    : AccessDesignObjectProcessor(parent)
 {
     m_objectType          = Model::Form;
     m_accessObjectType    = Access::acForm;
@@ -1394,10 +1394,10 @@ FormSetting::FormSetting(ProjectSetting *parent)
     m_existCheckExtension = m_designFileExtension;
 }
 
-bool FormSetting::prepareItemCollection()
+bool FormProcessor::prepareItemCollection()
 {
     if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
-        return AccessDesignObjectSetting::prepareItemCollection();
+        return AccessDesignObjectProcessor::prepareItemCollection();
 
     ComPtr<Access::CurrentProject> currentProject = m_projectSetting->application()->CurrentProject();
     m_objects.set( currentProject->AllForms() );
@@ -1405,20 +1405,20 @@ bool FormSetting::prepareItemCollection()
     return m_objects.is();
 }
 
-int FormSetting::itemCount()
+int FormProcessor::itemCount()
 {
     if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
-        return AccessDesignObjectSetting::itemCount();
+        return AccessDesignObjectProcessor::itemCount();
 
     if (!m_objects.is())
         return 0;
     return m_objects->Count();
 }
 
-QAxObject *FormSetting::itemUnsafePtr(const QVariant &index)
+QAxObject *FormProcessor::itemUnsafePtr(const QVariant &index)
 {
     if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
-        return AccessDesignObjectSetting::itemUnsafePtr(index);
+        return AccessDesignObjectProcessor::itemUnsafePtr(index);
 
     if (!m_objects.is())
         return 0;
@@ -1429,8 +1429,8 @@ QAxObject *FormSetting::itemUnsafePtr(const QVariant &index)
 //=============================================================================
 // Report
 
-ReportSetting::ReportSetting(ProjectSetting *parent)
-    : AccessDesignObjectSetting(parent)
+ReportProcessor::ReportProcessor(ProjectSetting *parent)
+    : AccessDesignObjectProcessor(parent)
 {
     m_objectType          = Model::Report;
     m_accessObjectType    = Access::acReport;
@@ -1445,10 +1445,10 @@ ReportSetting::ReportSetting(ProjectSetting *parent)
     m_reportPropFileExtension = "rpp";
 }
 
-bool ReportSetting::prepareItemCollection()
+bool ReportProcessor::prepareItemCollection()
 {
     if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
-        return AccessDesignObjectSetting::prepareItemCollection();
+        return AccessDesignObjectProcessor::prepareItemCollection();
 
     ComPtr<Access::CurrentProject> currentProject = m_projectSetting->application()->CurrentProject();
     m_objects.set( currentProject->AllReports() );
@@ -1456,27 +1456,27 @@ bool ReportSetting::prepareItemCollection()
     return m_objects.is();
 }
 
-int ReportSetting::itemCount()
+int ReportProcessor::itemCount()
 {
     if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
-        return AccessDesignObjectSetting::itemCount();
+        return AccessDesignObjectProcessor::itemCount();
 
     if (!m_objects.is())
         return 0;
     return m_objects->Count();
 }
 
-QAxObject *ReportSetting::itemUnsafePtr(const QVariant &index)
+QAxObject *ReportProcessor::itemUnsafePtr(const QVariant &index)
 {
     if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
-        return AccessDesignObjectSetting::itemUnsafePtr(index);
+        return AccessDesignObjectProcessor::itemUnsafePtr(index);
 
     if (!m_objects.is())
         return 0;
     return m_objects->Item(index);
 }
 
-bool ReportSetting::afterImportFromTempDirToProject(QAxObject *object, const QString &objectName)
+bool ReportProcessor::afterImportFromTempDirToProject(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
 
@@ -1635,7 +1635,7 @@ bool ReportSetting::afterImportFromTempDirToProject(QAxObject *object, const QSt
     return true;
 }
 
-bool ReportSetting::afterSanitizeTempDir(QAxObject *object, const QString &objectName, AccessDesignObjectSanitizer *sanitizer)
+bool ReportProcessor::afterSanitizeTempDir(QAxObject *object, const QString &objectName, AccessDesignObjectSanitizer *sanitizer)
 {
     Q_UNUSED(object);
 
@@ -1746,8 +1746,8 @@ bool ReportSetting::afterSanitizeTempDir(QAxObject *object, const QString &objec
 //=============================================================================
 // Macro
 
-MacroSetting::MacroSetting(ProjectSetting *parent)
-    : AccessDesignObjectSetting(parent)
+MacroProcessor::MacroProcessor(ProjectSetting *parent)
+    : AccessDesignObjectProcessor(parent)
 {
     m_objectType          = Model::Macro;
     m_accessObjectType    = Access::acMacro;
@@ -1760,10 +1760,10 @@ MacroSetting::MacroSetting(ProjectSetting *parent)
     m_existCheckExtension = m_designFileExtension;
 }
 
-bool MacroSetting::prepareItemCollection()
+bool MacroProcessor::prepareItemCollection()
 {
     if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
-        return AccessDesignObjectSetting::prepareItemCollection();
+        return AccessDesignObjectProcessor::prepareItemCollection();
 
     ComPtr<Access::CurrentProject> currentProject = m_projectSetting->application()->CurrentProject();
     m_objects.set( currentProject->AllMacros() );
@@ -1771,20 +1771,20 @@ bool MacroSetting::prepareItemCollection()
     return m_objects.is();
 }
 
-int MacroSetting::itemCount()
+int MacroProcessor::itemCount()
 {
     if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
-        return AccessDesignObjectSetting::itemCount();
+        return AccessDesignObjectProcessor::itemCount();
 
     if (!m_objects.is())
         return 0;
     return m_objects->Count();
 }
 
-QAxObject *MacroSetting::itemUnsafePtr(const QVariant &index)
+QAxObject *MacroProcessor::itemUnsafePtr(const QVariant &index)
 {
     if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
-        return AccessDesignObjectSetting::itemUnsafePtr(index);
+        return AccessDesignObjectProcessor::itemUnsafePtr(index);
 
     if (!m_objects.is())
         return 0;
@@ -1795,8 +1795,8 @@ QAxObject *MacroSetting::itemUnsafePtr(const QVariant &index)
 //=============================================================================
 // Module
 
-ModuleSetting::ModuleSetting(ProjectSetting *parent)
-    : AccessObjectSetting(parent)
+ModuleProcessor::ModuleProcessor(ProjectSetting *parent)
+    : AccessObjectProcessor(parent)
 {
     m_objectType          = Model::Module;
     m_accessObjectType    = Access::acModule;
@@ -1809,7 +1809,7 @@ ModuleSetting::ModuleSetting(ProjectSetting *parent)
     m_existCheckExtension = m_moduleFileExtension;
 }
 
-bool ModuleSetting::sanitizeTempDir(QAxObject *object, const QString &objectName)
+bool ModuleProcessor::sanitizeTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
@@ -1827,7 +1827,7 @@ bool ModuleSetting::sanitizeTempDir(QAxObject *object, const QString &objectName
     return true;
 }
 
-bool ModuleSetting::desanitizeTempDir(QAxObject *object, const QString &objectName)
+bool ModuleProcessor::desanitizeTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
@@ -1845,10 +1845,10 @@ bool ModuleSetting::desanitizeTempDir(QAxObject *object, const QString &objectNa
     return true;
 }
 
-bool ModuleSetting::prepareItemCollection()
+bool ModuleProcessor::prepareItemCollection()
 {
     if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
-        return AccessObjectSetting::prepareItemCollection();
+        return AccessObjectProcessor::prepareItemCollection();
 
     ComPtr<Access::CurrentProject> currentProject = m_projectSetting->application()->CurrentProject();
     m_objects.set( currentProject->AllModules() );
@@ -1856,27 +1856,27 @@ bool ModuleSetting::prepareItemCollection()
     return m_objects.is();
 }
 
-int ModuleSetting::itemCount()
+int ModuleProcessor::itemCount()
 {
     if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
-        return AccessObjectSetting::itemCount();
+        return AccessObjectProcessor::itemCount();
 
     if (!m_objects.is())
         return 0;
     return m_objects->Count();
 }
 
-QAxObject *ModuleSetting::itemUnsafePtr(const QVariant &index)
+QAxObject *ModuleProcessor::itemUnsafePtr(const QVariant &index)
 {
     if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
-        return AccessObjectSetting::itemUnsafePtr(index);
+        return AccessObjectProcessor::itemUnsafePtr(index);
 
     if (!m_objects.is())
         return 0;
     return m_objects->Item(index);
 }
 
-void ModuleSetting::determineCodecForProject()
+void ModuleProcessor::determineCodecForProject()
 {
     // Module is always saved in Shift_JIS.
     // so we have to convert ONLY codec.
@@ -1893,8 +1893,8 @@ void ModuleSetting::determineCodecForProject()
 //=============================================================================
 // ProjectLevelObject : virtual
 
-ProjectLevelObjectSetting::ProjectLevelObjectSetting(ProjectSetting *parent)
-    : ObjectSetting(parent)
+ProjectLevelObjectProcessor::ProjectLevelObjectProcessor(ProjectSetting *parent)
+    : ObjectProcessor(parent)
 //    , m_objectName("Reference")
 {
 //    m_objectType          = Model::Reference;
@@ -1908,13 +1908,13 @@ ProjectLevelObjectSetting::ProjectLevelObjectSetting(ProjectSetting *parent)
 //    m_existCheckExtension = m_tempFileExtension;
 }
 
-bool ProjectLevelObjectSetting::isTargetObject(QAxObject *object) const
+bool ProjectLevelObjectProcessor::isTargetObject(QAxObject *object) const
 {
     Q_UNUSED(object)
     return true;
 }
 
-ObjectItem *ProjectLevelObjectSetting::createItemFromProject(QAxObject *object, QObject *parent)
+ObjectItem *ProjectLevelObjectProcessor::createItemFromProject(QAxObject *object, QObject *parent)
 {
     Q_UNUSED(object)
     ObjectItem *item = new ObjectItem(parent);
@@ -1929,7 +1929,7 @@ ObjectItem *ProjectLevelObjectSetting::createItemFromProject(QAxObject *object, 
     return item;
 }
 
-bool ProjectLevelObjectSetting::sanitizeTempDir(QAxObject *object, const QString &objectName)
+bool ProjectLevelObjectProcessor::sanitizeTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
@@ -1937,7 +1937,7 @@ bool ProjectLevelObjectSetting::sanitizeTempDir(QAxObject *object, const QString
     return true;
 }
 
-bool ProjectLevelObjectSetting::desanitizeTempDir(QAxObject *object, const QString &objectName)
+bool ProjectLevelObjectProcessor::desanitizeTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
@@ -1945,7 +1945,7 @@ bool ProjectLevelObjectSetting::desanitizeTempDir(QAxObject *object, const QStri
     return true;
 }
 
-bool ProjectLevelObjectSetting::prepareItemCollection()
+bool ProjectLevelObjectProcessor::prepareItemCollection()
 {
     // different from others.
     if (m_projectSetting->isMDB() || m_projectSetting->isADP())
@@ -1953,7 +1953,7 @@ bool ProjectLevelObjectSetting::prepareItemCollection()
     return false;
 }
 
-int ProjectLevelObjectSetting::itemCount()
+int ProjectLevelObjectProcessor::itemCount()
 {
     // different from others.
     if (m_projectSetting->isMDB() || m_projectSetting->isADP())
@@ -1961,7 +1961,7 @@ int ProjectLevelObjectSetting::itemCount()
     return 0;
 }
 
-QAxObject *ProjectLevelObjectSetting::itemUnsafePtr(const QVariant &index)
+QAxObject *ProjectLevelObjectProcessor::itemUnsafePtr(const QVariant &index)
 {
     Q_UNUSED(index)
     // different from others.
@@ -1976,7 +1976,7 @@ QAxObject *ProjectLevelObjectSetting::itemUnsafePtr(const QVariant &index)
 // Reference
 
 ReferenceSetting::ReferenceSetting(ProjectSetting *parent)
-    : ProjectLevelObjectSetting(parent)
+    : ProjectLevelObjectProcessor(parent)
 {
     m_objectName          = "Reference";
 
@@ -2317,8 +2317,8 @@ bool ReferenceSetting::importFromTempDirToProject(QAxObject *object, const QStri
 //=============================================================================
 // ProjectFile
 
-ProjectFileSetting::ProjectFileSetting(ProjectSetting *parent)
-    : ProjectLevelObjectSetting(parent)
+ProjectFileProcessor::ProjectFileProcessor(ProjectSetting *parent)
+    : ProjectLevelObjectProcessor(parent)
 {
     m_objectName          = "AccessProject";
 
@@ -2333,7 +2333,7 @@ ProjectFileSetting::ProjectFileSetting(ProjectSetting *parent)
     m_existCheckExtension = m_tempFileExtension;
 }
 
-bool ProjectFileSetting::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
+bool ProjectFileProcessor::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
@@ -2391,7 +2391,7 @@ bool ProjectFileSetting::exportFromProjectToTempDir(QAxObject *object, const QSt
     return true;
 }
 
-bool ProjectFileSetting::importFromTempDirToProject(QAxObject *object, const QString &objectName)
+bool ProjectFileProcessor::importFromTempDirToProject(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
@@ -2518,7 +2518,7 @@ bool ProjectFileSetting::importFromTempDirToProject(QAxObject *object, const QSt
     return true;
 }
 
-void ProjectFileSetting::loadProperties(QMap<QString, ProjectFileSetting::ProjectFileProperty *> &propMap)
+void ProjectFileProcessor::loadProperties(QMap<QString, ProjectFileProcessor::ProjectFileProperty *> &propMap)
 {
     QString pattern;
     pattern  = "^(";
@@ -2581,8 +2581,8 @@ void ProjectFileSetting::loadProperties(QMap<QString, ProjectFileSetting::Projec
 //=============================================================================
 // VBProject
 
-VBProjectSetting::VBProjectSetting(ProjectSetting *parent)
-    : ProjectLevelObjectSetting(parent)
+VBProjectProcessor::VBProjectProcessor(ProjectSetting *parent)
+    : ProjectLevelObjectProcessor(parent)
 {
     m_objectName          = "VBEProject";
 
@@ -2597,7 +2597,7 @@ VBProjectSetting::VBProjectSetting(ProjectSetting *parent)
     m_existCheckExtension = m_tempFileExtension;
 }
 
-bool VBProjectSetting::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
+bool VBProjectProcessor::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
@@ -2637,7 +2637,7 @@ bool VBProjectSetting::exportFromProjectToTempDir(QAxObject *object, const QStri
     return true;
 }
 
-bool VBProjectSetting::importFromTempDirToProject(QAxObject *object, const QString &objectName)
+bool VBProjectProcessor::importFromTempDirToProject(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
@@ -2684,7 +2684,7 @@ bool VBProjectSetting::importFromTempDirToProject(QAxObject *object, const QStri
     return true;
 }
 
-VBIDE::VBProject *VBProjectSetting::currentVBProject()
+VBIDE::VBProject *VBProjectProcessor::currentVBProject()
 {
     ComPtr<Access::CurrentProject> currentProject = m_projectSetting->application()->CurrentProject();
     QString fileName = currentProject->FullName();

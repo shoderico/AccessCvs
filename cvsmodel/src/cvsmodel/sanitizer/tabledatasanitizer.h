@@ -1,7 +1,7 @@
 #ifndef TABLEDATASANITIZER_H
 #define TABLEDATASANITIZER_H
 
-#include "../cvsmodel_global.h"
+#include "cvsmodel/cvsmodel_global.h"
 
 #include <QObject>
 #include <QTextStream>

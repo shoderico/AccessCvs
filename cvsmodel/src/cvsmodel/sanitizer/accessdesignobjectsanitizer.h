@@ -1,7 +1,7 @@
 #ifndef ACCESSDESIGNOBJECTSANITIZER_H
 #define ACCESSDESIGNOBJECTSANITIZER_H
 
-#include "../cvsmodel_global.h"
+#include "cvsmodel/cvsmodel_global.h"
 
 #include <QObject>
 #include <QTextStream>

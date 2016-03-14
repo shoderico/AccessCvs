@@ -14,7 +14,7 @@ SOURCES += \
     cvsmodel/objectitems.cpp \
     cvsmodel/objectmodel.cpp \
     cvsmodel/objectproxymodel.cpp \
-    cvsmodel/objectsetting.cpp \
+    cvsmodel/processor/objectsetting.cpp \
     cvsmodel/projectsetting.cpp \
     cvsmodel/setting.cpp \
     cvsmodel/sanitizer/accessdesignobjectsanitizer.cpp \
@@ -27,7 +27,7 @@ HEADERS += \
     cvsmodel/objectitems.h \
     cvsmodel/objectmodel.h \
     cvsmodel/objectproxymodel.h \
-    cvsmodel/objectsetting.h \
+    cvsmodel/processor/objectsetting.h \
     cvsmodel/projectsetting.h \
     cvsmodel/setting.h \
     cvsmodel/sanitizer/accessdesignobjectsanitizer.h \

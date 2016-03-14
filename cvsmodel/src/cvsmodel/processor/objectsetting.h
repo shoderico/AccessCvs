@@ -1,7 +1,7 @@
 #ifndef OBJECTSETTING_H
 #define OBJECTSETTING_H
 
-#include "cvsmodel_global.h"
+#include "cvsmodel/cvsmodel_global.h"
 
 #include <QObject>
 
@@ -9,7 +9,7 @@
 #include <QReadWriteLock>
 #include <QVariant>
 
-#include "objectitem.h"
+#include "cvsmodel/objectitem.h"
 #include "util/comptr.h"
 
 class ProjectSetting;
@@ -40,11 +40,11 @@ class VBProject;
 }
 
 
-class CVSMODEL_SHARED_EXPORT ObjectSetting : public QObject
+class CVSMODEL_SHARED_EXPORT ObjectProcessor : public QObject
 {
     Q_OBJECT
 public:
-    explicit ObjectSetting(ProjectSetting *parent = 0);
+    explicit ObjectProcessor(ProjectSetting *parent = 0);
 
     virtual bool isTargetObject(QAxObject *object) const = 0;
 
@@ -146,10 +146,10 @@ protected:
 
 
 
-class TableDefSetting : public ObjectSetting
+class TableDefProcessor : public ObjectProcessor
 {
 public:
-    explicit TableDefSetting(ProjectSetting *parent);
+    explicit TableDefProcessor(ProjectSetting *parent);
     virtual bool        isTargetObject(QAxObject *object) const;
     virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
     virtual ObjectItem *createItemFromSourceDir(QFileInfo &fileInfo, QObject *parent = 0);
@@ -180,17 +180,17 @@ protected:
 //    explicit TableDataSetting(ProjectSetting *parent);
 //};
 
-class RelationSetting : public ObjectSetting
+class RelationProcessor : public ObjectProcessor
 {
 public:
-    explicit RelationSetting(ProjectSetting *parent);
+    explicit RelationProcessor(ProjectSetting *parent);
 };
 
 
-class QueryAsSqlSetting : public ObjectSetting
+class QueryAsSqlProcessor : public ObjectProcessor
 {
 public:
-    explicit QueryAsSqlSetting(ProjectSetting *parent);
+    explicit QueryAsSqlProcessor(ProjectSetting *parent);
     virtual bool        isTargetObject(QAxObject *object) const;
     virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
     virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
@@ -205,10 +205,10 @@ protected:
     ComPtr<DAO::QueryDefs> m_queryDefs;
 };
 
-class QueryAsObjectSetting : public QueryAsSqlSetting
+class QueryAsObjectProcessor : public QueryAsSqlProcessor
 {
 public:
-    explicit QueryAsObjectSetting(ProjectSetting *parent);
+    explicit QueryAsObjectProcessor(ProjectSetting *parent);
     virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
     virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
 };
@@ -216,10 +216,10 @@ public:
 
 
 
-class AccessObjectSetting : public ObjectSetting
+class AccessObjectProcessor : public ObjectProcessor
 {
 public:
-    explicit AccessObjectSetting(ProjectSetting *parent);
+    explicit AccessObjectProcessor(ProjectSetting *parent);
     virtual bool        isTargetObject(QAxObject *object) const;
     virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
     virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
@@ -237,10 +237,10 @@ protected:
 
 
 
-class AccessDesignObjectSetting : public AccessObjectSetting
+class AccessDesignObjectProcessor : public AccessObjectProcessor
 {
 public:
-    explicit AccessDesignObjectSetting(ProjectSetting *parent);
+    explicit AccessDesignObjectProcessor(ProjectSetting *parent);
     virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
     virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
     virtual void determineCodecForProject();
@@ -253,10 +253,10 @@ protected:
 
 
 
-class FormSetting : public AccessDesignObjectSetting
+class FormProcessor : public AccessDesignObjectProcessor
 {
 public:
-    explicit FormSetting(ProjectSetting *parent);
+    explicit FormProcessor(ProjectSetting *parent);
     virtual bool        prepareItemCollection();
     virtual int         itemCount();
     virtual QAxObject  *itemUnsafePtr(const QVariant &index);
@@ -264,10 +264,10 @@ protected:
     ComPtr<Access::AllForms> m_objects;
 };
 
-class ReportSetting : public AccessDesignObjectSetting
+class ReportProcessor : public AccessDesignObjectProcessor
 {
 public:
-    explicit ReportSetting(ProjectSetting *parent);
+    explicit ReportProcessor(ProjectSetting *parent);
     virtual bool        prepareItemCollection();
     virtual int         itemCount();
     virtual QAxObject  *itemUnsafePtr(const QVariant &index);
@@ -278,10 +278,10 @@ protected:
     QReadWriteLock m_lock;
 };
 
-class MacroSetting : public AccessDesignObjectSetting
+class MacroProcessor : public AccessDesignObjectProcessor
 {
 public:
-    explicit MacroSetting(ProjectSetting *parent);
+    explicit MacroProcessor(ProjectSetting *parent);
     virtual bool        prepareItemCollection();
     virtual int         itemCount();
     virtual QAxObject  *itemUnsafePtr(const QVariant &index);
@@ -289,10 +289,10 @@ protected:
     ComPtr<Access::AllMacros> m_objects;
 };
 
-class ModuleSetting : public AccessObjectSetting
+class ModuleProcessor : public AccessObjectProcessor
 {
 public:
-    explicit ModuleSetting(ProjectSetting *parent);
+    explicit ModuleProcessor(ProjectSetting *parent);
     virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
     virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
 
@@ -308,10 +308,10 @@ protected:
 
 
 
-class ProjectLevelObjectSetting : public ObjectSetting
+class ProjectLevelObjectProcessor : public ObjectProcessor
 {
 public:
-    explicit ProjectLevelObjectSetting(ProjectSetting *parent);
+    explicit ProjectLevelObjectProcessor(ProjectSetting *parent);
     virtual bool        isTargetObject(QAxObject *object) const;
     virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
 //    virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
@@ -329,7 +329,7 @@ protected:
 
 
 
-class ReferenceSetting : public ProjectLevelObjectSetting
+class ReferenceSetting : public ProjectLevelObjectProcessor
 {
 public:
     explicit ReferenceSetting(ProjectSetting *parent);
@@ -351,10 +351,10 @@ private:
 
 
 
-class ProjectFileSetting : public ProjectLevelObjectSetting
+class ProjectFileProcessor : public ProjectLevelObjectProcessor
 {
 public:
-    explicit ProjectFileSetting(ProjectSetting *parent);
+    explicit ProjectFileProcessor(ProjectSetting *parent);
 //    virtual bool        isTargetObject(QAxObject *object) const;
 //    virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
     virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
@@ -386,10 +386,10 @@ private:
 
 
 
-class VBProjectSetting : public ProjectLevelObjectSetting
+class VBProjectProcessor : public ProjectLevelObjectProcessor
 {
 public:
-    explicit VBProjectSetting(ProjectSetting *parent);
+    explicit VBProjectProcessor(ProjectSetting *parent);
     virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
     virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
 
