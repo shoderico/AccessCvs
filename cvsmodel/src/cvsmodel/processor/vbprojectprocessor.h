@@ -2,7 +2,7 @@
 #define VBPROJECTPROCESSOR_H
 
 #include "cvsmodel/cvsmodel_global.h"
-#include "objectprocessor.h"
+#include "projectlevelobjectprocessor.h"
 
 class ProjectSetting;
 

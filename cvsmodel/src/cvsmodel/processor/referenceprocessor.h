@@ -1,0 +1,31 @@
+#ifndef REFERENCEPROCESSOR_H
+#define REFERENCEPROCESSOR_H
+
+#include "cvsmodel/cvsmodel_global.h"
+#include "projectlevelobjectprocessor.h"
+
+class ProjectSetting;
+
+class QAxObject;
+
+class ReferenceProcessor : public ProjectLevelObjectProcessor
+{
+public:
+    explicit ReferenceProcessor(ProjectSetting *parent);
+//    virtual bool        isTargetObject(QAxObject *object) const;
+//    virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
+    virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
+    virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
+//    virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
+//    virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
+
+//    virtual bool        prepareItemCollection();
+//    virtual int         itemCount();
+//    virtual QAxObject  *itemUnsafePtr(const QVariant &index);
+private:
+//    QString m_objectName;
+    // ComPtr<Access::XXX> m_objects; // no need
+};
+
+
+#endif // REFERENCEPROCESSOR_H

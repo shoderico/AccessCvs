@@ -9,6 +9,12 @@
 #include "util/fileutil.h"
 
 #include "processor/objectprocessor.h"
+#include "processor/formprocessor.h"
+#include "processor/reportprocessor.h"
+#include "processor/macroprocessor.h"
+#include "processor/moduleprocessor.h"
+#include "processor/referenceprocessor.h"
+#include "processor/projectfileprocessor.h"
 #include "processor/vbprojectprocessor.h"
 
 
@@ -25,7 +31,7 @@ ProjectSetting::ProjectSetting(QObject *parent)
     m_objectSettings.insert( Model::Report,     new ReportProcessor   (this) );
     m_objectSettings.insert( Model::Macro,      new MacroProcessor    (this) );
     m_objectSettings.insert( Model::Module,     new ModuleProcessor   (this) );
-    m_objectSettings.insert( Model::Reference,  new ReferenceSetting(this) );
+    m_objectSettings.insert( Model::Reference,  new ReferenceProcessor(this) );
     m_objectSettings.insert( Model::ProjectFile,  new ProjectFileProcessor(this) );
     m_objectSettings.insert( Model::VBProject,  new VBProjectProcessor(this) );
 }

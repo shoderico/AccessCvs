@@ -20,7 +20,15 @@ SOURCES += \
     cvsmodel/sanitizer/tabledatasanitizer.cpp \
     cvsmodel/sanitizer/tabledefsanitizer.cpp \
     cvsmodel/processor/objectprocessor.cpp \
-    cvsmodel/processor/vbprojectprocessor.cpp
+    cvsmodel/processor/vbprojectprocessor.cpp \
+    cvsmodel/processor/projectfileprocessor.cpp \
+    cvsmodel/processor/referenceprocessor.cpp \
+    cvsmodel/processor/projectlevelobjectprocessor.cpp \
+    cvsmodel/processor/moduleprocessor.cpp \
+    cvsmodel/processor/macroprocessor.cpp \
+    cvsmodel/processor/reportprocessor.cpp \
+    cvsmodel/processor/formprocessor.cpp \
+    cvsmodel/processor/accessdesignobjectprocessor.cpp
 
 HEADERS += \
     cvsmodel/cvsmodel_global.h \
@@ -34,7 +42,15 @@ HEADERS += \
     cvsmodel/sanitizer/tabledatasanitizer.h \
     cvsmodel/sanitizer/tabledefsanitizer.h \
     cvsmodel/processor/objectprocessor.h \
-    cvsmodel/processor/vbprojectprocessor.h
+    cvsmodel/processor/vbprojectprocessor.h \
+    cvsmodel/processor/projectfileprocessor.h \
+    cvsmodel/processor/referenceprocessor.h \
+    cvsmodel/processor/projectlevelobjectprocessor.h \
+    cvsmodel/processor/moduleprocessor.h \
+    cvsmodel/processor/macroprocessor.h \
+    cvsmodel/processor/reportprocessor.h \
+    cvsmodel/processor/formprocessor.h \
+    cvsmodel/processor/accessdesignobjectprocessor.h
 
 include(../../common.pri)
 include(../../submodule.pri)
