@@ -2,7 +2,7 @@
 #define MODULEPROCESSOR_H
 
 #include "cvsmodel/cvsmodel_global.h"
-#include "objectprocessor.h"
+#include "accessobjectprocessor.h"
 
 class ProjectSetting;
 

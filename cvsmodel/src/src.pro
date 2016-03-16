@@ -28,7 +28,12 @@ SOURCES += \
     cvsmodel/processor/macroprocessor.cpp \
     cvsmodel/processor/reportprocessor.cpp \
     cvsmodel/processor/formprocessor.cpp \
-    cvsmodel/processor/accessdesignobjectprocessor.cpp
+    cvsmodel/processor/accessdesignobjectprocessor.cpp \
+    cvsmodel/processor/accessobjectprocessor.cpp \
+    cvsmodel/processor/queryasobjectprocessor.cpp \
+    cvsmodel/processor/queryassqlprocessor.cpp \
+    cvsmodel/processor/relationprocessor.cpp \
+    cvsmodel/processor/tabledefprocessor.cpp
 
 HEADERS += \
     cvsmodel/cvsmodel_global.h \
@@ -50,7 +55,12 @@ HEADERS += \
     cvsmodel/processor/macroprocessor.h \
     cvsmodel/processor/reportprocessor.h \
     cvsmodel/processor/formprocessor.h \
-    cvsmodel/processor/accessdesignobjectprocessor.h
+    cvsmodel/processor/accessdesignobjectprocessor.h \
+    cvsmodel/processor/accessobjectprocessor.h \
+    cvsmodel/processor/queryasobjectprocessor.h \
+    cvsmodel/processor/queryassqlprocessor.h \
+    cvsmodel/processor/relationprocessor.h \
+    cvsmodel/processor/tabledefprocessor.h
 
 include(../../common.pri)
 include(../../submodule.pri)

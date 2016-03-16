@@ -4,6 +4,8 @@
 #include "cvsmodel/cvsmodel_global.h"
 #include "projectlevelobjectprocessor.h"
 
+#include <QVariant>
+
 class ProjectSetting;
 
 class QAxObject;

@@ -1,44 +1,19 @@
-#ifndef OBJECTSETTING_H
-#define OBJECTSETTING_H
+#ifndef OBJECTPROCESSOR_H
+#define OBJECTPROCESSOR_H
 
 #include "cvsmodel/cvsmodel_global.h"
 
 #include <QObject>
 
-#include <QFileInfo>
-#include <QReadWriteLock>
-#include <QVariant>
-
 #include "cvsmodel/objectitem.h"
-#include "util/comptr.h"
 
 class ProjectSetting;
-class AccessDesignObjectSanitizer;
-class TableDefSanitizer;
-class TableDataSanitizer;
 class CodecInfo;
+class ObjectItem;
 
 class QAxObject;
 class QSettings;
-
-
-namespace DAO {
-class TableDefs;
-class QueryDefs;
-class Containers;
-class Container;
-class Documents;
-}
-namespace Access {
-class AllForms;
-class AllReports;
-class AllMacros;
-class AllModules;
-}
-namespace VBIDE {
-class VBProject;
-}
-
+class QFileInfo;
 
 class CVSMODEL_SHARED_EXPORT ObjectProcessor : public QObject
 {
@@ -145,94 +120,4 @@ protected:
 };
 
 
-
-class TableDefProcessor : public ObjectProcessor
-{
-public:
-    explicit TableDefProcessor(ProjectSetting *parent);
-    virtual bool        isTargetObject(QAxObject *object) const;
-    virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
-    virtual ObjectItem *createItemFromSourceDir(QFileInfo &fileInfo, QObject *parent = 0);
-    virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
-    virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
-    virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
-    virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
-
-    virtual bool        prepareItemCollection();
-    virtual int         itemCount();
-    virtual QAxObject  *itemUnsafePtr(const QVariant &index);
-
-    virtual void loadSettings(QSettings *settings);
-    virtual void saveSettings(QSettings *settings);
-
-    void setTableDataTargets(QStringList *newTargets);
-    virtual void determineCodecForProject();
-protected:
-    ComPtr<DAO::TableDefs> m_tableDefs;
-    QStringList m_tableDataTargets;
-    TableDefSanitizer *m_tableDefSanitizer;
-    TableDataSanitizer *m_tableDataSanitizer;
-};
-
-//class TableDataSetting : public ObjectSetting
-//{
-//public:
-//    explicit TableDataSetting(ProjectSetting *parent);
-//};
-
-class RelationProcessor : public ObjectProcessor
-{
-public:
-    explicit RelationProcessor(ProjectSetting *parent);
-};
-
-
-class QueryAsSqlProcessor : public ObjectProcessor
-{
-public:
-    explicit QueryAsSqlProcessor(ProjectSetting *parent);
-    virtual bool        isTargetObject(QAxObject *object) const;
-    virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
-    virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
-    virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
-    virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
-    virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
-
-    virtual bool        prepareItemCollection();
-    virtual int         itemCount();
-    virtual QAxObject  *itemUnsafePtr(const QVariant &index);
-protected:
-    ComPtr<DAO::QueryDefs> m_queryDefs;
-};
-
-class QueryAsObjectProcessor : public QueryAsSqlProcessor
-{
-public:
-    explicit QueryAsObjectProcessor(ProjectSetting *parent);
-    virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
-    virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
-};
-
-
-
-
-class AccessObjectProcessor : public ObjectProcessor
-{
-public:
-    explicit AccessObjectProcessor(ProjectSetting *parent);
-    virtual bool        isTargetObject(QAxObject *object) const;
-    virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
-    virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
-    virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
-
-    virtual bool        prepareItemCollection();
-    virtual int         itemCount();
-    virtual QAxObject  *itemUnsafePtr(const QVariant &index);
-protected:
-    ComPtr<DAO::Containers> m_containers;
-    ComPtr<DAO::Container> m_container;
-    ComPtr<DAO::Documents> m_documents;
-};
-
-
-#endif // OBJECTSETTING_H
+#endif // OBJECTPROCESSOR_H

@@ -1,13 +1,9 @@
 #include "accessdesignobjectprocessor.h"
 
 #include <QDebug>
-//#include <QDir>
 #include <QTextCodec>
 #include <QFile>
 #include <QTextStream>
-//#include <QSettings>
-//#include <QRegularExpression>
-//#include <QUuid>
 
 #include "accesslib/accesslib.h"
 

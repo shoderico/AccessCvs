@@ -8,7 +8,9 @@
 #include "util/comptr.h"
 #include "util/fileutil.h"
 
-#include "processor/objectprocessor.h"
+//#include "processor/objectprocessor.h"
+#include "processor/tabledefprocessor.h"
+#include "processor/queryassqlprocessor.h"
 #include "processor/formprocessor.h"
 #include "processor/reportprocessor.h"
 #include "processor/macroprocessor.h"
