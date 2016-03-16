@@ -2,10 +2,10 @@
 #define OBJECTMODEL_H
 
 #include "cvsmodel_global.h"
+#include "cvsmodel_const.h"
 
 #include <QAbstractItemModel>
 
-#include "objectitem.h"
 #include "objectitems.h"
 
 namespace Access {

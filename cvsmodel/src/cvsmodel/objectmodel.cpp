@@ -17,6 +17,7 @@
 #include "projectsetting.h"
 #include "processor/objectprocessor.h"
 #include "processor/tabledefprocessor.h"
+#include "objectitem.h"
 
 
 ObjectModel::ObjectModel(QObject * parent)

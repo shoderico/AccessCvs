@@ -8,6 +8,7 @@
 #include "util/fileutil.h"
 
 #include "cvsmodel/projectsetting.h"
+#include "cvsmodel/objectitem.h"
 
 
 

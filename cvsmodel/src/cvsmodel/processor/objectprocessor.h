@@ -2,10 +2,10 @@
 #define OBJECTPROCESSOR_H
 
 #include "cvsmodel/cvsmodel_global.h"
+#include "cvsmodel/cvsmodel_const.h"
 
 #include <QObject>
 
-#include "cvsmodel/objectitem.h"
 
 class ProjectSetting;
 class CodecInfo;

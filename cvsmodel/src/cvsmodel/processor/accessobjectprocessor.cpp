@@ -9,6 +9,7 @@
 
 #include "cvsmodel/projectsetting.h"
 #include "cvsmodel/setting.h"
+#include "cvsmodel/objectitem.h"
 
 
 //=============================================================================

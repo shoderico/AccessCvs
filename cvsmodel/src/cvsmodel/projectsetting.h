@@ -2,17 +2,14 @@
 #define PROJECTSETTING_H
 
 #include "cvsmodel_global.h"
+#include "cvsmodel_const.h"
 
 #include <QObject>
 #include <QMap>
 
-#include "objectitem.h"
-//#include "util/comptr.h"
-
 class QSettings;
 
 class ObjectProcessor;
-//#include "objectsetting.h"
 
 namespace Access {
 class Application;

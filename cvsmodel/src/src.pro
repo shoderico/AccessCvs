@@ -60,7 +60,8 @@ HEADERS += \
     cvsmodel/processor/queryasobjectprocessor.h \
     cvsmodel/processor/queryassqlprocessor.h \
     cvsmodel/processor/relationprocessor.h \
-    cvsmodel/processor/tabledefprocessor.h
+    cvsmodel/processor/tabledefprocessor.h \
+    cvsmodel/cvsmodel_const.h
 
 include(../../common.pri)
 include(../../submodule.pri)
