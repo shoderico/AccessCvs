@@ -48,10 +48,10 @@ ProjectSetting::~ProjectSetting()
     }
 }
 
-void ProjectSetting::initialize(Access::Application *application)
+void ProjectSetting::initialize(QAxObject *application)
 {
-    m_application = application;
-    ComPtr<Access::CurrentProject> currentProject = application->CurrentProject();
+    m_application = static_cast<Access::Application*>(application);
+    ComPtr<Access::CurrentProject> currentProject = m_application->CurrentProject();
     if (currentProject.is())
     {
         QString projectPath = currentProject->Path();

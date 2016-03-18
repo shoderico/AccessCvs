@@ -7,6 +7,7 @@
 #include <QObject>
 #include <QMap>
 
+class QAxObject;
 class QSettings;
 
 class ObjectProcessor;
@@ -22,7 +23,7 @@ public:
     explicit ProjectSetting(QObject *parent = 0);
     ~ProjectSetting();
 
-    void initialize(Access::Application* application);
+    void initialize(QAxObject* application);
 
     bool isMDB() const;
     bool isADP() const;

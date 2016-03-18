@@ -170,43 +170,6 @@ public:
 
     //----------------------------------------------------------------------------------------------------------------------
     // progress notification
-public:
-    enum ProcessType
-    {
-        RefreshProcess,
-        ExportProcess,
-        ImportProcess,
-
-        LoadItemFromProjectProcess,
-        LoadItemFromSourceDirProcess,
-
-        ExportFromProjectToTempDirProcess,
-        ImportFromTempDirToProjectProcess,
-
-        CopyFromTempDirToSourceDirProcess,
-        CopyFromSourceDirToTempDirProcess,
-
-        SanitizeTempDirProcess,
-        DesanitizeTempDirProcess,
-        CompareTempDirProcess,
-
-        DeleteFromSourceDirProcess,
-        DeleteFromProjectProcess,
-
-        DeleteFromTempDirProcess,
-
-        UpdateItemsDifferenceByFileTimeProcess,
-        UpdateFileTimeInTempDirByExportDateProcess,
-        UpdateItemsExportDateProcess,
-        UpdateFileTimeInTempDirProcess,
-
-        UpdateItemsInProjectProcess,
-        UpdateItemsInSourceDirProcess,
-        UpdateItemsDifferenceProcess,
-        UpdateItemsDifferenceAsIsProcess,
-        DeleteItemsProcess,
-        UpdateItemsCreateUpdateDateFromProjectProcess,
-    };
 signals:
     void progressStart(int type, int count);
     void progressEnd(int type);

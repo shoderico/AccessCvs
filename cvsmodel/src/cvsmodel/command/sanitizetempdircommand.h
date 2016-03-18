@@ -1,0 +1,16 @@
+#ifndef SANITIZETEMPDIRCOMMAND_H
+#define SANITIZETEMPDIRCOMMAND_H
+
+#include "commandbase.h"
+
+class SanitizeTempDirCommand : public CommandBase
+{
+    Q_OBJECT
+public:
+    explicit SanitizeTempDirCommand(QObject *parent = 0);
+
+    virtual void execute(ObjectItems *allTargets);
+
+};
+
+#endif // SANITIZETEMPDIRCOMMAND_H

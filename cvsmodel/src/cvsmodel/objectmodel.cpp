@@ -919,7 +919,7 @@ void ObjectModel::updateItemsExportDate(ObjectItems *allTargets, const QDateTime
 {
     // non-blocking
     DataChangedHelper helper( m_items.count() );
-    ProgressNotifier mainProg(UpdateItemsExportDateProcess, this);
+    ProgressNotifier mainProg(Model::UpdateItemsExportDateProcess, this);
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
@@ -983,7 +983,7 @@ void ObjectModel::updateItemsInProject(ObjectItems *allTargets, Model::ObjectExi
 {
     // non-blocking
     DataChangedHelper helper( m_items.count() );
-    ProgressNotifier mainProg(UpdateItemsInProjectProcess, this);
+    ProgressNotifier mainProg(Model::UpdateItemsInProjectProcess, this);
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
@@ -1040,7 +1040,7 @@ void ObjectModel::updateItemsInSourceDir(ObjectItems *allTargets, Model::ObjectE
 {
     // non-blocking
     DataChangedHelper helper( m_items.count() );
-    ProgressNotifier mainProg(UpdateItemsInSourceDirProcess, this);
+    ProgressNotifier mainProg(Model::UpdateItemsInSourceDirProcess, this);
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
@@ -1097,7 +1097,7 @@ void ObjectModel::updateItemsDifference(ObjectItems *allTargets, Model::ObjectDi
 {
     // non-blocking
     DataChangedHelper helper( m_items.count() );
-    ProgressNotifier mainProg(UpdateItemsDifferenceProcess, this);
+    ProgressNotifier mainProg(Model::UpdateItemsDifferenceProcess, this);
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
@@ -1154,7 +1154,7 @@ void ObjectModel::updateItemsDifferenceByFileTime(ObjectItems *allTargets)
 {
     // non-blocking
     DataChangedHelper helper( m_items.count() );
-    ProgressNotifier mainProg(UpdateItemsDifferenceByFileTimeProcess, this);
+    ProgressNotifier mainProg(Model::UpdateItemsDifferenceByFileTimeProcess, this);
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
@@ -1229,7 +1229,7 @@ void ObjectModel::updateItemsDifferenceAsIs(ObjectItems *allTargets)
 {
     // non-blocking
     DataChangedHelper helper( m_items.count() );
-    ProgressNotifier mainProg(UpdateItemsDifferenceAsIsProcess, this);
+    ProgressNotifier mainProg(Model::UpdateItemsDifferenceAsIsProcess, this);
     ProjectSetting setting(this);
     ObjectProcessor *os;
     setting.initialize(m_application);
@@ -1281,7 +1281,7 @@ void ObjectModel::updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets
 {
     // BLOCKING, cannot be asynch
     DataChangedHelper helper( m_items.count() );
-    ProgressNotifier mainProg(UpdateItemsCreateUpdateDateFromProjectProcess, this);
+    ProgressNotifier mainProg(Model::UpdateItemsCreateUpdateDateFromProjectProcess, this);
     ProjectSetting setting(this);
     ObjectProcessor *os;
     setting.initialize(m_application);
@@ -1349,7 +1349,7 @@ struct UpdateFileTimeInTempDirFunctionObject : public BaseFunctionObject
 void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTime &fileTime, const ObjectDifferenceTypes differenceTypes)
 {
     // non-blocking
-    ProgressNotifier mainProg(UpdateFileTimeInTempDirProcess, this);
+    ProgressNotifier mainProg(Model::UpdateFileTimeInTempDirProcess, this);
     ProjectSetting setting(this);
     ObjectProcessor *os;
     setting.initialize(m_application);
@@ -1393,7 +1393,7 @@ void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTi
 void ObjectModel::deleteItems(ObjectItems *allTargets)
 {
     // FIXME: non-blocking, can be async ? require removeRows emission ?
-    ProgressNotifier mainProg(DeleteItemsProcess, this);
+    ProgressNotifier mainProg(Model::DeleteItemsProcess, this);
 
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
@@ -1454,7 +1454,7 @@ void ObjectModel::updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, c
 {
     // non-blocking
     DataChangedHelper helper( m_items.count() );
-    ProgressNotifier mainProg(UpdateFileTimeInTempDirByExportDateProcess, this);
+    ProgressNotifier mainProg(Model::UpdateFileTimeInTempDirByExportDateProcess, this);
     ProjectSetting setting(this);
     ObjectProcessor *os;
     setting.initialize(m_application);
@@ -1514,7 +1514,7 @@ void ObjectModel::updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, c
 void ObjectModel::loadItemsFromProject(QList<ObjectItem*> *items)
 {
     // BLOCKING, cannot be async
-    ProgressNotifier mainProg(LoadItemFromProjectProcess, this);
+    ProgressNotifier mainProg(Model::LoadItemFromProjectProcess, this);
     ProjectSetting setting(this);
     ObjectProcessor *os;
     setting.initialize(m_application);
@@ -1544,7 +1544,7 @@ void ObjectModel::loadItemsFromProject(QList<ObjectItem*> *items)
 void ObjectModel::loadItemsFromSourceDir(QList<ObjectItem*> *items)
 {
     // FIXME: non-blocking, can be async ? require append ?
-    ProgressNotifier mainProg(LoadItemFromSourceDirProcess, this);
+    ProgressNotifier mainProg(Model::LoadItemFromSourceDirProcess, this);
     ProjectSetting setting(this);
     ObjectProcessor *os;
     setting.initialize(m_application);
@@ -1703,7 +1703,7 @@ void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
     //      for objects existing in ProjectOnly
     // without sanitizing and any extra processes.
 
-    ProgressNotifier mainProg(ExportFromProjectToTempDirProcess, this);
+    ProgressNotifier mainProg(Model::ExportFromProjectToTempDirProcess, this);
     ProjectSetting setting(this);
     ObjectProcessor *os;
     setting.initialize(m_application);
@@ -1733,7 +1733,7 @@ void ObjectModel::importFromTempDirToProject(ObjectItems *allTargets)
 {
     // BLOCKING, cannot be async
 
-    ProgressNotifier mainProg(ImportFromTempDirToProjectProcess, this);
+    ProgressNotifier mainProg(Model::ImportFromTempDirToProjectProcess, this);
     ProjectSetting setting(this);
     ObjectProcessor *os;
     setting.initialize(m_application);
@@ -1808,7 +1808,7 @@ struct CopyFromTempDirToSourceDirFunctionObject
 void ObjectModel::copyFromTempDirToSourceDir(ObjectItems *allTargets)
 {
     // non-blocking
-    ProgressNotifier mainProg(CopyFromTempDirToSourceDirProcess, this);
+    ProgressNotifier mainProg(Model::CopyFromTempDirToSourceDirProcess, this);
     ProjectSetting setting(this);
     ObjectProcessor *os;
     setting.initialize(m_application);
@@ -1866,7 +1866,7 @@ struct CopyFromSourceDirToTempDirFunctionObject
 void ObjectModel::copyFromSourceDirToTempDir(ObjectItems *allTargets)
 {
     // non-blocking
-    ProgressNotifier mainProg(CopyFromSourceDirToTempDirProcess, this);
+    ProgressNotifier mainProg(Model::CopyFromSourceDirToTempDirProcess, this);
     ProjectSetting setting(this);
     ObjectProcessor *os;
     setting.initialize(m_application);
@@ -1902,7 +1902,7 @@ void ObjectModel::copyFromSourceDirToTempDir(ObjectItems *allTargets)
 }
 
 
-
+// NOTE: implemented as command
 struct SanitizeTempDirFunctionObject
 {
     SanitizeTempDirFunctionObject(ObjectProcessor *os)
@@ -1923,7 +1923,7 @@ struct SanitizeTempDirFunctionObject
 void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
 {
     // non-blocking
-    ProgressNotifier mainProg(SanitizeTempDirProcess, this);
+    ProgressNotifier mainProg(Model::SanitizeTempDirProcess, this);
     ProjectSetting setting(this);
     ObjectProcessor *os;
     setting.initialize(m_application);
@@ -1959,6 +1959,7 @@ void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
     }
 }
 
+// NOTE: implemented as command
 struct DesanitizeTempDirFunctionObject
 {
     DesanitizeTempDirFunctionObject(ObjectProcessor *os)
@@ -1979,7 +1980,7 @@ struct DesanitizeTempDirFunctionObject
 void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
 {
     // non-blocking
-    ProgressNotifier mainProg(DesanitizeTempDirProcess, this);
+    ProgressNotifier mainProg(Model::DesanitizeTempDirProcess, this);
     ProjectSetting setting(this);
     ObjectProcessor *os;
     setting.initialize(m_application);
@@ -2053,7 +2054,7 @@ void ObjectModel::compareTempDir(ObjectItems *allTargets)
 {
     // non-blocking
     DataChangedHelper helper( m_items.count() );
-    ProgressNotifier mainProg(CompareTempDirProcess, this);
+    ProgressNotifier mainProg(Model::CompareTempDirProcess, this);
     ProjectSetting setting(this);
     ObjectProcessor *os;
     setting.initialize(m_application);
@@ -2130,7 +2131,7 @@ struct DeleteFromSourceDirFunctionObject
 void ObjectModel::deleteFromSourceDir(ObjectItems *allTargets)
 {
     // non-blocking
-    ProgressNotifier mainProg(DeleteFromSourceDirProcess, this);
+    ProgressNotifier mainProg(Model::DeleteFromSourceDirProcess, this);
     ProjectSetting setting(this);
     ObjectProcessor *os;
     setting.initialize(m_application);
@@ -2169,7 +2170,7 @@ void ObjectModel::deleteFromProject(ObjectItems *allTargets)
 {
     // BLOCKING, cannot be async
 
-    ProgressNotifier mainProg(DeleteFromProjectProcess, this);
+    ProgressNotifier mainProg(Model::DeleteFromProjectProcess, this);
     ProjectSetting setting(this);
     ObjectProcessor *os;
     setting.initialize(m_application);
@@ -2212,7 +2213,7 @@ struct DeleteFromTempDirFunctionObject
 void ObjectModel::deleteFromTempDir(ObjectItems *allTargets)
 {
     // non-blocking
-    ProgressNotifier mainProg(DeleteFromTempDirProcess, this);
+    ProgressNotifier mainProg(Model::DeleteFromTempDirProcess, this);
     ProjectSetting setting(this);
     ObjectProcessor *os;
     setting.initialize(m_application);

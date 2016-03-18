@@ -33,7 +33,10 @@ SOURCES += \
     cvsmodel/processor/queryasobjectprocessor.cpp \
     cvsmodel/processor/queryassqlprocessor.cpp \
     cvsmodel/processor/relationprocessor.cpp \
-    cvsmodel/processor/tabledefprocessor.cpp
+    cvsmodel/processor/tabledefprocessor.cpp \
+    cvsmodel/command/sanitizetempdircommand.cpp \
+    cvsmodel/command/commandbase.cpp \
+    cvsmodel/command/desanitizetempdircommand.cpp
 
 HEADERS += \
     cvsmodel/cvsmodel_global.h \
@@ -61,7 +64,10 @@ HEADERS += \
     cvsmodel/processor/queryassqlprocessor.h \
     cvsmodel/processor/relationprocessor.h \
     cvsmodel/processor/tabledefprocessor.h \
-    cvsmodel/cvsmodel_const.h
+    cvsmodel/cvsmodel_const.h \
+    cvsmodel/command/sanitizetempdircommand.h \
+    cvsmodel/command/commandbase.h \
+    cvsmodel/command/desanitizetempdircommand.h
 
 include(../../common.pri)
 include(../../submodule.pri)

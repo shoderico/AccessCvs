@@ -58,6 +58,53 @@ enum ObjectDifference
     SameContents = State_Off,
 };
 
+
+
+//----------------------------------------------------------------------------------------------------------------------
+// progress notification
+enum ProcessType
+{
+    RefreshProcess,
+    ExportProcess,
+    ImportProcess,
+
+    LoadItemFromProjectProcess,
+    LoadItemFromSourceDirProcess,
+
+    ExportFromProjectToTempDirProcess,
+    ImportFromTempDirToProjectProcess,
+
+    CopyFromTempDirToSourceDirProcess,
+    CopyFromSourceDirToTempDirProcess,
+
+    SanitizeTempDirProcess,
+    DesanitizeTempDirProcess,
+    CompareTempDirProcess,
+
+    DeleteFromSourceDirProcess,
+    DeleteFromProjectProcess,
+
+    DeleteFromTempDirProcess,
+
+    UpdateItemsDifferenceByFileTimeProcess,
+    UpdateFileTimeInTempDirByExportDateProcess,
+    UpdateItemsExportDateProcess,
+    UpdateFileTimeInTempDirProcess,
+
+    UpdateItemsInProjectProcess,
+    UpdateItemsInSourceDirProcess,
+    UpdateItemsDifferenceProcess,
+    UpdateItemsDifferenceAsIsProcess,
+    DeleteItemsProcess,
+    UpdateItemsCreateUpdateDateFromProjectProcess,
+};
+
+
+
+
+
+
+
 } // namespace Model
 
 #endif // CVSMODEL_CONST_H
