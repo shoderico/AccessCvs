@@ -1693,7 +1693,7 @@ void ObjectModel::reloadAndMergeItems()
 
 
 
-
+// NOTE: implemented as command
 void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
 {
     // BLOCKING, cannot be async
@@ -1729,6 +1729,7 @@ void ObjectModel::exportFromProjectToTempDir(ObjectItems *allTargets)
     }
 }
 
+// NOTE: implemented as command
 void ObjectModel::importFromTempDirToProject(ObjectItems *allTargets)
 {
     // BLOCKING, cannot be async
@@ -1787,6 +1788,7 @@ void ObjectModel::importFromTempDirToProject(ObjectItems *allTargets)
 
 
 
+// NOTE: implemented as command
 struct CopyFromTempDirToSourceDirFunctionObject
 {
     CopyFromTempDirToSourceDirFunctionObject(ObjectProcessor *os)
@@ -1805,6 +1807,7 @@ struct CopyFromTempDirToSourceDirFunctionObject
 };
 
 
+// NOTE: implemented as command
 void ObjectModel::copyFromTempDirToSourceDir(ObjectItems *allTargets)
 {
     // non-blocking
@@ -1846,6 +1849,7 @@ void ObjectModel::copyFromTempDirToSourceDir(ObjectItems *allTargets)
 
 
 
+// NOTE: implemented as command
 struct CopyFromSourceDirToTempDirFunctionObject
 {
     CopyFromSourceDirToTempDirFunctionObject(ObjectProcessor *os)
@@ -1863,6 +1867,7 @@ struct CopyFromSourceDirToTempDirFunctionObject
     ObjectProcessor *m_os;
 };
 
+// NOTE: implemented as command
 void ObjectModel::copyFromSourceDirToTempDir(ObjectItems *allTargets)
 {
     // non-blocking
@@ -1920,6 +1925,7 @@ struct SanitizeTempDirFunctionObject
     ObjectProcessor *m_os;
 };
 
+// NOTE: implemented as command
 void ObjectModel::sanitizeTempDir(ObjectItems *allTargets)
 {
     // non-blocking
@@ -1977,6 +1983,7 @@ struct DesanitizeTempDirFunctionObject
     ObjectProcessor *m_os;
 };
 
+// NOTE: implemented as command
 void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
 {
     // non-blocking
@@ -2019,6 +2026,7 @@ void ObjectModel::desanitizeTempDir(ObjectItems *allTargets)
 
 
 
+// NOTE: implemented as command
 struct CompareTempDirFunctionObject : public BaseFunctionObject
 {
     CompareTempDirFunctionObject(ObjectProcessor *os, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
@@ -2049,7 +2057,7 @@ struct CompareTempDirFunctionObject : public BaseFunctionObject
     ObjectProcessor *m_os;
 };
 
-
+// NOTE: implemented as command
 void ObjectModel::compareTempDir(ObjectItems *allTargets)
 {
     // non-blocking
@@ -2110,6 +2118,7 @@ void ObjectModel::compareTempDir(ObjectItems *allTargets)
 
 
 
+// NOTE: implemented as command
 struct DeleteFromSourceDirFunctionObject
 {
     DeleteFromSourceDirFunctionObject(ObjectProcessor *os)
@@ -2128,6 +2137,7 @@ struct DeleteFromSourceDirFunctionObject
 };
 
 
+// NOTE: implemented as command
 void ObjectModel::deleteFromSourceDir(ObjectItems *allTargets)
 {
     // non-blocking
@@ -2166,6 +2176,7 @@ void ObjectModel::deleteFromSourceDir(ObjectItems *allTargets)
     }
 }
 
+// NOTE: implemented as command
 void ObjectModel::deleteFromProject(ObjectItems *allTargets)
 {
     // BLOCKING, cannot be async
@@ -2193,6 +2204,7 @@ void ObjectModel::deleteFromProject(ObjectItems *allTargets)
 
 
 
+// NOTE: implemented as command
 struct DeleteFromTempDirFunctionObject
 {
     DeleteFromTempDirFunctionObject(ObjectProcessor *os)
@@ -2210,6 +2222,7 @@ struct DeleteFromTempDirFunctionObject
     ObjectProcessor *m_os;
 };
 
+// NOTE: implemented as command
 void ObjectModel::deleteFromTempDir(ObjectItems *allTargets)
 {
     // non-blocking

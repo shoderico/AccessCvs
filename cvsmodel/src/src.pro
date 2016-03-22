@@ -36,7 +36,15 @@ SOURCES += \
     cvsmodel/processor/tabledefprocessor.cpp \
     cvsmodel/command/sanitizetempdircommand.cpp \
     cvsmodel/command/commandbase.cpp \
-    cvsmodel/command/desanitizetempdircommand.cpp
+    cvsmodel/command/desanitizetempdircommand.cpp \
+    cvsmodel/command/deletefromsourcedircommand.cpp \
+    cvsmodel/command/deletefromtempdircommand.cpp \
+    cvsmodel/command/deletefromprojectcommand.cpp \
+    cvsmodel/command/copyfromtempdirtosourcedircommand.cpp \
+    cvsmodel/command/copyfromsourcedirtotempdircommand.cpp \
+    cvsmodel/command/comparetempdircommand.cpp \
+    cvsmodel/command/importfromtempdirtoprojectcommand.cpp \
+    cvsmodel/command/exportfromprojecttotempdircommand.cpp
 
 HEADERS += \
     cvsmodel/cvsmodel_global.h \
@@ -67,7 +75,15 @@ HEADERS += \
     cvsmodel/cvsmodel_const.h \
     cvsmodel/command/sanitizetempdircommand.h \
     cvsmodel/command/commandbase.h \
-    cvsmodel/command/desanitizetempdircommand.h
+    cvsmodel/command/desanitizetempdircommand.h \
+    cvsmodel/command/deletefromsourcedircommand.h \
+    cvsmodel/command/deletefromtempdircommand.h \
+    cvsmodel/command/deletefromprojectcommand.h \
+    cvsmodel/command/copyfromtempdirtosourcedircommand.h \
+    cvsmodel/command/copyfromsourcedirtotempdircommand.h \
+    cvsmodel/command/comparetempdircommand.h \
+    cvsmodel/command/importfromtempdirtoprojectcommand.h \
+    cvsmodel/command/exportfromprojecttotempdircommand.h
 
 include(../../common.pri)
 include(../../submodule.pri)

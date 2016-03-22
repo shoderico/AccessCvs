@@ -5,7 +5,9 @@
 
 class QAxObject;
 
+class ObjectItem;
 class ObjectItems;
+class DataChangedHelper;
 
 class CommandBase : public QObject
 {
@@ -14,6 +16,7 @@ public:
     explicit CommandBase(QObject *parent = 0);
 
     void setApplication(QAxObject *application);
+    void setItems(QList<ObjectItem*> *items);
     virtual void execute(ObjectItems *allTargets);
 
 signals:
@@ -25,6 +28,22 @@ public slots:
 
 protected:
     QAxObject *m_application;
+    QList<ObjectItem*> *m_items;
 };
+
+
+struct FunctionObjectBase
+{
+    FunctionObjectBase(DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items);
+
+    typedef void result_type;
+
+    void registerChanged(ObjectItem* item);
+
+    DataChangedHelper *m_dataChangedHelper;
+    QList<ObjectItem*> *m_items;
+};
+
+
 
 #endif // COMMANDBASE_H
