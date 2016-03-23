@@ -24,21 +24,21 @@ MainDialog::MainDialog(ObjectModel *model, ObjectProxyModel *proxyModel, QWidget
 
     ui->treeView->setModel(m_proxyModel);
     ui->treeView->setIndentation(0);
-    ui->treeView->setItemDelegateForColumn( ObjectModel::InProjectColumn,     new CheckBoxItemDelegate(Model::State_NoChange, Model::State_On, Model::State_Off) );
-    ui->treeView->setItemDelegateForColumn( ObjectModel::InSourceDirColumn,   new CheckBoxItemDelegate(Model::State_NoChange, Model::State_On, Model::State_Off) );
-    ui->treeView->setItemDelegateForColumn( ObjectModel::DifferentColumn,     new CheckBoxItemDelegate(Model::State_NoChange, Model::State_On, Model::State_Off) );
-    ui->treeView->setItemDelegateForColumn( ObjectModel::HasDataColumn,       new HasDataColumnItemDelegate() );
-    ui->treeView->setColumnWidth(ObjectModel::InProjectColumn,    35);
-    ui->treeView->setColumnWidth(ObjectModel::InSourceDirColumn, 35);
-    ui->treeView->setColumnWidth(ObjectModel::DifferentColumn,    35);
-    ui->treeView->setColumnWidth(ObjectModel::HasDataColumn,      35);
-    ui->treeView->setColumnWidth(ObjectModel::NameColumn, 200);
-    ui->treeView->setColumnWidth(ObjectModel::CreateDateColumn, 150);
-    ui->treeView->setColumnWidth(ObjectModel::UpdateDateColumn, 150);
-    ui->treeView->setColumnWidth(ObjectModel::ExportDateColumn, 150);
+    ui->treeView->setItemDelegateForColumn( Model::InProjectColumn,     new CheckBoxItemDelegate(Model::State_NoChange, Model::State_On, Model::State_Off) );
+    ui->treeView->setItemDelegateForColumn( Model::InSourceDirColumn,   new CheckBoxItemDelegate(Model::State_NoChange, Model::State_On, Model::State_Off) );
+    ui->treeView->setItemDelegateForColumn( Model::DifferentColumn,     new CheckBoxItemDelegate(Model::State_NoChange, Model::State_On, Model::State_Off) );
+    ui->treeView->setItemDelegateForColumn( Model::HasDataColumn,       new HasDataColumnItemDelegate() );
+    ui->treeView->setColumnWidth(Model::InProjectColumn,    35);
+    ui->treeView->setColumnWidth(Model::InSourceDirColumn, 35);
+    ui->treeView->setColumnWidth(Model::DifferentColumn,    35);
+    ui->treeView->setColumnWidth(Model::HasDataColumn,      35);
+    ui->treeView->setColumnWidth(Model::NameColumn, 200);
+    ui->treeView->setColumnWidth(Model::CreateDateColumn, 150);
+    ui->treeView->setColumnWidth(Model::UpdateDateColumn, 150);
+    ui->treeView->setColumnWidth(Model::ExportDateColumn, 150);
 
     ui->treeView->setSortingEnabled(true);
-    ui->treeView->sortByColumn(ObjectModel::NameColumn, Qt::AscendingOrder);
+    ui->treeView->sortByColumn(Model::NameColumn, Qt::AscendingOrder);
 
     // command
     connect( ui->okButton,     SIGNAL(clicked(bool)), this, SLOT(onAccepted()) );
@@ -228,17 +228,17 @@ void MainDialog::setShownObjectType(int objectTypes)
     const QSignalBlocker blockProjectFile( ui->showProjectFileCheckBox );
     const QSignalBlocker blockVBProject( ui->showVBProjectCheckBox );
 
-    ui->showAllCheckBox         ->setChecked( objectTypes == ObjectModel::AllObjectTypes );
+    ui->showAllCheckBox         ->setChecked( objectTypes == Model::AllObjectTypes );
 
-    ui->showTableCheckBox       ->setChecked( objectTypes & ObjectModel::TableObjectType );
-    ui->showQueryCheckBox       ->setChecked( objectTypes & ObjectModel::QueryObjectType );
-    ui->showFormCheckBox        ->setChecked( objectTypes & ObjectModel::FormObjectType );
-    ui->showReportCheckBox      ->setChecked( objectTypes & ObjectModel::ReportObjectType );
-    ui->showMacroCheckBox       ->setChecked( objectTypes & ObjectModel::MacroObjectType );
-    ui->showModuleCheckBox      ->setChecked( objectTypes & ObjectModel::ModuleObjectType );
-    ui->showReferenceCheckBox   ->setChecked( objectTypes & ObjectModel::ReferenceObjectType );
-    ui->showProjectFileCheckBox ->setChecked( objectTypes & ObjectModel::ProjectFileType );
-    ui->showVBProjectCheckBox   ->setChecked( objectTypes & ObjectModel::VBProjectType );
+    ui->showTableCheckBox       ->setChecked( objectTypes & Model::TableObjectType );
+    ui->showQueryCheckBox       ->setChecked( objectTypes & Model::QueryObjectType );
+    ui->showFormCheckBox        ->setChecked( objectTypes & Model::FormObjectType );
+    ui->showReportCheckBox      ->setChecked( objectTypes & Model::ReportObjectType );
+    ui->showMacroCheckBox       ->setChecked( objectTypes & Model::MacroObjectType );
+    ui->showModuleCheckBox      ->setChecked( objectTypes & Model::ModuleObjectType );
+    ui->showReferenceCheckBox   ->setChecked( objectTypes & Model::ReferenceObjectType );
+    ui->showProjectFileCheckBox ->setChecked( objectTypes & Model::ProjectFileType );
+    ui->showVBProjectCheckBox   ->setChecked( objectTypes & Model::VBProjectType );
 }
 
 void MainDialog::setSelectObjectType(int objectTypes)
@@ -254,41 +254,41 @@ void MainDialog::setSelectObjectType(int objectTypes)
     const QSignalBlocker blockProjectFile( ui->selectProjectFileCheckBox );
     const QSignalBlocker blockVBProject( ui->selectVBProjectCheckBox );
 
-    ui->selectAllCheckBox         ->setChecked( objectTypes == ObjectModel::AllObjectTypes );
+    ui->selectAllCheckBox         ->setChecked( objectTypes == Model::AllObjectTypes );
 
-    ui->selectTableCheckBox       ->setChecked( objectTypes & ObjectModel::TableObjectType );
-    ui->selectQueryCheckBox       ->setChecked( objectTypes & ObjectModel::QueryObjectType );
-    ui->selectFormCheckBox        ->setChecked( objectTypes & ObjectModel::FormObjectType );
-    ui->selectReportCheckBox      ->setChecked( objectTypes & ObjectModel::ReportObjectType );
-    ui->selectMacroCheckBox       ->setChecked( objectTypes & ObjectModel::MacroObjectType );
-    ui->selectModuleCheckBox      ->setChecked( objectTypes & ObjectModel::ModuleObjectType );
-    ui->selectReferenceCheckBox   ->setChecked( objectTypes & ObjectModel::ReferenceObjectType );
-    ui->selectProjectFileCheckBox ->setChecked( objectTypes & ObjectModel::ProjectFileType );
-    ui->selectVBProjectCheckBox   ->setChecked( objectTypes & ObjectModel::VBProjectType );
+    ui->selectTableCheckBox       ->setChecked( objectTypes & Model::TableObjectType );
+    ui->selectQueryCheckBox       ->setChecked( objectTypes & Model::QueryObjectType );
+    ui->selectFormCheckBox        ->setChecked( objectTypes & Model::FormObjectType );
+    ui->selectReportCheckBox      ->setChecked( objectTypes & Model::ReportObjectType );
+    ui->selectMacroCheckBox       ->setChecked( objectTypes & Model::MacroObjectType );
+    ui->selectModuleCheckBox      ->setChecked( objectTypes & Model::ModuleObjectType );
+    ui->selectReferenceCheckBox   ->setChecked( objectTypes & Model::ReferenceObjectType );
+    ui->selectProjectFileCheckBox ->setChecked( objectTypes & Model::ProjectFileType );
+    ui->selectVBProjectCheckBox   ->setChecked( objectTypes & Model::VBProjectType );
 }
 
 int MainDialog::checkBoxToObjectType(QCheckBox *checkBox) const
 {
     int objectType = 0;
-    if (ui->showTableCheckBox        == checkBox) objectType = ObjectModel::TableObjectType;
-    if (ui->showQueryCheckBox        == checkBox) objectType = ObjectModel::QueryObjectType;
-    if (ui->showFormCheckBox         == checkBox) objectType = ObjectModel::FormObjectType;
-    if (ui->showReportCheckBox       == checkBox) objectType = ObjectModel::ReportObjectType;
-    if (ui->showMacroCheckBox        == checkBox) objectType = ObjectModel::MacroObjectType;
-    if (ui->showModuleCheckBox       == checkBox) objectType = ObjectModel::ModuleObjectType;
-    if (ui->showReferenceCheckBox    == checkBox) objectType = ObjectModel::ReferenceObjectType;
-    if (ui->showProjectFileCheckBox  == checkBox) objectType = ObjectModel::ProjectFileType;
-    if (ui->showVBProjectCheckBox    == checkBox) objectType = ObjectModel::VBProjectType;
+    if (ui->showTableCheckBox        == checkBox) objectType = Model::TableObjectType;
+    if (ui->showQueryCheckBox        == checkBox) objectType = Model::QueryObjectType;
+    if (ui->showFormCheckBox         == checkBox) objectType = Model::FormObjectType;
+    if (ui->showReportCheckBox       == checkBox) objectType = Model::ReportObjectType;
+    if (ui->showMacroCheckBox        == checkBox) objectType = Model::MacroObjectType;
+    if (ui->showModuleCheckBox       == checkBox) objectType = Model::ModuleObjectType;
+    if (ui->showReferenceCheckBox    == checkBox) objectType = Model::ReferenceObjectType;
+    if (ui->showProjectFileCheckBox  == checkBox) objectType = Model::ProjectFileType;
+    if (ui->showVBProjectCheckBox    == checkBox) objectType = Model::VBProjectType;
 
-    if (ui->selectTableCheckBox        == checkBox) objectType = ObjectModel::TableObjectType;
-    if (ui->selectQueryCheckBox        == checkBox) objectType = ObjectModel::QueryObjectType;
-    if (ui->selectFormCheckBox         == checkBox) objectType = ObjectModel::FormObjectType;
-    if (ui->selectReportCheckBox       == checkBox) objectType = ObjectModel::ReportObjectType;
-    if (ui->selectMacroCheckBox        == checkBox) objectType = ObjectModel::MacroObjectType;
-    if (ui->selectModuleCheckBox       == checkBox) objectType = ObjectModel::ModuleObjectType;
-    if (ui->selectReferenceCheckBox    == checkBox) objectType = ObjectModel::ReferenceObjectType;
-    if (ui->selectProjectFileCheckBox  == checkBox) objectType = ObjectModel::ProjectFileType;
-    if (ui->selectVBProjectCheckBox    == checkBox) objectType = ObjectModel::VBProjectType;
+    if (ui->selectTableCheckBox        == checkBox) objectType = Model::TableObjectType;
+    if (ui->selectQueryCheckBox        == checkBox) objectType = Model::QueryObjectType;
+    if (ui->selectFormCheckBox         == checkBox) objectType = Model::FormObjectType;
+    if (ui->selectReportCheckBox       == checkBox) objectType = Model::ReportObjectType;
+    if (ui->selectMacroCheckBox        == checkBox) objectType = Model::MacroObjectType;
+    if (ui->selectModuleCheckBox       == checkBox) objectType = Model::ModuleObjectType;
+    if (ui->selectReferenceCheckBox    == checkBox) objectType = Model::ReferenceObjectType;
+    if (ui->selectProjectFileCheckBox  == checkBox) objectType = Model::ProjectFileType;
+    if (ui->selectVBProjectCheckBox    == checkBox) objectType = Model::VBProjectType;
 
     return objectType;
 }

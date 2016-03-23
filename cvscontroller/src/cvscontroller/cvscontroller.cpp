@@ -176,12 +176,12 @@ void CvsController::selectAuto()
 
 void CvsController::selectAllObject(bool select)
 {
-    m_model->selectItems( ObjectModel::AllItems, select, true/*resetSelection*/ );
+    m_model->selectItems( Model::AllItems, select, true/*resetSelection*/ );
 }
 
 void CvsController::selectObject(int objectType, bool select)
 {
-    m_model->selectItemsByObjectType( (ObjectModel::SelectObjectType)objectType, select, false /*resetSelection*/ );
+    m_model->selectItemsByObjectType( (Model::SelectObjectType)objectType, select, false /*resetSelection*/ );
 }
 
 void CvsController::showSelectedOnly(bool selectedOnly)
@@ -191,7 +191,7 @@ void CvsController::showSelectedOnly(bool selectedOnly)
 
 void CvsController::showAllObject(bool show)
 {
-    int objectTypes = show ? ObjectModel::AllObjectTypes : 0 ;
+    int objectTypes = show ? Model::AllObjectTypes : 0 ;
     m_proxyModel->setFilterShowObjectType( objectTypes );
     // TODO : update view's check state
     // model emit the signal for filter changed.
@@ -269,7 +269,7 @@ void CvsController::init()
     connect(m_dlg, SIGNAL(selectAllObject(bool)), this, SLOT(selectAllObject(bool)) );
     connect(m_dlg, SIGNAL(selectObject(int,bool)), this, SLOT(selectObject(int,bool)) );
 
-    m_proxyModel->setFilterShowObjectType( ObjectModel::AllObjectTypes );
+    m_proxyModel->setFilterShowObjectType( Model::AllObjectTypes );
     m_proxyModel->setFilterShowSelectedOnly( true/*selected*/ );
 }
 
@@ -291,7 +291,7 @@ void CvsController::prepare(const CvsController::PrepareType prepareType, const 
     if (clearCache)
     {
         m_model->refreshItems();
-        m_model->selectItems(ObjectModel::AllItems, true /*selected*/, true /*resetSelection*/ );
+        m_model->selectItems(Model::AllItems, true /*selected*/, true /*resetSelection*/ );
         m_model->clearItemsCache();
     }
     m_model->refreshItems();

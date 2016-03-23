@@ -35,19 +35,19 @@ public:
 
     bool setData(const QModelIndex &index, const QVariant &value, int role);
 
-    enum Column
-    {
-        NameColumn = 0,
-        HasDataColumn,
-        InProjectColumn,
-        InSourceDirColumn,
-        DifferentColumn,
-        CreateDateColumn,
-        UpdateDateColumn,
-        ExportDateColumn,
-        ObjectTypeColumn,
-        ColumnCount
-    };
+//    enum Column
+//    {
+//        NameColumn = 0,
+//        HasDataColumn,
+//        InProjectColumn,
+//        InSourceDirColumn,
+//        DifferentColumn,
+//        CreateDateColumn,
+//        UpdateDateColumn,
+//        ExportDateColumn,
+//        ObjectTypeColumn,
+//        ColumnCount
+//    };
 
     void saveSettigs();
 
@@ -75,55 +75,55 @@ public:
 
 
 
-    // items getter
-    enum ItemsType
-    {
-      //NoItems          = 0,
-        InBoth           = 1,
-        InBoth_Different = 2,
-        InBoth_Same      = 4,
-        InBoth_NotSame   = 8,
-        InProjectOnly    = 16,
-        InSourceDirOnly = 32,
-        AllItems         = 63,
-    };
-    Q_DECLARE_FLAGS(ItemsTypes, ItemsType)
+//    // items getter
+//    enum ItemsType
+//    {
+//      //NoItems          = 0,
+//        InBoth           = 1,
+//        InBoth_Different = 2,
+//        InBoth_Same      = 4,
+//        InBoth_NotSame   = 8,
+//        InProjectOnly    = 16,
+//        InSourceDirOnly = 32,
+//        AllItems         = 63,
+//    };
+//    Q_DECLARE_FLAGS(ItemsTypes, ItemsType)
 
-    enum SelectObjectType
-    {
-      //NoObjectTypes = 0,
-        TableObjectType = 1,
-        QueryObjectType = 2,
-        FormObjectType = 4,
-        ReportObjectType = 8,
-        MacroObjectType = 16,
-        ModuleObjectType = 32,
-        ReferenceObjectType = 64,
-        ProjectFileType = 128,
-        VBProjectType = 256,
-        AllObjectTypes = 511,
-    };
-    Q_DECLARE_FLAGS(SelectObjectTypes, SelectObjectType)
+//    enum SelectObjectType
+//    {
+//      //NoObjectTypes = 0,
+//        TableObjectType = 1,
+//        QueryObjectType = 2,
+//        FormObjectType = 4,
+//        ReportObjectType = 8,
+//        MacroObjectType = 16,
+//        ModuleObjectType = 32,
+//        ReferenceObjectType = 64,
+//        ProjectFileType = 128,
+//        VBProjectType = 256,
+//        AllObjectTypes = 511,
+//    };
+//    Q_DECLARE_FLAGS(SelectObjectTypes, SelectObjectType)
 
-    enum ObjectDifferenceType
-    {
-        SameContentsType = 1,
-        DifferentContentsTypes = 2,
-        AllDifferenceTypes = 3,
-    };
-    Q_DECLARE_FLAGS(ObjectDifferenceTypes, ObjectDifferenceType)
+//    enum ObjectDifferenceType
+//    {
+//        SameContentsType = 1,
+//        DifferentContentsTypes = 2,
+//        AllDifferenceTypes = 3,
+//    };
+//    Q_DECLARE_FLAGS(ObjectDifferenceTypes, ObjectDifferenceType)
 
     int selectedRowCount() const;
 
-    void getItems(ObjectItems *pItems, ItemsTypes itemsType, bool selectedOnly /*= true*/, bool modifiedOnly /*= false*/) const;
-    void getItems(ObjectItems *pItems, ItemsTypes itemsType, SelectObjectTypes objectTypes, bool selectedOnly /*= true*/, bool modifiedOnly /*= false*/) const;
+    void getItems(ObjectItems *pItems, Model::ItemsTypes itemsType, bool selectedOnly /*= true*/, bool modifiedOnly /*= false*/) const;
+    void getItems(ObjectItems *pItems, Model::ItemsTypes itemsType, Model::SelectObjectTypes objectTypes, bool selectedOnly /*= true*/, bool modifiedOnly /*= false*/) const;
 
     void selectItemsForProcess(bool selected, bool resetSelection /*= true*/);
-    void selectItems(ItemsTypes itemsType, bool selected, bool resetSelection /*= true*/);
-    void selectItemsByObjectType(SelectObjectTypes objectTypes, bool selected, bool resetSelection /*= true*/);
+    void selectItems(Model::ItemsTypes itemsType, bool selected, bool resetSelection /*= true*/);
+    void selectItemsByObjectType(Model::SelectObjectTypes objectTypes, bool selected, bool resetSelection /*= true*/);
     void emitSelectionChanged();
 
-    void updateItemsExportDate(ObjectItems *allTargets, const QDateTime &exportDate, const ObjectDifferenceTypes differenceTypes);
+    void updateItemsExportDate(ObjectItems *allTargets, const QDateTime &exportDate, const Model::ObjectDifferenceTypes differenceTypes);
     void updateItemsInProject(ObjectItems *allTargets, Model::ObjectExistence existence);
     void updateItemsInSourceDir(ObjectItems *allTargets, Model::ObjectExistence existence);
     void updateItemsDifference(ObjectItems *allTargets, Model::ObjectDifference difference);
@@ -132,8 +132,8 @@ public:
     void updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets);
 
 
-    void updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, const ObjectDifferenceTypes differenceTypes);
-    void updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTime &fileTime, const ObjectDifferenceTypes differenceTypes);
+    void updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, const Model::ObjectDifferenceTypes differenceTypes);
+    void updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTime &fileTime, const Model::ObjectDifferenceTypes differenceTypes);
 
     void deleteItems(ObjectItems *allTargets);
 
@@ -185,8 +185,8 @@ private:
     void mergeItemProperties(ObjectItem* itemSrc, ObjectItem* itemDst);
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(ObjectModel::ItemsTypes)
-Q_DECLARE_OPERATORS_FOR_FLAGS(ObjectModel::SelectObjectTypes)
-Q_DECLARE_OPERATORS_FOR_FLAGS(ObjectModel::ObjectDifferenceTypes)
+//Q_DECLARE_OPERATORS_FOR_FLAGS(ObjectModel::ItemsTypes)
+//Q_DECLARE_OPERATORS_FOR_FLAGS(ObjectModel::SelectObjectTypes)
+//Q_DECLARE_OPERATORS_FOR_FLAGS(ObjectModel::ObjectDifferenceTypes)
 
 #endif // OBJECTMODEL_H

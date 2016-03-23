@@ -10,7 +10,7 @@ HasDataColumnItemDelegate::HasDataColumnItemDelegate(QObject *parent) : BoolChec
 bool HasDataColumnItemDelegate::paintRequired(const QModelIndex &index) const
 {
     // table only
-    const QModelIndex index_type = index.model()->index( index.row(), ObjectModel::ObjectTypeColumn );
+    const QModelIndex index_type = index.model()->index( index.row(), Model::ObjectTypeColumn );
     int objectType = index.model()->data(index_type).toInt();
     if (objectType != Model::TableDef)
         return false;
@@ -20,7 +20,7 @@ bool HasDataColumnItemDelegate::paintRequired(const QModelIndex &index) const
 bool HasDataColumnItemDelegate::editAvaiable(QAbstractItemModel *model, const QModelIndex &index)
 {
     // table only
-    QModelIndex index_type = model->index( index.row(), ObjectModel::ObjectTypeColumn );
+    QModelIndex index_type = model->index( index.row(), Model::ObjectTypeColumn );
     int objectType = model->data(index_type).toInt();
     if (objectType != Model::TableDef)
         return false;

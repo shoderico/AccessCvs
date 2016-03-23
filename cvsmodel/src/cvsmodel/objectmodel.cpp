@@ -33,7 +33,7 @@ int ObjectModel::columnCount(const QModelIndex &parent) const
     // createDate,updateDate
     if (parent.isValid())
         return 0;
-    return ColumnCount;
+    return Model::ColumnCount;
 }
 
 int ObjectModel::rowCount(const QModelIndex &parent) const
@@ -51,15 +51,15 @@ QVariant ObjectModel::headerData(int section, Qt::Orientation orientation, int r
     {
         switch (section)
         {
-            case NameColumn: return tr("Name");
-            case InProjectColumn: return tr("InProject");
-            case InSourceDirColumn: return tr("InRepository");
-            case CreateDateColumn: return tr("CreateDate");
-            case UpdateDateColumn: return tr("UpdateDate");
-            case ExportDateColumn: return tr("ExportDate");
-            case ObjectTypeColumn: return tr("ObjectType");
-            case DifferentColumn: return tr("Different");
-            case HasDataColumn: return tr("HasData");
+            case Model::NameColumn: return tr("Name");
+            case Model::InProjectColumn: return tr("InProject");
+            case Model::InSourceDirColumn: return tr("InRepository");
+            case Model::CreateDateColumn: return tr("CreateDate");
+            case Model::UpdateDateColumn: return tr("UpdateDate");
+            case Model::ExportDateColumn: return tr("ExportDate");
+            case Model::ObjectTypeColumn: return tr("ObjectType");
+            case Model::DifferentColumn: return tr("Different");
+            case Model::HasDataColumn: return tr("HasData");
         }
     }
 
@@ -84,7 +84,7 @@ QVariant ObjectModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid() ||
             index.row() < 0 || index.row() >= m_items.count() ||
-            index.column() < 0 || index.column() >= ColumnCount)
+            index.column() < 0 || index.column() >= Model::ColumnCount)
         return QVariant();
 
     const ObjectItem *item = m_items.at(index.row());
@@ -95,15 +95,15 @@ QVariant ObjectModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole || role == Qt::EditRole)
     {
         switch (index.column()) {
-            case NameColumn:          return item->name();
-            case InProjectColumn:     return (int)item->inProject();
-            case InSourceDirColumn:  return (int)item->inSourceDir();
-            case CreateDateColumn:    return item->createDate();
-            case UpdateDateColumn:    return item->updateDate();
-            case ExportDateColumn:    return item->exportDate();
-            case ObjectTypeColumn:    return item->objectType();
-            case DifferentColumn:    return item->isDifferent();
-            case HasDataColumn:       return item->hasData();
+            case Model::NameColumn:          return item->name();
+            case Model::InProjectColumn:     return (int)item->inProject();
+            case Model::InSourceDirColumn:  return (int)item->inSourceDir();
+            case Model::CreateDateColumn:    return item->createDate();
+            case Model::UpdateDateColumn:    return item->updateDate();
+            case Model::ExportDateColumn:    return item->exportDate();
+            case Model::ObjectTypeColumn:    return item->objectType();
+            case Model::DifferentColumn:    return item->isDifferent();
+            case Model::HasDataColumn:       return item->hasData();
         default:
             break;
         }
@@ -113,12 +113,12 @@ QVariant ObjectModel::data(const QModelIndex &index, int role) const
     {
         switch (index.column())
         {
-        case NameColumn:  return static_cast<int>(Qt::AlignVCenter | Qt::AlignLeft);
+        case Model::NameColumn:  return static_cast<int>(Qt::AlignVCenter | Qt::AlignLeft);
         default: return static_cast<int>(Qt::AlignVCenter | Qt::AlignCenter);
         }
     }
 
-    if (role == Qt::DecorationRole && index.column() == NameColumn)
+    if (role == Qt::DecorationRole && index.column() == Model::NameColumn)
     {
         // return QIcon
 
@@ -144,7 +144,7 @@ QVariant ObjectModel::data(const QModelIndex &index, int role) const
     {
         switch (index.column())
         {
-        case NameColumn: return static_cast<int>(item->isSelected() ? Qt::Checked : Qt::Unchecked);
+        case Model::NameColumn: return static_cast<int>(item->isSelected() ? Qt::Checked : Qt::Unchecked);
         //case InProject: return static_cast<int>(item->inProject() ? Qt::Checked : Qt::Unchecked);
         //case InRepository: return static_cast<int>(item->inRepository() ? Qt::Checked : Qt::Unchecked);
         }
@@ -155,7 +155,7 @@ QVariant ObjectModel::data(const QModelIndex &index, int role) const
 
 QModelIndex ObjectModel::index(int row, int column, const QModelIndex &parent) const
 {
-    if (row < 0 || column < 0 || column >= ColumnCount || row >= m_items.count() ||
+    if (row < 0 || column < 0 || column >= Model::ColumnCount || row >= m_items.count() ||
             parent.isValid())
         return QModelIndex();
 
@@ -178,7 +178,7 @@ bool ObjectModel::setData(const QModelIndex &index, const QVariant &value, int r
     {
         ObjectItem *item = m_items.at(index.row());
         switch (index.column()) {
-            case NameColumn:
+            case Model::NameColumn:
             {
                 item->setSelected( value.toBool() );
                 emit dataChanged(index, index);
@@ -186,7 +186,7 @@ bool ObjectModel::setData(const QModelIndex &index, const QVariant &value, int r
                 return true;
             }
                 break;
-            case HasDataColumn:
+            case Model::HasDataColumn:
             {
                 item->setHasData( value.toBool() );
                 emit dataChanged(index, index);
@@ -194,8 +194,8 @@ bool ObjectModel::setData(const QModelIndex &index, const QVariant &value, int r
                 // reset exportDate, difference
                 item->setDifferent( Model::Unchecked_OD );
                 item->setExportDate( QDateTime() );
-                emit dataChanged( createIndex(index.row(), DifferentColumn),  createIndex(index.row(), DifferentColumn) );
-                emit dataChanged( createIndex(index.row(), ExportDateColumn), createIndex(index.row(), ExportDateColumn) );
+                emit dataChanged( createIndex(index.row(), Model::DifferentColumn),  createIndex(index.row(), Model::DifferentColumn) );
+                emit dataChanged( createIndex(index.row(), Model::ExportDateColumn), createIndex(index.row(), Model::ExportDateColumn) );
 
                 // Export dataFile into TempDir with hasData = true,
                 // and then change hasData to false and do Refresh,
@@ -360,12 +360,12 @@ void ObjectModel::prepareMerge()
 bool ObjectModel::clearItemsCache()
 {
     ObjectItems targets;
-    getItems(&targets, AllItems, true /*selectedOnly*/, false /* modifiedOnly */);
+    getItems(&targets, Model::AllItems, true /*selectedOnly*/, false /* modifiedOnly */);
 
     deleteFromTempDir(&targets);
 
     // smart-refresh : post-process
-    updateItemsExportDate(&targets, QDateTime(), AllDifferenceTypes);
+    updateItemsExportDate(&targets, QDateTime(), Model::AllDifferenceTypes);
     updateItemsDifference(&targets, Model::Unchecked_OD);
 
     return true;
@@ -394,22 +394,22 @@ bool ObjectModel::refreshItems()
     {
 
         ObjectItems targetsAll;
-        getItems(&targetsAll, InBoth, false/*selectedOnly*/, false/*modifiedOnly*/);
+        getItems(&targetsAll, Model::InBoth, false/*selectedOnly*/, false/*modifiedOnly*/);
 
         // smart-refresh : pre-process
 //        updateItemsDifferenceByFileTime(&targetsAll);                                       // for smart refresh, we assume the contents are the same if item's updateDate <= filetime of TempFile
         updateItemsDifferenceAsIs(&targetsAll);                                             // for smart refresh, we set item to be SameContents if TempDir and SourceDir are exactly the same
 
         ObjectItems targets;
-        getItems(&targets, InBoth_NotSame, false/*selectedOnly*/, false/*modifiedOnly*/);
+        getItems(&targets, Model::InBoth_NotSame, false/*selectedOnly*/, false/*modifiedOnly*/);
 
         exportFromProjectToTempDir(&targets);   // InBoth           : BLOCK :                   :
         sanitizeTempDir(&targets);              // InBoth           :       :                   :
         compareTempDir(&targets);               // InBoth           :       :                   :
 
         // smart-refresh : post-process
-        updateFileTimeInTempDirByExportDate(&targets, DifferentContentsTypes);              // for smart refresh, we must rollback filetime of TempFile if different.
-        updateItemsExportDate(&targets, QDateTime::currentDateTime(), SameContentsType);    // for smart-refresh, update exportDate
+        updateFileTimeInTempDirByExportDate(&targets, Model::DifferentContentsTypes);              // for smart refresh, we must rollback filetime of TempFile if different.
+        updateItemsExportDate(&targets, QDateTime::currentDateTime(), Model::SameContentsType);    // for smart-refresh, update exportDate
 
         //.done
     }
@@ -439,10 +439,10 @@ bool ObjectModel::executeExport()
     ObjectItems targetsInBoth_Different;
     ObjectItems targetsInBoth_Same;
 
-    getItems(&targetsInProjectOnly,    InProjectOnly,    selectedOnly, false/*modifiedOnly*/);
-    getItems(&targetsInSourceDirOnly, InSourceDirOnly, selectedOnly, false/*modifiedOnly*/);
-    getItems(&targetsInBoth_Different, InBoth_Different, selectedOnly, false/*modifiedOnly*/);
-    getItems(&targetsInBoth_Same,      InBoth_Same,      selectedOnly, false/*modifiedOnly*/);
+    getItems(&targetsInProjectOnly,    Model::InProjectOnly,    selectedOnly, false/*modifiedOnly*/);
+    getItems(&targetsInSourceDirOnly, Model::InSourceDirOnly, selectedOnly, false/*modifiedOnly*/);
+    getItems(&targetsInBoth_Different, Model::InBoth_Different, selectedOnly, false/*modifiedOnly*/);
+    getItems(&targetsInBoth_Same,      Model::InBoth_Same,      selectedOnly, false/*modifiedOnly*/);
 
     // for InProjectOnly
     {
@@ -455,7 +455,7 @@ bool ObjectModel::executeExport()
 
             // smart-refresh : post-process
             QDateTime currentTime = QDateTime::currentDateTime();
-            updateItemsExportDate(targets, currentTime, AllDifferenceTypes);   // set exportDate
+            updateItemsExportDate(targets, currentTime, Model::AllDifferenceTypes);   // set exportDate
             updateItemsInSourceDir(targets, Model::Present);                  // set inSourceDir flag to Present
             updateItemsDifference(targets, Model::SameContents);               // set isDifferent  flag to SameContents
         }
@@ -483,8 +483,8 @@ bool ObjectModel::executeExport()
 
             // smart-refresh : post-process
             QDateTime currentTime = QDateTime::currentDateTime();
-            updateFileTimeInTempDir(targets, currentTime, AllDifferenceTypes);     // for smart-refresh, we need to update filetime which rollbacked in smart-refresh process
-            updateItemsExportDate  (targets, currentTime, AllDifferenceTypes);     // for smart-refresh, update exportDate too.
+            updateFileTimeInTempDir(targets, currentTime, Model::AllDifferenceTypes);     // for smart-refresh, we need to update filetime which rollbacked in smart-refresh process
+            updateItemsExportDate  (targets, currentTime, Model::AllDifferenceTypes);     // for smart-refresh, update exportDate too.
             updateItemsDifference(targets, Model::SameContents);                   // set isDifferent flag to SameContents
         }
 
@@ -496,8 +496,8 @@ bool ObjectModel::executeExport()
 
             // smart-refresh : post-process
             QDateTime currentTime = QDateTime::currentDateTime();
-            updateFileTimeInTempDir(targets, currentTime, AllDifferenceTypes);     // we need to update filetime which rollbacked in smart-refresh process
-            updateItemsExportDate  (targets, currentTime, AllDifferenceTypes);     // update exportDate too.
+            updateFileTimeInTempDir(targets, currentTime, Model::AllDifferenceTypes);     // we need to update filetime which rollbacked in smart-refresh process
+            updateItemsExportDate  (targets, currentTime, Model::AllDifferenceTypes);     // update exportDate too.
         }
     }
 
@@ -523,10 +523,10 @@ bool ObjectModel::executeImport()
     ObjectItems targetsInBoth_Different;
     ObjectItems targetsInBoth_Same;
 
-    getItems(&targetsInProjectOnly,    InProjectOnly,    selectedOnly, false/*modifiedOnly*/);
-    getItems(&targetsInSourceDirOnly, InSourceDirOnly, selectedOnly, false/*modifiedOnly*/);
-    getItems(&targetsInBoth_Different, InBoth_Different, selectedOnly, false/*modifiedOnly*/);
-    getItems(&targetsInBoth_Same,      InBoth_Same,      selectedOnly, false/*modifiedOnly*/);
+    getItems(&targetsInProjectOnly,    Model::InProjectOnly,    selectedOnly, false/*modifiedOnly*/);
+    getItems(&targetsInSourceDirOnly, Model::InSourceDirOnly, selectedOnly, false/*modifiedOnly*/);
+    getItems(&targetsInBoth_Different, Model::InBoth_Different, selectedOnly, false/*modifiedOnly*/);
+    getItems(&targetsInBoth_Same,      Model::InBoth_Same,      selectedOnly, false/*modifiedOnly*/);
 
 
     // for InProjectOnly
@@ -552,8 +552,8 @@ bool ObjectModel::executeImport()
 
             // smart-refresh : post-process
             QDateTime currentTime = QDateTime::currentDateTime();
-            updateFileTimeInTempDir(targets, currentTime, AllDifferenceTypes);     // for smart refresh, update filetime of TempFile if imported
-            updateItemsExportDate  (targets, currentTime, AllDifferenceTypes);     // for smart-refresh, update exportDate too.
+            updateFileTimeInTempDir(targets, currentTime, Model::AllDifferenceTypes);     // for smart refresh, update filetime of TempFile if imported
+            updateItemsExportDate  (targets, currentTime, Model::AllDifferenceTypes);     // for smart-refresh, update exportDate too.
             updateItemsInProject(targets, Model::Present);                         // set inProject   flag to Present
             updateItemsDifference(targets, Model::SameContents);                   // set isDifferent flag to SameContents
             updateItemsCreateUpdateDateFromProject(targets);                       // set create/updateDate from Access Object
@@ -572,8 +572,8 @@ bool ObjectModel::executeImport()
 
             // smart-refresh : post-process
             QDateTime currentTime = QDateTime::currentDateTime();
-            updateFileTimeInTempDir(targets, currentTime, AllDifferenceTypes);     // for smart refresh, update filetime of TempFile if imported
-            updateItemsExportDate  (targets, currentTime, AllDifferenceTypes);     // for smart-refresh, update exportDate too.
+            updateFileTimeInTempDir(targets, currentTime, Model::AllDifferenceTypes);     // for smart refresh, update filetime of TempFile if imported
+            updateItemsExportDate  (targets, currentTime, Model::AllDifferenceTypes);     // for smart-refresh, update exportDate too.
             updateItemsDifference(targets, Model::SameContents);                   // set isDifferent flag to SameContents
             updateItemsCreateUpdateDateFromProject(targets);                       // set create/updateDate from Access Object
         }
@@ -587,8 +587,8 @@ bool ObjectModel::executeImport()
 
             // smart-refresh : post-process
             QDateTime currentTime = QDateTime::currentDateTime();
-            updateFileTimeInTempDir(targets, currentTime, AllDifferenceTypes);     // for smart refresh, update filetime of TempFile if imported
-            updateItemsExportDate  (targets, currentTime, AllDifferenceTypes);     // for smart-refresh, update exportDate too.
+            updateFileTimeInTempDir(targets, currentTime, Model::AllDifferenceTypes);     // for smart refresh, update filetime of TempFile if imported
+            updateItemsExportDate  (targets, currentTime, Model::AllDifferenceTypes);     // for smart-refresh, update exportDate too.
             updateItemsCreateUpdateDateFromProject(targets);                       // set create/updateDate from Access Object
         }
     }
@@ -657,12 +657,12 @@ int ObjectModel::selectedRowCount() const
 
 
 
-void ObjectModel::getItems(ObjectItems *pItems, ObjectModel::ItemsTypes itemsType, bool selectedOnly, bool modifiedOnly) const
+void ObjectModel::getItems(ObjectItems *pItems, Model::ItemsTypes itemsType, bool selectedOnly, bool modifiedOnly) const
 {
-    getItems( pItems, itemsType, ObjectModel::AllObjectTypes, selectedOnly, modifiedOnly);
+    getItems( pItems, itemsType, Model::AllObjectTypes, selectedOnly, modifiedOnly);
 }
 
-void ObjectModel::getItems(ObjectItems *pItems, ItemsTypes itemsType, SelectObjectTypes objectTypes, bool selectedOnly, bool modifiedOnly) const
+void ObjectModel::getItems(ObjectItems *pItems, Model::ItemsTypes itemsType, Model::SelectObjectTypes objectTypes, bool selectedOnly, bool modifiedOnly) const
 {
     for ( QList<ObjectItem*>::const_iterator it = m_items.begin() ; it != m_items.end() ; ++it )
     {
@@ -684,52 +684,52 @@ void ObjectModel::getItems(ObjectItems *pItems, ItemsTypes itemsType, SelectObje
         // skip non-target object type
         switch (item->objectType())
         {
-            case Model::TableDef:   if ( !(objectTypes & ObjectModel::TableObjectType    ) ) continue; break;
-            case Model::Query:      if ( !(objectTypes & ObjectModel::QueryObjectType    ) ) continue; break;
-            case Model::Form:       if ( !(objectTypes & ObjectModel::FormObjectType     ) ) continue; break;
-            case Model::Report:     if ( !(objectTypes & ObjectModel::ReportObjectType   ) ) continue; break;
-            case Model::Macro:      if ( !(objectTypes & ObjectModel::MacroObjectType    ) ) continue; break;
-            case Model::Module:     if ( !(objectTypes & ObjectModel::ModuleObjectType   ) ) continue; break;
-            case Model::Reference:  if ( !(objectTypes & ObjectModel::ReferenceObjectType) ) continue; break;
-            case Model::ProjectFile:  if ( !(objectTypes & ObjectModel::ProjectFileType) ) continue; break;
-            case Model::VBProject:  if ( !(objectTypes & ObjectModel::VBProjectType) ) continue; break;
+            case Model::TableDef:   if ( !(objectTypes & Model::TableObjectType    ) ) continue; break;
+            case Model::Query:      if ( !(objectTypes & Model::QueryObjectType    ) ) continue; break;
+            case Model::Form:       if ( !(objectTypes & Model::FormObjectType     ) ) continue; break;
+            case Model::Report:     if ( !(objectTypes & Model::ReportObjectType   ) ) continue; break;
+            case Model::Macro:      if ( !(objectTypes & Model::MacroObjectType    ) ) continue; break;
+            case Model::Module:     if ( !(objectTypes & Model::ModuleObjectType   ) ) continue; break;
+            case Model::Reference:  if ( !(objectTypes & Model::ReferenceObjectType) ) continue; break;
+            case Model::ProjectFile:  if ( !(objectTypes & Model::ProjectFileType) ) continue; break;
+            case Model::VBProject:  if ( !(objectTypes & Model::VBProjectType) ) continue; break;
             default: break;
         }
 
-        if (!toBeInserted && itemsType & InBoth)
+        if (!toBeInserted && itemsType & Model::InBoth)
         {
             if ( item->inProject()    == Model::Present &&
                  item->inSourceDir() == Model::Present )
                 toBeInserted = item;
         }
-        if (!toBeInserted && itemsType & InBoth_Different)
+        if (!toBeInserted && itemsType & Model::InBoth_Different)
         {
             if ( item->inProject()    == Model::Present &&
                  item->inSourceDir() == Model::Present &&
                  item->isDifferent()  == Model::DifferentContents )
                 toBeInserted = item;
         }
-        if (!toBeInserted && itemsType & InBoth_Same)
+        if (!toBeInserted && itemsType & Model::InBoth_Same)
         {
             if ( item->inProject()    == Model::Present &&
                  item->inSourceDir() == Model::Present &&
                  item->isDifferent()  == Model::SameContents )
                 toBeInserted = item;
         }
-        if (!toBeInserted && itemsType & InBoth_NotSame)
+        if (!toBeInserted && itemsType & Model::InBoth_NotSame)
         {
             if ( item->inProject()    == Model::Present &&
                  item->inSourceDir() == Model::Present &&
                  item->isDifferent()  != Model::SameContents )
                 toBeInserted = item;
         }
-        if (!toBeInserted && itemsType & InProjectOnly)
+        if (!toBeInserted && itemsType & Model::InProjectOnly)
         {
             if ( item->inProject()    == Model::Present &&
                  item->inSourceDir() == Model::Absent )
                 toBeInserted = item;
         }
-        if (!toBeInserted && itemsType & InSourceDirOnly)
+        if (!toBeInserted && itemsType & Model::InSourceDirOnly)
         {
             if ( item->inProject()    == Model::Absent &&
                  item->inSourceDir() == Model::Present )
@@ -755,10 +755,10 @@ void ObjectModel::getItems(ObjectItems *pItems, ItemsTypes itemsType, SelectObje
 
 void ObjectModel::selectItemsForProcess(bool selected, bool resetSelection)
 {
-    selectItems( InProjectOnly | InSourceDirOnly | InBoth_Different, selected, resetSelection );
+    selectItems( Model::InProjectOnly | Model::InSourceDirOnly | Model::InBoth_Different, selected, resetSelection );
 }
 
-void ObjectModel::selectItems(ObjectModel::ItemsTypes itemsType, bool selected, bool resetSelection)
+void ObjectModel::selectItems(Model::ItemsTypes itemsType, bool selected, bool resetSelection)
 {
     DataChangedHelper helper( m_items.count() );
     if (resetSelection)
@@ -783,12 +783,12 @@ void ObjectModel::selectItems(ObjectModel::ItemsTypes itemsType, bool selected, 
     }
 
     if (helper.isChanged())
-        emit dataChanged( createIndex(helper.first(), NameColumn), createIndex(helper.last(), NameColumn) );
+        emit dataChanged( createIndex(helper.first(), Model::NameColumn), createIndex(helper.last(), Model::NameColumn) );
 
     emitSelectionChanged();
 }
 
-void ObjectModel::selectItemsByObjectType(SelectObjectTypes objectTypes, bool selected, bool resetSelection)
+void ObjectModel::selectItemsByObjectType(Model::SelectObjectTypes objectTypes, bool selected, bool resetSelection)
 {
     DataChangedHelper helper( m_items.count() );
     if (resetSelection)
@@ -800,7 +800,7 @@ void ObjectModel::selectItemsByObjectType(SelectObjectTypes objectTypes, bool se
     }
 
     ObjectItems targets;
-    getItems(&targets, ObjectModel::AllItems, objectTypes, false/*selectedOnly*/, false/*modifiedOnly*/);
+    getItems(&targets, Model::AllItems, objectTypes, false/*selectedOnly*/, false/*modifiedOnly*/);
     foreach (const Model::ObjectType &objectType, targets.keys() )
     {
         QList<ObjectItem*> items = targets[ objectType ].values();
@@ -813,7 +813,7 @@ void ObjectModel::selectItemsByObjectType(SelectObjectTypes objectTypes, bool se
     }
 
     if (helper.isChanged())
-        emit dataChanged( createIndex(helper.first(), NameColumn), createIndex(helper.last(), NameColumn) );
+        emit dataChanged( createIndex(helper.first(), Model::NameColumn), createIndex(helper.last(), Model::NameColumn) );
 
     emitSelectionChanged();
 }
@@ -829,15 +829,15 @@ void ObjectModel::emitSelectionChanged()
            {
                switch (objectType)
                {
-                   case Model::TableDef:    objectTypes |= TableObjectType;     break;
-                   case Model::Query:       objectTypes |= QueryObjectType;     break;
-                   case Model::Form:        objectTypes |= FormObjectType;      break;
-                   case Model::Report:      objectTypes |= ReportObjectType;    break;
-                   case Model::Macro:       objectTypes |= MacroObjectType;     break;
-                   case Model::Module:      objectTypes |= ModuleObjectType;    break;
-                   case Model::Reference:   objectTypes |= ReferenceObjectType; break;
-                   case Model::ProjectFile: objectTypes |= ProjectFileType;     break;
-                   case Model::VBProject:   objectTypes |= VBProjectType;       break;
+                   case Model::TableDef:    objectTypes |= Model::TableObjectType;     break;
+                   case Model::Query:       objectTypes |= Model::QueryObjectType;     break;
+                   case Model::Form:        objectTypes |= Model::FormObjectType;      break;
+                   case Model::Report:      objectTypes |= Model::ReportObjectType;    break;
+                   case Model::Macro:       objectTypes |= Model::MacroObjectType;     break;
+                   case Model::Module:      objectTypes |= Model::ModuleObjectType;    break;
+                   case Model::Reference:   objectTypes |= Model::ReferenceObjectType; break;
+                   case Model::ProjectFile: objectTypes |= Model::ProjectFileType;     break;
+                   case Model::VBProject:   objectTypes |= Model::VBProjectType;       break;
                }
                break;
            }
@@ -889,7 +889,7 @@ struct BaseFunctionObject
 
 struct UpdateItemsExportDateFunctionObject : public BaseFunctionObject
 {
-    UpdateItemsExportDateFunctionObject(QDateTime exportDate, ObjectModel::ObjectDifferenceTypes differenceTypes, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
+    UpdateItemsExportDateFunctionObject(QDateTime exportDate, Model::ObjectDifferenceTypes differenceTypes, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
         : BaseFunctionObject(dataChangedHelper, items)
         , m_exportDate(exportDate)
         , m_differenceTypes(differenceTypes)
@@ -902,8 +902,8 @@ struct UpdateItemsExportDateFunctionObject : public BaseFunctionObject
     {
         switch( item->isDifferent() )
         {
-            case Model::SameContents:       if (!(m_differenceTypes & ObjectModel::SameContentsType      )) return;
-            case Model::DifferentContents:  if (!(m_differenceTypes & ObjectModel::DifferentContentsTypes)) return;
+            case Model::SameContents:       if (!(m_differenceTypes & Model::SameContentsType      )) return;
+            case Model::DifferentContents:  if (!(m_differenceTypes & Model::DifferentContentsTypes)) return;
             default: break;
         }
 
@@ -912,10 +912,10 @@ struct UpdateItemsExportDateFunctionObject : public BaseFunctionObject
     }
 
     QDateTime m_exportDate;
-    ObjectModel::ObjectDifferenceTypes m_differenceTypes;
+    Model::ObjectDifferenceTypes m_differenceTypes;
 };
 
-void ObjectModel::updateItemsExportDate(ObjectItems *allTargets, const QDateTime &exportDate, const ObjectDifferenceTypes differenceTypes)
+void ObjectModel::updateItemsExportDate(ObjectItems *allTargets, const QDateTime &exportDate, const Model::ObjectDifferenceTypes differenceTypes)
 {
     // non-blocking
     DataChangedHelper helper( m_items.count() );
@@ -956,7 +956,7 @@ void ObjectModel::updateItemsExportDate(ObjectItems *allTargets, const QDateTime
         // */
     }
     if (helper.isChanged())
-        emit dataChanged( createIndex(helper.first(), ExportDateColumn), createIndex(helper.last(), ExportDateColumn) );
+        emit dataChanged( createIndex(helper.first(), Model::ExportDateColumn), createIndex(helper.last(), Model::ExportDateColumn) );
 }
 
 
@@ -1012,7 +1012,7 @@ void ObjectModel::updateItemsInProject(ObjectItems *allTargets, Model::ObjectExi
         // */
     }
     if (helper.isChanged())
-        emit dataChanged( createIndex(helper.first(), InProjectColumn), createIndex(helper.last(), InProjectColumn) );
+        emit dataChanged( createIndex(helper.first(), Model::InProjectColumn), createIndex(helper.last(), Model::InProjectColumn) );
 }
 
 
@@ -1069,7 +1069,7 @@ void ObjectModel::updateItemsInSourceDir(ObjectItems *allTargets, Model::ObjectE
         // */
     }
     if (helper.isChanged())
-        emit dataChanged( createIndex(helper.first(), InSourceDirColumn), createIndex(helper.last(), InSourceDirColumn) );
+        emit dataChanged( createIndex(helper.first(), Model::InSourceDirColumn), createIndex(helper.last(), Model::InSourceDirColumn) );
 }
 
 
@@ -1127,7 +1127,7 @@ void ObjectModel::updateItemsDifference(ObjectItems *allTargets, Model::ObjectDi
 
     }
     if (helper.isChanged())
-        emit dataChanged( createIndex(helper.first(), DifferentColumn), createIndex(helper.last(), DifferentColumn) );
+        emit dataChanged( createIndex(helper.first(), Model::DifferentColumn), createIndex(helper.last(), Model::DifferentColumn) );
 }
 
 
@@ -1187,7 +1187,7 @@ void ObjectModel::updateItemsDifferenceByFileTime(ObjectItems *allTargets)
 
     }
     if (helper.isChanged())
-        emit dataChanged( createIndex(helper.first(), DifferentColumn), createIndex(helper.last(), DifferentColumn) );
+        emit dataChanged( createIndex(helper.first(), Model::DifferentColumn), createIndex(helper.last(), Model::DifferentColumn) );
 }
 
 
@@ -1274,7 +1274,7 @@ void ObjectModel::updateItemsDifferenceAsIs(ObjectItems *allTargets)
 
     }
     if (helper.isChanged())
-        emit dataChanged( createIndex(helper.first(), DifferentColumn), createIndex(helper.last(), DifferentColumn) );
+        emit dataChanged( createIndex(helper.first(), Model::DifferentColumn), createIndex(helper.last(), Model::DifferentColumn) );
 }
 
 void ObjectModel::updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets)
@@ -1308,8 +1308,8 @@ void ObjectModel::updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets
     }
     if (helper.isChanged())
     {
-        emit dataChanged( createIndex(helper.first(), CreateDateColumn), createIndex(helper.last(), CreateDateColumn) );
-        emit dataChanged( createIndex(helper.first(), UpdateDateColumn), createIndex(helper.last(), UpdateDateColumn) );
+        emit dataChanged( createIndex(helper.first(), Model::CreateDateColumn), createIndex(helper.last(), Model::CreateDateColumn) );
+        emit dataChanged( createIndex(helper.first(), Model::UpdateDateColumn), createIndex(helper.last(), Model::UpdateDateColumn) );
     }
 }
 
@@ -1317,7 +1317,7 @@ void ObjectModel::updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets
 
 struct UpdateFileTimeInTempDirFunctionObject : public BaseFunctionObject
 {
-    UpdateFileTimeInTempDirFunctionObject(ObjectProcessor *os, const QDateTime &fileTime, const ObjectModel::ObjectDifferenceTypes differenceTypes, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
+    UpdateFileTimeInTempDirFunctionObject(ObjectProcessor *os, const QDateTime &fileTime, const Model::ObjectDifferenceTypes differenceTypes, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
         : BaseFunctionObject(dataChangedHelper, items)
         , m_os(os)
         , m_fileTime(fileTime)
@@ -1331,8 +1331,8 @@ struct UpdateFileTimeInTempDirFunctionObject : public BaseFunctionObject
     {
         switch( item->isDifferent() )
         {
-            case Model::SameContents:       if (!(m_differenceTypes & ObjectModel::SameContentsType      )) return;
-            case Model::DifferentContents:  if (!(m_differenceTypes & ObjectModel::DifferentContentsTypes)) return;
+            case Model::SameContents:       if (!(m_differenceTypes & Model::SameContentsType      )) return;
+            case Model::DifferentContents:  if (!(m_differenceTypes & Model::DifferentContentsTypes)) return;
             default: break;
         }
 
@@ -1342,11 +1342,11 @@ struct UpdateFileTimeInTempDirFunctionObject : public BaseFunctionObject
 
     ObjectProcessor *m_os;
     QDateTime m_fileTime;
-    ObjectModel::ObjectDifferenceTypes m_differenceTypes;
+    Model::ObjectDifferenceTypes m_differenceTypes;
 };
 
 
-void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTime &fileTime, const ObjectDifferenceTypes differenceTypes)
+void ObjectModel::updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTime &fileTime, const Model::ObjectDifferenceTypes differenceTypes)
 {
     // non-blocking
     ProgressNotifier mainProg(Model::UpdateFileTimeInTempDirProcess, this);
@@ -1416,7 +1416,7 @@ void ObjectModel::deleteItems(ObjectItems *allTargets)
 
 struct UpdateFileTimeInTempDirByExportDateFunctionObject : public BaseFunctionObject
 {
-    UpdateFileTimeInTempDirByExportDateFunctionObject(ObjectProcessor *os, const ObjectModel::ObjectDifferenceTypes differenceTypes, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
+    UpdateFileTimeInTempDirByExportDateFunctionObject(ObjectProcessor *os, const Model::ObjectDifferenceTypes differenceTypes, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
         : BaseFunctionObject(dataChangedHelper, items)
         , m_os(os)
         , m_differenceTypes(differenceTypes)
@@ -1429,8 +1429,8 @@ struct UpdateFileTimeInTempDirByExportDateFunctionObject : public BaseFunctionOb
     {
         switch( item->isDifferent() )
         {
-            case Model::SameContents:       if (!(m_differenceTypes & ObjectModel::SameContentsType      )) return;
-            case Model::DifferentContents:  if (!(m_differenceTypes & ObjectModel::DifferentContentsTypes)) return;
+            case Model::SameContents:       if (!(m_differenceTypes & Model::SameContentsType      )) return;
+            case Model::DifferentContents:  if (!(m_differenceTypes & Model::DifferentContentsTypes)) return;
             default: break;
         }
 
@@ -1447,10 +1447,10 @@ struct UpdateFileTimeInTempDirByExportDateFunctionObject : public BaseFunctionOb
     }
 
     ObjectProcessor *m_os;
-    ObjectModel::ObjectDifferenceTypes m_differenceTypes;
+    Model::ObjectDifferenceTypes m_differenceTypes;
 };
 
-void ObjectModel::updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, const ObjectDifferenceTypes differenceTypes)
+void ObjectModel::updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, const Model::ObjectDifferenceTypes differenceTypes)
 {
     // non-blocking
     DataChangedHelper helper( m_items.count() );
@@ -1507,7 +1507,7 @@ void ObjectModel::updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, c
     }
 
     if (helper.isChanged())
-        emit dataChanged( createIndex(helper.first(), ExportDateColumn), createIndex(helper.last(), ExportDateColumn) );
+        emit dataChanged( createIndex(helper.first(), Model::ExportDateColumn), createIndex(helper.last(), Model::ExportDateColumn) );
 }
 
 
@@ -1539,7 +1539,6 @@ void ObjectModel::loadItemsFromProject(QList<ObjectItem*> *items)
     }
 
 }
-
 
 void ObjectModel::loadItemsFromSourceDir(QList<ObjectItem*> *items)
 {
@@ -2113,7 +2112,7 @@ void ObjectModel::compareTempDir(ObjectItems *allTargets)
 
     // update items
     if (helper.isChanged())
-        emit dataChanged( createIndex(helper.first(), DifferentColumn), createIndex( helper.last(), DifferentColumn ) );
+        emit dataChanged( createIndex(helper.first(), Model::DifferentColumn), createIndex( helper.last(), Model::DifferentColumn ) );
 }
 
 
