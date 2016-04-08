@@ -338,7 +338,7 @@ bool ReferenceProcessor::importFromTempDirToProject(QAxObject *object, const QSt
                 {
                     ComPtr<Access::CurrentProject> currentPoject = m_projectSetting->application()->CurrentProject();
                     QDir dir( currentPoject->Path() );
-                    fullPath = QDir::cleanPath( dir.filePath( fullPath ) );
+                    fullPath = QDir::cleanPath( dir.filePath( fullPath ) ).replace(QString('/'),QString('\\'));
                 }
 
                 ComPtr<Access::Reference> reference = references->AddFromFile(fullPath);

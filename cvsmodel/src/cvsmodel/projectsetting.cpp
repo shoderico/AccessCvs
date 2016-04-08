@@ -72,7 +72,7 @@ void ProjectSetting::initialize(QAxObject *application)
             m_sourcePathName   = config->value( "SourcePathName",  "source"           ).toString();
             m_tempPathName     = config->value( "TempPathName",    ".accesscvs"       ).toString();
             m_settingsFileName = config->value( "SettingFileName", "project.settings" ).toString();
-            m_projectPath = QDir::cleanPath( QDir( projectPath ).filePath( config->value( "ProjectPath", "." ).toString() ) );
+            m_projectPath = QDir::cleanPath( QDir( projectPath ).filePath( config->value( "ProjectPath", "." ).toString() ) ).replace(QString('/'),QString('\\'));
             qDebug() << "m_projectPath : " << m_projectPath;
             qDebug() << "m_sourcePathName : " << m_sourcePathName;
             qDebug() << "m_tempPathName : " << m_tempPathName;
@@ -85,6 +85,10 @@ void ProjectSetting::initialize(QAxObject *application)
             m_tempPathName     = ".accesscvs";
             m_settingsFileName = "project.settings";
             m_projectPath      = currentProject->Path();
+            qDebug() << "m_projectPath : " << m_projectPath;
+            qDebug() << "m_sourcePathName : " << m_sourcePathName;
+            qDebug() << "m_tempPathName : " << m_tempPathName;
+            qDebug() << "m_settingFileName : " << m_settingsFileName;
         }
 
         m_projectType = currentProject->ProjectType();
