@@ -84,6 +84,7 @@ bool ProjectFileProcessor::exportFromProjectToTempDir(QAxObject *object, const Q
         if (prop->Type != -1)
             element->append("Type", prop->Type);
         element->append("Value", prop->Value);
+        qDebug() << "export : " << prop->Name << " : " << prop->Value << " : " << prop->Type << " : QVariant.type() = " << prop->Value.type();
     }
     setting.save();
 
@@ -129,7 +130,23 @@ bool ProjectFileProcessor::importFromTempDirToProject(QAxObject *object, const Q
         Q_ASSERT(element != NULL);
         Q_ASSERT(element->name() == "Property");
         QString propName = element->value("Name").toString();
-        propMapTempDir.insert( propName, new ProjectFileProperty(propName, element->value("Type", -1).toInt(), element->value("Value")) );
+        int propType = element->value("Type", -1).toInt();
+        QVariant propValue = element->value("Value");
+        switch (propType) {
+            case QMetaType::Int:
+//            case QVariant::Int: // obsolete
+                propValue = propValue.toInt();
+                break;
+            case QMetaType::QString:
+//            case QVariant::String: // obsolete
+                propValue = propValue.toString();
+                break;
+            default:
+                propValue = propValue.toString();
+                break;
+        }
+        propMapTempDir.insert( propName, new ProjectFileProperty(propName, propType, propValue) );
+
     }
 
 
@@ -168,18 +185,21 @@ bool ProjectFileProcessor::importFromTempDirToProject(QAxObject *object, const Q
         {
             ComPtr<DAO::Property> p = props->Item( prop->Name );
             p->SetValue( prop->Value );
+            qDebug() << "update : " << prop->Name << " : " << prop->Value << " : " << prop->Type;
         }
 
         // exists in project only : remove
         foreach ( ProjectFileProperty *prop , inProjectOnly )
         {
             props->Delete( prop->Name );
+            qDebug() << "delete : " << prop->Name << " : " << prop->Value << " : " << prop->Type;
         }
 
         // exists in tempdir only : insert
         foreach ( ProjectFileProperty *prop , inTempDirOnly )
         {
             ComPtr<DAO::Property> p = currentDb->CreateProperty( prop->Name, prop->Type, prop->Value );
+            qDebug() << "insert : " << prop->Name << " : " << prop->Value << " : " << prop->Type;
             IDispatch *idisp = 0;
             p->queryInterface( QUuid(IID_IDispatch), (void**)&idisp);
             if (idisp)
@@ -199,18 +219,21 @@ bool ProjectFileProcessor::importFromTempDirToProject(QAxObject *object, const Q
         {
             ComPtr<Access::AccessObjectProperty> p = props->Item( prop->Name );
             p->SetValue( prop->Value );
+            qDebug() << "update : " << prop->Name << " : " << prop->Value << " : " << prop->Type;
         }
 
         // exists in project only : remove
         foreach ( ProjectFileProperty *prop , inProjectOnly )
         {
             props->Remove( prop->Name );
+            qDebug() << "delete : " << prop->Name << " : " << prop->Value << " : " << prop->Type;
         }
 
         // exists in tempdir only : insert
         foreach ( ProjectFileProperty *prop , inTempDirOnly )
         {
             props->Add( prop->Name, prop->Value );
+            qDebug() << "insert : " << prop->Name << " : " << prop->Value << " : " << prop->Type;
         }
     }
 
@@ -268,7 +291,7 @@ void ProjectFileProcessor::loadProperties(QMap<QString, ProjectFileProcessor::Pr
             ComPtr<Access::AccessObjectProperty> prop = props->Item(i);
             if (!regExp.match(prop->Name()).hasMatch())
             {
-                propMap.insert( prop->Name(), new ProjectFileProperty(prop->Name(), -1, prop->Value()));
+                propMap.insert( prop->Name(), new ProjectFileProperty(prop->Name(), prop->Value().type(), prop->Value()));
             }
         }
     }
