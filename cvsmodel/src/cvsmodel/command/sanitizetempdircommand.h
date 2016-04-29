@@ -10,7 +10,6 @@ public:
     explicit SanitizeTempDirCommand(QObject *parent = 0);
 
     virtual void execute(ObjectItems *allTargets);
-
 };
 
 #endif // SANITIZETEMPDIRCOMMAND_H

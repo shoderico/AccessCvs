@@ -5,6 +5,7 @@
 
 class DesanitizeTempDirCommand : public CommandBase
 {
+    Q_OBJECT
 public:
     DesanitizeTempDirCommand(QObject *parent = 0);
 

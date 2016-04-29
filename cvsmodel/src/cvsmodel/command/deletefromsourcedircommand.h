@@ -10,7 +10,6 @@ public:
     explicit DeleteFromSourceDirCommand(QObject *parent = 0);
 
     virtual void execute(ObjectItems *allTargets);
-
 };
 
 #endif // DELETEFROMSOURCEDIRCOMMAND_H
