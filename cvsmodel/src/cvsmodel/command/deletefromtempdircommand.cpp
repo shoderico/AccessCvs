@@ -16,8 +16,8 @@ DeleteFromTempDirCommand::DeleteFromTempDirCommand(QObject *parent)
 
 struct DeleteFromTempDirFunctionObject
 {
-    DeleteFromTempDirFunctionObject(ObjectProcessor *os)
-        : m_os(os)
+    DeleteFromTempDirFunctionObject(ObjectProcessor *processor)
+        : m_processor(processor)
     {
     }
 
@@ -25,25 +25,25 @@ struct DeleteFromTempDirFunctionObject
 
     void operator()(const QString &objectName)
     {
-        m_os->deleteFromTempDir(objectName);
+        m_processor->deleteFromTempDir(objectName);
     }
 
-    ObjectProcessor *m_os;
+    ObjectProcessor *m_processor;
 };
 
 void DeleteFromTempDirCommand::execute(ObjectItems *allTargets)
 {
     // non-blocking
-    ProgressNotifier mainProg(Model::DeleteFromTempDirProcess, this);
+    ProgressNotifier mainProgress(Model::DeleteFromTempDirProcess, this);
     ProjectSetting setting(this);
-    ObjectProcessor *os;
+    ObjectProcessor *processor;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
     {
-        os = setting[ objectType ];
+        processor = setting[ objectType ];
 
-        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
+        QMap<QString, ObjectItem*> targets = allTargets->value( processor->objectType() );
         QStringList objectNames = targets.keys();
 
         //----------------------------------------------------------------------------------------
@@ -61,9 +61,9 @@ void DeleteFromTempDirCommand::execute(ObjectItems *allTargets)
         // asynchronous call
         //*
         {
-            ProgressNotifier subProg(mainProg.type(), objectNames.count(), this);
-            ConcurrentMapHelper<void> mapHelper( &subProg );
-            mapHelper.run( QtConcurrent::map(objectNames, DeleteFromTempDirFunctionObject(os) ) );
+            ProgressNotifier subProgress(mainProgress.type(), objectNames.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProgress );
+            mapHelper.run( QtConcurrent::map(objectNames, DeleteFromTempDirFunctionObject(processor) ) );
         }
         // */
     }

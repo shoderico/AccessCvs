@@ -18,8 +18,8 @@ DesanitizeTempDirCommand::DesanitizeTempDirCommand(QObject *parent)
 
 struct DesanitizeTempDirFunctionObject
 {
-    DesanitizeTempDirFunctionObject(ObjectProcessor *os)
-        : m_os(os)
+    DesanitizeTempDirFunctionObject(ObjectProcessor *processor)
+        : m_processor(processor)
     {
     }
 
@@ -27,27 +27,27 @@ struct DesanitizeTempDirFunctionObject
 
     void operator()(const QString &objectName)
     {
-        m_os->desanitizeTempDir(NULL, objectName);
+        m_processor->desanitizeTempDir(NULL, objectName);
     }
 
-    ObjectProcessor *m_os;
+    ObjectProcessor *m_processor;
 };
 
 
 void DesanitizeTempDirCommand::execute(ObjectItems *allTargets)
 {
     // non-blocking
-    ProgressNotifier mainProg(Model::DesanitizeTempDirProcess, this);
+    ProgressNotifier mainProgress(Model::DesanitizeTempDirProcess, this);
     ProjectSetting setting(this);
-    ObjectProcessor *os;
+    ObjectProcessor *processor;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
     {
-        os = setting[ objectType ];
-        os->determineCodecForProject();
+        processor = setting[ objectType ];
+        processor->determineCodecForProject();
 
-        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
+        QMap<QString, ObjectItem*> targets = allTargets->value( processor->objectType() );
         QStringList objectNames = targets.keys();
 
         //----------------------------------------------------------------------------------------
@@ -65,9 +65,9 @@ void DesanitizeTempDirCommand::execute(ObjectItems *allTargets)
         // asynchronous call
         //*
         {
-            ProgressNotifier subProg(mainProg.type(), objectNames.count(), this);
-            ConcurrentMapHelper<void> mapHelper( &subProg );
-            mapHelper.run( QtConcurrent::map(objectNames, DesanitizeTempDirFunctionObject(os) ) );
+            ProgressNotifier subProgress(mainProgress.type(), objectNames.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProgress );
+            mapHelper.run( QtConcurrent::map(objectNames, DesanitizeTempDirFunctionObject(processor) ) );
         }
         // */
     }
