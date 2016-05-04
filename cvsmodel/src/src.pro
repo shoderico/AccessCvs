@@ -53,7 +53,9 @@ SOURCES += \
     cvsmodel/command/updatefiletimeintempdircommand.cpp \
     cvsmodel/command/updateitemsinprojectcommand.cpp \
     cvsmodel/command/updateitemscreateupdatedatefromprojectcommand.cpp \
-    cvsmodel/command/updateitemsdifferencebyfiletimecommand.cpp
+    cvsmodel/command/updateitemsdifferencebyfiletimecommand.cpp \
+    cvsmodel/command/loaditemsfromprojectcommand.cpp \
+    cvsmodel/command/loaditemsfromsourcedircommand.cpp
 
 HEADERS += \
     cvsmodel/cvsmodel_global.h \
@@ -101,7 +103,9 @@ HEADERS += \
     cvsmodel/command/updatefiletimeintempdircommand.h \
     cvsmodel/command/updateitemsinprojectcommand.h \
     cvsmodel/command/updateitemscreateupdatedatefromprojectcommand.h \
-    cvsmodel/command/updateitemsdifferencebyfiletimecommand.h
+    cvsmodel/command/updateitemsdifferencebyfiletimecommand.h \
+    cvsmodel/command/loaditemsfromprojectcommand.h \
+    cvsmodel/command/loaditemsfromsourcedircommand.h
 
 include(../../common.pri)
 include(../../submodule.pri)

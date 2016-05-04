@@ -37,6 +37,8 @@
 #include "command/importfromtempdirtoprojectcommand.h"
 #include "command/updateitemsinprojectcommand.h"
 #include "command/updateitemscreateupdatedatefromprojectcommand.h"
+#include "command/loaditemsfromprojectcommand.h"
+#include "command/loaditemsfromsourcedircommand.h"
 
 
 ObjectModel::ObjectModel(QObject * parent)
@@ -590,7 +592,7 @@ bool ObjectModel::executeImport()
             deleteFromProject.execute(targets); // InProjectOnly    : BLOCK : Dirty Project : need one-more step? like confirm
 
             // smart-refresh : post-process
-            deleteItems(targets);                                                  // delete item from model
+            deleteItems(targets);   // delete item from model
         }
     }
 
@@ -956,63 +958,6 @@ void ObjectModel::deleteItems(ObjectItems *allTargets)
 
 
 
-void ObjectModel::loadItemsFromProject(QList<ObjectItem*> *items)
-{
-    // BLOCKING, cannot be async
-    ProgressNotifier mainProg(Model::LoadItemFromProjectProcess, this);
-    ProjectSetting setting(this);
-    ObjectProcessor *os;
-    setting.initialize(m_application);
-
-    foreach (const Model::ObjectType &objectType, setting.objectTypes() )
-    {
-        os = setting[ objectType ];
-
-        if ( !os->prepareItemCollection() )
-            continue;
-
-        ProgressNotifier subProg(mainProg.type(), os->itemCount(), this);
-        for ( int i = 0 ; i < os->itemCount() ; ++i )
-        {
-            subProg.next();
-            ComPtr<QAxObject> object = os->itemUnsafePtr(i);
-            if ( os->isTargetObject( object.ptr() ) )
-            {
-                items->append( os->createItemFromProject(object.ptr(), this) );
-            }
-        }
-    }
-
-}
-
-void ObjectModel::loadItemsFromSourceDir(QList<ObjectItem*> *items)
-{
-    // FIXME: non-blocking, can be async ? require append ?
-    ProgressNotifier mainProg(Model::LoadItemFromSourceDirProcess, this);
-    ProjectSetting setting(this);
-    ObjectProcessor *os;
-    setting.initialize(m_application);
-
-    foreach (const Model::ObjectType &objectType, setting.objectTypes() )
-    {
-        os = setting[ objectType ];
-
-        QDir objectDir( os->sourceObjectPath() );
-        if (objectDir.exists())
-        {
-            objectDir.setNameFilters( (QStringList() << ("*." + os->existCheckExtension() ) ) );
-            QFileInfoList fileInfos = objectDir.entryInfoList( QDir::Files );
-            ProgressNotifier subProg(mainProg.type(), fileInfos.length(), this);
-
-            for (QFileInfoList::iterator it = fileInfos.begin(); it != fileInfos.end(); ++it )
-            {
-                subProg.next();
-                items->append( os->createItemFromSourceDir( (*it), this) );
-            }
-        }
-    }
-}
-
 void ObjectModel::reloadAndMergeItems()
 {
     // FIXME: conjunction with BLOCKING and non-blocking, can be async ?
@@ -1022,8 +967,10 @@ void ObjectModel::reloadAndMergeItems()
     QList<ObjectItem*> itemsFromProject;
     QList<ObjectItem*> itemsFromSourceDir;
 
-    loadItemsFromProject( &itemsFromProject );
-    loadItemsFromSourceDir( &itemsFromSourceDir );
+    LoadItemsFromProjectCommand     loadItemsFromProject    (m_application, &itemsFromProject, this);
+    LoadItemsFromSourceDirCommand   loadItemsFromSourceDir  (m_application, &itemsFromSourceDir, this);
+    loadItemsFromProject    .execute( NULL );
+    loadItemsFromSourceDir  .execute( NULL );
 
 
     // we need to do here for ..
