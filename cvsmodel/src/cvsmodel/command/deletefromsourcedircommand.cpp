@@ -16,8 +16,8 @@ DeleteFromSourceDirCommand::DeleteFromSourceDirCommand(QObject *parent)
 
 struct DeleteFromSourceDirFunctionObject
 {
-    DeleteFromSourceDirFunctionObject(ObjectProcessor *os)
-        : m_os(os)
+    DeleteFromSourceDirFunctionObject(ObjectProcessor *processor)
+        : m_processor(processor)
     {
     }
 
@@ -25,25 +25,25 @@ struct DeleteFromSourceDirFunctionObject
 
     void operator()(const QString &objectName)
     {
-        m_os->deleteFromSourceDir(objectName);
+        m_processor->deleteFromSourceDir(objectName);
     }
 
-    ObjectProcessor *m_os;
+    ObjectProcessor *m_processor;
 };
 
 void DeleteFromSourceDirCommand::execute(ObjectItems *allTargets)
 {
     // non-blocking
-    ProgressNotifier mainProg(Model::DeleteFromSourceDirProcess, this);
+    ProgressNotifier mainProgress(Model::DeleteFromSourceDirProcess, this);
     ProjectSetting setting(this);
-    ObjectProcessor *os;
+    ObjectProcessor *processor;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
     {
-        os = setting[ objectType ];
+        processor = setting[ objectType ];
 
-        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
+        QMap<QString, ObjectItem*> targets = allTargets->value( processor->objectType() );
         QStringList objectNames = targets.keys();
 
         //----------------------------------------------------------------------------------------
@@ -61,9 +61,9 @@ void DeleteFromSourceDirCommand::execute(ObjectItems *allTargets)
         // asynchronous call
         //*
         {
-            ProgressNotifier subProg(mainProg.type(), objectNames.count(), this);
-            ConcurrentMapHelper<void> mapHelper( &subProg );
-            mapHelper.run( QtConcurrent::map(objectNames, DeleteFromSourceDirFunctionObject(os) ) );
+            ProgressNotifier subProgress(mainProgress.type(), objectNames.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProgress );
+            mapHelper.run( QtConcurrent::map(objectNames, DeleteFromSourceDirFunctionObject(processor) ) );
         }
         // */
     }

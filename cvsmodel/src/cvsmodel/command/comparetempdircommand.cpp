@@ -19,9 +19,9 @@ CompareTempDirCommand::CompareTempDirCommand(QObject *parent)
 
 struct CompareTempDirFunctionObject : public FunctionObjectBase
 {
-    CompareTempDirFunctionObject(ObjectProcessor *os, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
+    CompareTempDirFunctionObject(ObjectProcessor *processor, DataChangedHelper *dataChangedHelper, QList<ObjectItem*> *items)
         : FunctionObjectBase(dataChangedHelper, items)
-        , m_os(os)
+        , m_processor(processor)
     {
     }
 
@@ -30,7 +30,7 @@ struct CompareTempDirFunctionObject : public FunctionObjectBase
     void operator()(ObjectItem *item)
     {
         bool isDifferent = false;
-        m_os->compareTempDir( item->name() , &isDifferent);
+        m_processor->compareTempDir( item->name() , &isDifferent);
 
         if (isDifferent == true && item->isDifferent() != Model::DifferentContents )
         {
@@ -44,7 +44,7 @@ struct CompareTempDirFunctionObject : public FunctionObjectBase
         }
     }
 
-    ObjectProcessor *m_os;
+    ObjectProcessor *m_processor;
 };
 
 
@@ -52,14 +52,14 @@ void CompareTempDirCommand::execute(ObjectItems *allTargets)
 {
     // non-blocking
     DataChangedHelper helper( m_items->count() );
-    ProgressNotifier mainProg(Model::CompareTempDirProcess, this);
+    ProgressNotifier mainProgress(Model::CompareTempDirProcess, this);
     ProjectSetting setting(this);
-    ObjectProcessor *os;
+    ObjectProcessor *processor;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
     {
-        os = setting[ objectType ];
+        processor = setting[ objectType ];
 
 
         //----------------------------------------------------------------------------------------
@@ -94,9 +94,9 @@ void CompareTempDirCommand::execute(ObjectItems *allTargets)
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
         //
         {
-            ProgressNotifier subProg(mainProg.type(), items.count(), this);
-            ConcurrentMapHelper<void> mapHelper( &subProg );
-            mapHelper.run( QtConcurrent::map(items, CompareTempDirFunctionObject(os, &helper, m_items) ) );
+            ProgressNotifier subProgress(mainProgress.type(), items.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProgress );
+            mapHelper.run( QtConcurrent::map(items, CompareTempDirFunctionObject(processor, &helper, m_items) ) );
         }
         // */
     }

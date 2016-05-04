@@ -19,53 +19,53 @@ void ImportFromTempDirToProjectCommand::execute(ObjectItems *allTargets)
 {
     // BLOCKING, cannot be async
 
-    ProgressNotifier mainProg(Model::ImportFromTempDirToProjectProcess, this);
+    ProgressNotifier mainProgress(Model::ImportFromTempDirToProjectProcess, this);
     ProjectSetting setting(this);
-    ObjectProcessor *os;
+    ObjectProcessor *processor;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
     {
-        os = setting[ objectType ];
+        processor = setting[ objectType ];
 
-        if (!os->prepareItemCollection())
+        if (!processor->prepareItemCollection())
             continue;
 
-        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
+        QMap<QString, ObjectItem*> targets = allTargets->value( processor->objectType() );
         QStringList objectNames = targets.keys();
 
         // main process
         {
-            ProgressNotifier subProg(mainProg.type(), objectNames.count(), this);
+            ProgressNotifier subProgress(mainProgress.type(), objectNames.count(), this);
 
             for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
             {
-                subProg.next();
+                subProgress.next();
                 ObjectItem *item = targets[ (*it) ];
                 if (item->inProject() == Model::Present)
                 {
-                    ComPtr<QAxObject> object = os->itemUnsafePtr( (*it) );
-                    os->importFromTempDirToProject(object.ptr(), (*it));
+                    ComPtr<QAxObject> object = processor->itemUnsafePtr( (*it) );
+                    processor->importFromTempDirToProject(object.ptr(), (*it));
                 }
                 else
-                    os->importFromTempDirToProject( NULL, (*it) );
+                    processor->importFromTempDirToProject( NULL, (*it) );
             }
         }
         // post process
         {
-            ProgressNotifier subProg(mainProg.type(), objectNames.count(), this);
+            ProgressNotifier subProgress(mainProgress.type(), objectNames.count(), this);
 
             for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
             {
-                subProg.next();
+                subProgress.next();
                 ObjectItem *item = targets[ (*it) ];
                 if (item->inProject() == Model::Present)
                 {
-                    ComPtr<QAxObject> object = os->itemUnsafePtr( (*it) );
-                    os->afterImportFromTempDirToProject(object.ptr(), (*it));
+                    ComPtr<QAxObject> object = processor->itemUnsafePtr( (*it) );
+                    processor->afterImportFromTempDirToProject(object.ptr(), (*it));
                 }
                 else
-                    os->afterImportFromTempDirToProject( NULL, (*it) );
+                    processor->afterImportFromTempDirToProject( NULL, (*it) );
             }
         }
     }

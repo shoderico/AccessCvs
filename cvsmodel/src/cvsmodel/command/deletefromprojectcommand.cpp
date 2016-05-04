@@ -16,23 +16,23 @@ void DeleteFromProjectCommand::execute(ObjectItems *allTargets)
 {
     // BLOCKING, cannot be async
 
-    ProgressNotifier mainProg(Model::DeleteFromProjectProcess, this);
+    ProgressNotifier mainProgress(Model::DeleteFromProjectProcess, this);
     ProjectSetting setting(this);
-    ObjectProcessor *os;
+    ObjectProcessor *processor;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
     {
-        os = setting[ objectType ];
+        processor = setting[ objectType ];
 
-        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
+        QMap<QString, ObjectItem*> targets = allTargets->value( processor->objectType() );
         QStringList objectNames = targets.keys();
-        ProgressNotifier subProg(mainProg.type(), objectNames.count(), this);
+        ProgressNotifier subProgress(mainProgress.type(), objectNames.count(), this);
 
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
-            subProg.next();
-            os->deleteFromProject( (*it) );
+            subProgress.next();
+            processor->deleteFromProject( (*it) );
         }
     }
 }

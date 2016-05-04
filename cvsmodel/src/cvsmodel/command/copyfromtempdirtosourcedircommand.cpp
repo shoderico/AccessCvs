@@ -16,8 +16,8 @@ CopyFromTempDirToSourceDirCommand::CopyFromTempDirToSourceDirCommand(QObject *pa
 
 struct CopyFromTempDirToSourceDirFunctionObject
 {
-    CopyFromTempDirToSourceDirFunctionObject(ObjectProcessor *os)
-        : m_os(os)
+    CopyFromTempDirToSourceDirFunctionObject(ObjectProcessor *processor)
+        : m_processor(processor)
     {
     }
 
@@ -25,26 +25,26 @@ struct CopyFromTempDirToSourceDirFunctionObject
 
     void operator()(const QString &objectName)
     {
-        m_os->copyFromTempDirToSourceDir(objectName);
+        m_processor->copyFromTempDirToSourceDir(objectName);
     }
 
-    ObjectProcessor *m_os;
+    ObjectProcessor *m_processor;
 };
 
 void CopyFromTempDirToSourceDirCommand::execute(ObjectItems *allTargets)
 {
     // non-blocking
-    ProgressNotifier mainProg(Model::CopyFromTempDirToSourceDirProcess, this);
+    ProgressNotifier mainProgress(Model::CopyFromTempDirToSourceDirProcess, this);
     ProjectSetting setting(this);
-    ObjectProcessor *os;
+    ObjectProcessor *processor;
     setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, setting.objectTypes())
     {
-        os = setting[ objectType ];
-        os->mkdirSourceObjectPath();
+        processor = setting[ objectType ];
+        processor->mkdirSourceObjectPath();
 
-        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
+        QMap<QString, ObjectItem*> targets = allTargets->value( processor->objectType() );
         QStringList objectNames = targets.keys();
 
         //----------------------------------------------------------------------------------------
@@ -62,9 +62,9 @@ void CopyFromTempDirToSourceDirCommand::execute(ObjectItems *allTargets)
         // asynchronous call
         //*
         {
-            ProgressNotifier subProg(mainProg.type(), objectNames.count(), this);
-            ConcurrentMapHelper<void> mapHelper( &subProg );
-            mapHelper.run( QtConcurrent::map(objectNames, CopyFromTempDirToSourceDirFunctionObject(os) ) );
+            ProgressNotifier subProgress(mainProgress.type(), objectNames.count(), this);
+            ConcurrentMapHelper<void> mapHelper( &subProgress );
+            mapHelper.run( QtConcurrent::map(objectNames, CopyFromTempDirToSourceDirFunctionObject(processor) ) );
         }
         // */
     }

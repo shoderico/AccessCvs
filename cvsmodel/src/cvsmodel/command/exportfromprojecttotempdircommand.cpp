@@ -24,28 +24,28 @@ void ExportFromProjectToTempDirCommand::execute(ObjectItems *allTargets)
     //      for objects existing in ProjectOnly
     // without sanitizing and any extra processes.
 
-    ProgressNotifier mainProg(Model::ExportFromProjectToTempDirProcess, this);
+    ProgressNotifier mainProgress(Model::ExportFromProjectToTempDirProcess, this);
     ProjectSetting setting(this);
-    ObjectProcessor *os;
+    ObjectProcessor *processor;
     setting.initialize(m_application);
 
     foreach ( const Model::ObjectType &objectType, setting.objectTypes() )
     {
-        os = setting[ objectType ];
-        os->mkdirTempObjectPath();
+        processor = setting[ objectType ];
+        processor->mkdirTempObjectPath();
 
-        if (!os->prepareItemCollection())
+        if (!processor->prepareItemCollection())
             continue;
 
-        QMap<QString, ObjectItem*> targets = allTargets->value( os->objectType() );
+        QMap<QString, ObjectItem*> targets = allTargets->value( processor->objectType() );
         QStringList objectNames = targets.keys();
-        ProgressNotifier subProg(mainProg.type(), objectNames.count(), this);
+        ProgressNotifier subProgress(mainProgress.type(), objectNames.count(), this);
 
         for (QStringList::iterator it = objectNames.begin(); it != objectNames.end(); ++it)
         {
-            subProg.next();
-            ComPtr<QAxObject> object = os->itemUnsafePtr( (*it) );
-            os->exportFromProjectToTempDir(object.ptr(), (*it) );
+            subProgress.next();
+            ComPtr<QAxObject> object = processor->itemUnsafePtr( (*it) );
+            processor->exportFromProjectToTempDir(object.ptr(), (*it) );
         }
     }
 }
