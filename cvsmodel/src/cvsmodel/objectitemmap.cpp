@@ -2,6 +2,7 @@
 
 ObjectItemMap::ObjectItemMap()
 {
+    // add Object-Level object types ( not Project-Level )
     QList<Model::ObjectType> objectTypes;
     objectTypes << Model::TableDef
                 << Model::Query

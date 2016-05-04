@@ -87,6 +87,13 @@ public:
     void setObjectType(const Model::ObjectType objectType) { m_objectType = objectType; }
 
     /*!
+       \brief selectObjectType
+       \return
+     */
+    Model::SelectObjectType selectObjectType() const { return m_selectObjectType; }
+    void setSelectObjectType(const Model::SelectObjectType objectType) { m_selectObjectType = objectType; }
+
+    /*!
        \brief gitStatusInIndex
        \return
      */
@@ -115,6 +122,7 @@ protected:
     Model::ObjectExistence  m_inSourceDir;
     Model::ObjectDifference m_isDifferent;
     Model::ObjectType       m_objectType;
+    Model::SelectObjectType m_selectObjectType;
     Model::GitStatus        m_gitStatusInIndex;
     Model::GitStatus        m_gitStatusInWorkTree;
 };

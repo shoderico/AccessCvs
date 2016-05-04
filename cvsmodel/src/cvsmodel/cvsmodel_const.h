@@ -38,6 +38,7 @@ enum SelectObjectType
     ProjectFileType = 128,
     VBProjectType = 256,
     AllObjectTypes = 511,
+    RelationObjectType = -1, // unused
 };
 Q_DECLARE_FLAGS(SelectObjectTypes, SelectObjectType)
 

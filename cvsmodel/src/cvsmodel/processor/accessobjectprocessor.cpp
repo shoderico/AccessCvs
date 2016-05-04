@@ -45,6 +45,7 @@ ObjectItem *AccessObjectProcessor::createItemFromProject(QAxObject *object, QObj
     if (accessObject)
     {
         item->setObjectType( m_objectType );
+        item->setSelectObjectType( m_selectObjectType );
         item->setName( accessObject->Name() );
         item->setInProject( Model::Present );
         item->setCreateDate( accessObject->DateCreated() );
@@ -56,6 +57,7 @@ ObjectItem *AccessObjectProcessor::createItemFromProject(QAxObject *object, QObj
     if (daoDocument)
     {
         item->setObjectType( m_objectType );
+        item->setSelectObjectType( m_selectObjectType );
         item->setName( daoDocument->Name() );
         item->setInProject( Model::Present );
         item->setCreateDate( daoDocument->DateCreated().toDateTime() );

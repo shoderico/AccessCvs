@@ -16,6 +16,7 @@ RelationProcessor::RelationProcessor(ProjectSetting *parent)
     : ObjectProcessor(parent)
 {
     m_objectType          = Model::Relation;
+    m_selectObjectType    = Model::RelationObjectType;
     m_accessObjectType    = -1;
     m_objectPathName      = "relations";
     m_containerName       = "";

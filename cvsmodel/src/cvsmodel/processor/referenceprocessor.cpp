@@ -19,6 +19,7 @@ ReferenceProcessor::ReferenceProcessor(ProjectSetting *parent)
     m_objectName          = "Reference";
 
     m_objectType          = Model::Reference;
+    m_selectObjectType    = Model::ReferenceObjectType;
     m_accessObjectType    = -1;
     m_objectPathName      = "";
     m_containerName       = "";

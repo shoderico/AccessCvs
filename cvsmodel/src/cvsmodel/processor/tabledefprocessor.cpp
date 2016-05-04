@@ -25,6 +25,7 @@ TableDefProcessor::TableDefProcessor(ProjectSetting *parent)
     , m_tableDataSanitizer(new TableDataSanitizer(this))
 {
     m_objectType          = Model::TableDef;
+    m_selectObjectType    = Model::TableDefObjectType;
     m_accessObjectType    = Access::acTable;
     m_objectPathName      = "tabledefs";
     m_containerName       = "";
@@ -57,6 +58,7 @@ ObjectItem *TableDefProcessor::createItemFromProject(QAxObject *object, QObject 
     if (tableDef)
     {
         item->setObjectType( m_objectType );
+        item->setSelectObjectType( m_selectObjectType );
         item->setName( tableDef->Name() );
         item->setInProject( Model::Present );
         item->setCreateDate( tableDef->DateCreated().toDateTime() );

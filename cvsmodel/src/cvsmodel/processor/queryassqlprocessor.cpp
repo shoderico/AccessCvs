@@ -20,6 +20,7 @@ QueryAsSqlProcessor::QueryAsSqlProcessor(ProjectSetting *parent)
     : ObjectProcessor(parent)
 {
     m_objectType          = Model::Query;
+    m_selectObjectType    = Model::QueryObjectType;
     m_accessObjectType    = Access::acQuery;
     m_objectPathName      = "queries";
     m_containerName       = "";
@@ -48,6 +49,7 @@ ObjectItem *QueryAsSqlProcessor::createItemFromProject(QAxObject *object, QObjec
     if (queryDef)
     {
         item->setObjectType( m_objectType );
+        item->setSelectObjectType( m_selectObjectType );
         item->setName( queryDef->Name() );
         item->setInProject( Model::Present );
         item->setCreateDate( queryDef->DateCreated().toDateTime() );

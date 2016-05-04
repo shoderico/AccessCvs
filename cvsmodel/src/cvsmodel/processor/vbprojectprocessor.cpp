@@ -18,6 +18,7 @@ VBProjectProcessor::VBProjectProcessor(ProjectSetting *parent)
     m_objectName          = "VBEProject";
 
     m_objectType          = Model::VBProject;
+    m_selectObjectType    = Model::VBProjectType;
     m_accessObjectType    = -1;
     m_objectPathName      = "";
     m_containerName       = "";

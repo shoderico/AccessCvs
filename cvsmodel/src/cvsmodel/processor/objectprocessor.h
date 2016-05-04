@@ -102,6 +102,7 @@ protected:
 protected:
     Model::ObjectType m_objectType;
     int m_accessObjectType;
+    Model::SelectObjectType m_selectObjectType;
     QString m_objectPathName;
     QString m_containerName;
 

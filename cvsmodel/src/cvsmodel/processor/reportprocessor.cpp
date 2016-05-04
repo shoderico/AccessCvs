@@ -20,6 +20,7 @@ ReportProcessor::ReportProcessor(ProjectSetting *parent)
     : AccessDesignObjectProcessor(parent)
 {
     m_objectType          = Model::Report;
+    m_selectObjectType    = Model::ReportObjectType;
     m_accessObjectType    = Access::acReport;
     m_objectPathName      = "reports";
     m_containerName       = "Reports";

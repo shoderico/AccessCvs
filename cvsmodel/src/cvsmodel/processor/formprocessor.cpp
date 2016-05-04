@@ -13,6 +13,7 @@ FormProcessor::FormProcessor(ProjectSetting *parent)
     : AccessDesignObjectProcessor(parent)
 {
     m_objectType          = Model::Form;
+    m_selectObjectType    = Model::FormObjectType;
     m_accessObjectType    = Access::acForm;
     m_objectPathName      = "forms";
     m_containerName       = "Forms";

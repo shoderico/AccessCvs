@@ -22,6 +22,7 @@ ProjectFileProcessor::ProjectFileProcessor(ProjectSetting *parent)
     m_objectName          = "AccessProject";
 
     m_objectType          = Model::ProjectFile;
+    m_selectObjectType    = Model::ProjectFileType;
     m_accessObjectType    = -1;
     m_objectPathName      = "";
     m_containerName       = "";

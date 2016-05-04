@@ -16,6 +16,7 @@ ModuleProcessor::ModuleProcessor(ProjectSetting *parent)
     : AccessObjectProcessor(parent)
 {
     m_objectType          = Model::Module;
+    m_selectObjectType    = Model::ModuleObjectType;
     m_accessObjectType    = Access::acModule;
     m_objectPathName      = "modules";
     m_containerName       = "Modules";

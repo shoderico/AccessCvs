@@ -17,6 +17,7 @@ MacroProcessor::MacroProcessor(ProjectSetting *parent)
     : AccessDesignObjectProcessor(parent)
 {
     m_objectType          = Model::Macro;
+    m_selectObjectType    = Model::MacroObjectType;
     m_accessObjectType    = Access::acMacro;
     m_objectPathName      = "macros";
     m_containerName       = "Scripts";
