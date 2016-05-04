@@ -20,6 +20,7 @@ ModuleProcessor::ModuleProcessor(ProjectSetting *parent)
     m_accessObjectType    = Access::acModule;
     m_objectPathName      = "modules";
     m_containerName       = "Modules";
+    m_iconPath            = ":/images/page.png";
 
     m_tempFileExtension   = "tmp";
     m_designFileExtension = "";

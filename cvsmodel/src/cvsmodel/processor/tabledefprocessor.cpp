@@ -29,6 +29,7 @@ TableDefProcessor::TableDefProcessor(ProjectSetting *parent)
     m_accessObjectType    = Access::acTable;
     m_objectPathName      = "tabledefs";
     m_containerName       = "";
+    m_iconPath            = ":/images/table.png";
 
     m_tempFileExtension   = "tmp";
     m_designFileExtension = "xml";
@@ -59,6 +60,7 @@ ObjectItem *TableDefProcessor::createItemFromProject(QAxObject *object, QObject 
     {
         item->setObjectType( m_objectType );
         item->setSelectObjectType( m_selectObjectType );
+        item->setIconPath( m_iconPath );
         item->setName( tableDef->Name() );
         item->setInProject( Model::Present );
         item->setCreateDate( tableDef->DateCreated().toDateTime() );

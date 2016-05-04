@@ -105,6 +105,7 @@ protected:
     Model::SelectObjectType m_selectObjectType;
     QString m_objectPathName;
     QString m_containerName;
+    QString m_iconPath;
 
     QString m_tempFileExtension;
     QString m_designFileExtension;

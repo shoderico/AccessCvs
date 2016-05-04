@@ -24,6 +24,7 @@ ReportProcessor::ReportProcessor(ProjectSetting *parent)
     m_accessObjectType    = Access::acReport;
     m_objectPathName      = "reports";
     m_containerName       = "Reports";
+    m_iconPath            = ":/images/report.png";
 
     m_tempFileExtension   = "tmp";
     m_designFileExtension = "rpt";

@@ -46,6 +46,7 @@ ObjectItem *AccessObjectProcessor::createItemFromProject(QAxObject *object, QObj
     {
         item->setObjectType( m_objectType );
         item->setSelectObjectType( m_selectObjectType );
+        item->setIconPath( m_iconPath );
         item->setName( accessObject->Name() );
         item->setInProject( Model::Present );
         item->setCreateDate( accessObject->DateCreated() );
@@ -58,6 +59,7 @@ ObjectItem *AccessObjectProcessor::createItemFromProject(QAxObject *object, QObj
     {
         item->setObjectType( m_objectType );
         item->setSelectObjectType( m_selectObjectType );
+        item->setIconPath( m_iconPath );
         item->setName( daoDocument->Name() );
         item->setInProject( Model::Present );
         item->setCreateDate( daoDocument->DateCreated().toDateTime() );

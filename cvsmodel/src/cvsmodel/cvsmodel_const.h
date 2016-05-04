@@ -6,25 +6,6 @@
 namespace Model {
 
 //----------------------------------------------------------------------------------------------------------------------
-enum ObjectType
-{
-    Unknwon = 0,
-    Unkown_OT = 0,
-    TableDef,
-    Query,
-    Form,
-    Report,
-    Macro,
-    Module,
-//    TableData,
-    Relation,
-    Reference,
-    ProjectFile,
-    VBProject
-};
-
-
-//----------------------------------------------------------------------------------------------------------------------
 enum SelectObjectType
 {
   //NoObjectTypes = 0,
@@ -41,6 +22,25 @@ enum SelectObjectType
     RelationObjectType = -1, // unused
 };
 Q_DECLARE_FLAGS(SelectObjectTypes, SelectObjectType)
+
+
+//----------------------------------------------------------------------------------------------------------------------
+enum ObjectType
+{
+    Unknwon = 0,
+    Unkown_OT = 0,
+    TableDef = TableDefObjectType,
+    Query = QueryObjectType,
+    Form = FormObjectType,
+    Report = ReportObjectType,
+    Macro = MacroObjectType,
+    Module = ModuleObjectType,
+//    TableData,
+    Relation = RelationObjectType,
+    Reference = ReferenceObjectType,
+    ProjectFile = ProjectFileType,
+    VBProject = VBProjectType,
+};
 
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -141,24 +141,7 @@ QVariant ObjectModel::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DecorationRole && index.column() == Model::NameColumn)
     {
-        // return QIcon
-
-        // TODO: make icon manager
-        switch (item->objectType()) {
-            case Model::TableDef:   return QIcon( ":/images/table.png" );
-            case Model::Query:      return QIcon( ":/images/table_multiple.png" );
-            case Model::Form:       return QIcon( ":/images/application_form.png" );
-            case Model::Report:     return QIcon( ":/images/report.png" );
-            case Model::Macro:      return QIcon( ":/images/script.png" );
-            case Model::Module:     return QIcon( ":/images/page.png" );
-            case Model::Reference:  return QIcon( ":/images/page_link.png" );
-            case Model::ProjectFile: return QIcon( ":/images/page_link.png" );
-            case Model::VBProject:   return QIcon( ":/images/page_link.png" );
-
-        default:
-            break;
-        }
-        return QVariant();
+        return QIcon( item->iconPath() );
     }
 
     if (role == Qt::CheckStateRole)
@@ -764,19 +747,10 @@ void ObjectModel::getItems(ObjectItemMap *pItems, Model::ItemsTypes itemsType, M
             continue;
 
         // skip non-target object type
-        switch (item->objectType())
-        {
-            case Model::TableDef:   if ( !(objectTypes & Model::TableDefObjectType    ) ) continue; break;
-            case Model::Query:      if ( !(objectTypes & Model::QueryObjectType    ) ) continue; break;
-            case Model::Form:       if ( !(objectTypes & Model::FormObjectType     ) ) continue; break;
-            case Model::Report:     if ( !(objectTypes & Model::ReportObjectType   ) ) continue; break;
-            case Model::Macro:      if ( !(objectTypes & Model::MacroObjectType    ) ) continue; break;
-            case Model::Module:     if ( !(objectTypes & Model::ModuleObjectType   ) ) continue; break;
-            case Model::Reference:  if ( !(objectTypes & Model::ReferenceObjectType) ) continue; break;
-            case Model::ProjectFile:  if ( !(objectTypes & Model::ProjectFileType) ) continue; break;
-            case Model::VBProject:  if ( !(objectTypes & Model::VBProjectType) ) continue; break;
-            default: break;
-        }
+        if ( !(objectTypes & item->selectObjectType()) )
+            continue;
+
+
 
         if (!toBeInserted && itemsType & Model::InBoth)
         {
@@ -909,18 +883,7 @@ void ObjectModel::emitSelectionChanged()
        {
            if (item->isSelected())
            {
-               switch (objectType)
-               {
-                   case Model::TableDef:    objectTypes |= Model::TableDefObjectType;     break;
-                   case Model::Query:       objectTypes |= Model::QueryObjectType;     break;
-                   case Model::Form:        objectTypes |= Model::FormObjectType;      break;
-                   case Model::Report:      objectTypes |= Model::ReportObjectType;    break;
-                   case Model::Macro:       objectTypes |= Model::MacroObjectType;     break;
-                   case Model::Module:      objectTypes |= Model::ModuleObjectType;    break;
-                   case Model::Reference:   objectTypes |= Model::ReferenceObjectType; break;
-                   case Model::ProjectFile: objectTypes |= Model::ProjectFileType;     break;
-                   case Model::VBProject:   objectTypes |= Model::VBProjectType;       break;
-               }
+               objectTypes |= item->selectObjectType();
                break;
            }
        }

@@ -21,6 +21,7 @@ MacroProcessor::MacroProcessor(ProjectSetting *parent)
     m_accessObjectType    = Access::acMacro;
     m_objectPathName      = "macros";
     m_containerName       = "Scripts";
+    m_iconPath            = ":/images/script.png";
 
     m_tempFileExtension   = "tmp";
     m_designFileExtension = "mcr";

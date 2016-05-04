@@ -6,15 +6,20 @@ ObjectProxyModel::ObjectProxyModel(QObject *parent)
     : QSortFilterProxyModel(parent)
     , m_showSelectedOnly(false)
 {
-    m_showObjectTypes[ Model::TableDef ] = true;
-    m_showObjectTypes[ Model::Query ] = true;
-    m_showObjectTypes[ Model::Form ] = true;
-    m_showObjectTypes[ Model::Report ] = true;
-    m_showObjectTypes[ Model::Macro ] = true;
-    m_showObjectTypes[ Model::Module ] = true;
-    m_showObjectTypes[ Model::Reference ] = true;
-    m_showObjectTypes[ Model::ProjectFile ] = true;
-    m_showObjectTypes[ Model::VBProject ] = true;
+    QList<Model::ObjectType> objectTypes;
+    objectTypes << Model::TableDef
+                << Model::Query
+                << Model::Form
+                << Model::Report
+                << Model::Macro
+                << Model::Module
+                << Model::Reference
+                << Model::ProjectFile
+                << Model::VBProject
+                   ;
+    foreach ( Model::ObjectType objectType, objectTypes )
+        m_showObjectTypes[ objectType ] = true;
+
 }
 
 bool ObjectProxyModel::lessThan(const QModelIndex &source_left, const QModelIndex &source_right) const
@@ -87,15 +92,12 @@ void ObjectProxyModel::setFilterShowSelectedOnly(const bool selectedOnly)
 
 void ObjectProxyModel::setFilterShowObjectType(const int objectTypes)
 {
-    m_showObjectTypes[ Model::TableDef  ] = ( objectTypes & Model::TableDefObjectType );
-    m_showObjectTypes[ Model::Query     ] = ( objectTypes & Model::QueryObjectType );
-    m_showObjectTypes[ Model::Form      ] = ( objectTypes & Model::FormObjectType ) ;
-    m_showObjectTypes[ Model::Report    ] = ( objectTypes & Model::ReportObjectType ) ;
-    m_showObjectTypes[ Model::Macro     ] = ( objectTypes & Model::MacroObjectType );
-    m_showObjectTypes[ Model::Module    ] = ( objectTypes & Model::ModuleObjectType );
-    m_showObjectTypes[ Model::Reference ] = ( objectTypes & Model::ReferenceObjectType ) ;
-    m_showObjectTypes[ Model::ProjectFile ] = ( objectTypes & Model::ProjectFileType ) ;
-    m_showObjectTypes[ Model::VBProject] = ( objectTypes & Model::VBProjectType ) ;
+    foreach(int objectType, m_showObjectTypes.keys() )
+    {
+        int selectObjectType = objectType; // SelectObjectType is the same as ObjectType
+        m_showObjectTypes[ objectType ] = ( objectTypes & selectObjectType ) ;
+    }
+
     invalidateFilter();
     emit showObjectTypeChanged( showObjectType() );
 }
@@ -107,16 +109,14 @@ bool ObjectProxyModel::isShowSelectedOnly() const
 
 int ObjectProxyModel::showObjectType() const
 {
-    int objectType = 0;
-    objectType |= m_showObjectTypes[ Model::TableDef    ] ? Model::TableDefObjectType : 0;
-    objectType |= m_showObjectTypes[ Model::Query       ] ? Model::QueryObjectType : 0;
-    objectType |= m_showObjectTypes[ Model::Form        ] ? Model::FormObjectType : 0;
-    objectType |= m_showObjectTypes[ Model::Report      ] ? Model::ReportObjectType : 0;
-    objectType |= m_showObjectTypes[ Model::Macro       ] ? Model::MacroObjectType : 0;
-    objectType |= m_showObjectTypes[ Model::Module      ] ? Model::ModuleObjectType : 0;
-    objectType |= m_showObjectTypes[ Model::Reference   ] ? Model::ReferenceObjectType : 0;
-    objectType |= m_showObjectTypes[ Model::ProjectFile ] ? Model::ProjectFileType : 0;
-    objectType |= m_showObjectTypes[ Model::VBProject   ] ? Model::VBProjectType : 0;
-    return objectType;
+    int objectTypes = 0;
+
+    foreach(int objectType, m_showObjectTypes.keys() )
+    {
+        int selectObjectType = objectType; // SelectObjectType is the same as ObjectType
+        objectTypes |= m_showObjectTypes[ objectType ] ? selectObjectType : 0;
+    }
+
+    return objectTypes;
 }
 

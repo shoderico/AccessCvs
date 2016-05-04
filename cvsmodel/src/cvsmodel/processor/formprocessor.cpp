@@ -17,6 +17,7 @@ FormProcessor::FormProcessor(ProjectSetting *parent)
     m_accessObjectType    = Access::acForm;
     m_objectPathName      = "forms";
     m_containerName       = "Forms";
+    m_iconPath            = ":/images/application_form.png";
 
     m_tempFileExtension   = "tmp";
     m_designFileExtension = "frm";

@@ -40,6 +40,7 @@ ObjectItem *ProjectLevelObjectProcessor::createItemFromProject(QAxObject *object
     {
         item->setObjectType( m_objectType );
         item->setSelectObjectType( m_selectObjectType );
+        item->setIconPath( m_iconPath );
         item->setName( m_objectName );
         item->setInProject( Model::Present );
         item->setExportDate( FileUtil::fileTime( filePath(TempDir, TempFile, item->name()) ) );

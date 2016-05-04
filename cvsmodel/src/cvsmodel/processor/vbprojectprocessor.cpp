@@ -22,6 +22,7 @@ VBProjectProcessor::VBProjectProcessor(ProjectSetting *parent)
     m_accessObjectType    = -1;
     m_objectPathName      = "";
     m_containerName       = "";
+    m_iconPath            = ":/images/page_link.png";
 
     m_tempFileExtension   = "vbeproj";
     m_designFileExtension = m_tempFileExtension;

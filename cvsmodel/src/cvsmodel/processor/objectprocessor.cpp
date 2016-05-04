@@ -55,6 +55,7 @@ ObjectItem *ObjectProcessor::createItemFromSourceDir(QFileInfo &fileInfo, QObjec
 
     item->setObjectType( m_objectType );
     item->setSelectObjectType( m_selectObjectType );
+    item->setIconPath( m_iconPath );
     item->setName( fileInfo.completeBaseName() );
     item->setInSourceDir( Model::Present );
 

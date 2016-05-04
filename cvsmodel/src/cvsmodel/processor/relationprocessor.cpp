@@ -20,6 +20,7 @@ RelationProcessor::RelationProcessor(ProjectSetting *parent)
     m_accessObjectType    = -1;
     m_objectPathName      = "relations";
     m_containerName       = "";
+    m_iconPath            = ":/images/page_link.png";
 
     m_tempFileExtension   = "tmp";
     m_designFileExtension = "rel";

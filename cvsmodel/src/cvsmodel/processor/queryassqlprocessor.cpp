@@ -24,6 +24,7 @@ QueryAsSqlProcessor::QueryAsSqlProcessor(ProjectSetting *parent)
     m_accessObjectType    = Access::acQuery;
     m_objectPathName      = "queries";
     m_containerName       = "";
+    m_iconPath            = ":/images/table_multiple.png";
 
     m_tempFileExtension   = "sql";
     m_designFileExtension = m_tempFileExtension;
@@ -50,6 +51,7 @@ ObjectItem *QueryAsSqlProcessor::createItemFromProject(QAxObject *object, QObjec
     {
         item->setObjectType( m_objectType );
         item->setSelectObjectType( m_selectObjectType );
+        item->setIconPath( m_iconPath );
         item->setName( queryDef->Name() );
         item->setInProject( Model::Present );
         item->setCreateDate( queryDef->DateCreated().toDateTime() );

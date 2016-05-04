@@ -80,6 +80,14 @@ public:
 
 
     /*!
+       \brief iconPath
+       \return
+     */
+    QString iconPath() const { return m_iconPath; }
+    void setIconPath(const QString &iconPath) { m_iconPath = iconPath; }
+
+
+    /*!
        \brief objectType
        \return
      */
@@ -118,11 +126,14 @@ protected:
     QDateTime   m_exportDate;
     bool        m_isSelected;
     bool        m_hasData;
+    QString     m_iconPath;
+
     Model::ObjectExistence  m_inProject;
     Model::ObjectExistence  m_inSourceDir;
     Model::ObjectDifference m_isDifferent;
     Model::ObjectType       m_objectType;
     Model::SelectObjectType m_selectObjectType;
+
     Model::GitStatus        m_gitStatusInIndex;
     Model::GitStatus        m_gitStatusInWorkTree;
 };
