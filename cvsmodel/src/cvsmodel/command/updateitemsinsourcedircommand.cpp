@@ -72,8 +72,7 @@ void UpdateItemsInSourceDirCommand::execute(ObjectItems *allTargets)
     }
     if (helper.isChanged())
     {
-        // TODO : how to emit model's signal ?
-//        emit dataChanged( createIndex(helper.first(), Model::InSourceDirColumn), createIndex(helper.last(), Model::InSourceDirColumn) );
+        emit dataChanged(helper.first(), helper.last(), Model::InSourceDirColumn, Model::InSourceDirColumn);
     }
 
 }

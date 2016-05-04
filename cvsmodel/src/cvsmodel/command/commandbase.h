@@ -26,6 +26,8 @@ signals:
     void progressEnd(int type);
     void progressChange(int type, int position);
 
+    void dataChanged(int rowStart, int rowEnd, int columnStart, int columnEnd);
+
 public slots:
 
 private:

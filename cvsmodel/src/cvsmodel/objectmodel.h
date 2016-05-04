@@ -83,6 +83,9 @@ public:
     void reloadAndMergeItems();
 
 
+public slots:
+    void itemDataChanged(int rowStart, int rowEnd, int columnStart, int columnEnd);
+
     //----------------------------------------------------------------------------------------------------------------------
     // progress notification
 signals:

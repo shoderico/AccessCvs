@@ -73,8 +73,7 @@ void UpdateItemsDifferenceCommand::execute(ObjectItems *allTargets)
     }
     if (helper.isChanged())
     {
-        // TODO : how to emit model's signal ?
-//        emit dataChanged( createIndex(helper.first(), Model::DifferentColumn), createIndex(helper.last(), Model::DifferentColumn) );
+        emit dataChanged(helper.first(), helper.last(), Model::DifferentColumn, Model::DifferentColumn);
     }
 }
 

@@ -104,8 +104,7 @@ void CompareTempDirCommand::execute(ObjectItems *allTargets)
     // update items
     if (helper.isChanged())
     {
-        // TODO : how to emit model's signal ?
-        //emit dataChanged( createIndex(helper.first(), DifferentColumn), createIndex( helper.last(), DifferentColumn ) );
+        emit dataChanged(helper.first(), helper.last(), Model::DifferentColumn, Model::DifferentColumn);
     }
 }
 

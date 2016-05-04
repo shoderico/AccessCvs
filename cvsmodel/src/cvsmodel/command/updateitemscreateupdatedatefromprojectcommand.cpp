@@ -51,9 +51,8 @@ void UpdateItemsCreateUpdateDateFromProjectCommand::execute(ObjectItems *allTarg
     }
     if (helper.isChanged())
     {
-        // TODO : how to emit model's signal ?
-//        emit dataChanged( createIndex(helper.first(), Model::CreateDateColumn), createIndex(helper.last(), Model::CreateDateColumn) );
-//        emit dataChanged( createIndex(helper.first(), Model::UpdateDateColumn), createIndex(helper.last(), Model::UpdateDateColumn) );
+        emit dataChanged(helper.first(), helper.last(), Model::CreateDateColumn, Model::CreateDateColumn);
+        emit dataChanged(helper.first(), helper.last(), Model::UpdateDateColumn, Model::UpdateDateColumn);
     }
 }
 

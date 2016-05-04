@@ -1138,6 +1138,11 @@ void ObjectModel::reloadAndMergeItems()
 
 
 
+void ObjectModel::itemDataChanged(int rowStart, int rowEnd, int columnStart, int columnEnd)
+{
+    emit dataChanged( createIndex(rowStart, columnStart), createIndex(rowEnd, columnEnd) );
+}
+
 
 
 void ObjectModel::mergeItemProperties(ObjectItem *itemSrc, ObjectItem *itemDst)

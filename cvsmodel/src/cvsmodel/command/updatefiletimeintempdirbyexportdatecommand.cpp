@@ -113,8 +113,7 @@ void UpdateFileTimeInTempDirByExportDateCommand::execute(ObjectItems *allTargets
 
     if (helper.isChanged())
     {
-        // TODO : how to emit model's signal ?
-//        emit dataChanged( createIndex(helper.first(), Model::ExportDateColumn), createIndex(helper.last(), Model::ExportDateColumn) );
+        emit dataChanged(helper.first(), helper.last(), Model::ExportDateColumn, Model::ExportDateColumn);
     }
 
 }

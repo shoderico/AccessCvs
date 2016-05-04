@@ -72,8 +72,7 @@ void UpdateItemsInProjectCommand::execute(ObjectItems *allTargets)
     }
     if (helper.isChanged())
     {
-        // TODO : how to emit model's signal ?
-//        emit dataChanged( createIndex(helper.first(), Model::InProjectColumn), createIndex(helper.last(), Model::InProjectColumn) );
+        emit dataChanged(helper.first(), helper.last(), Model::InProjectColumn, Model::InProjectColumn);
     }
 
 }

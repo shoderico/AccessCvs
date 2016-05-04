@@ -43,6 +43,8 @@ void CommandBase::assign()
     connect(this, SIGNAL(progressStart(int,int)),   parent(), SIGNAL(progressStart(int,int)) );
     connect(this, SIGNAL(progressChange(int,int)),  parent(), SIGNAL(progressChange(int,int)) );
     connect(this, SIGNAL(progressEnd(int)),         parent(), SIGNAL(progressEnd(int)) );
+
+    connect(this, SIGNAL(dataChanged(int,int,int,int)),         parent(), SLOT(itemDataChanged(int,int,int,int)) );
 }
 
 
