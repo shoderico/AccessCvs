@@ -87,7 +87,7 @@ void ObjectProxyModel::setFilterShowSelectedOnly(const bool selectedOnly)
 
 void ObjectProxyModel::setFilterShowObjectType(const int objectTypes)
 {
-    m_showObjectTypes[ Model::TableDef  ] = ( objectTypes & Model::TableObjectType );
+    m_showObjectTypes[ Model::TableDef  ] = ( objectTypes & Model::TableDefObjectType );
     m_showObjectTypes[ Model::Query     ] = ( objectTypes & Model::QueryObjectType );
     m_showObjectTypes[ Model::Form      ] = ( objectTypes & Model::FormObjectType ) ;
     m_showObjectTypes[ Model::Report    ] = ( objectTypes & Model::ReportObjectType ) ;
@@ -108,7 +108,7 @@ bool ObjectProxyModel::isShowSelectedOnly() const
 int ObjectProxyModel::showObjectType() const
 {
     int objectType = 0;
-    objectType |= m_showObjectTypes[ Model::TableDef    ] ? Model::TableObjectType : 0;
+    objectType |= m_showObjectTypes[ Model::TableDef    ] ? Model::TableDefObjectType : 0;
     objectType |= m_showObjectTypes[ Model::Query       ] ? Model::QueryObjectType : 0;
     objectType |= m_showObjectTypes[ Model::Form        ] ? Model::FormObjectType : 0;
     objectType |= m_showObjectTypes[ Model::Report      ] ? Model::ReportObjectType : 0;

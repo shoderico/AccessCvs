@@ -230,7 +230,7 @@ void MainDialog::setShownObjectType(int objectTypes)
 
     ui->showAllCheckBox         ->setChecked( objectTypes == Model::AllObjectTypes );
 
-    ui->showTableCheckBox       ->setChecked( objectTypes & Model::TableObjectType );
+    ui->showTableCheckBox       ->setChecked( objectTypes & Model::TableDefObjectType );
     ui->showQueryCheckBox       ->setChecked( objectTypes & Model::QueryObjectType );
     ui->showFormCheckBox        ->setChecked( objectTypes & Model::FormObjectType );
     ui->showReportCheckBox      ->setChecked( objectTypes & Model::ReportObjectType );
@@ -256,7 +256,7 @@ void MainDialog::setSelectObjectType(int objectTypes)
 
     ui->selectAllCheckBox         ->setChecked( objectTypes == Model::AllObjectTypes );
 
-    ui->selectTableCheckBox       ->setChecked( objectTypes & Model::TableObjectType );
+    ui->selectTableCheckBox       ->setChecked( objectTypes & Model::TableDefObjectType );
     ui->selectQueryCheckBox       ->setChecked( objectTypes & Model::QueryObjectType );
     ui->selectFormCheckBox        ->setChecked( objectTypes & Model::FormObjectType );
     ui->selectReportCheckBox      ->setChecked( objectTypes & Model::ReportObjectType );
@@ -270,7 +270,7 @@ void MainDialog::setSelectObjectType(int objectTypes)
 int MainDialog::checkBoxToObjectType(QCheckBox *checkBox) const
 {
     int objectType = 0;
-    if (ui->showTableCheckBox        == checkBox) objectType = Model::TableObjectType;
+    if (ui->showTableCheckBox        == checkBox) objectType = Model::TableDefObjectType;
     if (ui->showQueryCheckBox        == checkBox) objectType = Model::QueryObjectType;
     if (ui->showFormCheckBox         == checkBox) objectType = Model::FormObjectType;
     if (ui->showReportCheckBox       == checkBox) objectType = Model::ReportObjectType;
@@ -280,7 +280,7 @@ int MainDialog::checkBoxToObjectType(QCheckBox *checkBox) const
     if (ui->showProjectFileCheckBox  == checkBox) objectType = Model::ProjectFileType;
     if (ui->showVBProjectCheckBox    == checkBox) objectType = Model::VBProjectType;
 
-    if (ui->selectTableCheckBox        == checkBox) objectType = Model::TableObjectType;
+    if (ui->selectTableCheckBox        == checkBox) objectType = Model::TableDefObjectType;
     if (ui->selectQueryCheckBox        == checkBox) objectType = Model::QueryObjectType;
     if (ui->selectFormCheckBox         == checkBox) objectType = Model::FormObjectType;
     if (ui->selectReportCheckBox       == checkBox) objectType = Model::ReportObjectType;

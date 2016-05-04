@@ -766,7 +766,7 @@ void ObjectModel::getItems(ObjectItems *pItems, Model::ItemsTypes itemsType, Mod
         // skip non-target object type
         switch (item->objectType())
         {
-            case Model::TableDef:   if ( !(objectTypes & Model::TableObjectType    ) ) continue; break;
+            case Model::TableDef:   if ( !(objectTypes & Model::TableDefObjectType    ) ) continue; break;
             case Model::Query:      if ( !(objectTypes & Model::QueryObjectType    ) ) continue; break;
             case Model::Form:       if ( !(objectTypes & Model::FormObjectType     ) ) continue; break;
             case Model::Report:     if ( !(objectTypes & Model::ReportObjectType   ) ) continue; break;
@@ -911,7 +911,7 @@ void ObjectModel::emitSelectionChanged()
            {
                switch (objectType)
                {
-                   case Model::TableDef:    objectTypes |= Model::TableObjectType;     break;
+                   case Model::TableDef:    objectTypes |= Model::TableDefObjectType;     break;
                    case Model::Query:       objectTypes |= Model::QueryObjectType;     break;
                    case Model::Form:        objectTypes |= Model::FormObjectType;      break;
                    case Model::Report:      objectTypes |= Model::ReportObjectType;    break;

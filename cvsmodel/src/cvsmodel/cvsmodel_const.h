@@ -4,6 +4,8 @@
 #include <QFlag>
 
 namespace Model {
+
+//----------------------------------------------------------------------------------------------------------------------
 enum ObjectType
 {
     Unknwon = 0,
@@ -21,6 +23,26 @@ enum ObjectType
     VBProject
 };
 
+
+//----------------------------------------------------------------------------------------------------------------------
+enum SelectObjectType
+{
+  //NoObjectTypes = 0,
+    TableDefObjectType = 1,
+    QueryObjectType = 2,
+    FormObjectType = 4,
+    ReportObjectType = 8,
+    MacroObjectType = 16,
+    ModuleObjectType = 32,
+    ReferenceObjectType = 64,
+    ProjectFileType = 128,
+    VBProjectType = 256,
+    AllObjectTypes = 511,
+};
+Q_DECLARE_FLAGS(SelectObjectTypes, SelectObjectType)
+
+
+//----------------------------------------------------------------------------------------------------------------------
 enum GitStatus
 {
     GS_Unknown = 0,
@@ -36,6 +58,7 @@ enum GitStatus
     Ignored
 };
 
+//----------------------------------------------------------------------------------------------------------------------
 enum ObjectCheckState
 {
     State_NoChange = 0,
@@ -43,6 +66,7 @@ enum ObjectCheckState
     State_Off = 2,
 };
 
+//----------------------------------------------------------------------------------------------------------------------
 enum ObjectExistence
 {
     OE_Unchecked = State_NoChange,
@@ -51,6 +75,7 @@ enum ObjectExistence
     Absent  = State_Off,
 };
 
+//----------------------------------------------------------------------------------------------------------------------
 enum ObjectDifference
 {
     OD_Unchecked = State_NoChange,
@@ -131,22 +156,6 @@ enum ItemsType
 };
 Q_DECLARE_FLAGS(ItemsTypes, ItemsType)
 
-//----------------------------------------------------------------------------------------------------------------------
-enum SelectObjectType
-{
-  //NoObjectTypes = 0,
-    TableObjectType = 1,
-    QueryObjectType = 2,
-    FormObjectType = 4,
-    ReportObjectType = 8,
-    MacroObjectType = 16,
-    ModuleObjectType = 32,
-    ReferenceObjectType = 64,
-    ProjectFileType = 128,
-    VBProjectType = 256,
-    AllObjectTypes = 511,
-};
-Q_DECLARE_FLAGS(SelectObjectTypes, SelectObjectType)
 
 //----------------------------------------------------------------------------------------------------------------------
 enum ObjectDifferenceType
