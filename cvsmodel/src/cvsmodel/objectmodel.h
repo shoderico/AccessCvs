@@ -35,20 +35,6 @@ public:
 
     bool setData(const QModelIndex &index, const QVariant &value, int role);
 
-//    enum Column
-//    {
-//        NameColumn = 0,
-//        HasDataColumn,
-//        InProjectColumn,
-//        InSourceDirColumn,
-//        DifferentColumn,
-//        CreateDateColumn,
-//        UpdateDateColumn,
-//        ExportDateColumn,
-//        ObjectTypeColumn,
-//        ColumnCount
-//    };
-
     void saveSettigs();
 
     // TODO: split Model and Manager
@@ -72,46 +58,6 @@ public:
 
     bool checkProjectState();
 
-
-
-
-//    // items getter
-//    enum ItemsType
-//    {
-//      //NoItems          = 0,
-//        InBoth           = 1,
-//        InBoth_Different = 2,
-//        InBoth_Same      = 4,
-//        InBoth_NotSame   = 8,
-//        InProjectOnly    = 16,
-//        InSourceDirOnly = 32,
-//        AllItems         = 63,
-//    };
-//    Q_DECLARE_FLAGS(ItemsTypes, ItemsType)
-
-//    enum SelectObjectType
-//    {
-//      //NoObjectTypes = 0,
-//        TableObjectType = 1,
-//        QueryObjectType = 2,
-//        FormObjectType = 4,
-//        ReportObjectType = 8,
-//        MacroObjectType = 16,
-//        ModuleObjectType = 32,
-//        ReferenceObjectType = 64,
-//        ProjectFileType = 128,
-//        VBProjectType = 256,
-//        AllObjectTypes = 511,
-//    };
-//    Q_DECLARE_FLAGS(SelectObjectTypes, SelectObjectType)
-
-//    enum ObjectDifferenceType
-//    {
-//        SameContentsType = 1,
-//        DifferentContentsTypes = 2,
-//        AllDifferenceTypes = 3,
-//    };
-//    Q_DECLARE_FLAGS(ObjectDifferenceTypes, ObjectDifferenceType)
 
     int selectedRowCount() const;
 
@@ -153,9 +99,5 @@ private:
 
     void mergeItemProperties(ObjectItem* itemSrc, ObjectItem* itemDst);
 };
-
-//Q_DECLARE_OPERATORS_FOR_FLAGS(ObjectModel::ItemsTypes)
-//Q_DECLARE_OPERATORS_FOR_FLAGS(ObjectModel::SelectObjectTypes)
-//Q_DECLARE_OPERATORS_FOR_FLAGS(ObjectModel::ObjectDifferenceTypes)
 
 #endif // OBJECTMODEL_H
