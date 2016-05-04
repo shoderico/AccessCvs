@@ -7,7 +7,7 @@ class SanitizeTempDirCommand : public CommandBase
 {
     Q_OBJECT
 public:
-    explicit SanitizeTempDirCommand(QObject *parent = 0);
+    explicit SanitizeTempDirCommand(QAxObject *application, QObject *parent = 0);
 
     virtual void execute(ObjectItems *allTargets);
 };

@@ -10,8 +10,8 @@
 
 #include <QAxObject>
 
-ExportFromProjectToTempDirCommand::ExportFromProjectToTempDirCommand(QObject *parent)
-    : CommandBase(parent)
+ExportFromProjectToTempDirCommand::ExportFromProjectToTempDirCommand(QAxObject *application, QObject *parent)
+    : CommandBase(application, parent)
 {
 }
 

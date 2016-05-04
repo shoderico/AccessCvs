@@ -14,6 +14,8 @@ class CommandBase : public QObject
     Q_OBJECT
 public:
     explicit CommandBase(QObject *parent = 0);
+    explicit CommandBase(QAxObject *application, QObject *parent = 0);
+    explicit CommandBase(QAxObject *application, QList<ObjectItem*> *items, QObject *parent = 0);
 
     void setApplication(QAxObject *application);
     void setItems(QList<ObjectItem*> *items);
@@ -25,6 +27,9 @@ signals:
     void progressChange(int type, int position);
 
 public slots:
+
+private:
+    void assign();
 
 protected:
     QAxObject *m_application;

@@ -9,8 +9,8 @@
 
 #include <QtConcurrent>
 
-CopyFromTempDirToSourceDirCommand::CopyFromTempDirToSourceDirCommand(QObject *parent)
-    : CommandBase(parent)
+CopyFromTempDirToSourceDirCommand::CopyFromTempDirToSourceDirCommand(QAxObject *application, QObject *parent)
+    : CommandBase(application, parent)
 {
 }
 

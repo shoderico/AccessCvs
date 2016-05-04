@@ -7,7 +7,7 @@ class DeleteFromTempDirCommand : public CommandBase
 {
     Q_OBJECT
 public:
-    explicit DeleteFromTempDirCommand(QObject *parent = 0);
+    explicit DeleteFromTempDirCommand(QAxObject *application, QObject *parent = 0);
 
     virtual void execute(ObjectItems *allTargets);
 };

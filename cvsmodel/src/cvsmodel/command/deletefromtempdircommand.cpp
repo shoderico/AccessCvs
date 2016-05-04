@@ -9,8 +9,8 @@
 
 #include <QtConcurrent>
 
-DeleteFromTempDirCommand::DeleteFromTempDirCommand(QObject *parent)
-    : CommandBase(parent)
+DeleteFromTempDirCommand::DeleteFromTempDirCommand(QAxObject *application, QObject *parent)
+    : CommandBase(application, parent)
 {
 }
 

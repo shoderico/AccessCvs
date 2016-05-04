@@ -44,7 +44,16 @@ SOURCES += \
     cvsmodel/command/copyfromsourcedirtotempdircommand.cpp \
     cvsmodel/command/comparetempdircommand.cpp \
     cvsmodel/command/importfromtempdirtoprojectcommand.cpp \
-    cvsmodel/command/exportfromprojecttotempdircommand.cpp
+    cvsmodel/command/exportfromprojecttotempdircommand.cpp \
+    cvsmodel/command/updateitemsdifferenceasiscommand.cpp \
+    cvsmodel/command/updatefiletimeintempdirbyexportdatecommand.cpp \
+    cvsmodel/command/updateitemsexportdatecommand.cpp \
+    cvsmodel/command/updateitemsdifferencecommand.cpp \
+    cvsmodel/command/updateitemsinsourcedircommand.cpp \
+    cvsmodel/command/updatefiletimeintempdircommand.cpp \
+    cvsmodel/command/updateitemsinprojectcommand.cpp \
+    cvsmodel/command/updateitemscreateupdatedatefromprojectcommand.cpp \
+    cvsmodel/command/updateitemsdifferencebyfiletimecommand.cpp
 
 HEADERS += \
     cvsmodel/cvsmodel_global.h \
@@ -83,7 +92,16 @@ HEADERS += \
     cvsmodel/command/copyfromsourcedirtotempdircommand.h \
     cvsmodel/command/comparetempdircommand.h \
     cvsmodel/command/importfromtempdirtoprojectcommand.h \
-    cvsmodel/command/exportfromprojecttotempdircommand.h
+    cvsmodel/command/exportfromprojecttotempdircommand.h \
+    cvsmodel/command/updateitemsdifferenceasiscommand.h \
+    cvsmodel/command/updatefiletimeintempdirbyexportdatecommand.h \
+    cvsmodel/command/updateitemsexportdatecommand.h \
+    cvsmodel/command/updateitemsdifferencecommand.h \
+    cvsmodel/command/updateitemsinsourcedircommand.h \
+    cvsmodel/command/updatefiletimeintempdircommand.h \
+    cvsmodel/command/updateitemsinprojectcommand.h \
+    cvsmodel/command/updateitemscreateupdatedatefromprojectcommand.h \
+    cvsmodel/command/updateitemsdifferencebyfiletimecommand.h
 
 include(../../common.pri)
 include(../../submodule.pri)

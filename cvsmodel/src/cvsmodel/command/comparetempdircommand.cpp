@@ -12,8 +12,8 @@
 
 #include <QtConcurrent>
 
-CompareTempDirCommand::CompareTempDirCommand(QObject *parent)
-    : CommandBase(parent)
+CompareTempDirCommand::CompareTempDirCommand(QAxObject *application, QList<ObjectItem*> *items, QObject *parent)
+    : CommandBase(application, items, parent)
 {
 }
 

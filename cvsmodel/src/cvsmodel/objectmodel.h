@@ -123,17 +123,6 @@ public:
     void selectItemsByObjectType(Model::SelectObjectTypes objectTypes, bool selected, bool resetSelection /*= true*/);
     void emitSelectionChanged();
 
-    void updateItemsExportDate(ObjectItems *allTargets, const QDateTime &exportDate, const Model::ObjectDifferenceTypes differenceTypes);
-    void updateItemsInProject(ObjectItems *allTargets, Model::ObjectExistence existence);
-    void updateItemsInSourceDir(ObjectItems *allTargets, Model::ObjectExistence existence);
-    void updateItemsDifference(ObjectItems *allTargets, Model::ObjectDifference difference);
-    void updateItemsDifferenceByFileTime(ObjectItems *allTargets);
-    void updateItemsDifferenceAsIs(ObjectItems *allTargets);
-    void updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets);
-
-
-    void updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, const Model::ObjectDifferenceTypes differenceTypes);
-    void updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTime &fileTime, const Model::ObjectDifferenceTypes differenceTypes);
 
     void deleteItems(ObjectItems *allTargets);
 
@@ -147,26 +136,6 @@ public:
     void loadItemsFromSourceDir(QList<ObjectItem*> *items);     //                                                      :
     void reloadAndMergeItems();
 
-    // import/export object
-    void exportFromProjectToTempDir(ObjectItems *allTargets);   // InBoth           , InProjectOnly ,                   : BLOCK
-    void importFromTempDirToProject(ObjectItems *allTargets);   // InBoth_DiffOnly  ,               , InSourceDirOnly  : BLOCK : Dirty Project
-
-    // copy files between directories
-    void copyFromTempDirToSourceDir(ObjectItems *allTargets);  // InBoth:DiffOnly  , InProjectOnly ,                   :       : Dirty SourceDir
-    void copyFromSourceDirToTempDir(ObjectItems *allTargets);  // InBoth_DiffOnly  ,               , InSourceDirOnly  :
-
-    // sanitize/de-sanitize files
-    void sanitizeTempDir(ObjectItems *allTargets);              // InBoth           , InProjectOnly ,                   :
-    void desanitizeTempDir(ObjectItems *allTargets);            // InBoth_DiffOnly  ,               , InSourceDirOnly  :
-
-    // compare files and update model-item status
-    void compareTempDir(ObjectItems *allTargets);               // InBoth           ,               ,                   :
-
-    // delete object/file
-    void deleteFromSourceDir(ObjectItems *allTargets);         //                  ,               , InSourceDirOnly  :       : Dirty FileSytem
-    void deleteFromProject(ObjectItems *allTargets);            //                  , InProjectOnly ,                   : BLOCK : Dirty Project
-
-    void deleteFromTempDir(ObjectItems *allTargets);
 
     //----------------------------------------------------------------------------------------------------------------------
     // progress notification

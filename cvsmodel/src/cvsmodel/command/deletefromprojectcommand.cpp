@@ -7,8 +7,8 @@
 #include "cvsmodel/objectitems.h"
 #include "cvsmodel/cvsmodel_const.h"
 
-DeleteFromProjectCommand::DeleteFromProjectCommand(QObject *parent)
-    : CommandBase(parent)
+DeleteFromProjectCommand::DeleteFromProjectCommand(QAxObject *application, QObject *parent)
+    : CommandBase(application, parent)
 {
 }
 

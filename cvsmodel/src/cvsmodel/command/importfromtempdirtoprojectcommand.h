@@ -7,7 +7,7 @@ class ImportFromTempDirToProjectCommand : public CommandBase
 {
     Q_OBJECT
 public:
-    explicit ImportFromTempDirToProjectCommand(QObject *parent = 0);
+    explicit ImportFromTempDirToProjectCommand(QAxObject *application, QObject *parent = 0);
 
     virtual void execute(ObjectItems *allTargets);
 };

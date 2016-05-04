@@ -7,7 +7,7 @@ class DesanitizeTempDirCommand : public CommandBase
 {
     Q_OBJECT
 public:
-    DesanitizeTempDirCommand(QObject *parent = 0);
+    DesanitizeTempDirCommand(QAxObject *application, QObject *parent = 0);
 
     virtual void execute(ObjectItems *allTargets);
 };

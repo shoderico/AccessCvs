@@ -10,8 +10,8 @@
 
 #include <QAxObject>
 
-ImportFromTempDirToProjectCommand::ImportFromTempDirToProjectCommand(QObject *parent)
-    : CommandBase(parent)
+ImportFromTempDirToProjectCommand::ImportFromTempDirToProjectCommand(QAxObject *application, QObject *parent)
+    : CommandBase(application, parent)
 {
 }
 

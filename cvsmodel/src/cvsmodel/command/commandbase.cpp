@@ -3,8 +3,24 @@
 #include "util/datachangedhelper.h"
 
 CommandBase::CommandBase(QObject *parent) : QObject(parent)
+  , m_application(0)
+  , m_items(0)
 {
+    assign();
+}
 
+CommandBase::CommandBase(QAxObject *application, QObject *parent) : QObject(parent)
+  , m_application(application)
+  , m_items(0)
+{
+    assign();
+}
+
+CommandBase::CommandBase(QAxObject *application, QList<ObjectItem *> *items, QObject *parent) : QObject(parent)
+  , m_application(application)
+  , m_items(items)
+{
+    assign();
 }
 
 void CommandBase::setApplication(QAxObject *application)
@@ -20,6 +36,13 @@ void CommandBase::setItems(QList<ObjectItem *> *items)
 void CommandBase::execute(ObjectItems *allTargets)
 {
     Q_UNUSED(allTargets)
+}
+
+void CommandBase::assign()
+{
+    connect(this, SIGNAL(progressStart(int,int)),   parent(), SIGNAL(progressStart(int,int)) );
+    connect(this, SIGNAL(progressChange(int,int)),  parent(), SIGNAL(progressChange(int,int)) );
+    connect(this, SIGNAL(progressEnd(int)),         parent(), SIGNAL(progressEnd(int)) );
 }
 
 

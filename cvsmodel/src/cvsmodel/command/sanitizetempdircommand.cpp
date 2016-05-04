@@ -9,8 +9,8 @@
 
 #include <QtConcurrent>
 
-SanitizeTempDirCommand::SanitizeTempDirCommand(QObject *parent)
-    : CommandBase(parent)
+SanitizeTempDirCommand::SanitizeTempDirCommand(QAxObject *application, QObject *parent)
+    : CommandBase(application, parent)
 {
 
 }
