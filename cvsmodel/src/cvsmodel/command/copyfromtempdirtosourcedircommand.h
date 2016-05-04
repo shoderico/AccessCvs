@@ -9,7 +9,7 @@ class CopyFromTempDirToSourceDirCommand : public CommandBase
 public:
     explicit CopyFromTempDirToSourceDirCommand(QAxObject *application, QObject *parent = 0);
 
-    virtual void execute(ObjectItems *allTargets);
+    virtual void execute(ObjectItemMap *allTargets);
 };
 
 #endif // COPYFROMTEMPDIRTOSOURCEDIRCOMMAND_H

@@ -9,7 +9,7 @@ class CompareTempDirCommand : public CommandBase
 public:
     explicit CompareTempDirCommand(QAxObject *application, QList<ObjectItem*> *items, QObject *parent = 0);
 
-    virtual void execute(ObjectItems *allTargets);
+    virtual void execute(ObjectItemMap *allTargets);
 };
 
 #endif // COMPARETEMPDIRCOMMAND_H

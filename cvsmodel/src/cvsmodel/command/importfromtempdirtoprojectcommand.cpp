@@ -4,7 +4,7 @@
 #include "util/comptr.h"
 #include "cvsmodel/projectsetting.h"
 #include "cvsmodel/processor/objectprocessor.h"
-#include "cvsmodel/objectitems.h"
+#include "cvsmodel/objectitemmap.h"
 #include "cvsmodel/objectitem.h"
 #include "cvsmodel/cvsmodel_const.h"
 
@@ -15,7 +15,7 @@ ImportFromTempDirToProjectCommand::ImportFromTempDirToProjectCommand(QAxObject *
 {
 }
 
-void ImportFromTempDirToProjectCommand::execute(ObjectItems *allTargets)
+void ImportFromTempDirToProjectCommand::execute(ObjectItemMap *allTargets)
 {
     // BLOCKING, cannot be async
 

@@ -4,7 +4,7 @@
 #include "util/concurrentmaphelper.h"
 #include "cvsmodel/projectsetting.h"
 #include "cvsmodel/processor/objectprocessor.h"
-#include "cvsmodel/objectitems.h"
+#include "cvsmodel/objectitemmap.h"
 #include "cvsmodel/cvsmodel_const.h"
 
 //#include "cvsmodel/objectitem.h"
@@ -19,7 +19,7 @@ LoadItemsFromSourceDirCommand::LoadItemsFromSourceDirCommand(QAxObject *applicat
 
 }
 
-void LoadItemsFromSourceDirCommand::execute(ObjectItems *allTargets)
+void LoadItemsFromSourceDirCommand::execute(ObjectItemMap *allTargets)
 {
     // FIXME: non-blocking, can be async ? require append ?
     ProgressNotifier mainProgress(Model::LoadItemFromSourceDirProcess, this);

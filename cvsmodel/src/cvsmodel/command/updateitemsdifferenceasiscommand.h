@@ -9,7 +9,7 @@ class UpdateItemsDifferenceAsIsCommand : public CommandBase
 public:
     explicit UpdateItemsDifferenceAsIsCommand(QAxObject *application, QList<ObjectItem*> *items, QObject *parent = 0);
 
-    virtual void execute(ObjectItems *allTargets);
+    virtual void execute(ObjectItemMap *allTargets);
 };
 
 #endif // UPDATEITEMSDIFFERENCEASISCOMMAND_H

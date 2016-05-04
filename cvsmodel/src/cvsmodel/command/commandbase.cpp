@@ -33,7 +33,7 @@ void CommandBase::setItems(QList<ObjectItem *> *items)
     m_items = items;
 }
 
-void CommandBase::execute(ObjectItems *allTargets)
+void CommandBase::execute(ObjectItemMap *allTargets)
 {
     Q_UNUSED(allTargets)
 }

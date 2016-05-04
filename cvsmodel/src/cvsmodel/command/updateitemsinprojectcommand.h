@@ -9,7 +9,7 @@ class UpdateItemsInProjectCommand : public CommandBase
 public:
     explicit UpdateItemsInProjectCommand(const int existence, QAxObject *application, QList<ObjectItem*> *items, QObject *parent = 0);
 
-    virtual void execute(ObjectItems *allTargets);
+    virtual void execute(ObjectItemMap *allTargets);
 
 private:
     int m_existence;

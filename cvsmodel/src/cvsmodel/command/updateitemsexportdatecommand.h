@@ -11,7 +11,7 @@ class UpdateItemsExportDateCommand : public CommandBase
 public:
     explicit UpdateItemsExportDateCommand(const QDateTime &exportDate, const int differenceTypes, QAxObject *application, QList<ObjectItem*> *items, QObject *parent = 0);
 
-    virtual void execute(ObjectItems *allTargets);
+    virtual void execute(ObjectItemMap *allTargets);
 
     void setExportDate(const QDateTime &exportDate);
     void setDifferenceTypes(const int differenceTypes);

@@ -222,7 +222,7 @@ bool ObjectModel::setData(const QModelIndex &index, const QVariant &value, int r
                 // and then change hasData to false and do Refresh,
                 // the item is always DifferentContents because *.dat file in TempDir but not in SourceDir.
                 // so, we have to clear TempDir if hasData is changed.
-                ObjectItems target;
+                ObjectItemMap target;
                 target[ item->objectType() ].insert( item->name(), item );
                 DeleteFromTempDirCommand deleteFromTempDir(m_application, this);
                 deleteFromTempDir.execute( &target );
@@ -381,7 +381,7 @@ void ObjectModel::prepareMerge()
 
 bool ObjectModel::clearItemsCache()
 {
-    ObjectItems targets;
+    ObjectItemMap targets;
     getItems(&targets, Model::AllItems, true /*selectedOnly*/, false /* modifiedOnly */);
 
     DeleteFromTempDirCommand deleteFromTempDir(m_application, this);
@@ -418,7 +418,7 @@ bool ObjectModel::refreshItems()
     // for InBoth
     {
 
-        ObjectItems targetsAll;
+        ObjectItemMap targetsAll;
         getItems(&targetsAll, Model::InBoth, false/*selectedOnly*/, false/*modifiedOnly*/);
 
 
@@ -428,7 +428,7 @@ bool ObjectModel::refreshItems()
         updateItemsDifferenceAsIs.execute(&targetsAll); // for smart refresh, we set item to be SameContents if TempDir and SourceDir are exactly the same
 
 
-        ObjectItems targets;
+        ObjectItemMap targets;
         getItems(&targets, Model::InBoth_NotSame, false/*selectedOnly*/, false/*modifiedOnly*/);
 
         ExportFromProjectToTempDirCommand   exportFromProjectToTempDir  (m_application, this);
@@ -468,10 +468,10 @@ bool ObjectModel::executeExport()
     // because each process changes the states of items
     bool selectedOnly = true;
 
-    ObjectItems targetsInProjectOnly;
-    ObjectItems targetsInSourceDirOnly;
-    ObjectItems targetsInBoth_Different;
-    ObjectItems targetsInBoth_Same;
+    ObjectItemMap targetsInProjectOnly;
+    ObjectItemMap targetsInSourceDirOnly;
+    ObjectItemMap targetsInBoth_Different;
+    ObjectItemMap targetsInBoth_Same;
 
     getItems(&targetsInProjectOnly,    Model::InProjectOnly,    selectedOnly, false/*modifiedOnly*/);
     getItems(&targetsInSourceDirOnly,  Model::InSourceDirOnly,  selectedOnly, false/*modifiedOnly*/);
@@ -481,7 +481,7 @@ bool ObjectModel::executeExport()
     // for InProjectOnly
     {
         {
-            ObjectItems *targets = &targetsInProjectOnly;
+            ObjectItemMap *targets = &targetsInProjectOnly;
 
             ExportFromProjectToTempDirCommand   exportFromProjectToTempDir  (m_application, this);
             SanitizeTempDirCommand              sanitizeTempDir             (m_application, this);
@@ -506,7 +506,7 @@ bool ObjectModel::executeExport()
     // for InFileSytemOnly
     {
         {
-            ObjectItems *targets = &targetsInSourceDirOnly;
+            ObjectItemMap *targets = &targetsInSourceDirOnly;
 
             DeleteFromSourceDirCommand deleteFromSourceDir(m_application, this);
             deleteFromSourceDir.execute(targets);                                             // InSourceDirOnly :       : Dirty SourceDir  : need one-more step? like confirm
@@ -520,7 +520,7 @@ bool ObjectModel::executeExport()
     {
         // for InBoth_Different
         {
-            ObjectItems *targets = &targetsInBoth_Different;
+            ObjectItemMap *targets = &targetsInBoth_Different;
 
             CopyFromTempDirToSourceDirCommand copyFromTempDirToSourceDir(m_application, this);
             copyFromTempDirToSourceDir.execute(targets);                                  // InBoth_Different :       : Dirty SourceDir  : need one-more step? like confirm
@@ -539,7 +539,7 @@ bool ObjectModel::executeExport()
 
         // for InBoth_Same
         {
-            ObjectItems *targets = &targetsInBoth_Same;
+            ObjectItemMap *targets = &targetsInBoth_Same;
 
             CopyFromTempDirToSourceDirCommand copyFromTempDirToSourceDir(m_application, this);
             copyFromTempDirToSourceDir.execute(targets);    // InBoth_Same      :       : Dirty SourceDir  : need one-more step? like confirm
@@ -572,10 +572,10 @@ bool ObjectModel::executeImport()
     // because each process changes the states of items
     bool selectedOnly = true;
 
-    ObjectItems targetsInProjectOnly;
-    ObjectItems targetsInSourceDirOnly;
-    ObjectItems targetsInBoth_Different;
-    ObjectItems targetsInBoth_Same;
+    ObjectItemMap targetsInProjectOnly;
+    ObjectItemMap targetsInSourceDirOnly;
+    ObjectItemMap targetsInBoth_Different;
+    ObjectItemMap targetsInBoth_Same;
 
     getItems(&targetsInProjectOnly,    Model::InProjectOnly,    selectedOnly, false/*modifiedOnly*/);
     getItems(&targetsInSourceDirOnly,  Model::InSourceDirOnly,  selectedOnly, false/*modifiedOnly*/);
@@ -586,7 +586,7 @@ bool ObjectModel::executeImport()
     // for InProjectOnly
     {
         {
-            ObjectItems *targets = &targetsInProjectOnly;
+            ObjectItemMap *targets = &targetsInProjectOnly;
 
             DeleteFromProjectCommand deleteFromProject(m_application, this);
             deleteFromProject.execute(targets); // InProjectOnly    : BLOCK : Dirty Project : need one-more step? like confirm
@@ -599,7 +599,7 @@ bool ObjectModel::executeImport()
     // for InFileSytemOnly
     {
         {
-            ObjectItems *targets = &targetsInSourceDirOnly;
+            ObjectItemMap *targets = &targetsInSourceDirOnly;
 
             CopyFromSourceDirToTempDirCommand   copyFromSourceDirToTempDir  (m_application, this);
             DesanitizeTempDirCommand            desanitizeTempDir           (m_application, this);
@@ -629,7 +629,7 @@ bool ObjectModel::executeImport()
     {
         // for InBoth_Different
         {
-            ObjectItems *targets = &targetsInBoth_Different;
+            ObjectItemMap *targets = &targetsInBoth_Different;
 
             CopyFromSourceDirToTempDirCommand   copyFromSourceDirToTempDir  (m_application, this);
             DesanitizeTempDirCommand            desanitizeTempDir           (m_application, this);
@@ -653,7 +653,7 @@ bool ObjectModel::executeImport()
         }
         // for InBoth_Same
         {
-            ObjectItems *targets = &targetsInBoth_Same;
+            ObjectItemMap *targets = &targetsInBoth_Same;
 
             CopyFromSourceDirToTempDirCommand   copyFromSourceDirToTempDir  (m_application, this);
             DesanitizeTempDirCommand            desanitizeTempDir           (m_application, this);
@@ -739,12 +739,12 @@ int ObjectModel::selectedRowCount() const
 
 
 
-void ObjectModel::getItems(ObjectItems *pItems, Model::ItemsTypes itemsType, bool selectedOnly, bool modifiedOnly) const
+void ObjectModel::getItems(ObjectItemMap *pItems, Model::ItemsTypes itemsType, bool selectedOnly, bool modifiedOnly) const
 {
     getItems( pItems, itemsType, Model::AllObjectTypes, selectedOnly, modifiedOnly);
 }
 
-void ObjectModel::getItems(ObjectItems *pItems, Model::ItemsTypes itemsType, Model::SelectObjectTypes objectTypes, bool selectedOnly, bool modifiedOnly) const
+void ObjectModel::getItems(ObjectItemMap *pItems, Model::ItemsTypes itemsType, Model::SelectObjectTypes objectTypes, bool selectedOnly, bool modifiedOnly) const
 {
     for ( QList<ObjectItem*>::const_iterator it = m_items.begin() ; it != m_items.end() ; ++it )
     {
@@ -851,7 +851,7 @@ void ObjectModel::selectItems(Model::ItemsTypes itemsType, bool selected, bool r
         helper.changedAll();
     }
 
-    ObjectItems targets;
+    ObjectItemMap targets;
     getItems(&targets, itemsType, false/*selectedOnly*/, false/*modifiedOnly*/);
     foreach (const Model::ObjectType &objectType, targets.keys() )
     {
@@ -881,7 +881,7 @@ void ObjectModel::selectItemsByObjectType(Model::SelectObjectTypes objectTypes, 
         helper.changedAll();
     }
 
-    ObjectItems targets;
+    ObjectItemMap targets;
     getItems(&targets, Model::AllItems, objectTypes, false/*selectedOnly*/, false/*modifiedOnly*/);
     foreach (const Model::ObjectType &objectType, targets.keys() )
     {
@@ -933,7 +933,7 @@ void ObjectModel::emitSelectionChanged()
 
 
 
-void ObjectModel::deleteItems(ObjectItems *allTargets)
+void ObjectModel::deleteItems(ObjectItemMap *allTargets)
 {
     // FIXME: non-blocking, can be async ? require removeRows emission ?
     ProgressNotifier mainProg(Model::DeleteItemsProcess, this);
@@ -981,7 +981,7 @@ void ObjectModel::reloadAndMergeItems()
 
     // first of all, we merge both items into one
     QList<ObjectItem*> items;
-    ObjectItems mapItems;
+    ObjectItemMap mapItems;
 
     // merged from Project
     for ( QList<ObjectItem*>::iterator it = itemsFromProject.begin(); it != itemsFromProject.end(); ++it )

@@ -4,7 +4,7 @@
 #include "util/concurrentmaphelper.h"
 #include "cvsmodel/projectsetting.h"
 #include "cvsmodel/processor/objectprocessor.h"
-#include "cvsmodel/objectitems.h"
+#include "cvsmodel/objectitemmap.h"
 #include "cvsmodel/cvsmodel_const.h"
 
 #include <QtConcurrent>
@@ -31,7 +31,7 @@ struct DeleteFromTempDirFunctionObject
     ObjectProcessor *m_processor;
 };
 
-void DeleteFromTempDirCommand::execute(ObjectItems *allTargets)
+void DeleteFromTempDirCommand::execute(ObjectItemMap *allTargets)
 {
     // non-blocking
     ProgressNotifier mainProgress(Model::DeleteFromTempDirProcess, this);

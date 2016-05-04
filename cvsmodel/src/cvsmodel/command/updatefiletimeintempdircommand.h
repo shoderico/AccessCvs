@@ -11,7 +11,7 @@ class UpdateFileTimeInTempDirCommand : public CommandBase
 public:
     explicit UpdateFileTimeInTempDirCommand(const QDateTime &fileTime, const int differenceTypes, QAxObject *application, QObject *parent = 0);
 
-    virtual void execute(ObjectItems *allTargets);
+    virtual void execute(ObjectItemMap *allTargets);
 
 private:
     QDateTime m_fileTime;

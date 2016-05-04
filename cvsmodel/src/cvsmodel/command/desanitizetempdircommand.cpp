@@ -4,7 +4,7 @@
 #include "util/concurrentmaphelper.h"
 #include "cvsmodel/projectsetting.h"
 #include "cvsmodel/processor/objectprocessor.h"
-#include "cvsmodel/objectitems.h"
+#include "cvsmodel/objectitemmap.h"
 #include "cvsmodel/cvsmodel_const.h"
 
 #include <QtConcurrent>
@@ -34,7 +34,7 @@ struct DesanitizeTempDirFunctionObject
 };
 
 
-void DesanitizeTempDirCommand::execute(ObjectItems *allTargets)
+void DesanitizeTempDirCommand::execute(ObjectItemMap *allTargets)
 {
     // non-blocking
     ProgressNotifier mainProgress(Model::DesanitizeTempDirProcess, this);

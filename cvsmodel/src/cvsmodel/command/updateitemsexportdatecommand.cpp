@@ -4,7 +4,7 @@
 #include "util/concurrentmaphelper.h"
 #include "cvsmodel/projectsetting.h"
 #include "cvsmodel/processor/objectprocessor.h"
-#include "cvsmodel/objectitems.h"
+#include "cvsmodel/objectitemmap.h"
 #include "cvsmodel/cvsmodel_const.h"
 
 #include "cvsmodel/objectitem.h"
@@ -48,7 +48,7 @@ struct UpdateItemsExportDateFunctionObject : public FunctionObjectBase
     Model::ObjectDifferenceTypes m_differenceTypes;
 };
 
-void UpdateItemsExportDateCommand::execute(ObjectItems *allTargets)
+void UpdateItemsExportDateCommand::execute(ObjectItemMap *allTargets)
 {
     // non-blocking
     DataChangedHelper helper( m_items->count() );

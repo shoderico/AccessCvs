@@ -4,7 +4,7 @@
 #include "util/concurrentmaphelper.h"
 #include "cvsmodel/projectsetting.h"
 #include "cvsmodel/processor/objectprocessor.h"
-#include "cvsmodel/objectitems.h"
+#include "cvsmodel/objectitemmap.h"
 #include "cvsmodel/cvsmodel_const.h"
 
 #include "cvsmodel/objectitem.h"
@@ -20,7 +20,7 @@ UpdateItemsCreateUpdateDateFromProjectCommand::UpdateItemsCreateUpdateDateFromPr
 
 }
 
-void UpdateItemsCreateUpdateDateFromProjectCommand::execute(ObjectItems *allTargets)
+void UpdateItemsCreateUpdateDateFromProjectCommand::execute(ObjectItemMap *allTargets)
 {
     // BLOCKING, cannot be asynch
     DataChangedHelper helper( m_items->count() );

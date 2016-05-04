@@ -1,6 +1,6 @@
-#include "objectitems.h"
+#include "objectitemmap.h"
 
-ObjectItems::ObjectItems()
+ObjectItemMap::ObjectItemMap()
 {
     QList<Model::ObjectType> objectTypes;
     objectTypes << Model::TableDef
@@ -14,7 +14,7 @@ ObjectItems::ObjectItems()
         insert( objectType, QMap< QString, ObjectItem* >() );
 }
 
-void ObjectItems::clearItems()
+void ObjectItemMap::clearItems()
 {
     // TODO: clear all sub lists.
 }

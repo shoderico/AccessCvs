@@ -9,7 +9,7 @@ class DeleteFromSourceDirCommand : public CommandBase
 public:
     explicit DeleteFromSourceDirCommand(QAxObject *application, QObject *parent = 0);
 
-    virtual void execute(ObjectItems *allTargets);
+    virtual void execute(ObjectItemMap *allTargets);
 };
 
 #endif // DELETEFROMSOURCEDIRCOMMAND_H

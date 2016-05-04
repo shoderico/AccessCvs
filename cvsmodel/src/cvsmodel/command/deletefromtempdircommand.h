@@ -9,7 +9,7 @@ class DeleteFromTempDirCommand : public CommandBase
 public:
     explicit DeleteFromTempDirCommand(QAxObject *application, QObject *parent = 0);
 
-    virtual void execute(ObjectItems *allTargets);
+    virtual void execute(ObjectItemMap *allTargets);
 };
 
 #endif // DELETEFROMTEMPDIRCOMMAND_H

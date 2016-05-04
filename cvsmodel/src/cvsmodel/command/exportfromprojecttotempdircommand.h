@@ -9,7 +9,7 @@ class ExportFromProjectToTempDirCommand : public CommandBase
 public:
     explicit ExportFromProjectToTempDirCommand(QAxObject *application, QObject *parent = 0);
 
-    virtual void execute(ObjectItems *allTargets);
+    virtual void execute(ObjectItemMap *allTargets);
 };
 
 #endif // EXPORTFROMPROJECTTOTEMPDIRCOMMAND_H

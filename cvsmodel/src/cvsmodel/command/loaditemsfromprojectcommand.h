@@ -9,7 +9,7 @@ class LoadItemsFromProjectCommand : public CommandBase
 public:
     explicit LoadItemsFromProjectCommand(QAxObject *application, QList<ObjectItem*> *items, QObject *parent = 0);
 
-    virtual void execute(ObjectItems *allTargets);
+    virtual void execute(ObjectItemMap *allTargets);
 };
 
 #endif // LOADITEMSFROMPROJECTCOMMAND_H

@@ -9,7 +9,7 @@ class LoadItemsFromSourceDirCommand : public CommandBase
 public:
     explicit LoadItemsFromSourceDirCommand(QAxObject *application, QList<ObjectItem*> *items, QObject *parent = 0);
 
-    virtual void execute(ObjectItems *allTargets);
+    virtual void execute(ObjectItemMap *allTargets);
 };
 
 #endif // LOADITEMSFROMSOURCEDIRCOMMAND_H

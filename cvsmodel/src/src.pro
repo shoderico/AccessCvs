@@ -11,7 +11,6 @@ DEFINES += CVSMODEL_LIBRARY
 
 SOURCES += \
     cvsmodel/objectitem.cpp \
-    cvsmodel/objectitems.cpp \
     cvsmodel/objectmodel.cpp \
     cvsmodel/objectproxymodel.cpp \
     cvsmodel/projectsetting.cpp \
@@ -55,12 +54,12 @@ SOURCES += \
     cvsmodel/command/updateitemscreateupdatedatefromprojectcommand.cpp \
     cvsmodel/command/updateitemsdifferencebyfiletimecommand.cpp \
     cvsmodel/command/loaditemsfromprojectcommand.cpp \
-    cvsmodel/command/loaditemsfromsourcedircommand.cpp
+    cvsmodel/command/loaditemsfromsourcedircommand.cpp \
+    cvsmodel/objectitemmap.cpp
 
 HEADERS += \
     cvsmodel/cvsmodel_global.h \
     cvsmodel/objectitem.h \
-    cvsmodel/objectitems.h \
     cvsmodel/objectmodel.h \
     cvsmodel/objectproxymodel.h \
     cvsmodel/projectsetting.h \
@@ -105,7 +104,8 @@ HEADERS += \
     cvsmodel/command/updateitemscreateupdatedatefromprojectcommand.h \
     cvsmodel/command/updateitemsdifferencebyfiletimecommand.h \
     cvsmodel/command/loaditemsfromprojectcommand.h \
-    cvsmodel/command/loaditemsfromsourcedircommand.h
+    cvsmodel/command/loaditemsfromsourcedircommand.h \
+    cvsmodel/objectitemmap.h
 
 include(../../common.pri)
 include(../../submodule.pri)

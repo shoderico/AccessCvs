@@ -4,7 +4,7 @@
 //#include "util/concurrentmaphelper.h"
 #include "cvsmodel/projectsetting.h"
 #include "cvsmodel/processor/objectprocessor.h"
-#include "cvsmodel/objectitems.h"
+#include "cvsmodel/objectitemmap.h"
 #include "cvsmodel/cvsmodel_const.h"
 
 DeleteFromProjectCommand::DeleteFromProjectCommand(QAxObject *application, QObject *parent)
@@ -12,7 +12,7 @@ DeleteFromProjectCommand::DeleteFromProjectCommand(QAxObject *application, QObje
 {
 }
 
-void DeleteFromProjectCommand::execute(ObjectItems *allTargets)
+void DeleteFromProjectCommand::execute(ObjectItemMap *allTargets)
 {
     // BLOCKING, cannot be async
 

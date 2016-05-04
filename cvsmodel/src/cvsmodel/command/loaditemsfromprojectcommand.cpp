@@ -4,7 +4,7 @@
 #include "util/concurrentmaphelper.h"
 #include "cvsmodel/projectsetting.h"
 #include "cvsmodel/processor/objectprocessor.h"
-#include "cvsmodel/objectitems.h"
+#include "cvsmodel/objectitemmap.h"
 #include "cvsmodel/cvsmodel_const.h"
 
 #include "cvsmodel/objectitem.h"
@@ -19,7 +19,7 @@ LoadItemsFromProjectCommand::LoadItemsFromProjectCommand(QAxObject *application,
 
 }
 
-void LoadItemsFromProjectCommand::execute(ObjectItems *allTargets)
+void LoadItemsFromProjectCommand::execute(ObjectItemMap *allTargets)
 {
     // BLOCKING, cannot be async
     ProgressNotifier mainProgress(Model::LoadItemFromProjectProcess, this);

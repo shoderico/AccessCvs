@@ -9,7 +9,7 @@ class UpdateItemsCreateUpdateDateFromProjectCommand : public CommandBase
 public:
     explicit UpdateItemsCreateUpdateDateFromProjectCommand(QAxObject *application, QList<ObjectItem*> *items, QObject *parent = 0);
 
-    virtual void execute(ObjectItems *allTargets);
+    virtual void execute(ObjectItemMap *allTargets);
 };
 
 #endif // UPDATEITEMSCREATEUPDATEDATEFROMPROJECTCOMMAND_H

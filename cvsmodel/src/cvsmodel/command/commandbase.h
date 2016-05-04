@@ -6,7 +6,7 @@
 class QAxObject;
 
 class ObjectItem;
-class ObjectItems;
+class ObjectItemMap;
 class DataChangedHelper;
 
 class CommandBase : public QObject
@@ -19,7 +19,7 @@ public:
 
     void setApplication(QAxObject *application);
     void setItems(QList<ObjectItem*> *items);
-    virtual void execute(ObjectItems *allTargets);
+    virtual void execute(ObjectItemMap *allTargets);
 
 signals:
     void progressStart(int type, int count);

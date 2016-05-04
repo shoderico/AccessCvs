@@ -4,7 +4,7 @@
 #include "util/concurrentmaphelper.h"
 #include "cvsmodel/projectsetting.h"
 #include "cvsmodel/processor/objectprocessor.h"
-#include "cvsmodel/objectitems.h"
+#include "cvsmodel/objectitemmap.h"
 #include "cvsmodel/cvsmodel_const.h"
 
 #include "cvsmodel/objectitem.h"
@@ -38,7 +38,7 @@ struct UpdateItemsDifferenceFunctionObject : public FunctionObjectBase
     Model::ObjectDifference m_difference;
 };
 
-void UpdateItemsDifferenceCommand::execute(ObjectItems *allTargets)
+void UpdateItemsDifferenceCommand::execute(ObjectItemMap *allTargets)
 {
     // non-blocking
     DataChangedHelper helper( m_items->count() );

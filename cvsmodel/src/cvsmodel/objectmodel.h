@@ -6,7 +6,7 @@
 
 #include <QAbstractItemModel>
 
-#include "objectitems.h"
+#include "objectitemmap.h"
 
 namespace Access {
 class Application;
@@ -61,8 +61,8 @@ public:
 
     int selectedRowCount() const;
 
-    void getItems(ObjectItems *pItems, Model::ItemsTypes itemsType, bool selectedOnly /*= true*/, bool modifiedOnly /*= false*/) const;
-    void getItems(ObjectItems *pItems, Model::ItemsTypes itemsType, Model::SelectObjectTypes objectTypes, bool selectedOnly /*= true*/, bool modifiedOnly /*= false*/) const;
+    void getItems(ObjectItemMap *pItems, Model::ItemsTypes itemsType, bool selectedOnly /*= true*/, bool modifiedOnly /*= false*/) const;
+    void getItems(ObjectItemMap *pItems, Model::ItemsTypes itemsType, Model::SelectObjectTypes objectTypes, bool selectedOnly /*= true*/, bool modifiedOnly /*= false*/) const;
 
     void selectItemsForProcess(bool selected, bool resetSelection /*= true*/);
     void selectItems(Model::ItemsTypes itemsType, bool selected, bool resetSelection /*= true*/);
@@ -70,7 +70,7 @@ public:
     void emitSelectionChanged();
 
 
-    void deleteItems(ObjectItems *allTargets);
+    void deleteItems(ObjectItemMap *allTargets);
 
 
 
@@ -95,7 +95,7 @@ signals:
 
 private:
     QList<ObjectItem*> m_items;
-    ObjectItems m_mapItems;
+    ObjectItemMap m_mapItems;
     Access::Application *m_application;
 
     void mergeItemProperties(ObjectItem* itemSrc, ObjectItem* itemDst);

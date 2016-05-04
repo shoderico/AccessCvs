@@ -9,7 +9,7 @@ class UpdateItemsDifferenceCommand : public CommandBase
 public:
     explicit UpdateItemsDifferenceCommand(const int difference, QAxObject *application, QList<ObjectItem*> *items, QObject *parent = 0);
 
-    virtual void execute(ObjectItems *allTargets);
+    virtual void execute(ObjectItemMap *allTargets);
 
 private:
     int m_difference;

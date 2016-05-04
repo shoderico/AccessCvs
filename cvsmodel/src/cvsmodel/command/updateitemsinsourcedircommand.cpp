@@ -4,7 +4,7 @@
 #include "util/concurrentmaphelper.h"
 #include "cvsmodel/projectsetting.h"
 #include "cvsmodel/processor/objectprocessor.h"
-#include "cvsmodel/objectitems.h"
+#include "cvsmodel/objectitemmap.h"
 #include "cvsmodel/cvsmodel_const.h"
 
 #include "cvsmodel/objectitem.h"
@@ -38,7 +38,7 @@ struct UpdateItemsInSourceDirFunctionObject : public FunctionObjectBase
     Model::ObjectExistence m_existence;
 };
 
-void UpdateItemsInSourceDirCommand::execute(ObjectItems *allTargets)
+void UpdateItemsInSourceDirCommand::execute(ObjectItemMap *allTargets)
 {
     // non-blocking
     DataChangedHelper helper( m_items->count() );
