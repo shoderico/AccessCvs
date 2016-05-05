@@ -2,7 +2,7 @@
 #define VBPROJECTPROCESSOR_H
 
 #include "cvsmodel/cvsmodel_global.h"
-#include "projectlevelobjectprocessor.h"
+#include "vbeprocessor.h"
 
 class ProjectContainer;
 
@@ -13,15 +13,12 @@ namespace VBIDE {
 class VBProject;
 }
 
-class VBProjectProcessor : public ProjectLevelObjectProcessor
+class VBProjectProcessor : public VBEProcessor
 {
 public:
     explicit VBProjectProcessor(ProjectContainer *parent);
     virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
     virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
-
-private:
-    VBIDE::VBProject *currentVBProject();
 };
 
 

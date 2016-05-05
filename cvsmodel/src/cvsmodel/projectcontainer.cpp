@@ -11,6 +11,9 @@
 ProjectContainer::ProjectContainer(QObject *parent)
     : QObject(parent)
 {
+    m_DefaultSourcePathName   = "source";
+    m_DefaultTempPathName     = ".officecvs";
+    m_DefaultSettingsFileName = "project.settings";
 }
 
 ProjectContainer::~ProjectContainer()
@@ -25,6 +28,65 @@ ProjectContainer::~ProjectContainer()
 void ProjectContainer::initialize(QAxObject *application)
 {
     m_application = application;
+
+    m_sourcePathName   = "";
+    m_tempPathName     = "";
+    m_settingsFileName = "";
+    m_projectPath      = "";
+
+    if (isProjectOpened())
+    {
+        QString projectConfigFileName = m_currentProjectName + ".config";
+        QString projectConfigFilePath = m_currentProjectPath + "\\" + projectConfigFileName;
+        qDebug() << projectConfigFilePath;
+
+        if ( QFile::exists( projectConfigFilePath ) )
+        {
+            qDebug() << " projectConfigFilePath exists ";
+            // read projectConfig file
+            //-----------------------------------
+            // SourcePathName  : default 'source'
+            // TempPathName    : default '.accesscvs'
+            // SettingFileName : default 'project.settings'
+            // ProjectPath     : relative to currentProject->Path(). default currentProject->Path().
+            QSettings *config = new QSettings( projectConfigFilePath, QSettings::IniFormat, this);
+            config->setIniCodec( "UTF-8" );
+            m_sourcePathName   = config->value( "SourcePathName",  m_DefaultSourcePathName   ).toString();
+            m_tempPathName     = config->value( "TempPathName",    m_DefaultTempPathName     ).toString();
+            m_settingsFileName = config->value( "SettingFileName", m_DefaultSettingsFileName ).toString();
+            m_projectPath      = QDir::cleanPath( QDir( m_currentProjectPath ).filePath( config->value( "ProjectPath", "." ).toString() ) ).replace(QString('/'),QString('\\'));
+        }
+        else
+        {
+            qDebug() << " projectConfigFilePath NOT exists ";
+            m_sourcePathName   = m_DefaultSourcePathName;
+            m_tempPathName     = m_DefaultTempPathName;
+            m_settingsFileName = m_DefaultSettingsFileName;
+            m_projectPath      = m_currentProjectPath;
+        }
+
+        qDebug() << "m_projectPath     : " << m_projectPath;
+        qDebug() << "m_sourcePathName  : " << m_sourcePathName;
+        qDebug() << "m_tempPathName    : " << m_tempPathName;
+        qDebug() << "m_settingFileName : " << m_settingsFileName;
+
+        loadSettings();
+    }
+}
+
+QString ProjectContainer::currentProjectFullName() const
+{
+    return m_currentProjectFullName;
+}
+
+QString ProjectContainer::currentProjectPath() const
+{
+    return m_currentProjectPath;
+}
+
+QString ProjectContainer::projectPath() const
+{
+    return m_projectPath;
 }
 
 QString ProjectContainer::sourcePath() const

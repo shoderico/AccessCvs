@@ -4,7 +4,8 @@
 #include <QDir>
 #include <QFile>
 
-#include "accesslib/accesslib.h"
+//#include "accesslib/accesslib.h"
+#include "officelib/officelib.h"
 
 #include "util/comptr.h"
 #include "util/codecinfo.h"
@@ -14,7 +15,7 @@
 
 
 ReferenceProcessor::ReferenceProcessor(ProjectContainer *parent)
-    : ProjectLevelObjectProcessor(parent)
+    : VBEProcessor(parent)
 {
     m_objectName          = "Reference";
 
@@ -38,7 +39,18 @@ bool ReferenceProcessor::exportFromProjectToTempDir(QAxObject *object, const QSt
 
     deleteAllFileFromTempDir(m_objectName);
 
-    ComPtr<Access::References> references = m_projectContainer->application<Access::Application>()->References();
+    ComPtr<VBIDE::VBProject> vbProject = currentVBProject();
+    if ( !vbProject.is() )
+    {
+        qDebug() << "ReferenceProcessor::exportFromProjectToTempDir : vbProject is NULL ";
+        return true;
+    }
+    ComPtr<VBIDE::References> references = vbProject->References();
+    if ( !references.is() )
+    {
+        qDebug() << "ReferenceProcessor::exportFromProjectToTempDir : references is NULL ";
+        return true;
+    }
     int nCount = references->Count();
 
     // QSettings
@@ -117,7 +129,7 @@ bool ReferenceProcessor::exportFromProjectToTempDir(QAxObject *object, const QSt
     SettingElement *refsElement = setting.append("References");
     for ( int i = 1 ; i <= nCount ; ++i )
     {
-        ComPtr<Access::Reference> reference = references->Item( i );
+        ComPtr<VBIDE::Reference> reference = references->Item( i );
 
         QString name     = reference->Name();
         bool    builtIn  = reference->BuiltIn();
@@ -137,8 +149,7 @@ bool ReferenceProcessor::exportFromProjectToTempDir(QAxObject *object, const QSt
                  || fullPath.endsWith( ".adp", Qt::CaseInsensitive )
                  )
             {
-                ComPtr<Access::CurrentProject> currentPoject = m_projectContainer->application<Access::Application>()->CurrentProject();
-                QDir dir( currentPoject->Path() );
+                QDir dir( m_projectContainer->currentProjectPath() );
 
                 fullPath = dir.relativeFilePath( fullPath );
             }
@@ -154,7 +165,6 @@ bool ReferenceProcessor::exportFromProjectToTempDir(QAxObject *object, const QSt
     }
     setting.save();
 
-
     return true;
 }
 
@@ -166,7 +176,8 @@ bool ReferenceProcessor::importFromTempDirToProject(QAxObject *object, const QSt
     if ( !QFile( filePath(TempDir, TempFile, m_objectName) ).exists())
         return true;
 
-    ComPtr<Access::References> references = m_projectContainer->application<Access::Application>()->References();
+    ComPtr<VBIDE::VBProject> vbProject = currentVBProject();
+    ComPtr<VBIDE::References> references = vbProject->References();
 
     // clear current references
     {
@@ -174,7 +185,7 @@ bool ReferenceProcessor::importFromTempDirToProject(QAxObject *object, const QSt
         for ( int i = nCount ; i >= 1 ; --i )
         {
 
-            ComPtr<Access::Reference> reference = references->Item( i );
+            ComPtr<VBIDE::Reference> reference = references->Item( i );
             bool refBuiltIn = reference->BuiltIn();
             if (!refBuiltIn)
             {
@@ -326,7 +337,7 @@ bool ReferenceProcessor::importFromTempDirToProject(QAxObject *object, const QSt
         {
             if ( !guid.isEmpty() )
             {
-                ComPtr<Access::Reference> reference = references->AddFromGuid(guid, major, minor);
+                ComPtr<VBIDE::Reference> reference = references->AddFromGuid(guid, major, minor);
                 Q_UNUSED(reference)
                 // NOTE: error 32813 may occur : The reference is already present in the access project
             }
@@ -338,12 +349,11 @@ bool ReferenceProcessor::importFromTempDirToProject(QAxObject *object, const QSt
                      || fullPath.endsWith( ".adp", Qt::CaseInsensitive )
                      )
                 {
-                    ComPtr<Access::CurrentProject> currentPoject = m_projectContainer->application<Access::Application>()->CurrentProject();
-                    QDir dir( currentPoject->Path() );
+                    QDir dir( m_projectContainer->currentProjectPath() );
                     fullPath = QDir::cleanPath( dir.filePath( fullPath ) ).replace(QString('/'),QString('\\'));
                 }
 
-                ComPtr<Access::Reference> reference = references->AddFromFile(fullPath);
+                ComPtr<VBIDE::Reference> reference = references->AddFromFile(fullPath);
                 Q_UNUSED(reference)
             }
         }

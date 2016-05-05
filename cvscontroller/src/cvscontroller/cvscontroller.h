@@ -50,9 +50,10 @@ public slots:
     void executeExport();
     void executeImport();
 
-private:
-    void init();
+protected:
+    virtual void init();
 
+private:
     enum PrepareType
     {
         Import
@@ -60,13 +61,15 @@ private:
     };
     void prepare(const PrepareType prepareType, const bool clearCache);
 
-private:
+protected:
     QAxObject *m_application;
+    ObjectModel *m_model;
+    ObjectProxyModel *m_proxyModel;
+
+private:
     QWidget *m_parentWidget;
     MainDialog *m_dlg;
     CvsProgressDialog *m_progressDlg;
-    ObjectModel *m_model;
-    ObjectProxyModel *m_proxyModel;
 };
 
 #endif // CVSCONTROLLER_H

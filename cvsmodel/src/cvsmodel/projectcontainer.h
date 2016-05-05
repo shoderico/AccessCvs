@@ -23,6 +23,9 @@ public:
 
     virtual bool isProjectOpened() const = 0;
 
+    QString currentProjectFullName() const;
+    QString currentProjectPath() const;
+    QString projectPath() const;
     QString sourcePath() const;
     QString tempPath() const;
 
@@ -52,12 +55,19 @@ private:
 
 protected:
     QMap<Model::ObjectType, ObjectProcessor*> m_objectProcessors;
+
+    QString m_currentProjectName;
+    QString m_currentProjectFullName;
+    QString m_currentProjectPath;
     QString m_projectPath;
 
     QString m_sourcePathName;
     QString m_tempPathName;
-
     QString m_settingsFileName;
+
+    QString m_DefaultSourcePathName;
+    QString m_DefaultTempPathName;
+    QString m_DefaultSettingsFileName;
 };
 
 #endif // PROJECTCONTAINER_H

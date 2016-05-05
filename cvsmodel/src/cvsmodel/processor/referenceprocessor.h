@@ -2,13 +2,13 @@
 #define REFERENCEPROCESSOR_H
 
 #include "cvsmodel/cvsmodel_global.h"
-#include "projectlevelobjectprocessor.h"
+#include "vbeprocessor.h"
 
 class ProjectContainer;
 
 class QAxObject;
 
-class ReferenceProcessor : public ProjectLevelObjectProcessor
+class ReferenceProcessor : public VBEProcessor
 {
 public:
     explicit ReferenceProcessor(ProjectContainer *parent);

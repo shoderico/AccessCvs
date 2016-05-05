@@ -16,7 +16,9 @@ SOURCES += \
     cvscontroller/view/cvsprogressdialog.cpp \
     cvscontroller/view/processtypenames.cpp \
     cvscontroller/view/progresshelper.cpp \
-    cvscontroller/view/appsignalhandler.cpp
+    cvscontroller/view/appsignalhandler.cpp \
+    cvscontroller/accesscvscontroller.cpp \
+    cvscontroller/excelcvscontroller.cpp
 
 HEADERS += \
     cvscontroller/cvscontroller_global.h \
@@ -26,7 +28,9 @@ HEADERS += \
     cvscontroller/view/cvsprogressdialog.h \
     cvscontroller/view/processtypenames.h \
     cvscontroller/view/progresshelper.h \
-    cvscontroller/view/appsignalhandler.h
+    cvscontroller/view/appsignalhandler.h \
+    cvscontroller/accesscvscontroller.h \
+    cvscontroller/excelcvscontroller.h
 
 FORMS += \
     cvscontroller/view/maindialog.ui \

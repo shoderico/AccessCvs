@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <QFile>
 
-#include "accesslib/accesslib.h"
+#include "officelib/officelib.h"
 
 #include "util/comptr.h"
 #include "util/codecinfo.h"
@@ -13,7 +13,7 @@
 
 
 VBProjectProcessor::VBProjectProcessor(ProjectContainer *parent)
-    : ProjectLevelObjectProcessor(parent)
+    : VBEProcessor(parent)
 {
     m_objectName          = "VBEProject";
 
@@ -116,26 +116,4 @@ bool VBProjectProcessor::importFromTempDirToProject(QAxObject *object, const QSt
 
     return true;
 }
-
-VBIDE::VBProject *VBProjectProcessor::currentVBProject()
-{
-    ComPtr<Access::CurrentProject> currentProject = m_projectContainer->application<Access::Application>()->CurrentProject();
-    QString fileName = currentProject->FullName();
-
-    ComPtr<VBIDE::VBE> vbe = m_projectContainer->application<Access::Application>()->VBE();
-    ComPtr<VBIDE::VBProjects> vbProjects = vbe->VBProjects();
-    for ( int i = 1 ; i <= vbProjects->Count(); ++i )
-    {
-        ComPtr<VBIDE::VBProject> vbp = vbProjects->Item(i);
-        if (vbp->FileName() == fileName)
-        {
-            return vbProjects->Item(i);
-        }
-    }
-    return NULL;
-}
-
-
-
-
 

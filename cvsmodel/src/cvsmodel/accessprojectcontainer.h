@@ -14,13 +14,10 @@ public:
     explicit AccessProjectContainer(QObject *parent = 0);
 
     virtual void initialize(QAxObject* application);
+    virtual bool isProjectOpened() const;
 
     bool isMDB() const;
     bool isADP() const;
-    virtual bool isProjectOpened() const;
-
-signals:
-public slots:
 
 private:
     Access::Application *m_application;

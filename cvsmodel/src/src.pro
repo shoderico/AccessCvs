@@ -58,7 +58,11 @@ SOURCES += \
     cvsmodel/accessobjectmodel.cpp \
     cvsmodel/accessobjectproxymodel.cpp \
     cvsmodel/projectcontainer.cpp \
-    cvsmodel/accessprojectcontainer.cpp
+    cvsmodel/accessprojectcontainer.cpp \
+    cvsmodel/processor/vbeprocessor.cpp \
+    cvsmodel/excelprojectcontainer.cpp \
+    cvsmodel/excelobjectproxymodel.cpp \
+    cvsmodel/excelobjectmodel.cpp
 
 HEADERS += \
     cvsmodel/cvsmodel_global.h \
@@ -111,7 +115,11 @@ HEADERS += \
     cvsmodel/accessobjectmodel.h \
     cvsmodel/accessobjectproxymodel.h \
     cvsmodel/projectcontainer.h \
-    cvsmodel/accessprojectcontainer.h
+    cvsmodel/accessprojectcontainer.h \
+    cvsmodel/processor/vbeprocessor.h \
+    cvsmodel/excelprojectcontainer.h \
+    cvsmodel/excelobjectproxymodel.h \
+    cvsmodel/excelobjectmodel.h
 
 include(../../common.pri)
 include(../../submodule.pri)

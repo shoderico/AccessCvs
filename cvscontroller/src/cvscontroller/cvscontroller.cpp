@@ -3,24 +3,20 @@
 #include "view/maindialog.h"
 #include "view/cvsprogressdialog.h"
 
-#include "accesslib/accesslib.h"
-
 #include "addinutil/addinutil.h"
 
-//#include "cvsmodel/objectmodel.h"
-//#include "cvsmodel/objectproxymodel.h"
-#include "cvsmodel/accessobjectmodel.h"
-#include "cvsmodel/accessobjectproxymodel.h"
+#include "cvsmodel/objectmodel.h"
+#include "cvsmodel/objectproxymodel.h"
 
 
 CvsController::CvsController(QObject *parent)
     : QObject(parent)
     , m_application(0)
+    , m_model(0)
+    , m_proxyModel(0)
     , m_parentWidget(0)
     , m_dlg(0)
     , m_progressDlg(0)
-    , m_model(0)
-    , m_proxyModel(0)
 {
 }
 
@@ -242,18 +238,6 @@ void CvsController::executeImport()
 
 void CvsController::init()
 {
-    if (!m_model)
-    {
-        m_model = new AccessObjectModel(this);
-        m_model->setApplication(m_application);
-    }
-
-    if (!m_proxyModel)
-    {
-        m_proxyModel = new AccessObjectProxyModel(this);
-        m_proxyModel->setSourceModel(m_model);
-    }
-
     if (!m_dlg)
     {
         m_dlg = new MainDialog( m_model, m_proxyModel, m_parentWidget );

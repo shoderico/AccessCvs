@@ -4,7 +4,7 @@
 #include "addin/addincontrollerimpl.h"
 #include "excellib/excellib.h"
 
-//#include "cvscontroller/cvscontroller.h"
+#include "cvscontroller/excelcvscontroller.h"
 //#include "acccontroller/acccontroller.h"
 #include "helpcontroller/helpcontroller.h"
 
@@ -48,7 +48,7 @@ QAxAggregated *ExcelCvsAddInFactory::createAggregate(QObject *parent)
     AddInControllerImpl *addInImpl = new AddInControllerImpl(this, parent);
     addInImpl->setRibbonTabId("ExcelCvs");
     addInImpl->setRibbonTabLabel("ExcelCvs");
-//    addInImpl->appendController( new CvsController(this) );
+    addInImpl->appendController( new ExcelCvsController(this) );
 //    addInImpl->appendController( new AccController(this) );
     addInImpl->appendController( new HelpController(this) );
     return addInImpl;

@@ -5,7 +5,7 @@ includeDepModule( addin )
 includeDepModule( util )
 # controllers
 #includeDepModule( acccontroller )
-#includeDepModule( cvscontroller )
+includeDepModule( cvscontroller )
 includeDepModule( helpcontroller )
 
 
