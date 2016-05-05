@@ -10,9 +10,9 @@
 class ProjectContainer;
 class CodecInfo;
 class ObjectItem;
+class Setting;
 
 class QAxObject;
-class QSettings;
 class QFileInfo;
 
 class CVSMODEL_SHARED_EXPORT ObjectProcessor : public QObject
@@ -63,8 +63,8 @@ public:
 
     void updateFileTimeInTempDir(const QString &objectName, const QDateTime &fileTime);
 
-    virtual void loadSetting(QSettings *settings) { Q_UNUSED(settings) }
-    virtual void saveSetting(QSettings *settings) { Q_UNUSED(settings) }
+    virtual void loadSetting(Setting *projectSetting) { Q_UNUSED(projectSetting) }
+    virtual void saveSetting(Setting *projectSetting) { Q_UNUSED(projectSetting) }
 
     virtual void updateSetting(QList<ObjectItem*> *items) { Q_UNUSED(items) }
 

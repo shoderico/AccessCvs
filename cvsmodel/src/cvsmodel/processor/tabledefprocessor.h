@@ -10,7 +10,6 @@ class TableDataSanitizer;
 class ObjectItem;
 
 class QAxObject;
-class QSettings;
 class QStringList;
 class QFileInfo;
 class QVariant;
@@ -32,8 +31,8 @@ public:
     virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
     virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
 
-    virtual void loadSetting(QSettings *settings);
-    virtual void saveSetting(QSettings *settings);
+    virtual void loadSetting(Setting *projectSetting);
+    virtual void saveSetting(Setting *projectSetting);
 
     virtual void updateSetting(QList<ObjectItem*> *items);
 

@@ -262,9 +262,9 @@ bool TableDefProcessor::desanitizeTempDir(QAxObject *object, const QString &obje
     return true;
 }
 
-void TableDefProcessor::loadSetting(QSettings *settings)
+void TableDefProcessor::loadSetting(Setting *projectSetting)
 {
-    Q_UNUSED(settings)
+    Q_UNUSED(projectSetting)
 
     // Setting
     Setting setting(m_projectContainer->sourcePath() + "\\" + "TableDef.settings", m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());
@@ -285,9 +285,9 @@ void TableDefProcessor::loadSetting(QSettings *settings)
     }
 }
 
-void TableDefProcessor::saveSetting(QSettings *settings)
+void TableDefProcessor::saveSetting(Setting *projectSetting)
 {
-    Q_UNUSED(settings)
+    Q_UNUSED(projectSetting)
 
     // Setting
     Setting setting(m_projectContainer->sourcePath() + "\\" + "TableDef.settings", m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());

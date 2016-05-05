@@ -3,10 +3,13 @@
 #include <QDebug>
 #include <QSettings>
 #include <QDir>
+#include <QTextCodec>
 
 #include "util/fileutil.h"
-#include "processor/objectprocessor.h"
+#include "util/codecinfo.h"
 
+#include "processor/objectprocessor.h"
+#include "setting.h"
 
 ProjectContainer::ProjectContainer(QObject *parent)
     : QObject(parent)
@@ -121,24 +124,25 @@ QList<Model::ObjectType> ProjectContainer::objectTypes() const
 
 void ProjectContainer::loadSetting()
 {
-    QSettings *settings = createSetting();
+    Setting *setting = createSetting();
+    setting->load();
     foreach ( Model::ObjectType objectType, m_objectProcessors.keys() )
     {
-        m_objectProcessors[ objectType ]->loadSetting( settings );
+        m_objectProcessors[ objectType ]->loadSetting( setting );
     }
-    delete settings;
+    delete setting;
 }
 
 
 void ProjectContainer::saveSetting()
 {
-    FileUtil::deleteFile( settingFilePath() );
-    QSettings *settings = createSetting();
+    Setting *setting = createSetting();
     foreach ( Model::ObjectType objectType, m_objectProcessors.keys() )
     {
-        m_objectProcessors[ objectType ]->saveSetting( settings );
+        m_objectProcessors[ objectType ]->saveSetting( setting );
     }
-    delete settings;
+    setting->save();
+    delete setting;
 }
 
 void ProjectContainer::updateSetting(QList<ObjectItem *> *items)
@@ -156,12 +160,17 @@ void ProjectContainer::exception(int code, const QString &source, const QString 
     qDebug() << code << source << desc << help;
 }
 
-QSettings *ProjectContainer::createSetting()
+Setting *ProjectContainer::createSetting()
 {
     QDir(sourcePath()).mkpath(".");
-    QSettings *settings = new QSettings( settingFilePath(), QSettings::IniFormat, this);
-    settings->setIniCodec( "UTF-8" );
-    return settings;
+
+    CodecInfo codec;
+    codec.setCodec( QTextCodec::codecForName("UTF-8") );
+    codec.setBom(false);
+    codec.setLineEnd("\r\n");
+
+    Setting *setting = new Setting(settingFilePath(), codec.codec(), codec.bom(), codec.lineEnd());
+    return setting;
 }
 
 

@@ -8,10 +8,10 @@
 #include <QMap>
 
 class QAxObject;
-class QSettings;
 
 class ObjectProcessor;
 class ObjectItem;
+class Setting;
 
 class CVSMODEL_SHARED_EXPORT ProjectContainer : public QObject
 {
@@ -50,7 +50,7 @@ public slots:
     void exception(int code, const QString & source, const QString & desc, const QString & help);
 
 private:
-    QSettings *createSetting();
+    Setting *createSetting();
     QString settingFilePath() const;
 
 private:
