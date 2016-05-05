@@ -6,7 +6,7 @@
 
 #include "util/comptr.h"
 
-class ProjectSetting;
+class ProjectContainer;
 
 class QAxObject;
 class QVariant;
@@ -19,7 +19,7 @@ class AllMacros;
 class MacroProcessor : public AccessDesignObjectProcessor
 {
 public:
-    explicit MacroProcessor(ProjectSetting *parent);
+    explicit MacroProcessor(ProjectContainer *parent);
     virtual bool        prepareItemCollection();
     virtual int         itemCount();
     virtual QAxObject  *itemUnsafePtr(const QVariant &index);

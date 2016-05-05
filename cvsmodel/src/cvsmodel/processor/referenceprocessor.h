@@ -4,14 +4,14 @@
 #include "cvsmodel/cvsmodel_global.h"
 #include "projectlevelobjectprocessor.h"
 
-class ProjectSetting;
+class ProjectContainer;
 
 class QAxObject;
 
 class ReferenceProcessor : public ProjectLevelObjectProcessor
 {
 public:
-    explicit ReferenceProcessor(ProjectSetting *parent);
+    explicit ReferenceProcessor(ProjectContainer *parent);
 //    virtual bool        isTargetObject(QAxObject *object) const;
 //    virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
     virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);

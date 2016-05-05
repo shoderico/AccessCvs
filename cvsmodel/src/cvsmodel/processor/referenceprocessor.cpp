@@ -9,11 +9,11 @@
 #include "util/comptr.h"
 #include "util/codecinfo.h"
 
-#include "cvsmodel/projectsetting.h"
+#include "cvsmodel/projectcontainer.h"
 #include "cvsmodel/setting.h"
 
 
-ReferenceProcessor::ReferenceProcessor(ProjectSetting *parent)
+ReferenceProcessor::ReferenceProcessor(ProjectContainer *parent)
     : ProjectLevelObjectProcessor(parent)
 {
     m_objectName          = "Reference";
@@ -38,7 +38,7 @@ bool ReferenceProcessor::exportFromProjectToTempDir(QAxObject *object, const QSt
 
     deleteAllFileFromTempDir(m_objectName);
 
-    ComPtr<Access::References> references = m_projectSetting->application()->References();
+    ComPtr<Access::References> references = m_projectContainer->application()->References();
     int nCount = references->Count();
 
     // QSettings
@@ -137,7 +137,7 @@ bool ReferenceProcessor::exportFromProjectToTempDir(QAxObject *object, const QSt
                  || fullPath.endsWith( ".adp", Qt::CaseInsensitive )
                  )
             {
-                ComPtr<Access::CurrentProject> currentPoject = m_projectSetting->application()->CurrentProject();
+                ComPtr<Access::CurrentProject> currentPoject = m_projectContainer->application()->CurrentProject();
                 QDir dir( currentPoject->Path() );
 
                 fullPath = dir.relativeFilePath( fullPath );
@@ -166,7 +166,7 @@ bool ReferenceProcessor::importFromTempDirToProject(QAxObject *object, const QSt
     if ( !QFile( filePath(TempDir, TempFile, m_objectName) ).exists())
         return true;
 
-    ComPtr<Access::References> references = m_projectSetting->application()->References();
+    ComPtr<Access::References> references = m_projectContainer->application()->References();
 
     // clear current references
     {
@@ -338,7 +338,7 @@ bool ReferenceProcessor::importFromTempDirToProject(QAxObject *object, const QSt
                      || fullPath.endsWith( ".adp", Qt::CaseInsensitive )
                      )
                 {
-                    ComPtr<Access::CurrentProject> currentPoject = m_projectSetting->application()->CurrentProject();
+                    ComPtr<Access::CurrentProject> currentPoject = m_projectContainer->application()->CurrentProject();
                     QDir dir( currentPoject->Path() );
                     fullPath = QDir::cleanPath( dir.filePath( fullPath ) ).replace(QString('/'),QString('\\'));
                 }

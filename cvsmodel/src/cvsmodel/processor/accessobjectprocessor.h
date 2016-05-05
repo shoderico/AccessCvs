@@ -6,7 +6,7 @@
 
 #include "util/comptr.h"
 
-class ProjectSetting;
+class ProjectContainer;
 class ObjectItem;
 
 class QAxObject;
@@ -22,7 +22,7 @@ class Documents;
 class AccessObjectProcessor : public ObjectProcessor
 {
 public:
-    explicit AccessObjectProcessor(ProjectSetting *parent);
+    explicit AccessObjectProcessor(ProjectContainer *parent);
     virtual bool        isTargetObject(QAxObject *object) const;
     virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
     virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);

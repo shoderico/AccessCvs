@@ -4,7 +4,7 @@
 
 #include "accesslib/accesslib.h"
 
-#include "cvsmodel/projectsetting.h"
+#include "cvsmodel/projectcontainer.h"
 
 
 //=============================================================================
@@ -20,7 +20,7 @@
 //        this problem cannot be solved simply.
 //        we set it as Known Issue.
 //
-QueryAsObjectProcessor::QueryAsObjectProcessor(ProjectSetting *parent)
+QueryAsObjectProcessor::QueryAsObjectProcessor(ProjectContainer *parent)
     : QueryAsSqlProcessor(parent)
 {
 }
@@ -31,7 +31,7 @@ bool QueryAsObjectProcessor::exportFromProjectToTempDir(QAxObject *object, const
 
     Q_UNUSED(object)
     {
-        m_projectSetting->application()->SaveAsText( (Access::AcObjectType)m_accessObjectType, objectName, filePath(TempDir, TempFile, objectName) );
+        m_projectContainer->application()->SaveAsText( (Access::AcObjectType)m_accessObjectType, objectName, filePath(TempDir, TempFile, objectName) );
         return true;
     }
 }
@@ -40,7 +40,7 @@ bool QueryAsObjectProcessor::importFromTempDirToProject(QAxObject *object, const
 {
     Q_UNUSED(object)
     {
-        m_projectSetting->application()->LoadFromText( (Access::AcObjectType)m_accessObjectType, objectName, filePath(TempDir, TempFile, objectName) );
+        m_projectContainer->application()->LoadFromText( (Access::AcObjectType)m_accessObjectType, objectName, filePath(TempDir, TempFile, objectName) );
 
         return true;
     }

@@ -6,7 +6,7 @@
 
 #include "util/comptr.h"
 
-class ProjectSetting;
+class ProjectContainer;
 
 class QAxObject;
 class QVariant;
@@ -18,7 +18,7 @@ class AllForms;
 class FormProcessor : public AccessDesignObjectProcessor
 {
 public:
-    explicit FormProcessor(ProjectSetting *parent);
+    explicit FormProcessor(ProjectContainer *parent);
     virtual bool        prepareItemCollection();
     virtual int         itemCount();
     virtual QAxObject  *itemUnsafePtr(const QVariant &index);

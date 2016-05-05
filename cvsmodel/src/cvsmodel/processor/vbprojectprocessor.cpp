@@ -8,11 +8,11 @@
 #include "util/comptr.h"
 #include "util/codecinfo.h"
 
-#include "cvsmodel/projectsetting.h"
+#include "cvsmodel/projectcontainer.h"
 #include "cvsmodel/setting.h"
 
 
-VBProjectProcessor::VBProjectProcessor(ProjectSetting *parent)
+VBProjectProcessor::VBProjectProcessor(ProjectContainer *parent)
     : ProjectLevelObjectProcessor(parent)
 {
     m_objectName          = "VBEProject";
@@ -119,10 +119,10 @@ bool VBProjectProcessor::importFromTempDirToProject(QAxObject *object, const QSt
 
 VBIDE::VBProject *VBProjectProcessor::currentVBProject()
 {
-    ComPtr<Access::CurrentProject> currentProject = m_projectSetting->application()->CurrentProject();
+    ComPtr<Access::CurrentProject> currentProject = m_projectContainer->application()->CurrentProject();
     QString fileName = currentProject->FullName();
 
-    ComPtr<VBIDE::VBE> vbe = m_projectSetting->application()->VBE();
+    ComPtr<VBIDE::VBE> vbe = m_projectContainer->application()->VBE();
     ComPtr<VBIDE::VBProjects> vbProjects = vbe->VBProjects();
     for ( int i = 1 ; i <= vbProjects->Count(); ++i )
     {

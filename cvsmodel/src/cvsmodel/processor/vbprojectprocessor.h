@@ -4,7 +4,7 @@
 #include "cvsmodel/cvsmodel_global.h"
 #include "projectlevelobjectprocessor.h"
 
-class ProjectSetting;
+class ProjectContainer;
 
 class QAxObject;
 
@@ -16,7 +16,7 @@ class VBProject;
 class VBProjectProcessor : public ProjectLevelObjectProcessor
 {
 public:
-    explicit VBProjectProcessor(ProjectSetting *parent);
+    explicit VBProjectProcessor(ProjectContainer *parent);
     virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
     virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
 

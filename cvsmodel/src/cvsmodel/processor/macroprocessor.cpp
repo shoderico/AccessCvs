@@ -6,14 +6,14 @@
 
 #include "util/comptr.h"
 
-#include "cvsmodel/projectsetting.h"
+#include "cvsmodel/projectcontainer.h"
 #include "cvsmodel/setting.h"
 
 
 //=============================================================================
 // Macro
 
-MacroProcessor::MacroProcessor(ProjectSetting *parent)
+MacroProcessor::MacroProcessor(ProjectContainer *parent)
     : AccessDesignObjectProcessor(parent)
 {
     m_objectType          = Model::Macro;
@@ -31,10 +31,10 @@ MacroProcessor::MacroProcessor(ProjectSetting *parent)
 
 bool MacroProcessor::prepareItemCollection()
 {
-    if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
+    if (!m_projectContainer->isADP() && !m_projectContainer->isMDB())
         return AccessDesignObjectProcessor::prepareItemCollection();
 
-    ComPtr<Access::CurrentProject> currentProject = m_projectSetting->application()->CurrentProject();
+    ComPtr<Access::CurrentProject> currentProject = m_projectContainer->application()->CurrentProject();
     m_objects.set( currentProject->AllMacros() );
 
     return m_objects.is();
@@ -42,7 +42,7 @@ bool MacroProcessor::prepareItemCollection()
 
 int MacroProcessor::itemCount()
 {
-    if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
+    if (!m_projectContainer->isADP() && !m_projectContainer->isMDB())
         return AccessDesignObjectProcessor::itemCount();
 
     if (!m_objects.is())
@@ -52,7 +52,7 @@ int MacroProcessor::itemCount()
 
 QAxObject *MacroProcessor::itemUnsafePtr(const QVariant &index)
 {
-    if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
+    if (!m_projectContainer->isADP() && !m_projectContainer->isMDB())
         return AccessDesignObjectProcessor::itemUnsafePtr(index);
 
     if (!m_objects.is())

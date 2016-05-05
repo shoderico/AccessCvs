@@ -8,7 +8,7 @@
 
 #include "util/comptr.h"
 
-class ProjectSetting;
+class ProjectContainer;
 class AccessDesignObjectSanitizer;
 
 class QAxObject;
@@ -21,7 +21,7 @@ class AllReports;
 class ReportProcessor : public AccessDesignObjectProcessor
 {
 public:
-    explicit ReportProcessor(ProjectSetting *parent);
+    explicit ReportProcessor(ProjectContainer *parent);
     virtual bool        prepareItemCollection();
     virtual int         itemCount();
     virtual QAxObject  *itemUnsafePtr(const QVariant &index);

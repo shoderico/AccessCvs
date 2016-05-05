@@ -11,13 +11,13 @@
 #include "util/codecinfo.h"
 #include "util/fileutil.h"
 
-#include "cvsmodel/projectsetting.h"
+#include "cvsmodel/projectcontainer.h"
 #include "cvsmodel/objectitem.h"
 
 
-ObjectProcessor::ObjectProcessor(ProjectSetting *parent)
+ObjectProcessor::ObjectProcessor(ProjectContainer *parent)
     : QObject(parent)
-    , m_projectSetting(parent)
+    , m_projectContainer(parent)
     , m_codecForCvs(new CodecInfo(this))
     , m_codecForProject(0)
 {
@@ -146,7 +146,7 @@ bool ObjectProcessor::deleteFromProject(const QString &objectName)
     // TODO: cache DoCmd object
     if (m_accessObjectType != -1)
     {
-        ComPtr<Access::DoCmd> doCmd = m_projectSetting->application()->DoCmd();
+        ComPtr<Access::DoCmd> doCmd = m_projectContainer->application()->DoCmd();
         doCmd->DeleteObject( (Access::AcObjectType)m_accessObjectType, objectName );
     }
     return true;
@@ -262,8 +262,8 @@ QString ObjectProcessor::rootPath(ObjectProcessor::DirectoryType dirType) const
 {
     switch (dirType)
     {
-        case TempDir:      return m_projectSetting->tempPath();
-        case SourceDir:    return m_projectSetting->sourcePath();
+        case TempDir:      return m_projectContainer->tempPath();
+        case SourceDir:    return m_projectContainer->sourcePath();
     }
     return QString();
 }

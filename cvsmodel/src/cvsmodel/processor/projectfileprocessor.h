@@ -6,14 +6,14 @@
 
 #include <QVariant>
 
-class ProjectSetting;
+class ProjectContainer;
 
 class QAxObject;
 
 class ProjectFileProcessor : public ProjectLevelObjectProcessor
 {
 public:
-    explicit ProjectFileProcessor(ProjectSetting *parent);
+    explicit ProjectFileProcessor(ProjectContainer *parent);
 //    virtual bool        isTargetObject(QAxObject *object) const;
 //    virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
     virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);

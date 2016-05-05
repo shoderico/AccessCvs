@@ -4,7 +4,7 @@
 #include "cvsmodel/cvsmodel_global.h"
 #include "objectprocessor.h"
 
-class ProjectSetting;
+class ProjectContainer;
 class ObjectItem;
 
 class QAxObject;
@@ -12,7 +12,7 @@ class QAxObject;
 class ProjectLevelObjectProcessor : public ObjectProcessor
 {
 public:
-    explicit ProjectLevelObjectProcessor(ProjectSetting *parent);
+    explicit ProjectLevelObjectProcessor(ProjectContainer *parent);
     virtual bool        isTargetObject(QAxObject *object) const;
     virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
 //    virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);

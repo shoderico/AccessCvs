@@ -9,10 +9,10 @@
 #include "util/codecinfo.h"
 #include "util/fileutil.h"
 
-#include "cvsmodel/projectsetting.h"
+#include "cvsmodel/projectcontainer.h"
 #include "cvsmodel/setting.h"
 
-ModuleProcessor::ModuleProcessor(ProjectSetting *parent)
+ModuleProcessor::ModuleProcessor(ProjectContainer *parent)
     : AccessObjectProcessor(parent)
 {
     m_objectType          = Model::Module;
@@ -66,10 +66,10 @@ bool ModuleProcessor::desanitizeTempDir(QAxObject *object, const QString &object
 
 bool ModuleProcessor::prepareItemCollection()
 {
-    if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
+    if (!m_projectContainer->isADP() && !m_projectContainer->isMDB())
         return AccessObjectProcessor::prepareItemCollection();
 
-    ComPtr<Access::CurrentProject> currentProject = m_projectSetting->application()->CurrentProject();
+    ComPtr<Access::CurrentProject> currentProject = m_projectContainer->application()->CurrentProject();
     m_objects.set( currentProject->AllModules() );
 
     return m_objects.is();
@@ -77,7 +77,7 @@ bool ModuleProcessor::prepareItemCollection()
 
 int ModuleProcessor::itemCount()
 {
-    if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
+    if (!m_projectContainer->isADP() && !m_projectContainer->isMDB())
         return AccessObjectProcessor::itemCount();
 
     if (!m_objects.is())
@@ -87,7 +87,7 @@ int ModuleProcessor::itemCount()
 
 QAxObject *ModuleProcessor::itemUnsafePtr(const QVariant &index)
 {
-    if (!m_projectSetting->isADP() && !m_projectSetting->isMDB())
+    if (!m_projectContainer->isADP() && !m_projectContainer->isMDB())
         return AccessObjectProcessor::itemUnsafePtr(index);
 
     if (!m_objects.is())

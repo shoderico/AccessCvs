@@ -2,7 +2,7 @@
 
 #include "util/progressnotifier.h"
 #include "util/comptr.h"
-#include "cvsmodel/projectsetting.h"
+#include "cvsmodel/projectcontainer.h"
 #include "cvsmodel/processor/objectprocessor.h"
 #include "cvsmodel/objectitemmap.h"
 #include "cvsmodel/objectitem.h"
@@ -25,7 +25,7 @@ void ExportFromProjectToTempDirCommand::execute(ObjectItemMap *allTargets)
     // without sanitizing and any extra processes.
 
     ProgressNotifier mainProgress(Model::ExportFromProjectToTempDirProcess, this);
-    ProjectSetting setting(this);
+    ProjectContainer setting(this);
     ObjectProcessor *processor;
     setting.initialize(m_application);
 

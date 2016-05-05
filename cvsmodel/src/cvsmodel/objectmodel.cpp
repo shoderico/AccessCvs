@@ -14,7 +14,7 @@
 #include "util/datachangedhelper.h"
 #include "util/concurrentmaphelper.h"
 
-#include "projectsetting.h"
+#include "projectcontainer.h"
 #include "processor/objectprocessor.h"
 #include "processor/tabledefprocessor.h"
 #include "objectitem.h"
@@ -238,7 +238,7 @@ bool ObjectModel::setData(const QModelIndex &index, const QVariant &value, int r
 void ObjectModel::saveSettigs()
 {
     // save settings
-    ProjectSetting setting(this);
+    ProjectContainer setting(this);
     ObjectProcessor *processor;
     setting.initialize(m_application);
 

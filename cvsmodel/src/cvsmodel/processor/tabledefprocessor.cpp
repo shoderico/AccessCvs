@@ -10,7 +10,7 @@
 #include "util/codecinfo.h"
 #include "util/fileutil.h"
 
-#include "cvsmodel/projectsetting.h"
+#include "cvsmodel/projectcontainer.h"
 #include "cvsmodel/sanitizer/tabledefsanitizer.h"
 #include "cvsmodel/sanitizer/tabledatasanitizer.h"
 #include "cvsmodel/setting.h"
@@ -19,7 +19,7 @@
 //=============================================================================
 // TableDef
 
-TableDefProcessor::TableDefProcessor(ProjectSetting *parent)
+TableDefProcessor::TableDefProcessor(ProjectContainer *parent)
     : ObjectProcessor(parent)
     , m_tableDefSanitizer(new TableDefSanitizer(this))
     , m_tableDataSanitizer(new TableDataSanitizer(this))
@@ -91,7 +91,7 @@ bool TableDefProcessor::exportFromProjectToTempDir(QAxObject *object, const QStr
     {
         // table-def
         {
-            m_projectSetting->application()
+            m_projectContainer->application()
                 ->ExportXML(
                         Access::acExportTable
                         ,objectName
@@ -108,7 +108,7 @@ bool TableDefProcessor::exportFromProjectToTempDir(QAxObject *object, const QStr
         // table-data
         if ( m_tableDataTargets.contains( objectName ) )
         {
-            m_projectSetting->application()
+            m_projectContainer->application()
                 ->ExportXML(
                         Access::acExportTable
                         ,objectName
@@ -130,7 +130,7 @@ bool TableDefProcessor::importFromTempDirToProject(QAxObject *object, const QStr
     if (object)
     {
         // table is already exists. so we need to delete first
-        ComPtr<Access::DoCmd> doCmd = m_projectSetting->application()->DoCmd();
+        ComPtr<Access::DoCmd> doCmd = m_projectContainer->application()->DoCmd();
         doCmd->DeleteObject( (Access::AcObjectType)m_accessObjectType, objectName );
     }
 
@@ -138,7 +138,7 @@ bool TableDefProcessor::importFromTempDirToProject(QAxObject *object, const QStr
         // table-def
         {
             // very slow but very accurate.
-            m_projectSetting->application()
+            m_projectContainer->application()
                 ->ImportXML(
                         filePath(TempDir, TempFile, objectName)
                         ,Access::acStructureOnly
@@ -147,7 +147,7 @@ bool TableDefProcessor::importFromTempDirToProject(QAxObject *object, const QStr
         // table-data
         if ( m_tableDataTargets.contains(objectName) && QFile( filePath(TempDir, DataTempFile, objectName) ).exists() )
         {
-            m_projectSetting->application()
+            m_projectContainer->application()
                 ->ImportXML(
                         filePath(TempDir, DataTempFile, objectName)
                         ,Access::acAppendData
@@ -268,10 +268,10 @@ bool TableDefProcessor::desanitizeTempDir(QAxObject *object, const QString &obje
 
 bool TableDefProcessor::prepareItemCollection()
 {
-    if (!m_projectSetting->isMDB())
+    if (!m_projectContainer->isMDB())
         return false;
 
-    ComPtr<DAO::Database> currentDb = m_projectSetting->application()->CurrentDb();
+    ComPtr<DAO::Database> currentDb = m_projectContainer->application()->CurrentDb();
     if (!currentDb.is())
         return false;
 
@@ -369,7 +369,7 @@ void TableDefProcessor::loadSettings(QSettings *settings)
     */
 
     // Setting
-    Setting setting(m_projectSetting->sourcePath() + "\\" + "TableDef.settings", m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());
+    Setting setting(m_projectContainer->sourcePath() + "\\" + "TableDef.settings", m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());
     if (setting.load())
     {
         SettingElement *element = setting.at(0)->toElement();
@@ -438,7 +438,7 @@ void TableDefProcessor::saveSettings(QSettings *settings)
     */
 
     // Setting
-    Setting setting(m_projectSetting->sourcePath() + "\\" + "TableDef.settings", m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());
+    Setting setting(m_projectContainer->sourcePath() + "\\" + "TableDef.settings", m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());
     SettingElement *element = setting.append("TableData");
     {
         QStringList tableNames = m_tableDataTargets;

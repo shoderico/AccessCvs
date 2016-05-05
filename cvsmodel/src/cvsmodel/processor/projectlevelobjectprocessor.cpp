@@ -6,12 +6,12 @@
 
 #include "util/fileutil.h"
 
-#include "cvsmodel/projectsetting.h"
+#include "cvsmodel/projectcontainer.h"
 #include "cvsmodel/setting.h"
 #include "cvsmodel/objectitem.h"
 
 
-ProjectLevelObjectProcessor::ProjectLevelObjectProcessor(ProjectSetting *parent)
+ProjectLevelObjectProcessor::ProjectLevelObjectProcessor(ProjectContainer *parent)
     : ObjectProcessor(parent)
 //    , m_objectName("Reference")
 {
@@ -68,7 +68,7 @@ bool ProjectLevelObjectProcessor::desanitizeTempDir(QAxObject *object, const QSt
 bool ProjectLevelObjectProcessor::prepareItemCollection()
 {
     // different from others.
-    if (m_projectSetting->isMDB() || m_projectSetting->isADP())
+    if (m_projectContainer->isMDB() || m_projectContainer->isADP())
         return true;
     return false;
 }
@@ -76,7 +76,7 @@ bool ProjectLevelObjectProcessor::prepareItemCollection()
 int ProjectLevelObjectProcessor::itemCount()
 {
     // different from others.
-    if (m_projectSetting->isMDB() || m_projectSetting->isADP())
+    if (m_projectContainer->isMDB() || m_projectContainer->isADP())
         return 1;
     return 0;
 }
@@ -85,7 +85,7 @@ QAxObject *ProjectLevelObjectProcessor::itemUnsafePtr(const QVariant &index)
 {
     Q_UNUSED(index)
     // different from others.
-    if (m_projectSetting->isMDB() || m_projectSetting->isADP())
+    if (m_projectContainer->isMDB() || m_projectContainer->isADP())
         return NULL; // unused
     return 0;
 }

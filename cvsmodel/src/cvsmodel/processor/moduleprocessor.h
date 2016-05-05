@@ -4,7 +4,7 @@
 #include "cvsmodel/cvsmodel_global.h"
 #include "accessobjectprocessor.h"
 
-class ProjectSetting;
+class ProjectContainer;
 
 class QAxObject;
 
@@ -16,7 +16,7 @@ class AllModules;
 class ModuleProcessor : public AccessObjectProcessor
 {
 public:
-    explicit ModuleProcessor(ProjectSetting *parent);
+    explicit ModuleProcessor(ProjectContainer *parent);
     virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
     virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
 

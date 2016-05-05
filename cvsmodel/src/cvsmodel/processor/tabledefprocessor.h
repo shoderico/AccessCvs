@@ -6,7 +6,7 @@
 
 #include "util/comptr.h"
 
-class ProjectSetting;
+class ProjectContainer;
 class TableDefSanitizer;
 class TableDataSanitizer;
 class ObjectItem;
@@ -25,7 +25,7 @@ class TableDefs;
 class TableDefProcessor : public ObjectProcessor
 {
 public:
-    explicit TableDefProcessor(ProjectSetting *parent);
+    explicit TableDefProcessor(ProjectContainer *parent);
     virtual bool        isTargetObject(QAxObject *object) const;
     virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
     virtual ObjectItem *createItemFromSourceDir(QFileInfo &fileInfo, QObject *parent = 0);

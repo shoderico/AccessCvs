@@ -4,7 +4,7 @@
 #include "cvsmodel/cvsmodel_global.h"
 #include "accessobjectprocessor.h"
 
-class ProjectSetting;
+class ProjectContainer;
 class AccessDesignObjectSanitizer;
 
 class QAxObject;
@@ -12,7 +12,7 @@ class QAxObject;
 class AccessDesignObjectProcessor : public AccessObjectProcessor
 {
 public:
-    explicit AccessDesignObjectProcessor(ProjectSetting *parent);
+    explicit AccessDesignObjectProcessor(ProjectContainer *parent);
     virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
     virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
     virtual void determineCodecForProject();

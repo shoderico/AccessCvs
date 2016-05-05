@@ -6,7 +6,7 @@
 
 #include "util/comptr.h"
 
-class ProjectSetting;
+class ProjectContainer;
 class ObjectItem;
 
 class QAxObject;
@@ -21,7 +21,7 @@ class QueryDefs;
 class QueryAsSqlProcessor : public ObjectProcessor
 {
 public:
-    explicit QueryAsSqlProcessor(ProjectSetting *parent);
+    explicit QueryAsSqlProcessor(ProjectContainer *parent);
     virtual bool        isTargetObject(QAxObject *object) const;
     virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
     virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);

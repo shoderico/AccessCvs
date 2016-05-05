@@ -7,7 +7,7 @@
 #include "util/comptr.h"
 #include "util/fileutil.h"
 
-#include "cvsmodel/projectsetting.h"
+#include "cvsmodel/projectcontainer.h"
 #include "cvsmodel/objectitem.h"
 
 
@@ -16,7 +16,7 @@
 //=============================================================================
 // QueryAsSqlProcessor
 
-QueryAsSqlProcessor::QueryAsSqlProcessor(ProjectSetting *parent)
+QueryAsSqlProcessor::QueryAsSqlProcessor(ProjectContainer *parent)
     : ObjectProcessor(parent)
 {
     m_objectType          = Model::Query;
@@ -98,7 +98,7 @@ bool QueryAsSqlProcessor::importFromTempDirToProject(QAxObject *object, const QS
         // create new query def
 
         // TODO: cache currentDb for performance conideration
-        ComPtr<DAO::Database> currentDb = m_projectSetting->application()->CurrentDb();
+        ComPtr<DAO::Database> currentDb = m_projectContainer->application()->CurrentDb();
 
         ComPtr<DAO::QueryDef> queryDef = currentDb->CreateQueryDef( objectName, sql );
         Q_UNUSED(queryDef)
@@ -125,10 +125,10 @@ bool QueryAsSqlProcessor::desanitizeTempDir(QAxObject *object, const QString &ob
 
 bool QueryAsSqlProcessor::prepareItemCollection()
 {
-    if (!m_projectSetting->isMDB())
+    if (!m_projectContainer->isMDB())
         return false;
 
-    ComPtr<DAO::Database> currentDb = m_projectSetting->application()->CurrentDb();
+    ComPtr<DAO::Database> currentDb = m_projectContainer->application()->CurrentDb();
     if (!currentDb.is())
         return false;
 

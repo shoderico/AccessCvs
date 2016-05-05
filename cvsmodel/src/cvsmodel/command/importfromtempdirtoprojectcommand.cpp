@@ -2,7 +2,7 @@
 
 #include "util/progressnotifier.h"
 #include "util/comptr.h"
-#include "cvsmodel/projectsetting.h"
+#include "cvsmodel/projectcontainer.h"
 #include "cvsmodel/processor/objectprocessor.h"
 #include "cvsmodel/objectitemmap.h"
 #include "cvsmodel/objectitem.h"
@@ -20,7 +20,7 @@ void ImportFromTempDirToProjectCommand::execute(ObjectItemMap *allTargets)
     // BLOCKING, cannot be async
 
     ProgressNotifier mainProgress(Model::ImportFromTempDirToProjectProcess, this);
-    ProjectSetting setting(this);
+    ProjectContainer setting(this);
     ObjectProcessor *processor;
     setting.initialize(m_application);
 

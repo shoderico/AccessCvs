@@ -2,7 +2,7 @@
 
 #include "util/progressnotifier.h"
 #include "util/concurrentmaphelper.h"
-#include "cvsmodel/projectsetting.h"
+#include "cvsmodel/projectcontainer.h"
 #include "cvsmodel/processor/objectprocessor.h"
 #include "cvsmodel/objectitemmap.h"
 #include "cvsmodel/cvsmodel_const.h"
@@ -38,7 +38,7 @@ void DesanitizeTempDirCommand::execute(ObjectItemMap *allTargets)
 {
     // non-blocking
     ProgressNotifier mainProgress(Model::DesanitizeTempDirProcess, this);
-    ProjectSetting setting(this);
+    ProjectContainer setting(this);
     ObjectProcessor *processor;
     setting.initialize(m_application);
 

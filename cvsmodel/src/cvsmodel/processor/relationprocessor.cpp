@@ -4,7 +4,7 @@
 
 #include "accesslib/accesslib.h"
 
-#include "cvsmodel/projectsetting.h"
+#include "cvsmodel/projectcontainer.h"
 
 
 
@@ -12,7 +12,7 @@
 // Relation
 // TODO: imeplement relationship export/import
 
-RelationProcessor::RelationProcessor(ProjectSetting *parent)
+RelationProcessor::RelationProcessor(ProjectContainer *parent)
     : ObjectProcessor(parent)
 {
     m_objectType          = Model::Relation;

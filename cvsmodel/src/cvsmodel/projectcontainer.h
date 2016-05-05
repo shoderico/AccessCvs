@@ -1,5 +1,5 @@
-#ifndef PROJECTSETTING_H
-#define PROJECTSETTING_H
+#ifndef PROJECTCONTAINER_H
+#define PROJECTCONTAINER_H
 
 #include "cvsmodel_global.h"
 #include "cvsmodel_const.h"
@@ -16,12 +16,12 @@ namespace Access {
 class Application;
 }
 
-class CVSMODEL_SHARED_EXPORT ProjectSetting : public QObject
+class CVSMODEL_SHARED_EXPORT ProjectContainer : public QObject
 {
     Q_OBJECT
 public:
-    explicit ProjectSetting(QObject *parent = 0);
-    ~ProjectSetting();
+    explicit ProjectContainer(QObject *parent = 0);
+    ~ProjectContainer();
 
     void initialize(QAxObject* application);
 
@@ -49,7 +49,7 @@ private:
     QString settingsFilePath() const;
 
 private:
-    QMap<Model::ObjectType, ObjectProcessor*> m_objectSettings;
+    QMap<Model::ObjectType, ObjectProcessor*> m_objectProcessors;
     Access::Application *m_application;
     int m_projectType;
     QString m_projectPath;
@@ -60,4 +60,4 @@ private:
     QString m_settingsFileName;
 };
 
-#endif // PROJECTSETTING_H
+#endif // PROJECTCONTAINER_H

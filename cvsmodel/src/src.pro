@@ -13,7 +13,6 @@ SOURCES += \
     cvsmodel/objectitem.cpp \
     cvsmodel/objectmodel.cpp \
     cvsmodel/objectproxymodel.cpp \
-    cvsmodel/projectsetting.cpp \
     cvsmodel/setting.cpp \
     cvsmodel/sanitizer/accessdesignobjectsanitizer.cpp \
     cvsmodel/sanitizer/tabledatasanitizer.cpp \
@@ -57,14 +56,14 @@ SOURCES += \
     cvsmodel/command/loaditemsfromsourcedircommand.cpp \
     cvsmodel/objectitemmap.cpp \
     cvsmodel/accessobjectmodel.cpp \
-    cvsmodel/accessobjectproxymodel.cpp
+    cvsmodel/accessobjectproxymodel.cpp \
+    cvsmodel/projectcontainer.cpp
 
 HEADERS += \
     cvsmodel/cvsmodel_global.h \
     cvsmodel/objectitem.h \
     cvsmodel/objectmodel.h \
     cvsmodel/objectproxymodel.h \
-    cvsmodel/projectsetting.h \
     cvsmodel/setting.h \
     cvsmodel/sanitizer/accessdesignobjectsanitizer.h \
     cvsmodel/sanitizer/tabledatasanitizer.h \
@@ -109,7 +108,8 @@ HEADERS += \
     cvsmodel/command/loaditemsfromsourcedircommand.h \
     cvsmodel/objectitemmap.h \
     cvsmodel/accessobjectmodel.h \
-    cvsmodel/accessobjectproxymodel.h
+    cvsmodel/accessobjectproxymodel.h \
+    cvsmodel/projectcontainer.h
 
 include(../../common.pri)
 include(../../submodule.pri)

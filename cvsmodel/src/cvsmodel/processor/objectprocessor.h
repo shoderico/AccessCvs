@@ -7,7 +7,7 @@
 #include <QObject>
 
 
-class ProjectSetting;
+class ProjectContainer;
 class CodecInfo;
 class ObjectItem;
 
@@ -19,7 +19,7 @@ class CVSMODEL_SHARED_EXPORT ObjectProcessor : public QObject
 {
     Q_OBJECT
 public:
-    explicit ObjectProcessor(ProjectSetting *parent = 0);
+    explicit ObjectProcessor(ProjectContainer *parent = 0);
 
     virtual bool isTargetObject(QAxObject *object) const = 0;
 
@@ -115,7 +115,7 @@ protected:
     QString m_dataFileExtension;
     QString m_reportPropFileExtension;
 
-    ProjectSetting *m_projectSetting;
+    ProjectContainer *m_projectContainer;
 
     CodecInfo *m_codecForCvs;
     CodecInfo *m_codecForProject;

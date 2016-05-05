@@ -4,13 +4,13 @@
 #include "cvsmodel/cvsmodel_global.h"
 #include "objectprocessor.h"
 
-class ProjectSetting;
+class ProjectContainer;
 
 
 class RelationProcessor : public ObjectProcessor
 {
 public:
-    explicit RelationProcessor(ProjectSetting *parent);
+    explicit RelationProcessor(ProjectContainer *parent);
 };
 
 

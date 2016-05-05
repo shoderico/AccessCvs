@@ -4,14 +4,14 @@
 #include "cvsmodel/cvsmodel_global.h"
 #include "queryassqlprocessor.h"
 
-class ProjectSetting;
+class ProjectContainer;
 
 class QAxObject;
 
 class QueryAsObjectProcessor : public QueryAsSqlProcessor
 {
 public:
-    explicit QueryAsObjectProcessor(ProjectSetting *parent);
+    explicit QueryAsObjectProcessor(ProjectContainer *parent);
     virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
     virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
 };
