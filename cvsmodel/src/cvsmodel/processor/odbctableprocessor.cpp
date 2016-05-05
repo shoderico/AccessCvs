@@ -39,7 +39,7 @@ bool OdbcTableProcessor::isTargetObject(QAxObject *object) const
         DAO::TableDef *tableDef = dynamic_cast<DAO::TableDef*>(object);
         if (tableDef)
         {
-            if (!tableDef->Connect().contains("ODBC;"))
+            if (!tableDef->Connect().startsWith("ODBC;"))
                 result = false;
         }
     }
