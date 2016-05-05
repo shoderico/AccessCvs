@@ -101,67 +101,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="showTableCheckBox">
-         <property name="text">
-          <string>Tables</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="showQueryCheckBox">
-         <property name="text">
-          <string>Queries</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="showFormCheckBox">
-         <property name="text">
-          <string>Forms</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="showReportCheckBox">
-         <property name="text">
-          <string>Reports</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="showMacroCheckBox">
-         <property name="text">
-          <string>Macros</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="showModuleCheckBox">
-         <property name="text">
-          <string>Modules</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="showReferenceCheckBox">
-         <property name="text">
-          <string>Reference</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="showProjectFileCheckBox">
-         <property name="text">
-          <string>AccessProject</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="showVBProjectCheckBox">
-         <property name="text">
-          <string>VBEProject</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="filterHorizontalLayout"/>
        </item>
        <item>
         <spacer name="horizontalSpacer_3">
@@ -202,67 +142,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="selectTableCheckBox">
-         <property name="text">
-          <string>Tables</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="selectQueryCheckBox">
-         <property name="text">
-          <string>Queries</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="selectFormCheckBox">
-         <property name="text">
-          <string>Forms</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="selectReportCheckBox">
-         <property name="text">
-          <string>Reports</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="selectMacroCheckBox">
-         <property name="text">
-          <string>Macros</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="selectModuleCheckBox">
-         <property name="text">
-          <string>Modules</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="selectReferenceCheckBox">
-         <property name="text">
-          <string>Reference</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="selectProjectFileCheckBox">
-         <property name="text">
-          <string>AccessProject</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="selectVBProjectCheckBox">
-         <property name="text">
-          <string>VBEProject</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="selectionHorizontalLayout"/>
        </item>
        <item>
         <spacer name="horizontalSpacer_2">

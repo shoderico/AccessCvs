@@ -14,8 +14,10 @@ class Application;
 class ObjectModel;
 class ObjectProxyModel;
 class ProgressHelper;
+class ObjectItemCheckBox;
 
-class QCheckBox;
+//class QCheckBox;
+#include <QCheckBox>
 
 class MainDialog : public QDialog
 {
@@ -67,7 +69,7 @@ private slots:
     void setSelectObjectType(int objectTypes);
 
 private:
-    int checkBoxToObjectType(QCheckBox *checkBox) const;
+//    int checkBoxToObjectType(QCheckBox *checkBox) const;
 
 private:
     Ui::MainDialog *ui;
@@ -76,9 +78,23 @@ private:
     ShowModes m_showMode;
 
     ProgressHelper *m_progressHelper;
+
+    QList<ObjectItemCheckBox*> m_selectionChecks;
+    QList<ObjectItemCheckBox*> m_filterChecks;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(MainDialog::ShowModes)
+
+class ObjectItemCheckBox : public QCheckBox
+{
+    Q_OBJECT
+public:
+    explicit ObjectItemCheckBox(const QString & text, const int selectObjectType, QWidget * parent = 0);
+    int selectObjectType() const { return m_selectObjectType; }
+private:
+    int m_selectObjectType;
+};
+
 
 
 #endif // MAINDIALOG_H
