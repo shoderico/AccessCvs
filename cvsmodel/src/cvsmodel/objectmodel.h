@@ -8,9 +8,10 @@
 
 #include "objectitemmap.h"
 
-namespace Access {
-class Application;
-}
+//namespace Access {
+//class Application;
+//}
+class QAxObject;
 
 
 class CVSMODEL_SHARED_EXPORT ObjectModel : public QAbstractItemModel
@@ -18,6 +19,7 @@ class CVSMODEL_SHARED_EXPORT ObjectModel : public QAbstractItemModel
     Q_OBJECT
 public:
     ObjectModel(QObject * parent = 0);
+    void init(const QList<Model::ObjectType> &objectTypes);
 
     //----------------------------------------------------------------------------------------------------------------------
     // QAbstractItemModel overrides
@@ -42,7 +44,7 @@ public:
     //----------------------------------------------------------------------------------------------------------------------
     // interface procedures
 
-    void setApplication(Access::Application *application);
+    virtual void setApplication(QAxObject *application);
 
     void prepareInit();
     void prepareClone();
@@ -54,9 +56,9 @@ public:
     bool refreshItems();
 
     bool executeExport();
-    bool executeImport();
+    virtual bool executeImport();
 
-    bool checkProjectState();
+    virtual bool checkProjectState();
 
 
     int selectedRowCount() const;
@@ -94,9 +96,10 @@ signals:
     void selectionChanged(int objectTypes);
 
 private:
+    QAxObject *m_application;
     QList<ObjectItem*> m_items;
-    ObjectItemMap m_mapItems;
-    Access::Application *m_application;
+    ObjectItemMap* m_mapItems;
+    QList<Model::ObjectType> m_objectTypes;
 
     void mergeItemProperties(ObjectItem* itemSrc, ObjectItem* itemDst);
 };

@@ -11,9 +11,9 @@ class CvsProgressDialog;
 class ObjectModel;
 class ObjectProxyModel;
 
-namespace Access {
-class Application;
-} // namespace Access
+//namespace Access {
+//class Application;
+//} // namespace Access
 
 class CVSCONTROLLER_SHARED_EXPORT CvsController : public QObject, public AddInController
 {
@@ -61,7 +61,7 @@ private:
     void prepare(const PrepareType prepareType, const bool clearCache);
 
 private:
-    Access::Application *m_application;
+    QAxObject *m_application;
     QWidget *m_parentWidget;
     MainDialog *m_dlg;
     CvsProgressDialog *m_progressDlg;

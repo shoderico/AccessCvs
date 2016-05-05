@@ -278,23 +278,6 @@ void MainDialog::setSelectObjectType(int objectTypes)
     qDeleteAll( blockers );
 }
 
-//int MainDialog::checkBoxToObjectType(QCheckBox *checkBox) const
-//{
-//    int objectType = 0;
-
-//    foreach( ObjectItemCheckBox* checkBoxInList, m_selectionChecks )
-//    {
-//        if ( checkBoxInList == checkBox )
-//            objectType = checkBoxInList->selectObjectType();
-//    }
-//    foreach( ObjectItemCheckBox* checkBoxInList, m_filterChecks )
-//    {
-//        if ( checkBoxInList == checkBox )
-//            objectType = checkBoxInList->selectObjectType();
-//    }
-
-//    return objectType;
-//}
 
 ObjectItemCheckBox::ObjectItemCheckBox(const QString &text, const int selectObjectType, QWidget *parent)
     : QCheckBox(text, parent)

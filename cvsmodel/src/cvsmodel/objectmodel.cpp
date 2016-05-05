@@ -44,7 +44,14 @@
 ObjectModel::ObjectModel(QObject * parent)
     : QAbstractItemModel(parent)
     , m_application(0)
+    , m_mapItems(0)
 {
+}
+
+void ObjectModel::init(const QList<Model::ObjectType> &objectTypes)
+{
+    m_objectTypes = objectTypes;
+    m_mapItems = new ObjectItemMap(objectTypes);
 }
 
 int ObjectModel::columnCount(const QModelIndex &parent) const
@@ -237,7 +244,7 @@ void ObjectModel::saveSettigs()
 
     {
         QStringList tableDataTargets;
-        QList<ObjectItem*> items = m_mapItems[ Model::TableDef ].values();
+        QList<ObjectItem*> items = m_mapItems->value( Model::TableDef ).values();
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it  )
         {
             if ( (*it)->hasData() )
@@ -252,7 +259,7 @@ void ObjectModel::saveSettigs()
     setting.saveSettings();
 }
 
-void ObjectModel::setApplication(Access::Application *application)
+void ObjectModel::setApplication(QAxObject *application)
 {
     m_application = application;
 }
@@ -370,7 +377,7 @@ void ObjectModel::prepareMerge()
 
 bool ObjectModel::clearItemsCache()
 {
-    ObjectItemMap targets;
+    ObjectItemMap targets(m_objectTypes);
     getItems(&targets, Model::AllItems, true /*selectedOnly*/, false /* modifiedOnly */);
 
     DeleteFromTempDirCommand deleteFromTempDir(m_application, this);
@@ -407,7 +414,7 @@ bool ObjectModel::refreshItems()
     // for InBoth
     {
 
-        ObjectItemMap targetsAll;
+        ObjectItemMap targetsAll(m_objectTypes);
         getItems(&targetsAll, Model::InBoth, false/*selectedOnly*/, false/*modifiedOnly*/);
 
 
@@ -417,7 +424,7 @@ bool ObjectModel::refreshItems()
         updateItemsDifferenceAsIs.execute(&targetsAll); // for smart refresh, we set item to be SameContents if TempDir and SourceDir are exactly the same
 
 
-        ObjectItemMap targets;
+        ObjectItemMap targets(m_objectTypes);
         getItems(&targets, Model::InBoth_NotSame, false/*selectedOnly*/, false/*modifiedOnly*/);
 
         ExportFromProjectToTempDirCommand   exportFromProjectToTempDir  (m_application, this);
@@ -457,10 +464,10 @@ bool ObjectModel::executeExport()
     // because each process changes the states of items
     bool selectedOnly = true;
 
-    ObjectItemMap targetsInProjectOnly;
-    ObjectItemMap targetsInSourceDirOnly;
-    ObjectItemMap targetsInBoth_Different;
-    ObjectItemMap targetsInBoth_Same;
+    ObjectItemMap targetsInProjectOnly(m_objectTypes);
+    ObjectItemMap targetsInSourceDirOnly(m_objectTypes);
+    ObjectItemMap targetsInBoth_Different(m_objectTypes);
+    ObjectItemMap targetsInBoth_Same(m_objectTypes);
 
     getItems(&targetsInProjectOnly,    Model::InProjectOnly,    selectedOnly, false/*modifiedOnly*/);
     getItems(&targetsInSourceDirOnly,  Model::InSourceDirOnly,  selectedOnly, false/*modifiedOnly*/);
@@ -561,10 +568,10 @@ bool ObjectModel::executeImport()
     // because each process changes the states of items
     bool selectedOnly = true;
 
-    ObjectItemMap targetsInProjectOnly;
-    ObjectItemMap targetsInSourceDirOnly;
-    ObjectItemMap targetsInBoth_Different;
-    ObjectItemMap targetsInBoth_Same;
+    ObjectItemMap targetsInProjectOnly(m_objectTypes);
+    ObjectItemMap targetsInSourceDirOnly(m_objectTypes);
+    ObjectItemMap targetsInBoth_Different(m_objectTypes);
+    ObjectItemMap targetsInBoth_Same(m_objectTypes);
 
     getItems(&targetsInProjectOnly,    Model::InProjectOnly,    selectedOnly, false/*modifiedOnly*/);
     getItems(&targetsInSourceDirOnly,  Model::InSourceDirOnly,  selectedOnly, false/*modifiedOnly*/);
@@ -664,32 +671,11 @@ bool ObjectModel::executeImport()
         }
     }
 
-    m_application->RefreshDatabaseWindow();
-
     return true;
 }
 
 bool ObjectModel::checkProjectState()
 {
-    ComPtr<Access::CurrentProject> currentProject  = m_application->CurrentProject();
-    ComPtr<DAO::Database> currentDb = m_application->CurrentDb();
-    if ( !currentProject.is() )
-    {
-        qDebug() << "currentProject is null";
-        return false;
-    }
-    int projectType = currentProject->ProjectType();
-    if ( projectType == Access::acMDB && !currentDb.is() )
-    {
-        qDebug() << "currentDb is null";
-        return false;
-    }
-
-    if ( (projectType != Access::acMDB) && (projectType != Access::acADP) )
-    {
-        qDebug() << "unknown project type";
-        return false;
-    }
     return true;
 }
 
@@ -831,7 +817,7 @@ void ObjectModel::selectItems(Model::ItemsTypes itemsType, bool selected, bool r
         helper.changedAll();
     }
 
-    ObjectItemMap targets;
+    ObjectItemMap targets(m_objectTypes);
     getItems(&targets, itemsType, false/*selectedOnly*/, false/*modifiedOnly*/);
     foreach (const Model::ObjectType &objectType, targets.keys() )
     {
@@ -861,7 +847,7 @@ void ObjectModel::selectItemsByObjectType(Model::SelectObjectTypes objectTypes, 
         helper.changedAll();
     }
 
-    ObjectItemMap targets;
+    ObjectItemMap targets(m_objectTypes);
     getItems(&targets, Model::AllItems, objectTypes, false/*selectedOnly*/, false/*modifiedOnly*/);
     foreach (const Model::ObjectType &objectType, targets.keys() )
     {
@@ -883,9 +869,9 @@ void ObjectModel::selectItemsByObjectType(Model::SelectObjectTypes objectTypes, 
 void ObjectModel::emitSelectionChanged()
 {
     int objectTypes = 0;
-    foreach( const Model::ObjectType &objectType, m_mapItems.keys() )
+    foreach( const Model::ObjectType &objectType, m_mapItems->keys() )
     {
-       foreach( const ObjectItem *item, m_mapItems[ objectType ].values() )
+       foreach( const ObjectItem *item, m_mapItems->value( objectType ).values() )
        {
            if (item->isSelected())
            {
@@ -917,7 +903,7 @@ void ObjectModel::deleteItems(ObjectItemMap *allTargets)
 
             int row = m_items.indexOf( (*it) );
             beginRemoveRows( QModelIndex(), row, row );
-            m_mapItems[ objectType ].remove( (*it)->name() );
+            m_mapItems->operator []( objectType ).remove( (*it)->name() );
             m_items.removeAll( (*it) );
             delete (*it);
             endRemoveRows();
@@ -950,7 +936,7 @@ void ObjectModel::reloadAndMergeItems()
 
     // first of all, we merge both items into one
     QList<ObjectItem*> items;
-    ObjectItemMap mapItems;
+    ObjectItemMap mapItems(m_objectTypes);
 
     // merged from Project
     for ( QList<ObjectItem*>::iterator it = itemsFromProject.begin(); it != itemsFromProject.end(); ++it )
@@ -991,7 +977,7 @@ void ObjectModel::reloadAndMergeItems()
         if ( !mapItems[ (*it)->objectType() ].contains( (*it)->name() ) )
         {
             ObjectItem *item = (*it);
-            m_mapItems[ (*it)->objectType() ].remove( (*it)->name() );
+            m_mapItems->operator []( (*it)->objectType() ).remove( (*it)->name() );
             it = m_items.erase( it );
             --it; // back one
             delete item;
@@ -1001,10 +987,10 @@ void ObjectModel::reloadAndMergeItems()
     // add new-item to member  if not exist in member
     for ( QList<ObjectItem*>::iterator it = items.begin(); it != items.end(); ++it )
     {
-        if ( !m_mapItems[ (*it)->objectType() ].contains( (*it)->name() ) )
+        if ( !m_mapItems->value( (*it)->objectType() ).contains( (*it)->name() ) )
         {
             ObjectItem *item = new ObjectItem( (*it) , this);
-            m_mapItems[ (*it)->objectType() ].insert( (*it)->name(), item );
+            m_mapItems->operator []( (*it)->objectType() ).insert( (*it)->name(), item );
             m_items.append( item );
         }
     }
@@ -1012,9 +998,9 @@ void ObjectModel::reloadAndMergeItems()
     // and now, we merge  from new-item to local-item
     for ( QList<ObjectItem*>::iterator it = items.begin(); it != items.end(); ++it )
     {
-        if ( m_mapItems[ (*it)->objectType() ].contains( (*it)->name() ) )
+        if ( m_mapItems->value( (*it)->objectType() ).contains( (*it)->name() ) )
         {
-            ObjectItem *item = m_mapItems[ (*it)->objectType() ].value( (*it)->name() );
+            ObjectItem *item = m_mapItems->value( (*it)->objectType() ).value( (*it)->name() );
 
             //  * update values
             //      * must keep

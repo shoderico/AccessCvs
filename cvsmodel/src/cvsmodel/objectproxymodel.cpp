@@ -6,20 +6,12 @@ ObjectProxyModel::ObjectProxyModel(QObject *parent)
     : QSortFilterProxyModel(parent)
     , m_showSelectedOnly(false)
 {
-    QList<Model::ObjectType> objectTypes;
-    objectTypes << Model::TableDef
-                << Model::Query
-                << Model::Form
-                << Model::Report
-                << Model::Macro
-                << Model::Module
-                << Model::Reference
-                << Model::ProjectFile
-                << Model::VBProject
-                   ;
+}
+
+void ObjectProxyModel::init(const QList<Model::ObjectType> &objectTypes)
+{
     foreach ( Model::ObjectType objectType, objectTypes )
         m_showObjectTypes[ objectType ] = true;
-
 }
 
 bool ObjectProxyModel::lessThan(const QModelIndex &source_left, const QModelIndex &source_right) const

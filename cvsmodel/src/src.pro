@@ -55,7 +55,9 @@ SOURCES += \
     cvsmodel/command/updateitemsdifferencebyfiletimecommand.cpp \
     cvsmodel/command/loaditemsfromprojectcommand.cpp \
     cvsmodel/command/loaditemsfromsourcedircommand.cpp \
-    cvsmodel/objectitemmap.cpp
+    cvsmodel/objectitemmap.cpp \
+    cvsmodel/accessobjectmodel.cpp \
+    cvsmodel/accessobjectproxymodel.cpp
 
 HEADERS += \
     cvsmodel/cvsmodel_global.h \
@@ -105,7 +107,9 @@ HEADERS += \
     cvsmodel/command/updateitemsdifferencebyfiletimecommand.h \
     cvsmodel/command/loaditemsfromprojectcommand.h \
     cvsmodel/command/loaditemsfromsourcedircommand.h \
-    cvsmodel/objectitemmap.h
+    cvsmodel/objectitemmap.h \
+    cvsmodel/accessobjectmodel.h \
+    cvsmodel/accessobjectproxymodel.h
 
 include(../../common.pri)
 include(../../submodule.pri)

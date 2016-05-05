@@ -2,10 +2,16 @@
 
 #include "view/maindialog.h"
 #include "view/cvsprogressdialog.h"
+
 #include "accesslib/accesslib.h"
+
 #include "addinutil/addinutil.h"
-#include "cvsmodel/objectmodel.h"
-#include "cvsmodel/objectproxymodel.h"
+
+//#include "cvsmodel/objectmodel.h"
+//#include "cvsmodel/objectproxymodel.h"
+#include "cvsmodel/accessobjectmodel.h"
+#include "cvsmodel/accessobjectproxymodel.h"
+
 
 CvsController::CvsController(QObject *parent)
     : QObject(parent)
@@ -35,7 +41,7 @@ CvsController::~CvsController()
 
 void CvsController::initialize(QAxObject *application, QWidget *parentWidget)
 {
-    m_application = static_cast<Access::Application*>(application);
+    m_application = application;
     m_parentWidget = parentWidget;
     init();
 }
@@ -238,13 +244,13 @@ void CvsController::init()
 {
     if (!m_model)
     {
-        m_model = new ObjectModel(this);
+        m_model = new AccessObjectModel(this);
         m_model->setApplication(m_application);
     }
 
     if (!m_proxyModel)
     {
-        m_proxyModel = new ObjectProxyModel(this);
+        m_proxyModel = new AccessObjectProxyModel(this);
         m_proxyModel->setSourceModel(m_model);
     }
 

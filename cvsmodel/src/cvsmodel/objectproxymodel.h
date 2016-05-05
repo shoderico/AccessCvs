@@ -2,6 +2,7 @@
 #define OBJECTPROXYMODEL_H
 
 #include "cvsmodel_global.h"
+#include "cvsmodel_const.h"
 
 #include <QObject>
 #include <QSortFilterProxyModel>
@@ -11,6 +12,7 @@ class CVSMODEL_SHARED_EXPORT ObjectProxyModel : public QSortFilterProxyModel
     Q_OBJECT
 public:
     explicit ObjectProxyModel(QObject *parent = 0);
+    void init(const QList<Model::ObjectType> &objectTypes);
 
     bool lessThan(const QModelIndex &source_left, const QModelIndex &source_right) const;
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;
