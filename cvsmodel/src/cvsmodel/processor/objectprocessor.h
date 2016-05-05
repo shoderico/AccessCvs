@@ -97,6 +97,10 @@ protected:
 
     void mkpathObjectPath(DirectoryType dirType);
 
+    template <typename T> T* projectContainer() const
+    {
+        return dynamic_cast<T*>(m_projectContainer);
+    }
 
 
 protected:

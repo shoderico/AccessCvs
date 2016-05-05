@@ -57,7 +57,8 @@ SOURCES += \
     cvsmodel/objectitemmap.cpp \
     cvsmodel/accessobjectmodel.cpp \
     cvsmodel/accessobjectproxymodel.cpp \
-    cvsmodel/projectcontainer.cpp
+    cvsmodel/projectcontainer.cpp \
+    cvsmodel/accessprojectcontainer.cpp
 
 HEADERS += \
     cvsmodel/cvsmodel_global.h \
@@ -109,7 +110,8 @@ HEADERS += \
     cvsmodel/objectitemmap.h \
     cvsmodel/accessobjectmodel.h \
     cvsmodel/accessobjectproxymodel.h \
-    cvsmodel/projectcontainer.h
+    cvsmodel/projectcontainer.h \
+    cvsmodel/accessprojectcontainer.h
 
 include(../../common.pri)
 include(../../submodule.pri)

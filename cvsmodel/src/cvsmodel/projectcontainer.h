@@ -12,10 +12,6 @@ class QSettings;
 
 class ObjectProcessor;
 
-namespace Access {
-class Application;
-}
-
 class CVSMODEL_SHARED_EXPORT ProjectContainer : public QObject
 {
     Q_OBJECT
@@ -23,18 +19,21 @@ public:
     explicit ProjectContainer(QObject *parent = 0);
     ~ProjectContainer();
 
-    void initialize(QAxObject* application);
+    virtual void initialize(QAxObject* application);
 
-    bool isMDB() const;
-    bool isADP() const;
-    bool isProjectOpened() const;
+    virtual bool isProjectOpened() const = 0;
 
     QString sourcePath() const;
     QString tempPath() const;
 
     ObjectProcessor* operator[](Model::ObjectType objectType);
 
-    Access::Application *application() const;
+    QAxObject *application() const;
+    template <typename T> T *application() const
+    {
+        return dynamic_cast<T *>(m_application);
+    }
+
 
     QList<Model::ObjectType> objectTypes() const;
 
@@ -49,9 +48,10 @@ private:
     QString settingsFilePath() const;
 
 private:
+    QAxObject *m_application;
+
+protected:
     QMap<Model::ObjectType, ObjectProcessor*> m_objectProcessors;
-    Access::Application *m_application;
-    int m_projectType;
     QString m_projectPath;
 
     QString m_sourcePathName;

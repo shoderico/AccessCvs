@@ -10,7 +10,7 @@
 #include "util/codecinfo.h"
 #include "util/fileutil.h"
 
-#include "cvsmodel/projectcontainer.h"
+#include "cvsmodel/accessprojectcontainer.h"
 #include "cvsmodel/sanitizer/tabledefsanitizer.h"
 #include "cvsmodel/sanitizer/tabledatasanitizer.h"
 #include "cvsmodel/setting.h"
@@ -91,7 +91,7 @@ bool TableDefProcessor::exportFromProjectToTempDir(QAxObject *object, const QStr
     {
         // table-def
         {
-            m_projectContainer->application()
+            m_projectContainer->application<Access::Application>()
                 ->ExportXML(
                         Access::acExportTable
                         ,objectName
@@ -108,7 +108,7 @@ bool TableDefProcessor::exportFromProjectToTempDir(QAxObject *object, const QStr
         // table-data
         if ( m_tableDataTargets.contains( objectName ) )
         {
-            m_projectContainer->application()
+            m_projectContainer->application<Access::Application>()
                 ->ExportXML(
                         Access::acExportTable
                         ,objectName
@@ -130,7 +130,7 @@ bool TableDefProcessor::importFromTempDirToProject(QAxObject *object, const QStr
     if (object)
     {
         // table is already exists. so we need to delete first
-        ComPtr<Access::DoCmd> doCmd = m_projectContainer->application()->DoCmd();
+        ComPtr<Access::DoCmd> doCmd = m_projectContainer->application<Access::Application>()->DoCmd();
         doCmd->DeleteObject( (Access::AcObjectType)m_accessObjectType, objectName );
     }
 
@@ -138,7 +138,7 @@ bool TableDefProcessor::importFromTempDirToProject(QAxObject *object, const QStr
         // table-def
         {
             // very slow but very accurate.
-            m_projectContainer->application()
+            m_projectContainer->application<Access::Application>()
                 ->ImportXML(
                         filePath(TempDir, TempFile, objectName)
                         ,Access::acStructureOnly
@@ -147,7 +147,7 @@ bool TableDefProcessor::importFromTempDirToProject(QAxObject *object, const QStr
         // table-data
         if ( m_tableDataTargets.contains(objectName) && QFile( filePath(TempDir, DataTempFile, objectName) ).exists() )
         {
-            m_projectContainer->application()
+            m_projectContainer->application<Access::Application>()
                 ->ImportXML(
                         filePath(TempDir, DataTempFile, objectName)
                         ,Access::acAppendData
@@ -268,10 +268,10 @@ bool TableDefProcessor::desanitizeTempDir(QAxObject *object, const QString &obje
 
 bool TableDefProcessor::prepareItemCollection()
 {
-    if (!m_projectContainer->isMDB())
+    if (!projectContainer<AccessProjectContainer>()->isMDB())
         return false;
 
-    ComPtr<DAO::Database> currentDb = m_projectContainer->application()->CurrentDb();
+    ComPtr<DAO::Database> currentDb = m_projectContainer->application<Access::Application>()->CurrentDb();
     if (!currentDb.is())
         return false;
 

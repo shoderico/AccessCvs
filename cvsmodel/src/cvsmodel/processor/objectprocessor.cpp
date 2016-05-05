@@ -146,7 +146,7 @@ bool ObjectProcessor::deleteFromProject(const QString &objectName)
     // TODO: cache DoCmd object
     if (m_accessObjectType != -1)
     {
-        ComPtr<Access::DoCmd> doCmd = m_projectContainer->application()->DoCmd();
+        ComPtr<Access::DoCmd> doCmd = m_projectContainer->application<Access::Application>()->DoCmd();
         doCmd->DeleteObject( (Access::AcObjectType)m_accessObjectType, objectName );
     }
     return true;

@@ -10,7 +10,7 @@
 #include "util/comptr.h"
 #include "util/codecinfo.h"
 
-#include "cvsmodel/projectcontainer.h"
+#include "cvsmodel/accessprojectcontainer.h"
 #include "cvsmodel/setting.h"
 
 #include <windows.h>
@@ -177,9 +177,9 @@ bool ProjectFileProcessor::importFromTempDirToProject(QAxObject *object, const Q
             inTempDirOnly << propMapTempDir.value(propName);
 
 
-    if (m_projectContainer->isMDB())
+    if (projectContainer<AccessProjectContainer>()->isMDB())
     {
-        ComPtr<DAO::Database> currentDb = m_projectContainer->application()->CurrentDb();
+        ComPtr<DAO::Database> currentDb = m_projectContainer->application<Access::Application>()->CurrentDb();
         ComPtr<DAO::Properties> props = currentDb->Properties();
 
         // both exists : update
@@ -211,9 +211,9 @@ bool ProjectFileProcessor::importFromTempDirToProject(QAxObject *object, const Q
             }
         }
     }
-    else if (m_projectContainer->isADP())
+    else if (projectContainer<AccessProjectContainer>()->isADP())
     {
-        ComPtr<Access::CurrentProject> currentProject = m_projectContainer->application()->CurrentProject();
+        ComPtr<Access::CurrentProject> currentProject = m_projectContainer->application<Access::Application>()->CurrentProject();
         ComPtr<Access::AccessObjectProperties> props = currentProject->Properties();
 
         // both exists : update
@@ -269,9 +269,9 @@ void ProjectFileProcessor::loadProperties(QMap<QString, ProjectFileProcessor::Pr
     QRegularExpression regExp;
     regExp.setPattern( pattern );
 
-    if ( m_projectContainer->isMDB() )
+    if ( projectContainer<AccessProjectContainer>()->isMDB() )
     {
-        ComPtr<DAO::Database> currentDb = m_projectContainer->application()->CurrentDb();
+        ComPtr<DAO::Database> currentDb = m_projectContainer->application<Access::Application>()->CurrentDb();
         ComPtr<DAO::Properties> props = currentDb->Properties();
         for ( int i = 0 ; i < props->Count() ; ++i )
         {
@@ -283,9 +283,9 @@ void ProjectFileProcessor::loadProperties(QMap<QString, ProjectFileProcessor::Pr
             }
         }
     }
-    else if (m_projectContainer->isADP())
+    else if (projectContainer<AccessProjectContainer>()->isADP())
     {
-        ComPtr<Access::CurrentProject> currentProject = m_projectContainer->application()->CurrentProject();
+        ComPtr<Access::CurrentProject> currentProject = m_projectContainer->application<Access::Application>()->CurrentProject();
         ComPtr<Access::AccessObjectProperties> props = currentProject->Properties();
 
         for ( int i = 0 ; i < props->Count() ; ++i )

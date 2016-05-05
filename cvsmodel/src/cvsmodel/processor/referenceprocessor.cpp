@@ -38,7 +38,7 @@ bool ReferenceProcessor::exportFromProjectToTempDir(QAxObject *object, const QSt
 
     deleteAllFileFromTempDir(m_objectName);
 
-    ComPtr<Access::References> references = m_projectContainer->application()->References();
+    ComPtr<Access::References> references = m_projectContainer->application<Access::Application>()->References();
     int nCount = references->Count();
 
     // QSettings
@@ -137,7 +137,7 @@ bool ReferenceProcessor::exportFromProjectToTempDir(QAxObject *object, const QSt
                  || fullPath.endsWith( ".adp", Qt::CaseInsensitive )
                  )
             {
-                ComPtr<Access::CurrentProject> currentPoject = m_projectContainer->application()->CurrentProject();
+                ComPtr<Access::CurrentProject> currentPoject = m_projectContainer->application<Access::Application>()->CurrentProject();
                 QDir dir( currentPoject->Path() );
 
                 fullPath = dir.relativeFilePath( fullPath );
@@ -166,7 +166,7 @@ bool ReferenceProcessor::importFromTempDirToProject(QAxObject *object, const QSt
     if ( !QFile( filePath(TempDir, TempFile, m_objectName) ).exists())
         return true;
 
-    ComPtr<Access::References> references = m_projectContainer->application()->References();
+    ComPtr<Access::References> references = m_projectContainer->application<Access::Application>()->References();
 
     // clear current references
     {
@@ -338,7 +338,7 @@ bool ReferenceProcessor::importFromTempDirToProject(QAxObject *object, const QSt
                      || fullPath.endsWith( ".adp", Qt::CaseInsensitive )
                      )
                 {
-                    ComPtr<Access::CurrentProject> currentPoject = m_projectContainer->application()->CurrentProject();
+                    ComPtr<Access::CurrentProject> currentPoject = m_projectContainer->application<Access::Application>()->CurrentProject();
                     QDir dir( currentPoject->Path() );
                     fullPath = QDir::cleanPath( dir.filePath( fullPath ) ).replace(QString('/'),QString('\\'));
                 }

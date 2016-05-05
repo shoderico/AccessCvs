@@ -7,7 +7,7 @@
 #include "util/comptr.h"
 #include "util/fileutil.h"
 
-#include "cvsmodel/projectcontainer.h"
+#include "cvsmodel/accessprojectcontainer.h"
 #include "cvsmodel/setting.h"
 #include "cvsmodel/objectitem.h"
 
@@ -76,7 +76,7 @@ bool AccessObjectProcessor::exportFromProjectToTempDir(QAxObject *object, const 
 
     Q_UNUSED(object)
     {
-        m_projectContainer->application()->SaveAsText( (Access::AcObjectType)m_accessObjectType, objectName, filePath(TempDir, TempFile, objectName) );
+        m_projectContainer->application<Access::Application>()->SaveAsText( (Access::AcObjectType)m_accessObjectType, objectName, filePath(TempDir, TempFile, objectName) );
         return true;
     }
     return false;
@@ -86,7 +86,7 @@ bool AccessObjectProcessor::importFromTempDirToProject(QAxObject *object, const 
 {
     Q_UNUSED(object)
     {
-        m_projectContainer->application()->LoadFromText( (Access::AcObjectType)m_accessObjectType, objectName, filePath(TempDir, TempFile, objectName) );
+        m_projectContainer->application<Access::Application>()->LoadFromText( (Access::AcObjectType)m_accessObjectType, objectName, filePath(TempDir, TempFile, objectName) );
 
         return true;
     }
@@ -95,10 +95,10 @@ bool AccessObjectProcessor::importFromTempDirToProject(QAxObject *object, const 
 
 bool AccessObjectProcessor::prepareItemCollection()
 {
-    if (!m_projectContainer->isMDB())
+    if (!projectContainer<AccessProjectContainer>()->isMDB())
         return false;
 
-    ComPtr<DAO::Database> currentDb = m_projectContainer->application()->CurrentDb();
+    ComPtr<DAO::Database> currentDb = m_projectContainer->application<Access::Application>()->CurrentDb();
     if (!currentDb.is())
         return false;
     m_containers.set( currentDb->Containers() );

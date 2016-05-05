@@ -7,7 +7,7 @@
 #include "util/comptr.h"
 #include "util/fileutil.h"
 
-#include "cvsmodel/projectcontainer.h"
+#include "cvsmodel/accessprojectcontainer.h"
 #include "cvsmodel/objectitem.h"
 
 
@@ -98,7 +98,7 @@ bool QueryAsSqlProcessor::importFromTempDirToProject(QAxObject *object, const QS
         // create new query def
 
         // TODO: cache currentDb for performance conideration
-        ComPtr<DAO::Database> currentDb = m_projectContainer->application()->CurrentDb();
+        ComPtr<DAO::Database> currentDb = m_projectContainer->application<Access::Application>()->CurrentDb();
 
         ComPtr<DAO::QueryDef> queryDef = currentDb->CreateQueryDef( objectName, sql );
         Q_UNUSED(queryDef)
@@ -125,10 +125,10 @@ bool QueryAsSqlProcessor::desanitizeTempDir(QAxObject *object, const QString &ob
 
 bool QueryAsSqlProcessor::prepareItemCollection()
 {
-    if (!m_projectContainer->isMDB())
+    if (!projectContainer<AccessProjectContainer>()->isMDB())
         return false;
 
-    ComPtr<DAO::Database> currentDb = m_projectContainer->application()->CurrentDb();
+    ComPtr<DAO::Database> currentDb = m_projectContainer->application<Access::Application>()->CurrentDb();
     if (!currentDb.is())
         return false;
 

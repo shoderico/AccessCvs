@@ -31,7 +31,7 @@ bool QueryAsObjectProcessor::exportFromProjectToTempDir(QAxObject *object, const
 
     Q_UNUSED(object)
     {
-        m_projectContainer->application()->SaveAsText( (Access::AcObjectType)m_accessObjectType, objectName, filePath(TempDir, TempFile, objectName) );
+        m_projectContainer->application<Access::Application>()->SaveAsText( (Access::AcObjectType)m_accessObjectType, objectName, filePath(TempDir, TempFile, objectName) );
         return true;
     }
 }
@@ -40,7 +40,7 @@ bool QueryAsObjectProcessor::importFromTempDirToProject(QAxObject *object, const
 {
     Q_UNUSED(object)
     {
-        m_projectContainer->application()->LoadFromText( (Access::AcObjectType)m_accessObjectType, objectName, filePath(TempDir, TempFile, objectName) );
+        m_projectContainer->application<Access::Application>()->LoadFromText( (Access::AcObjectType)m_accessObjectType, objectName, filePath(TempDir, TempFile, objectName) );
 
         return true;
     }

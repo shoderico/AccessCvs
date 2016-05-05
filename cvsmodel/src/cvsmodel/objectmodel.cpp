@@ -240,9 +240,7 @@ bool ObjectModel::setData(const QModelIndex &index, const QVariant &value, int r
 void ObjectModel::saveSettigs()
 {
     // save settings
-    ProjectContainer setting(this);
     ObjectProcessor *processor;
-    setting.initialize(m_application);
 
     {
         QStringList tableDataTargets;
@@ -253,12 +251,12 @@ void ObjectModel::saveSettigs()
                 tableDataTargets.append( (*it)->name() );
         }
 
-        processor = setting[ Model::TableDef ];
+        processor = m_project->operator []( Model::TableDef );
         TableDefProcessor *tableDataProcessor = static_cast<TableDefProcessor*>(processor);
         tableDataProcessor->setTableDataTargets( &tableDataTargets );
     }
 
-    setting.saveSettings();
+    m_project->saveSettings();
 }
 
 void ObjectModel::setApplication(QAxObject *application)

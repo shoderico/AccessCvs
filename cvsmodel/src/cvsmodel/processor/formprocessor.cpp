@@ -6,7 +6,7 @@
 
 #include "util/comptr.h"
 
-#include "cvsmodel/projectcontainer.h"
+#include "cvsmodel/accessprojectcontainer.h"
 
 
 FormProcessor::FormProcessor(ProjectContainer *parent)
@@ -27,10 +27,10 @@ FormProcessor::FormProcessor(ProjectContainer *parent)
 
 bool FormProcessor::prepareItemCollection()
 {
-    if (!m_projectContainer->isADP() && !m_projectContainer->isMDB())
+    if (!projectContainer<AccessProjectContainer>()->isADP() && !projectContainer<AccessProjectContainer>()->isMDB())
         return AccessDesignObjectProcessor::prepareItemCollection();
 
-    ComPtr<Access::CurrentProject> currentProject = m_projectContainer->application()->CurrentProject();
+    ComPtr<Access::CurrentProject> currentProject = m_projectContainer->application<Access::Application>()->CurrentProject();
     m_objects.set( currentProject->AllForms() );
 
     return m_objects.is();
@@ -38,7 +38,7 @@ bool FormProcessor::prepareItemCollection()
 
 int FormProcessor::itemCount()
 {
-    if (!m_projectContainer->isADP() && !m_projectContainer->isMDB())
+    if (!projectContainer<AccessProjectContainer>()->isADP() && !projectContainer<AccessProjectContainer>()->isMDB())
         return AccessDesignObjectProcessor::itemCount();
 
     if (!m_objects.is())
@@ -48,7 +48,7 @@ int FormProcessor::itemCount()
 
 QAxObject *FormProcessor::itemUnsafePtr(const QVariant &index)
 {
-    if (!m_projectContainer->isADP() && !m_projectContainer->isMDB())
+    if (!projectContainer<AccessProjectContainer>()->isADP() && !projectContainer<AccessProjectContainer>()->isMDB())
         return AccessDesignObjectProcessor::itemUnsafePtr(index);
 
     if (!m_objects.is())

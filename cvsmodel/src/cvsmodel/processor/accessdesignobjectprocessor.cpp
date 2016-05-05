@@ -11,7 +11,7 @@
 #include "util/codecinfo.h"
 #include "util/fileutil.h"
 
-#include "cvsmodel/projectcontainer.h"
+#include "cvsmodel/accessprojectcontainer.h"
 #include "cvsmodel/sanitizer/accessdesignobjectsanitizer.h"
 #include "cvsmodel/setting.h"
 
@@ -270,13 +270,13 @@ void AccessDesignObjectProcessor::determineCodecForProject()
         {
             // TODO: we need some research this logic is right
 
-            if ( m_projectContainer->isADP())
+            if ( projectContainer<AccessProjectContainer>()->isADP())
             {
                 isUcs2 = false;
             }
             else
             {
-                ComPtr<Access::CurrentProject> currentProject = m_projectContainer->application()->CurrentProject();
+                ComPtr<Access::CurrentProject> currentProject = m_projectContainer->application<Access::Application>()->CurrentProject();
                 int fileFormat = currentProject->FileFormat();
                 switch (fileFormat)
                 {

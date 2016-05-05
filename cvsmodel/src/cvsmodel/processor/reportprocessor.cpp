@@ -9,7 +9,7 @@
 #include "util/codecinfo.h"
 #include "util/fileutil.h"
 
-#include "cvsmodel/projectcontainer.h"
+#include "cvsmodel/accessprojectcontainer.h"
 #include "cvsmodel/sanitizer/accessdesignobjectsanitizer.h"
 #include "cvsmodel/setting.h"
 
@@ -36,10 +36,10 @@ ReportProcessor::ReportProcessor(ProjectContainer *parent)
 
 bool ReportProcessor::prepareItemCollection()
 {
-    if (!m_projectContainer->isADP() && !m_projectContainer->isMDB())
+    if (!projectContainer<AccessProjectContainer>()->isADP() && !projectContainer<AccessProjectContainer>()->isMDB())
         return AccessDesignObjectProcessor::prepareItemCollection();
 
-    ComPtr<Access::CurrentProject> currentProject = m_projectContainer->application()->CurrentProject();
+    ComPtr<Access::CurrentProject> currentProject = m_projectContainer->application<Access::Application>()->CurrentProject();
     m_objects.set( currentProject->AllReports() );
 
     return m_objects.is();
@@ -47,7 +47,7 @@ bool ReportProcessor::prepareItemCollection()
 
 int ReportProcessor::itemCount()
 {
-    if (!m_projectContainer->isADP() && !m_projectContainer->isMDB())
+    if (!projectContainer<AccessProjectContainer>()->isADP() && !projectContainer<AccessProjectContainer>()->isMDB())
         return AccessDesignObjectProcessor::itemCount();
 
     if (!m_objects.is())
@@ -57,7 +57,7 @@ int ReportProcessor::itemCount()
 
 QAxObject *ReportProcessor::itemUnsafePtr(const QVariant &index)
 {
-    if (!m_projectContainer->isADP() && !m_projectContainer->isMDB())
+    if (!projectContainer<AccessProjectContainer>()->isADP() && !projectContainer<AccessProjectContainer>()->isMDB())
         return AccessDesignObjectProcessor::itemUnsafePtr(index);
 
     if (!m_objects.is())
@@ -194,9 +194,9 @@ bool ReportProcessor::afterImportFromTempDirToProject(QAxObject *object, const Q
         dmTemp.dmColor       = element->value("dmColor")        .toString().toShort();
 
         // open target report in design view
-        ComPtr<Access::DoCmd> doCmd = m_projectContainer->application()->DoCmd();
+        ComPtr<Access::DoCmd> doCmd = m_projectContainer->application<Access::Application>()->DoCmd();
         doCmd->OpenReport( objectName, Access::acViewDesign );
-        ComPtr<Access::Reports> reports = m_projectContainer->application()->Reports();
+        ComPtr<Access::Reports> reports = m_projectContainer->application<Access::Application>()->Reports();
         ComPtr<Access::Report> report = reports->Item( objectName );
 
         // retreive PrtDevMode
