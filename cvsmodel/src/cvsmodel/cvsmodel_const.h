@@ -18,6 +18,7 @@ enum SelectObjectType
     ReferenceObjectType = 0x40,
     ProjectFileType     = 0x80,
     VBProjectType       = 0x100,
+    OdbcTableType       = 0x200,
     AllObjectTypes
         = TableDefObjectType
         | QueryObjectType
@@ -28,6 +29,7 @@ enum SelectObjectType
         | ReferenceObjectType
         | ProjectFileType
         | VBProjectType
+        | OdbcTableType
         ,
     RelationObjectType = -1, // unused
 };
@@ -49,6 +51,7 @@ enum ObjectType
     Reference = ReferenceObjectType,
     ProjectFile = ProjectFileType,
     VBProject = VBProjectType,
+    OdbcTable = OdbcTableType,
 };
 
 
