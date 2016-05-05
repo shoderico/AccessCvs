@@ -7,7 +7,7 @@ class UpdateItemsDifferenceByFileTimeCommand : public CommandBase
 {
     Q_OBJECT
 public:
-    explicit UpdateItemsDifferenceByFileTimeCommand(QAxObject *application, QList<ObjectItem*> *items, QObject *parent = 0);
+    explicit UpdateItemsDifferenceByFileTimeCommand(ProjectContainer *project, QAxObject *application, QList<ObjectItem*> *items, QObject *parent = 0);
 
     virtual void execute(ObjectItemMap *allTargets);
 };

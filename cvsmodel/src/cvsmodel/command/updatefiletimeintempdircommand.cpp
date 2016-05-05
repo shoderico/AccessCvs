@@ -11,8 +11,8 @@
 
 #include <QtConcurrent>
 
-UpdateFileTimeInTempDirCommand::UpdateFileTimeInTempDirCommand(const QDateTime &fileTime, const int differenceTypes, QAxObject *application, QObject *parent)
-    : CommandBase(application, parent)
+UpdateFileTimeInTempDirCommand::UpdateFileTimeInTempDirCommand(const QDateTime &fileTime, const int differenceTypes, ProjectContainer *project, QAxObject *application, QObject *parent)
+    : CommandBase(project, application, parent)
     , m_fileTime(fileTime)
     , m_differenceTypes(differenceTypes)
 {
@@ -53,13 +53,11 @@ void UpdateFileTimeInTempDirCommand::execute(ObjectItemMap *allTargets)
 {
     // non-blocking
     ProgressNotifier mainProgress(Model::UpdateFileTimeInTempDirProcess, this);
-    ProjectContainer setting(this);
     ObjectProcessor *processor;
-    setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
-        processor = setting[ objectType ];
+        processor = m_project->operator []( objectType );
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
         //----------------------------------------------------------------------------------------
         // synchronous call

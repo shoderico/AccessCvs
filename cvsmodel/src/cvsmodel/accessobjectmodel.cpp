@@ -3,6 +3,8 @@
 #include "accesslib/accesslib.h"
 #include "util/comptr.h"
 
+#include "projectcontainer.h"
+
 #include <QDebug>
 
 AccessObjectModel::AccessObjectModel(QObject *parent)
@@ -17,7 +19,9 @@ AccessObjectModel::AccessObjectModel(QObject *parent)
                 << Model::Module
                    ;
 
-    init(objectTypes);
+    ProjectContainer *project = new ProjectContainer(this);
+
+    init(objectTypes, project);
 }
 
 void AccessObjectModel::setApplication(QAxObject *application)

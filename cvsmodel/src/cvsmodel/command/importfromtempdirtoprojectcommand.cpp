@@ -10,8 +10,8 @@
 
 #include <QAxObject>
 
-ImportFromTempDirToProjectCommand::ImportFromTempDirToProjectCommand(QAxObject *application, QObject *parent)
-    : CommandBase(application, parent)
+ImportFromTempDirToProjectCommand::ImportFromTempDirToProjectCommand(ProjectContainer *project, QAxObject *application, QObject *parent)
+    : CommandBase(project, application, parent)
 {
 }
 
@@ -20,13 +20,11 @@ void ImportFromTempDirToProjectCommand::execute(ObjectItemMap *allTargets)
     // BLOCKING, cannot be async
 
     ProgressNotifier mainProgress(Model::ImportFromTempDirToProjectProcess, this);
-    ProjectContainer setting(this);
     ObjectProcessor *processor;
-    setting.initialize(m_application);
 
-    foreach (const Model::ObjectType &objectType, setting.objectTypes())
+    foreach (const Model::ObjectType &objectType, m_project->objectTypes())
     {
-        processor = setting[ objectType ];
+        processor = m_project->operator []( objectType );
 
         if (!processor->prepareItemCollection())
             continue;

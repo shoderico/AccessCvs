@@ -12,8 +12,8 @@
 
 #include <QtConcurrent>
 
-UpdateItemsInSourceDirCommand::UpdateItemsInSourceDirCommand(const int existence, QAxObject *application, QList<ObjectItem *> *items, QObject *parent)
-    : CommandBase(application, items, parent)
+UpdateItemsInSourceDirCommand::UpdateItemsInSourceDirCommand(const int existence, ProjectContainer *project, QAxObject *application, QList<ObjectItem *> *items, QObject *parent)
+    : CommandBase(project, application, items, parent)
     , m_existence(existence)
 {
 

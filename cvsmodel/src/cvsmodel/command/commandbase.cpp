@@ -2,21 +2,24 @@
 
 #include "util/datachangedhelper.h"
 
-CommandBase::CommandBase(QObject *parent) : QObject(parent)
+CommandBase::CommandBase(ProjectContainer *project, QObject *parent) : QObject(parent)
+  , m_project(project)
   , m_application(0)
   , m_items(0)
 {
     assign();
 }
 
-CommandBase::CommandBase(QAxObject *application, QObject *parent) : QObject(parent)
+CommandBase::CommandBase(ProjectContainer *project, QAxObject *application, QObject *parent) : QObject(parent)
+  , m_project(project)
   , m_application(application)
   , m_items(0)
 {
     assign();
 }
 
-CommandBase::CommandBase(QAxObject *application, QList<ObjectItem *> *items, QObject *parent) : QObject(parent)
+CommandBase::CommandBase(ProjectContainer *project, QAxObject *application, QList<ObjectItem *> *items, QObject *parent) : QObject(parent)
+  , m_project(project)
   , m_application(application)
   , m_items(items)
 {

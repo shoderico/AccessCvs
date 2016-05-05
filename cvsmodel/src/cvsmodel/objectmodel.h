@@ -13,13 +13,15 @@
 //}
 class QAxObject;
 
+class ProjectContainer;
+
 
 class CVSMODEL_SHARED_EXPORT ObjectModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
     ObjectModel(QObject * parent = 0);
-    void init(const QList<Model::ObjectType> &objectTypes);
+    void init(const QList<Model::ObjectType> &objectTypes, ProjectContainer *project);
 
     //----------------------------------------------------------------------------------------------------------------------
     // QAbstractItemModel overrides
@@ -100,6 +102,7 @@ private:
     QList<ObjectItem*> m_items;
     ObjectItemMap* m_mapItems;
     QList<Model::ObjectType> m_objectTypes;
+    ProjectContainer *m_project;
 
     void mergeItemProperties(ObjectItem* itemSrc, ObjectItem* itemDst);
 };

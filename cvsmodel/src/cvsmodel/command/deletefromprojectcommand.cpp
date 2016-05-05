@@ -7,8 +7,8 @@
 #include "cvsmodel/objectitemmap.h"
 #include "cvsmodel/cvsmodel_const.h"
 
-DeleteFromProjectCommand::DeleteFromProjectCommand(QAxObject *application, QObject *parent)
-    : CommandBase(application, parent)
+DeleteFromProjectCommand::DeleteFromProjectCommand(ProjectContainer *project, QAxObject *application, QObject *parent)
+    : CommandBase(project, application, parent)
 {
 }
 
@@ -17,13 +17,11 @@ void DeleteFromProjectCommand::execute(ObjectItemMap *allTargets)
     // BLOCKING, cannot be async
 
     ProgressNotifier mainProgress(Model::DeleteFromProjectProcess, this);
-    ProjectContainer setting(this);
     ObjectProcessor *processor;
-    setting.initialize(m_application);
 
-    foreach (const Model::ObjectType &objectType, setting.objectTypes())
+    foreach (const Model::ObjectType &objectType, m_project->objectTypes())
     {
-        processor = setting[ objectType ];
+        processor = m_project->operator []( objectType );
 
         QMap<QString, ObjectItem*> targets = allTargets->value( processor->objectType() );
         QStringList objectNames = targets.keys();

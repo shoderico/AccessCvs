@@ -12,8 +12,8 @@
 
 #include <QtConcurrent>
 
-UpdateItemsDifferenceCommand::UpdateItemsDifferenceCommand(const int difference, QAxObject *application, QList<ObjectItem *> *items, QObject *parent)
-    : CommandBase(application, items, parent)
+UpdateItemsDifferenceCommand::UpdateItemsDifferenceCommand(const int difference, ProjectContainer *project, QAxObject *application, QList<ObjectItem *> *items, QObject *parent)
+    : CommandBase(project, application, items, parent)
     , m_difference(difference)
 {
 

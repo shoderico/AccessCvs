@@ -13,8 +13,8 @@
 #include <QtConcurrent>
 //#include <QAxObject>
 
-LoadItemsFromSourceDirCommand::LoadItemsFromSourceDirCommand(QAxObject *application, QList<ObjectItem *> *items, QObject *parent)
-    : CommandBase(application, items, parent)
+LoadItemsFromSourceDirCommand::LoadItemsFromSourceDirCommand(ProjectContainer *project, QAxObject *application, QList<ObjectItem *> *items, QObject *parent)
+    : CommandBase(project, application, items, parent)
 {
 
 }
@@ -23,13 +23,11 @@ void LoadItemsFromSourceDirCommand::execute(ObjectItemMap *allTargets)
 {
     // FIXME: non-blocking, can be async ? require append ?
     ProgressNotifier mainProgress(Model::LoadItemFromSourceDirProcess, this);
-    ProjectContainer setting(this);
     ObjectProcessor *processor;
-    setting.initialize(m_application);
 
-    foreach (const Model::ObjectType &objectType, setting.objectTypes() )
+    foreach (const Model::ObjectType &objectType, m_project->objectTypes() )
     {
-        processor = setting[ objectType ];
+        processor = m_project->operator []( objectType );
 
         QDir objectDir( processor->sourceObjectPath() );
         if (objectDir.exists())

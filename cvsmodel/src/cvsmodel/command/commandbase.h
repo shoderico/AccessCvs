@@ -8,14 +8,15 @@ class QAxObject;
 class ObjectItem;
 class ObjectItemMap;
 class DataChangedHelper;
+class ProjectContainer;
 
 class CommandBase : public QObject
 {
     Q_OBJECT
 public:
-    explicit CommandBase(QObject *parent = 0);
-    explicit CommandBase(QAxObject *application, QObject *parent = 0);
-    explicit CommandBase(QAxObject *application, QList<ObjectItem*> *items, QObject *parent = 0);
+    explicit CommandBase(ProjectContainer *project, QObject *parent = 0);
+    explicit CommandBase(ProjectContainer *project, QAxObject *application, QObject *parent = 0);
+    explicit CommandBase(ProjectContainer *project, QAxObject *application, QList<ObjectItem*> *items, QObject *parent = 0);
 
     void setApplication(QAxObject *application);
     void setItems(QList<ObjectItem*> *items);
@@ -34,6 +35,7 @@ private:
     void assign();
 
 protected:
+    ProjectContainer *m_project;
     QAxObject *m_application;
     QList<ObjectItem*> *m_items;
 };

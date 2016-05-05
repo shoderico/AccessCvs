@@ -7,7 +7,7 @@ class DeleteFromProjectCommand : public CommandBase
 {
     Q_OBJECT
 public:
-    explicit DeleteFromProjectCommand(QAxObject *application, QObject *parent = 0);
+    explicit DeleteFromProjectCommand(ProjectContainer *project, QAxObject *application, QObject *parent = 0);
 
     virtual void execute(ObjectItemMap *allTargets);
 };

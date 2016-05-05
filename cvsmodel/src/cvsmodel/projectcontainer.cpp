@@ -40,7 +40,6 @@ ProjectContainer::ProjectContainer(QObject *parent)
 
 ProjectContainer::~ProjectContainer()
 {
-    QList<Model::ObjectType> objectTypes;
     foreach ( Model::ObjectType objectType, m_objectProcessors.keys() )
     {
         delete m_objectProcessors[ objectType ];

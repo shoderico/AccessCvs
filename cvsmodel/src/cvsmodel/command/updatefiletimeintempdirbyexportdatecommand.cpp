@@ -12,8 +12,8 @@
 
 #include <QtConcurrent>
 
-UpdateFileTimeInTempDirByExportDateCommand::UpdateFileTimeInTempDirByExportDateCommand(const int differenceTypes, QAxObject *application, QList<ObjectItem *> *items, QObject *parent)
-    : CommandBase(application, items, parent)
+UpdateFileTimeInTempDirByExportDateCommand::UpdateFileTimeInTempDirByExportDateCommand(const int differenceTypes, ProjectContainer *project, QAxObject *application, QList<ObjectItem *> *items, QObject *parent)
+    : CommandBase(project, application, items, parent)
     , m_differenceTypes(differenceTypes)
 {
 
@@ -60,13 +60,11 @@ void UpdateFileTimeInTempDirByExportDateCommand::execute(ObjectItemMap *allTarge
     // non-blocking
     DataChangedHelper helper( m_items->count() );
     ProgressNotifier mainProgress(Model::UpdateFileTimeInTempDirByExportDateProcess, this);
-    ProjectContainer setting(this);
     ObjectProcessor *processor;
-    setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
-        processor = setting[ objectType ];
+        processor = m_project->operator []( objectType );
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
 
 

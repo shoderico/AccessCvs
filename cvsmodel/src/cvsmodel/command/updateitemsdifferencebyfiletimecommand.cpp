@@ -12,8 +12,8 @@
 
 #include <QtConcurrent>
 
-UpdateItemsDifferenceByFileTimeCommand::UpdateItemsDifferenceByFileTimeCommand(QAxObject *application, QList<ObjectItem *> *items, QObject *parent)
-    : CommandBase(application, items, parent)
+UpdateItemsDifferenceByFileTimeCommand::UpdateItemsDifferenceByFileTimeCommand(ProjectContainer *project, QAxObject *application, QList<ObjectItem *> *items, QObject *parent)
+    : CommandBase(project, application, items, parent)
 {
 
 }

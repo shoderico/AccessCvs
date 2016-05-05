@@ -14,8 +14,8 @@
 
 #include <QtConcurrent>
 
-UpdateItemsCreateUpdateDateFromProjectCommand::UpdateItemsCreateUpdateDateFromProjectCommand(QAxObject *application, QList<ObjectItem *> *items, QObject *parent)
-    : CommandBase(application, items, parent)
+UpdateItemsCreateUpdateDateFromProjectCommand::UpdateItemsCreateUpdateDateFromProjectCommand(ProjectContainer *project, QAxObject *application, QList<ObjectItem *> *items, QObject *parent)
+    : CommandBase(project, application, items, parent)
 {
 
 }
@@ -25,13 +25,11 @@ void UpdateItemsCreateUpdateDateFromProjectCommand::execute(ObjectItemMap *allTa
     // BLOCKING, cannot be asynch
     DataChangedHelper helper( m_items->count() );
     ProgressNotifier mainProgress(Model::UpdateItemsCreateUpdateDateFromProjectProcess, this);
-    ProjectContainer setting(this);
     ObjectProcessor *processor;
-    setting.initialize(m_application);
 
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
-        processor = setting[ objectType ];
+        processor = m_project->operator []( objectType );
         if (!processor->prepareItemCollection())
             continue;
 

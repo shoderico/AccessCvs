@@ -13,8 +13,8 @@
 #include <QtConcurrent>
 #include <QAxObject>
 
-LoadItemsFromProjectCommand::LoadItemsFromProjectCommand(QAxObject *application, QList<ObjectItem *> *items, QObject *parent)
-    : CommandBase(application, items, parent)
+LoadItemsFromProjectCommand::LoadItemsFromProjectCommand(ProjectContainer *project, QAxObject *application, QList<ObjectItem *> *items, QObject *parent)
+    : CommandBase(project, application, items, parent)
 {
 
 }
@@ -23,13 +23,11 @@ void LoadItemsFromProjectCommand::execute(ObjectItemMap *allTargets)
 {
     // BLOCKING, cannot be async
     ProgressNotifier mainProgress(Model::LoadItemFromProjectProcess, this);
-    ProjectContainer setting(this);
     ObjectProcessor *processor;
-    setting.initialize(m_application);
 
-    foreach (const Model::ObjectType &objectType, setting.objectTypes() )
+    foreach (const Model::ObjectType &objectType, m_project->objectTypes() )
     {
-        processor = setting[ objectType ];
+        processor = m_project->operator []( objectType );
 
         if ( !processor->prepareItemCollection() )
             continue;

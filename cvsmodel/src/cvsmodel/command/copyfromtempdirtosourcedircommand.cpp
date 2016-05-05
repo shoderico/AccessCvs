@@ -9,8 +9,8 @@
 
 #include <QtConcurrent>
 
-CopyFromTempDirToSourceDirCommand::CopyFromTempDirToSourceDirCommand(QAxObject *application, QObject *parent)
-    : CommandBase(application, parent)
+CopyFromTempDirToSourceDirCommand::CopyFromTempDirToSourceDirCommand(ProjectContainer *project, QAxObject *application, QObject *parent)
+    : CommandBase(project, application, parent)
 {
 }
 
@@ -35,13 +35,11 @@ void CopyFromTempDirToSourceDirCommand::execute(ObjectItemMap *allTargets)
 {
     // non-blocking
     ProgressNotifier mainProgress(Model::CopyFromTempDirToSourceDirProcess, this);
-    ProjectContainer setting(this);
     ObjectProcessor *processor;
-    setting.initialize(m_application);
 
-    foreach (const Model::ObjectType &objectType, setting.objectTypes())
+    foreach (const Model::ObjectType &objectType, m_project->objectTypes())
     {
-        processor = setting[ objectType ];
+        processor = m_project->operator []( objectType );
         processor->mkdirSourceObjectPath();
 
         QMap<QString, ObjectItem*> targets = allTargets->value( processor->objectType() );

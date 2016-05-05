@@ -7,7 +7,7 @@ class UpdateFileTimeInTempDirByExportDateCommand : public CommandBase
 {
     Q_OBJECT
 public:
-    explicit UpdateFileTimeInTempDirByExportDateCommand(const int differenceTypes, QAxObject *application, QList<ObjectItem*> *items, QObject *parent = 0);
+    explicit UpdateFileTimeInTempDirByExportDateCommand(const int differenceTypes, ProjectContainer *project, QAxObject *application, QList<ObjectItem*> *items, QObject *parent = 0);
 
     virtual void execute(ObjectItemMap *allTargets);
 

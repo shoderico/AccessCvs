@@ -7,7 +7,7 @@ class CopyFromSourceDirToTempDirCommand : public CommandBase
 {
     Q_OBJECT
 public:
-    explicit CopyFromSourceDirToTempDirCommand(QAxObject *application, QObject *parent = 0);
+    explicit CopyFromSourceDirToTempDirCommand(ProjectContainer *project, QAxObject *application, QObject *parent = 0);
 
     virtual void execute(ObjectItemMap *allTargets);
 };

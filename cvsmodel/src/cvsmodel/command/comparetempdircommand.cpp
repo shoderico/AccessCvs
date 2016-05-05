@@ -12,8 +12,8 @@
 
 #include <QtConcurrent>
 
-CompareTempDirCommand::CompareTempDirCommand(QAxObject *application, QList<ObjectItem*> *items, QObject *parent)
-    : CommandBase(application, items, parent)
+CompareTempDirCommand::CompareTempDirCommand(ProjectContainer *project, QAxObject *application, QList<ObjectItem*> *items, QObject *parent)
+    : CommandBase(project, application, items, parent)
 {
 }
 
@@ -53,13 +53,11 @@ void CompareTempDirCommand::execute(ObjectItemMap *allTargets)
     // non-blocking
     DataChangedHelper helper( m_items->count() );
     ProgressNotifier mainProgress(Model::CompareTempDirProcess, this);
-    ProjectContainer setting(this);
     ObjectProcessor *processor;
-    setting.initialize(m_application);
 
-    foreach (const Model::ObjectType &objectType, setting.objectTypes())
+    foreach (const Model::ObjectType &objectType, m_project->objectTypes())
     {
-        processor = setting[ objectType ];
+        processor = m_project->operator []( objectType );
 
 
         //----------------------------------------------------------------------------------------
