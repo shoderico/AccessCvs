@@ -266,77 +266,6 @@ void TableDefProcessor::loadSettings(QSettings *settings)
 {
     Q_UNUSED(settings)
 
-    // QSettings
-    /*
-    // FIXME: groupName, keyName must be class level
-    settings->beginGroup("TableDef");
-    {
-        m_tableDataTargets.clear();
-        int size = settings->beginReadArray("TableData");
-        for ( int i = 0 ; i < size ; ++i )
-        {
-            settings->setArrayIndex(i);
-            QVariant tableName = settings->value("TableName");
-            if (tableName.isValid())
-                m_tableDataTargets.append( tableName.toString() );
-        }
-        settings->endArray();
-    }
-    settings->endGroup();
-    */
-
-    // Implement Own
-    /*
-    QString settingsFilePath = m_projectSetting->sourcePath() + "\\" + "TableDef.settings";
-
-    m_tableDataTargets.clear();
-
-    QFile file(settingsFilePath);
-    if (!file.exists())
-        return;
-
-    file.open(QIODevice::ReadOnly);
-    QTextStream stream( &file );
-    stream.setGenerateByteOrderMark( m_codecForCvs->bom() );
-    stream.setCodec( m_codecForCvs->codec() );
-
-    QRegularExpression regExpBegin;
-    regExpBegin.setPattern("^\\s*Begin (.*)$");
-    QRegularExpression regExpEnd;
-    regExpEnd.setPattern("^\\s*End$");
-    QRegularExpression regExpKeyValue;
-    regExpKeyValue.setPattern("^\\s*([^=]+) =(.*)$");
-
-    while (!stream.atEnd())
-    {
-        QString line = stream.readLine();
-        QRegularExpressionMatch matchBegin = regExpBegin.match(line);
-        if (matchBegin.hasMatch())
-        {
-            QString elementName = matchBegin.captured(1);
-            if (elementName == "TableData")
-            {
-                while (!stream.atEnd())
-                {
-                    line = stream.readLine();
-
-                    if (regExpEnd.match(line).hasMatch())
-                        break;
-
-                    QRegularExpressionMatch matchKeyValue = regExpKeyValue.match(line);
-                    if (matchKeyValue.hasMatch())
-                    {
-                        QString value = matchKeyValue.captured(2);
-                        m_tableDataTargets.append(value);
-                    }
-                }
-            }
-        }
-    }
-
-    file.close();
-    */
-
     // Setting
     Setting setting(m_projectContainer->sourcePath() + "\\" + "TableDef.settings", m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());
     if (setting.load())
@@ -359,52 +288,6 @@ void TableDefProcessor::loadSettings(QSettings *settings)
 void TableDefProcessor::saveSettings(QSettings *settings)
 {
     Q_UNUSED(settings)
-
-    // QSettings
-    /*
-    // FIXME: groupName, keyName must be class level
-    settings->beginGroup("TableDef");
-    {
-        settings->beginWriteArray("TableData");
-        int i = 0;
-        for ( QStringList::iterator it = m_tableDataTargets.begin() ; it != m_tableDataTargets.end() ; ++it )
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("TableName", (*it) );
-            ++i;
-        }
-        settings->endArray();
-    }
-    settings->endGroup();
-    */
-
-    // Implement Own
-    /*
-    QString settingsFilePath = m_projectSetting->sourcePath() + "\\" + "TableDef.settings";
-
-    if (QFile(settingsFilePath).exists())
-        QFile(settingsFilePath).remove();
-
-    QFile file(settingsFilePath);
-    file.open(QIODevice::WriteOnly);
-    QTextStream stream( &file );
-    stream.setGenerateByteOrderMark( m_codecForCvs->bom() );
-    stream.setCodec( m_codecForCvs->codec() );
-    QString lineEnd = m_codecForCvs->lineEnd();
-
-    stream << "Begin TableData" << lineEnd;
-    {
-        QStringList tableNames = m_tableDataTargets;
-        tableNames.sort(Qt::CaseSensitive);
-        for ( QStringList::iterator it = tableNames.begin() ; it != tableNames.end() ; ++it )
-        {
-            stream << "    " << "TableName" << " =" << (*it) << lineEnd;
-        }
-    }
-    stream << "End" << lineEnd;
-
-    file.close();
-    */
 
     // Setting
     Setting setting(m_projectContainer->sourcePath() + "\\" + "TableDef.settings", m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());
