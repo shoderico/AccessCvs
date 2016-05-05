@@ -4,9 +4,13 @@
 
 #include "util/comptr.h"
 #include "util/fileutil.h"
+#include "util/codecinfo.h"
 
 #include "cvsmodel/accessprojectcontainer.h"
+#include "cvsmodel/setting.h"
 
+#include <QUuid>
+#include <windows.h>
 
 OdbcTableProcessor::OdbcTableProcessor(ProjectContainer *parent)
     : TableObjectProcessor(parent)
@@ -47,11 +51,13 @@ bool OdbcTableProcessor::exportFromProjectToTempDir(QAxObject *object, const QSt
     DAO::TableDef *tableDef = dynamic_cast<DAO::TableDef*>(object);
     if (tableDef)
     {
-        // table-def
-        // TODO : export property
-        //  Connection
-        //  SourceTableName
-        //  Attributes
+        // Setting
+        Setting setting( filePath(TempDir, TempFile, objectName), m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd() );
+        SettingElement *element = setting.append("TableDef");
+        element->append("Connect",          tableDef->Connect() );
+        element->append("SourceTableName",  tableDef->SourceTableName() );
+        element->append("Attributes",       tableDef->Attributes() );
+        setting.save();
 
         return true;
     }
@@ -68,11 +74,34 @@ bool OdbcTableProcessor::importFromTempDirToProject(QAxObject *object, const QSt
     }
 
     {
-        // table-def
-        // TODO : create table-def from property
-        //  Connection
-        //  SourceTableName
-        //  Attributes
+        // Setting
+        Setting setting( filePath(TempDir, TempFile, objectName), m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd() );
+        if (!setting.load())
+            return false;
+        SettingElement *element = setting.at(0)->toElement();
+        Q_ASSERT(element != NULL);
+        Q_ASSERT(element->name() == "TableDef");
+
+        QString connect         = element->value("Connect").toString();
+        QString sourceTableName = element->value("SourceTableName").toString();
+        int attributes          = element->value("Attributes", 0).toInt();
+
+
+
+        ComPtr<DAO::Database> currentDb = m_projectContainer->application<Access::Application>()->CurrentDb();
+        ComPtr<DAO::TableDefs> tableDefs = currentDb->TableDefs();
+
+        DAO::TableDef *tableDef = currentDb->CreateTableDef( objectName, attributes );
+        tableDef->SetConnect( connect );
+        tableDef->SetSourceTableName( sourceTableName );
+
+        IDispatch *idisp = 0;
+        tableDef->queryInterface( QUuid(IID_IDispatch), (void**)&idisp);
+        if (idisp)
+        {
+            tableDefs->Append( idisp );
+            idisp->Release();
+        }
 
         return true;
     }
