@@ -69,9 +69,6 @@ private slots:
     void setSelectObjectType(int objectTypes);
 
 private:
-//    int checkBoxToObjectType(QCheckBox *checkBox) const;
-
-private:
     Ui::MainDialog *ui;
     ObjectModel *m_model;
     ObjectProxyModel *m_proxyModel;
