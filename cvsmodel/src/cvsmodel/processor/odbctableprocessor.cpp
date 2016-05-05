@@ -22,7 +22,7 @@ OdbcTableProcessor::OdbcTableProcessor(ProjectContainer *parent)
     m_accessObjectType    = Access::acTable;
     m_objectPathName      = "tabledefs";
     m_containerName       = "";
-    m_iconPath            = ":/images/table.png";
+    m_iconPath            = ":/images/table_link.png";
 
     m_tempFileExtension   = "tmp";
     m_designFileExtension = "odbc";
