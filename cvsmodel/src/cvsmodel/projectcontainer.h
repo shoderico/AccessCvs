@@ -40,15 +40,15 @@ public:
 
     QList<Model::ObjectType> objectTypes() const;
 
-    void loadSettings();
-    void saveSettings();
+    void loadSetting();
+    void saveSetting();
 
 public slots:
     void exception(int code, const QString & source, const QString & desc, const QString & help);
 
 private:
-    QSettings *createSettings();
-    QString settingsFilePath() const;
+    QSettings *createSetting();
+    QString settingFilePath() const;
 
 private:
     QAxObject *m_application;
@@ -63,11 +63,11 @@ protected:
 
     QString m_sourcePathName;
     QString m_tempPathName;
-    QString m_settingsFileName;
+    QString m_settingFileName;
 
     QString m_DefaultSourcePathName;
     QString m_DefaultTempPathName;
-    QString m_DefaultSettingsFileName;
+    QString m_DefaultSettingFileName;
 };
 
 #endif // PROJECTCONTAINER_H

@@ -32,8 +32,8 @@ public:
     virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
     virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
 
-    virtual void loadSettings(QSettings *settings);
-    virtual void saveSettings(QSettings *settings);
+    virtual void loadSetting(QSettings *settings);
+    virtual void saveSetting(QSettings *settings);
 
     void setTableDataTargets(QStringList *newTargets);
 

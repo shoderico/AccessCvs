@@ -256,7 +256,7 @@ void ObjectModel::saveSettigs()
         tableDataProcessor->setTableDataTargets( &tableDataTargets );
     }
 
-    m_project->saveSettings();
+    m_project->saveSetting();
 }
 
 void ObjectModel::setApplication(QAxObject *application)

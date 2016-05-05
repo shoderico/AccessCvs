@@ -13,7 +13,7 @@ ProjectContainer::ProjectContainer(QObject *parent)
 {
     m_DefaultSourcePathName   = "source";
     m_DefaultTempPathName     = ".officecvs";
-    m_DefaultSettingsFileName = "Project.settings";
+    m_DefaultSettingFileName = "Project.settings";
 }
 
 ProjectContainer::~ProjectContainer()
@@ -31,7 +31,7 @@ void ProjectContainer::initialize(QAxObject *application)
 
     m_sourcePathName   = "";
     m_tempPathName     = "";
-    m_settingsFileName = "";
+    m_settingFileName = "";
     m_projectPath      = "";
 
     if (isProjectOpened())
@@ -53,7 +53,7 @@ void ProjectContainer::initialize(QAxObject *application)
             config->setIniCodec( "UTF-8" );
             m_sourcePathName   = config->value( "SourcePathName",  m_DefaultSourcePathName   ).toString();
             m_tempPathName     = config->value( "TempPathName",    m_DefaultTempPathName     ).toString();
-            m_settingsFileName = config->value( "SettingFileName", m_DefaultSettingsFileName ).toString();
+            m_settingFileName  = config->value( "SettingFileName", m_DefaultSettingFileName  ).toString();
             m_projectPath      = QDir::cleanPath( QDir( m_currentProjectPath ).filePath( config->value( "ProjectPath", "." ).toString() ) ).replace(QString('/'),QString('\\'));
         }
         else
@@ -61,16 +61,16 @@ void ProjectContainer::initialize(QAxObject *application)
             qDebug() << " projectConfigFilePath NOT exists ";
             m_sourcePathName   = m_DefaultSourcePathName;
             m_tempPathName     = m_DefaultTempPathName;
-            m_settingsFileName = m_DefaultSettingsFileName;
+            m_settingFileName  = m_DefaultSettingFileName;
             m_projectPath      = m_currentProjectPath;
         }
 
         qDebug() << "m_projectPath     : " << m_projectPath;
         qDebug() << "m_sourcePathName  : " << m_sourcePathName;
         qDebug() << "m_tempPathName    : " << m_tempPathName;
-        qDebug() << "m_settingFileName : " << m_settingsFileName;
+        qDebug() << "m_settingFileName : " << m_settingFileName;
 
-        loadSettings();
+        loadSetting();
     }
 }
 
@@ -99,9 +99,9 @@ QString ProjectContainer::tempPath() const
     return m_projectPath + "\\" + m_tempPathName;
 }
 
-QString ProjectContainer::settingsFilePath() const
+QString ProjectContainer::settingFilePath() const
 {
-    return sourcePath() + "\\" + m_settingsFileName;
+    return sourcePath() + "\\" + m_settingFileName;
 }
 
 ObjectProcessor *ProjectContainer::operator[](Model::ObjectType objectType)
@@ -119,24 +119,24 @@ QList<Model::ObjectType> ProjectContainer::objectTypes() const
     return m_objectProcessors.keys();
 }
 
-void ProjectContainer::loadSettings()
+void ProjectContainer::loadSetting()
 {
-    QSettings *settings = createSettings();
+    QSettings *settings = createSetting();
     foreach ( Model::ObjectType objectType, m_objectProcessors.keys() )
     {
-        m_objectProcessors[ objectType ]->loadSettings( settings );
+        m_objectProcessors[ objectType ]->loadSetting( settings );
     }
     delete settings;
 }
 
 
-void ProjectContainer::saveSettings()
+void ProjectContainer::saveSetting()
 {
-    FileUtil::deleteFile( settingsFilePath() );
-    QSettings *settings = createSettings();
+    FileUtil::deleteFile( settingFilePath() );
+    QSettings *settings = createSetting();
     foreach ( Model::ObjectType objectType, m_objectProcessors.keys() )
     {
-        m_objectProcessors[ objectType ]->saveSettings( settings );
+        m_objectProcessors[ objectType ]->saveSetting( settings );
     }
     delete settings;
 }
@@ -148,10 +148,10 @@ void ProjectContainer::exception(int code, const QString &source, const QString 
     qDebug() << code << source << desc << help;
 }
 
-QSettings *ProjectContainer::createSettings()
+QSettings *ProjectContainer::createSetting()
 {
     QDir(sourcePath()).mkpath(".");
-    QSettings *settings = new QSettings( settingsFilePath(), QSettings::IniFormat, this);
+    QSettings *settings = new QSettings( settingFilePath(), QSettings::IniFormat, this);
     settings->setIniCodec( "UTF-8" );
     return settings;
 }

@@ -262,7 +262,7 @@ bool TableDefProcessor::desanitizeTempDir(QAxObject *object, const QString &obje
     return true;
 }
 
-void TableDefProcessor::loadSettings(QSettings *settings)
+void TableDefProcessor::loadSetting(QSettings *settings)
 {
     Q_UNUSED(settings)
 
@@ -285,7 +285,7 @@ void TableDefProcessor::loadSettings(QSettings *settings)
     }
 }
 
-void TableDefProcessor::saveSettings(QSettings *settings)
+void TableDefProcessor::saveSetting(QSettings *settings)
 {
     Q_UNUSED(settings)
 

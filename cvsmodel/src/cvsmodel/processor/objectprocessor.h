@@ -63,8 +63,8 @@ public:
 
     void updateFileTimeInTempDir(const QString &objectName, const QDateTime &fileTime);
 
-    virtual void loadSettings(QSettings *settings) { Q_UNUSED(settings) }
-    virtual void saveSettings(QSettings *settings) { Q_UNUSED(settings) }
+    virtual void loadSetting(QSettings *settings) { Q_UNUSED(settings) }
+    virtual void saveSetting(QSettings *settings) { Q_UNUSED(settings) }
 
     virtual void determineCodecForProject();
 protected:
