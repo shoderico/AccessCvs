@@ -6,6 +6,8 @@
 #include "util/comptr.h"
 
 #include "processor/tabledefprocessor.h"
+#include "processor/odbctableprocessor.h"
+
 #include "processor/queryassqlprocessor.h"
 #include "processor/formprocessor.h"
 #include "processor/reportprocessor.h"
@@ -26,6 +28,8 @@ AccessProjectContainer::AccessProjectContainer(QObject *parent)
     m_DefaultTempPathName     = ".accesscvs";
 
     m_objectProcessors.insert( Model::TableDef,   new TableDefProcessor (this) );
+    m_objectProcessors.insert( Model::OdbcTable,   new OdbcTableProcessor (this) );
+
     m_objectProcessors.insert( Model::Query,      new QueryAsSqlProcessor    (this) );
     m_objectProcessors.insert( Model::Form,       new FormProcessor     (this) );
     m_objectProcessors.insert( Model::Report,     new ReportProcessor   (this) );

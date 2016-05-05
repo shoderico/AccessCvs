@@ -1,5 +1,7 @@
 #include "odbctableprocessor.h"
 
+#include <QDebug>
+
 #include "accesslib/accesslib.h"
 
 #include "util/comptr.h"
@@ -77,7 +79,10 @@ bool OdbcTableProcessor::importFromTempDirToProject(QAxObject *object, const QSt
         // Setting
         Setting setting( filePath(TempDir, TempFile, objectName), m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd() );
         if (!setting.load())
+        {
+            qDebug() << "setting.load() is faled ";
             return false;
+        }
         SettingElement *element = setting.at(0)->toElement();
         Q_ASSERT(element != NULL);
         Q_ASSERT(element->name() == "TableDef");
@@ -86,14 +91,17 @@ bool OdbcTableProcessor::importFromTempDirToProject(QAxObject *object, const QSt
         QString sourceTableName = element->value("SourceTableName").toString();
         int attributes          = element->value("Attributes", 0).toInt();
 
-
+        qDebug() << "connect : " << connect;
+        qDebug() << "sourceTableName : " << sourceTableName;
+        qDebug() << "attributes : " << attributes;
 
         ComPtr<DAO::Database> currentDb = m_projectContainer->application<Access::Application>()->CurrentDb();
         ComPtr<DAO::TableDefs> tableDefs = currentDb->TableDefs();
 
-        DAO::TableDef *tableDef = currentDb->CreateTableDef( objectName, attributes );
+        ComPtr<DAO::TableDef> tableDef = currentDb->CreateTableDef( objectName, (attributes & DAO::dbAttachSavePWD) );
         tableDef->SetConnect( connect );
         tableDef->SetSourceTableName( sourceTableName );
+        tableDef->SetAttributes( attributes );
 
         IDispatch *idisp = 0;
         tableDef->queryInterface( QUuid(IID_IDispatch), (void**)&idisp);
@@ -112,14 +120,14 @@ bool OdbcTableProcessor::sanitizeTempDir(QAxObject *object, const QString &objec
 {
     Q_UNUSED(object)
     FileUtil::copyContents( filePath(TempDir, TempFile,   objectName), m_codecForProject,
-                            filePath(TempDir, ModuleFile, objectName), m_codecForCvs, true/*removeTrailingSpaces*/ );
+                            filePath(TempDir, DesignFile, objectName), m_codecForCvs, true/*removeTrailingSpaces*/ );
     return true;
 }
 
 bool OdbcTableProcessor::desanitizeTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
-    FileUtil::copyContents( filePath(TempDir, ModuleFile, objectName), m_codecForCvs,
+    FileUtil::copyContents( filePath(TempDir, DesignFile, objectName), m_codecForCvs,
                             filePath(TempDir, TempFile,   objectName), m_codecForProject, false/*removeTrailingSpaces*/ );
     return true;
 }

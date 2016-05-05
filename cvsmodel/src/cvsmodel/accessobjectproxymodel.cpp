@@ -8,6 +8,7 @@ AccessObjectProxyModel::AccessObjectProxyModel(QObject *parent)
     QList<Model::ObjectType> objectTypes;
     objectTypes
             << Model::TableDef
+            << Model::OdbcTable
             << Model::Query
             << Model::Form
             << Model::Report

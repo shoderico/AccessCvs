@@ -11,13 +11,15 @@ AccessObjectModel::AccessObjectModel(QObject *parent)
     : ObjectModel(parent)
 {
     QList<Model::ObjectType> objectTypes;
-    objectTypes << Model::TableDef
-                << Model::Query
-                << Model::Form
-                << Model::Report
-                << Model::Macro
-                << Model::Module
-                   ;
+    objectTypes
+            << Model::TableDef
+            << Model::OdbcTable
+            << Model::Query
+            << Model::Form
+            << Model::Report
+            << Model::Macro
+            << Model::Module
+           ;
 
     ProjectContainer *project = new AccessProjectContainer(this);
 
