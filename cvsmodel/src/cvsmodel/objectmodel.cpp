@@ -232,7 +232,7 @@ void ObjectModel::saveSettigs()
 {
     // save settings
     ProjectSetting setting(this);
-    ObjectProcessor *os;
+    ObjectProcessor *processor;
     setting.initialize(m_application);
 
     {
@@ -244,9 +244,9 @@ void ObjectModel::saveSettigs()
                 tableDataTargets.append( (*it)->name() );
         }
 
-        os = setting[ Model::TableDef ];
-        TableDefProcessor *tableDataSetting = static_cast<TableDefProcessor*>(os);
-        tableDataSetting->setTableDataTargets( &tableDataTargets );
+        processor = setting[ Model::TableDef ];
+        TableDefProcessor *tableDataProcessor = static_cast<TableDefProcessor*>(processor);
+        tableDataProcessor->setTableDataTargets( &tableDataTargets );
     }
 
     setting.saveSettings();
@@ -905,15 +905,15 @@ void ObjectModel::emitSelectionChanged()
 void ObjectModel::deleteItems(ObjectItemMap *allTargets)
 {
     // FIXME: non-blocking, can be async ? require removeRows emission ?
-    ProgressNotifier mainProg(Model::DeleteItemsProcess, this);
+    ProgressNotifier mainProgress(Model::DeleteItemsProcess, this);
 
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
-        ProgressNotifier subProg(mainProg.type(), items.count(), this);
+        ProgressNotifier subProgress(mainProgress.type(), items.count(), this);
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
         {
-            subProg.next();
+            subProgress.next();
 
             int row = m_items.indexOf( (*it) );
             beginRemoveRows( QModelIndex(), row, row );
