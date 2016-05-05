@@ -9,16 +9,26 @@ namespace Model {
 enum SelectObjectType
 {
   //NoObjectTypes = 0,
-    TableDefObjectType = 1,
-    QueryObjectType = 2,
-    FormObjectType = 4,
-    ReportObjectType = 8,
-    MacroObjectType = 16,
-    ModuleObjectType = 32,
-    ReferenceObjectType = 64,
-    ProjectFileType = 128,
-    VBProjectType = 256,
-    AllObjectTypes = 511,
+    TableDefObjectType  = 0x1,
+    QueryObjectType     = 0x2,
+    FormObjectType      = 0x4,
+    ReportObjectType    = 0x8,
+    MacroObjectType     = 0x10,
+    ModuleObjectType    = 0x20,
+    ReferenceObjectType = 0x40,
+    ProjectFileType     = 0x80,
+    VBProjectType       = 0x100,
+    AllObjectTypes
+        = TableDefObjectType
+        | QueryObjectType
+        | FormObjectType
+        | ReportObjectType
+        | MacroObjectType
+        | ModuleObjectType
+        | ReferenceObjectType
+        | ProjectFileType
+        | VBProjectType
+        ,
     RelationObjectType = -1, // unused
 };
 Q_DECLARE_FLAGS(SelectObjectTypes, SelectObjectType)
@@ -35,7 +45,6 @@ enum ObjectType
     Report = ReportObjectType,
     Macro = MacroObjectType,
     Module = ModuleObjectType,
-//    TableData,
     Relation = RelationObjectType,
     Reference = ReferenceObjectType,
     ProjectFile = ProjectFileType,
