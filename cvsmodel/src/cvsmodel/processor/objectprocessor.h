@@ -66,6 +66,8 @@ public:
     virtual void loadSetting(QSettings *settings) { Q_UNUSED(settings) }
     virtual void saveSetting(QSettings *settings) { Q_UNUSED(settings) }
 
+    virtual void updateSetting(QList<ObjectItem*> *items) { Q_UNUSED(items) }
+
     virtual void determineCodecForProject();
 protected:
     enum DirectoryType

@@ -35,8 +35,7 @@ public:
     virtual void loadSetting(QSettings *settings);
     virtual void saveSetting(QSettings *settings);
 
-    void setTableDataTargets(QStringList *newTargets);
-
+    virtual void updateSetting(QList<ObjectItem*> *items);
 
 protected:
     QStringList m_tableDataTargets;

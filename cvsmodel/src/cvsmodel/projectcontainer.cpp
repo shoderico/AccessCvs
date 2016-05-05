@@ -141,6 +141,14 @@ void ProjectContainer::saveSetting()
     delete settings;
 }
 
+void ProjectContainer::updateSetting(QList<ObjectItem *> *items)
+{
+    foreach ( Model::ObjectType objectType, m_objectProcessors.keys() )
+    {
+        m_objectProcessors[ objectType ]->updateSetting( items );
+    }
+}
+
 void ProjectContainer::exception(int code, const QString &source, const QString &desc, const QString &help)
 {
     // whatever connect() succeed, never called exception().

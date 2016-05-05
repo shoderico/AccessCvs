@@ -210,21 +210,6 @@ bool ObjectModel::setData(const QModelIndex &index, const QVariant &value, int r
                 emit dataChanged( createIndex(index.row(), Model::DifferentColumn),  createIndex(index.row(), Model::DifferentColumn) );
                 emit dataChanged( createIndex(index.row(), Model::ExportDateColumn), createIndex(index.row(), Model::ExportDateColumn) );
 
-                // no need to do this because Refresh() does clear temp dir
-                /*
-                // Export dataFile into TempDir with hasData = true,
-                // and then change hasData to false and do Refresh,
-                // the item is always DifferentContents because *.dat file in TempDir but not in SourceDir.
-                // so, we have to clear TempDir if hasData is changed.
-                if ( item->hasData() )
-                {
-                    ObjectItemMap target;
-                    target[ item->objectType() ].insert( item->name(), item );
-                    DeleteFromTempDirCommand deleteFromTempDir(m_application, this);
-                    deleteFromTempDir.execute( &target );
-                }
-                */
-
                 // save settings
                 saveSettigs();
                 return true;
@@ -240,22 +225,7 @@ bool ObjectModel::setData(const QModelIndex &index, const QVariant &value, int r
 void ObjectModel::saveSettigs()
 {
     // save settings
-    ObjectProcessor *processor;
-
-    {
-        QStringList tableDataTargets;
-        QList<ObjectItem*> items = m_mapItems->value( Model::TableDef ).values();
-        for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it  )
-        {
-            if ( (*it)->hasData() )
-                tableDataTargets.append( (*it)->name() );
-        }
-
-        processor = m_project->operator []( Model::TableDef );
-        TableDefProcessor *tableDataProcessor = static_cast<TableDefProcessor*>(processor);
-        tableDataProcessor->setTableDataTargets( &tableDataTargets );
-    }
-
+    m_project->updateSetting( &m_items );
     m_project->saveSetting();
 }
 

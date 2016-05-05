@@ -11,6 +11,7 @@ class QAxObject;
 class QSettings;
 
 class ObjectProcessor;
+class ObjectItem;
 
 class CVSMODEL_SHARED_EXPORT ProjectContainer : public QObject
 {
@@ -42,6 +43,8 @@ public:
 
     void loadSetting();
     void saveSetting();
+
+    void updateSetting(QList<ObjectItem*> *items);
 
 public slots:
     void exception(int code, const QString & source, const QString & desc, const QString & help);

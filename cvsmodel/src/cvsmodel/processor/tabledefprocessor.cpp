@@ -303,10 +303,12 @@ void TableDefProcessor::saveSetting(QSettings *settings)
     setting.save();
 }
 
-void TableDefProcessor::setTableDataTargets(QStringList *newTargets)
+void TableDefProcessor::updateSetting(QList<ObjectItem *> *items)
 {
     m_tableDataTargets.clear();
-    for ( QStringList::iterator it = newTargets->begin() ; it != newTargets->end() ; ++it )
-        m_tableDataTargets.append( (*it) );
+    for (QList<ObjectItem*>::iterator it = items->begin() ; it != items->end() ; ++it  )
+    {
+        if ( (*it)->hasData() )
+            m_tableDataTargets.append( (*it)->name() );
+    }
 }
-
