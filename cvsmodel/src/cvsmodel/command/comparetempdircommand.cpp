@@ -30,7 +30,7 @@ struct CompareTempDirFunctionObject : public FunctionObjectBase
     void operator()(ObjectItem *item)
     {
         bool isDifferent = false;
-        m_processor->compareTempDir( item->name() , &isDifferent);
+        m_processor->compareTempDir( item->name(), item, &isDifferent);
 
         if (isDifferent == true && item->isDifferent() != Model::DifferentContents )
         {

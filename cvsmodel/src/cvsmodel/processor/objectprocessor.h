@@ -51,7 +51,7 @@ public:
     virtual bool copyFromTempDirToSourceDir(const QString &objectName);
     virtual bool copyFromSourceDirToTempDir(const QString &objectName);
 
-    virtual bool compareTempDir(const QString &objectName, bool *pisDifferent);
+    virtual bool compareTempDir(const QString &objectName, const ObjectItem *item, bool *pisDifferent);
 
     virtual bool deleteFromSourceDir(const QString &objectName);
     virtual bool deleteFromProject(const QString &objectName);

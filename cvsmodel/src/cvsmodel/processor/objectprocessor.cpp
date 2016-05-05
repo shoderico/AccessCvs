@@ -89,7 +89,7 @@ bool ObjectProcessor::copyFromSourceDirToTempDir(const QString &objectName)
     return true;
 }
 
-bool ObjectProcessor::compareTempDir(const QString &objectName, bool *pisDifferent)
+bool ObjectProcessor::compareTempDir(const QString &objectName, const ObjectItem *item, bool *pisDifferent)
 {
     bool isSame = true;
 
@@ -108,12 +108,20 @@ bool ObjectProcessor::compareTempDir(const QString &objectName, bool *pisDiffere
     // data
     if (isSame && !m_dataFileExtension.isEmpty())
     {
-        // We specify isSameIfBothNonExist is true.
-        // This looks like wrong because isSameIfBothNonExist value must be determined by hasData.
-        // but when hasData() is changed, we clear all files in TempDir. Therefore treat as Not-Same.
-
-        isSame = FileUtil::compare( filePath(TempDir,   DataFile, objectName),
-                                    filePath(SourceDir, DataFile, objectName), true/*isSameIfBothNonExist*/ );
+        // if item has data, compare normally
+        if ( item->hasData() )
+        {
+            isSame = FileUtil::compare( filePath(TempDir,   DataFile, objectName),
+                                        filePath(SourceDir, DataFile, objectName), false/*isSameIfBothNonExist*/ );
+        }
+        // if item NOT has data, treat as different if any file exists.
+        else
+        {
+            QFile fileA( filePath(TempDir,   DataFile, objectName) );
+            QFile fileB( filePath(SourceDir, DataFile, objectName) );
+            if ( fileA.exists() || fileB.exists() )
+                isSame = false;
+        }
     }
     // report-prop
     if (isSame && !m_reportPropFileExtension.isEmpty())

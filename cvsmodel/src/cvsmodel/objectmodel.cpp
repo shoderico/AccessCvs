@@ -201,14 +201,20 @@ bool ObjectModel::setData(const QModelIndex &index, const QVariant &value, int r
                 emit dataChanged( createIndex(index.row(), Model::DifferentColumn),  createIndex(index.row(), Model::DifferentColumn) );
                 emit dataChanged( createIndex(index.row(), Model::ExportDateColumn), createIndex(index.row(), Model::ExportDateColumn) );
 
+                // no need to do this because Refresh() does clear temp dir
+                /*
                 // Export dataFile into TempDir with hasData = true,
                 // and then change hasData to false and do Refresh,
                 // the item is always DifferentContents because *.dat file in TempDir but not in SourceDir.
                 // so, we have to clear TempDir if hasData is changed.
-                ObjectItemMap target;
-                target[ item->objectType() ].insert( item->name(), item );
-                DeleteFromTempDirCommand deleteFromTempDir(m_application, this);
-                deleteFromTempDir.execute( &target );
+                if ( item->hasData() )
+                {
+                    ObjectItemMap target;
+                    target[ item->objectType() ].insert( item->name(), item );
+                    DeleteFromTempDirCommand deleteFromTempDir(m_application, this);
+                    deleteFromTempDir.execute( &target );
+                }
+                */
 
                 // save settings
                 saveSettigs();
