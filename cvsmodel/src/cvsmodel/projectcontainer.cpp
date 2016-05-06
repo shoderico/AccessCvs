@@ -16,7 +16,7 @@ ProjectContainer::ProjectContainer(QObject *parent)
 {
     m_DefaultSourcePathName   = "source";
     m_DefaultTempPathName     = ".officecvs";
-    m_DefaultSettingFileName = "Project.settings";
+    m_DefaultSettingFileName  = "Project.settings";
 }
 
 ProjectContainer::~ProjectContainer()
