@@ -27,19 +27,26 @@ AccessProjectContainer::AccessProjectContainer(QObject *parent)
 
     m_DefaultTempPathName     = ".accesscvs";
 
-    m_objectProcessors.insert( Model::TableDef,   new TableDefProcessor (this) );
-    m_objectProcessors.insert( Model::OdbcTable,   new OdbcTableProcessor (this) );
+    m_objectProcessorList.append( new TableDefProcessor (this) );
+    m_objectProcessorList.append( new OdbcTableProcessor (this) );
+    m_objectProcessorList.append( new QueryAsSqlProcessor (this) );
+    m_objectProcessorList.append( new FormProcessor (this) );
+    m_objectProcessorList.append( new ReportProcessor (this) );
+    m_objectProcessorList.append( new MacroProcessor (this) );
+    m_objectProcessorList.append( new ModuleProcessor (this) );
+    m_objectProcessorList.append( new ReferenceProcessor (this) );
+    m_objectProcessorList.append( new VBProjectProcessor (this) );
+    m_objectProcessorList.append( new ProjectFileProcessor (this) );
 
-    m_objectProcessors.insert( Model::Query,      new QueryAsSqlProcessor    (this) );
-    m_objectProcessors.insert( Model::Form,       new FormProcessor     (this) );
-    m_objectProcessors.insert( Model::Report,     new ReportProcessor   (this) );
-    m_objectProcessors.insert( Model::Macro,      new MacroProcessor    (this) );
-    m_objectProcessors.insert( Model::Module,     new ModuleProcessor   (this) );
-
-    m_objectProcessors.insert( Model::Reference,  new ReferenceProcessor(this) );
-    m_objectProcessors.insert( Model::VBProject,  new VBProjectProcessor(this) );
-
-    m_objectProcessors.insert( Model::ProjectFile,  new ProjectFileProcessor(this) );
+    m_objectTypesForItemMap
+        << Model::TableDef
+        << Model::OdbcTable
+        << Model::Query
+        << Model::Form
+        << Model::Report
+        << Model::Macro
+        << Model::Module
+       ;
 
 }
 

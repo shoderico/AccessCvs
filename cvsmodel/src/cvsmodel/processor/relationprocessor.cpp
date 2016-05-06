@@ -21,6 +21,7 @@ RelationProcessor::RelationProcessor(ProjectContainer *parent)
     m_objectPathName      = "relations";
     m_containerName       = "";
     m_iconPath            = ":/images/page_link.png";
+    m_uiText              = "Relation";
 
     m_tempFileExtension   = "tmp";
     m_designFileExtension = "rel";

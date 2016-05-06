@@ -1,6 +1,7 @@
 #include "objectproxymodel.h"
 
 #include "objectmodel.h"
+#include "projectcontainer.h"
 
 ObjectProxyModel::ObjectProxyModel(QObject *parent)
     : QSortFilterProxyModel(parent)
@@ -8,9 +9,15 @@ ObjectProxyModel::ObjectProxyModel(QObject *parent)
 {
 }
 
-void ObjectProxyModel::init(const QList<Model::ObjectType> &objectTypes)
+void ObjectProxyModel::setSourceModel(QAbstractItemModel *sourceModel)
 {
-    foreach ( Model::ObjectType objectType, objectTypes )
+    QSortFilterProxyModel::setSourceModel(sourceModel);
+
+    m_model = static_cast<ObjectModel *>(sourceModel);
+
+    m_objectTypes = m_model->projectContainer()->objectTypes();
+
+    foreach ( Model::ObjectType objectType, m_objectTypes )
         m_showObjectTypes[ objectType ] = true;
 }
 
@@ -39,9 +46,11 @@ bool ObjectProxyModel::lessThan(const QModelIndex &source_left, const QModelInde
             QVariant value_name_right = sourceModel()->data(index_name_right);
             QVariant value_type_left  = sourceModel()->data(index_type_left);
             QVariant value_type_right = sourceModel()->data(index_type_right);
+            int order_left  = m_objectTypes.indexOf( (Model::ObjectType)value_type_left.toInt() );
+            int order_right = m_objectTypes.indexOf( (Model::ObjectType)value_type_right.toInt() );
 
-            if (value_type_left.toInt() != value_type_right.toInt())
-                return ( value_type_left.toInt() < value_type_right.toInt() );
+            if (order_left != order_right)
+                return ( order_left < order_right );
 
             return QString::localeAwareCompare(value_name_left.toString(), value_name_right.toString()) < 0;
 

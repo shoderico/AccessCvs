@@ -23,6 +23,7 @@ OdbcTableProcessor::OdbcTableProcessor(ProjectContainer *parent)
     m_objectPathName      = "tabledefs";
     m_containerName       = "";
     m_iconPath            = ":/images/table_link.png";
+    m_uiText              = "OdbcTables";
 
     m_tempFileExtension   = "tmp";
     m_designFileExtension = "odbc";

@@ -21,11 +21,7 @@ ProjectContainer::ProjectContainer(QObject *parent)
 
 ProjectContainer::~ProjectContainer()
 {
-    foreach ( Model::ObjectType objectType, m_objectProcessors.keys() )
-    {
-        delete m_objectProcessors[ objectType ];
-        m_objectProcessors[ objectType ] = NULL;
-    }
+    qDeleteAll( m_objectProcessorList );
 }
 
 void ProjectContainer::initialize(QAxObject *application)
@@ -104,7 +100,12 @@ QString ProjectContainer::tempPath() const
 
 ObjectProcessor *ProjectContainer::operator[](Model::ObjectType objectType)
 {
-    return m_objectProcessors[ objectType ];
+    foreach( ObjectProcessor *processor, m_objectProcessorList )
+    {
+        if ( processor->objectType() == objectType)
+            return processor;
+    }
+    return NULL;
 }
 
 QAxObject *ProjectContainer::application() const
@@ -114,16 +115,26 @@ QAxObject *ProjectContainer::application() const
 
 QList<Model::ObjectType> ProjectContainer::objectTypes() const
 {
-    return m_objectProcessors.keys();
+    QList<Model::ObjectType> list;
+    foreach( ObjectProcessor *processor, m_objectProcessorList )
+    {
+        list << processor->objectType();
+    }
+    return list;
+}
+
+const QList<Model::ObjectType> &ProjectContainer::objectTypesForItemMap() const
+{
+    return m_objectTypesForItemMap;
 }
 
 void ProjectContainer::loadSetting()
 {
     Setting *setting = createSetting();
     setting->load();
-    foreach ( Model::ObjectType objectType, m_objectProcessors.keys() )
+    foreach( ObjectProcessor *processor, m_objectProcessorList )
     {
-        m_objectProcessors[ objectType ]->loadSetting( setting );
+        processor->loadSetting( setting );
     }
     delete setting;
 }
@@ -132,9 +143,9 @@ void ProjectContainer::loadSetting()
 void ProjectContainer::saveSetting()
 {
     Setting *setting = createSetting();
-    foreach ( Model::ObjectType objectType, m_objectProcessors.keys() )
+    foreach( ObjectProcessor *processor, m_objectProcessorList )
     {
-        m_objectProcessors[ objectType ]->saveSetting( setting );
+        processor->saveSetting( setting );
     }
     setting->save();
     delete setting;
@@ -142,9 +153,9 @@ void ProjectContainer::saveSetting()
 
 void ProjectContainer::updateSetting(QList<ObjectItem *> *items)
 {
-    foreach ( Model::ObjectType objectType, m_objectProcessors.keys() )
+    foreach( ObjectProcessor *processor, m_objectProcessorList )
     {
-        m_objectProcessors[ objectType ]->updateSetting( items );
+        processor->updateSetting( items );
     }
 }
 

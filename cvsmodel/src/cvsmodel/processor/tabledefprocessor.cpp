@@ -30,6 +30,7 @@ TableDefProcessor::TableDefProcessor(ProjectContainer *parent)
     m_objectPathName      = "tabledefs";
     m_containerName       = "";
     m_iconPath            = ":/images/table.png";
+    m_uiText              = "Tables";
 
     m_tempFileExtension   = "tmp";
     m_designFileExtension = "xml";

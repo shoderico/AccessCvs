@@ -40,11 +40,13 @@ public:
 
 
     QList<Model::ObjectType> objectTypes() const;
+    const QList<Model::ObjectType> &objectTypesForItemMap() const;
 
     void loadSetting();
     void saveSetting();
 
     void updateSetting(QList<ObjectItem*> *items);
+
 
 public slots:
     void exception(int code, const QString & source, const QString & desc, const QString & help);
@@ -56,7 +58,9 @@ private:
     QAxObject *m_application;
 
 protected:
-    QMap<Model::ObjectType, ObjectProcessor*> m_objectProcessors;
+//    QMap<Model::ObjectType, ObjectProcessor*> m_objectProcessorMap;
+    QList<ObjectProcessor*> m_objectProcessorList;
+    QList<Model::ObjectType> m_objectTypesForItemMap;
 
     QString m_currentProjectName;
     QString m_currentProjectFullName;

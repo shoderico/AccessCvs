@@ -10,19 +10,9 @@
 ExcelObjectModel::ExcelObjectModel(QObject *parent)
     : ObjectModel(parent)
 {
-    QList<Model::ObjectType> objectTypes;
-//    objectTypes
-//            << Model::TableDef
-//            << Model::Query
-//            << Model::Form
-//            << Model::Report
-//            << Model::Macro
-//            << Model::Module
-//           ;
+    ProjectContainer *projectContainer = new ExcelProjectContainer(this);
 
-    ProjectContainer *project = new ExcelProjectContainer(this);
-
-    init(objectTypes, project);
+    init(projectContainer);
 }
 
 void ExcelObjectModel::setApplication(QAxObject *application)

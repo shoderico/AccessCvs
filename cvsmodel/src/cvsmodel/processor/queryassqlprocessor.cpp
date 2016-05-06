@@ -25,6 +25,7 @@ QueryAsSqlProcessor::QueryAsSqlProcessor(ProjectContainer *parent)
     m_objectPathName      = "queries";
     m_containerName       = "";
     m_iconPath            = ":/images/table_multiple.png";
+    m_uiText              = "Queries";
 
     m_tempFileExtension   = "sql";
     m_designFileExtension = m_tempFileExtension;

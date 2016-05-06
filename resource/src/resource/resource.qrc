@@ -14,5 +14,7 @@
         <file>images/table.png</file>
         <file>images/table_multiple.png</file>
         <file>images/table_link.png</file>
+        <file>images/application.png</file>
+        <file>images/application_cascade.png</file>
     </qresource>
 </RCC>

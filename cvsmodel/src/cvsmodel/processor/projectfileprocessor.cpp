@@ -26,7 +26,8 @@ ProjectFileProcessor::ProjectFileProcessor(ProjectContainer *parent)
     m_accessObjectType    = -1;
     m_objectPathName      = "";
     m_containerName       = "";
-    m_iconPath            = ":/images/page_link.png";
+    m_iconPath            = ":/images/application.png";
+    m_uiText              = "AccessProject";
 
     m_tempFileExtension   = "accproj";
     m_designFileExtension = m_tempFileExtension;

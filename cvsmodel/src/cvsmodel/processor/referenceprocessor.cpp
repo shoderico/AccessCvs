@@ -25,6 +25,7 @@ ReferenceProcessor::ReferenceProcessor(ProjectContainer *parent)
     m_objectPathName      = "";
     m_containerName       = "";
     m_iconPath            = ":/images/page_link.png";
+    m_uiText              = "Reference";
 
     m_tempFileExtension   = "ref";
     m_designFileExtension = m_tempFileExtension;

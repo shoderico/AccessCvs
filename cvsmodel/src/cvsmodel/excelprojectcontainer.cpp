@@ -13,8 +13,9 @@ ExcelProjectContainer::ExcelProjectContainer(QObject *parent)
 {
     m_DefaultTempPathName     = ".excelcvs";
 
-    m_objectProcessors.insert( Model::Reference,  new ReferenceProcessor(this) );
-    m_objectProcessors.insert( Model::VBProject,  new VBProjectProcessor(this) );
+    m_objectProcessorList.append( new ReferenceProcessor(this) );
+    m_objectProcessorList.append( new VBProjectProcessor(this) );
+
 }
 
 void ExcelProjectContainer::initialize(QAxObject *application)

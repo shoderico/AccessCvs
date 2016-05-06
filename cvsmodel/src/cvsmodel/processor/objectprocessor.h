@@ -24,6 +24,9 @@ public:
     virtual bool isTargetObject(QAxObject *object) const = 0;
 
     Model::ObjectType objectType() const { return m_objectType; }
+    Model::SelectObjectType selectObjectType() const { return m_selectObjectType; }
+    QString uiText() const { return m_uiText; }
+    QString iconPath() const { return m_iconPath; }
 
     QString existCheckExtension() const { return m_existCheckExtension; }
 
@@ -113,6 +116,7 @@ protected:
     QString m_objectPathName;
     QString m_containerName;
     QString m_iconPath;
+    QString m_uiText;
 
     QString m_tempFileExtension;
     QString m_designFileExtension;

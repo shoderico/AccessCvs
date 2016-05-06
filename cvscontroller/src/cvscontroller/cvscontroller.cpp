@@ -14,19 +14,19 @@ CvsController::CvsController(QObject *parent)
     , m_application(0)
     , m_model(0)
     , m_proxyModel(0)
+    , m_mainDlg(0)
     , m_parentWidget(0)
-    , m_dlg(0)
     , m_progressDlg(0)
 {
 }
 
 CvsController::~CvsController()
 {
-    if (m_dlg)
+    if (m_mainDlg)
     {
-        m_dlg->close();
-        delete m_dlg;
-        m_dlg = 0;
+        m_mainDlg->close();
+        delete m_mainDlg;
+        m_mainDlg = 0;
     }
 
     if (m_progressDlg)
@@ -136,7 +136,7 @@ bool CvsController::handleButtonClick(const QString &controlId)
 
 void CvsController::prepareManual()
 {
-    m_dlg->showAsManual();
+    m_mainDlg->showAsManual();
 }
 
 void CvsController::prepareImport()
@@ -144,7 +144,7 @@ void CvsController::prepareImport()
     prepare(Import, false /*clearCache*/);
     if ( m_model->selectedRowCount() == 0)
         return;
-    m_dlg->showAsAutoImport();
+    m_mainDlg->showAsAutoImport();
 }
 
 void CvsController::prepareExport()
@@ -152,7 +152,7 @@ void CvsController::prepareExport()
     prepare(Export, false /*clearCache*/);
     if ( m_model->selectedRowCount() == 0)
         return;
-    m_dlg->showAsAutoExport();
+    m_mainDlg->showAsAutoExport();
 }
 
 void CvsController::clearCacheAndPrepareImport()
@@ -160,7 +160,7 @@ void CvsController::clearCacheAndPrepareImport()
     prepare(Import, true /*clearCache*/);
     if ( m_model->selectedRowCount() == 0)
         return;
-    m_dlg->showAsAutoImport();
+    m_mainDlg->showAsAutoImport();
 }
 
 void CvsController::clearCacheAndPrepareExport()
@@ -168,7 +168,7 @@ void CvsController::clearCacheAndPrepareExport()
     prepare(Export, true /*clearCache*/);
     if ( m_model->selectedRowCount() == 0)
         return;
-    m_dlg->showAsAutoExport();
+    m_mainDlg->showAsAutoExport();
 }
 
 void CvsController::selectAuto()
@@ -217,47 +217,42 @@ void CvsController::clearCache()
 
 void CvsController::refreshItems()
 {
-    m_dlg->beginBatch();
+    m_mainDlg->beginBatch();
     m_model->refreshItems();
-    m_dlg->endBatch();
+    m_mainDlg->endBatch();
 }
 
 void CvsController::executeExport()
 {
-    m_dlg->beginBatch();
+    m_mainDlg->beginBatch();
     m_model->executeExport();
-    m_dlg->endBatch();
+    m_mainDlg->endBatch();
 }
 
 void CvsController::executeImport()
 {
-    m_dlg->beginBatch();
+    m_mainDlg->beginBatch();
     m_model->executeImport();
-    m_dlg->endBatch();
+    m_mainDlg->endBatch();
 }
 
 void CvsController::init()
 {
-    if (!m_dlg)
-    {
-        m_dlg = new MainDialog( m_model, m_proxyModel, m_parentWidget );
-    }
-
     if (!m_progressDlg)
     {
         m_progressDlg = new CvsProgressDialog( m_model, m_parentWidget );
     }
 
-    connect(m_dlg, SIGNAL(selectAuto()), this, SLOT(selectAuto()) );
-    connect(m_dlg, SIGNAL(clearCache()), this, SLOT(clearCache()) );
-    connect(m_dlg, SIGNAL(refreshItems()), this, SLOT(refreshItems()) );
-    connect(m_dlg, SIGNAL(executeExport()), this, SLOT(executeExport()) );
-    connect(m_dlg, SIGNAL(executeImport()), this, SLOT(executeImport()) );
-    connect(m_dlg, SIGNAL(showSelectedOnly(bool)), this, SLOT(showSelectedOnly(bool)) );
-    connect(m_dlg, SIGNAL(showAllObject(bool)), this, SLOT(showAllObject(bool)) );
-    connect(m_dlg, SIGNAL(showObject(int,bool)), this, SLOT(showObject(int,bool)) );
-    connect(m_dlg, SIGNAL(selectAllObject(bool)), this, SLOT(selectAllObject(bool)) );
-    connect(m_dlg, SIGNAL(selectObject(int,bool)), this, SLOT(selectObject(int,bool)) );
+    connect(m_mainDlg, SIGNAL(selectAuto()), this, SLOT(selectAuto()) );
+    connect(m_mainDlg, SIGNAL(clearCache()), this, SLOT(clearCache()) );
+    connect(m_mainDlg, SIGNAL(refreshItems()), this, SLOT(refreshItems()) );
+    connect(m_mainDlg, SIGNAL(executeExport()), this, SLOT(executeExport()) );
+    connect(m_mainDlg, SIGNAL(executeImport()), this, SLOT(executeImport()) );
+    connect(m_mainDlg, SIGNAL(showSelectedOnly(bool)), this, SLOT(showSelectedOnly(bool)) );
+    connect(m_mainDlg, SIGNAL(showAllObject(bool)), this, SLOT(showAllObject(bool)) );
+    connect(m_mainDlg, SIGNAL(showObject(int,bool)), this, SLOT(showObject(int,bool)) );
+    connect(m_mainDlg, SIGNAL(selectAllObject(bool)), this, SLOT(selectAllObject(bool)) );
+    connect(m_mainDlg, SIGNAL(selectObject(int,bool)), this, SLOT(selectObject(int,bool)) );
 
     m_proxyModel->setFilterShowObjectType( Model::AllObjectTypes );
     m_proxyModel->setFilterShowSelectedOnly( true/*selected*/ );

@@ -25,6 +25,7 @@ ReportProcessor::ReportProcessor(ProjectContainer *parent)
     m_objectPathName      = "reports";
     m_containerName       = "Reports";
     m_iconPath            = ":/images/report.png";
+    m_uiText              = "Reports";
 
     m_tempFileExtension   = "tmp";
     m_designFileExtension = "rpt";
