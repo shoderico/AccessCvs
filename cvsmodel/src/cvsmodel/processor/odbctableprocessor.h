@@ -16,6 +16,12 @@ public:
     virtual bool        sanitizeTempDir(QAxObject* object, const QString &objectName);
     virtual bool        desanitizeTempDir(QAxObject* object, const QString &objectName);
 
+    virtual void loadSetting(Setting *projectSetting);
+    virtual void saveSetting(Setting *projectSetting);
+
+private:
+    bool m_toBeManaged;
+
 };
 
 #endif // ODBCTABLEPROCESSOR_H

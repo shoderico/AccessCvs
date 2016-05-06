@@ -29,10 +29,14 @@ OdbcTableProcessor::OdbcTableProcessor(ProjectContainer *parent)
     m_moduleFileExtension = "";
     m_existCheckExtension = m_designFileExtension;
 
+    m_settingFileName       = "OdbcTable.settings";
 }
 
 bool OdbcTableProcessor::isTargetObject(QAxObject *object) const
 {
+    if ( !m_toBeManaged )
+        return false;
+
     bool result = TableObjectProcessor::isTargetObject(object);
     if (result)
     {
@@ -130,5 +134,33 @@ bool OdbcTableProcessor::desanitizeTempDir(QAxObject *object, const QString &obj
     FileUtil::copyContents( filePath(TempDir, DesignFile, objectName), m_codecForCvs,
                             filePath(TempDir, TempFile,   objectName), m_codecForProject, false/*removeTrailingSpaces*/ );
     return true;
+}
+
+void OdbcTableProcessor::loadSetting(Setting *projectSetting)
+{
+    Q_UNUSED(projectSetting)
+
+    m_toBeManaged = false;
+
+    // Setting
+    Setting *setting = createSetting();
+    if (setting->load())
+    {
+        m_toBeManaged = setting->value( "ToBeManaged", false ).toBool();
+    }
+    delete setting;
+}
+
+void OdbcTableProcessor::saveSetting(Setting *projectSetting)
+{
+    Q_UNUSED(projectSetting)
+
+    // Setting
+    Setting *setting = createSetting();
+
+    setting->append( "ToBeManaged", m_toBeManaged );
+
+    setting->save();
+    delete setting;
 }
 
