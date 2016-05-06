@@ -49,6 +49,7 @@ public slots:
     void refreshItems();
     void executeExport();
     void executeImport();
+    void showSettingDialog();
 
 protected:
     virtual void init();

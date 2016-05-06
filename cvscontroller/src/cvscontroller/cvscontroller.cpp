@@ -8,6 +8,10 @@
 #include "cvsmodel/objectmodel.h"
 #include "cvsmodel/objectproxymodel.h"
 
+#include "view/settingdialog.h"
+
+#include <QMessageBox>
+
 
 CvsController::CvsController(QObject *parent)
     : QObject(parent)
@@ -78,6 +82,12 @@ QString CvsController::ribbonXml()
             "   onAction=\"ButtonClicked\" "
             "   getImage=\"GetButtonImage\" "
             "   /> "
+            "<button id=\"StandardSettingButton\" "
+            "   size=\"normal\" "
+            "   label=\"Setting\" "
+            "   onAction=\"ButtonClicked\" "
+            "   getImage=\"GetButtonImage\" "
+            "   /> "
         "</group>"
         ;
     return content;
@@ -129,6 +139,8 @@ bool CvsController::handleButtonClick(const QString &controlId)
         clearCacheAndPrepareExport();
     else if (controlId == "StandardClearCacheAndImportButton")
         clearCacheAndPrepareImport();
+    else if (controlId == "StandardSettingButton")
+        showSettingDialog();
     else
         return false;
     return true;
@@ -234,6 +246,17 @@ void CvsController::executeImport()
     m_mainDlg->beginBatch();
     m_model->executeImport();
     m_mainDlg->endBatch();
+}
+
+void CvsController::showSettingDialog()
+{
+    if ( !m_model->checkProjectState() )
+    {
+        QMessageBox::warning(m_parentWidget, tr("OfficeCvs"), tr("Open project !"), QMessageBox::Ok );
+        return;
+    }
+    SettingDialog dlg(m_parentWidget);
+    dlg.exec();
 }
 
 void CvsController::init()
