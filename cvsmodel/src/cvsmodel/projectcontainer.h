@@ -51,7 +51,6 @@ public slots:
 
 private:
     Setting *createSetting();
-    QString settingFilePath() const;
 
 private:
     QAxObject *m_application;

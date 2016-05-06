@@ -102,11 +102,6 @@ QString ProjectContainer::tempPath() const
     return m_projectPath + "\\" + m_tempPathName;
 }
 
-QString ProjectContainer::settingFilePath() const
-{
-    return sourcePath() + "\\" + m_settingFileName;
-}
-
 ObjectProcessor *ProjectContainer::operator[](Model::ObjectType objectType)
 {
     return m_objectProcessors[ objectType ];
@@ -169,7 +164,7 @@ Setting *ProjectContainer::createSetting()
     codec.setBom(false);
     codec.setLineEnd("\r\n");
 
-    Setting *setting = new Setting(settingFilePath(), codec.codec(), codec.bom(), codec.lineEnd());
+    Setting *setting = new Setting(sourcePath()+ "\\" + m_settingFileName, codec.codec(), codec.bom(), codec.lineEnd());
     return setting;
 }
 

@@ -38,6 +38,8 @@ TableDefProcessor::TableDefProcessor(ProjectContainer *parent)
 
     m_dataTempFileExtension = "dattmp";
     m_dataFileExtension     = "dat";
+
+    m_settingFileName       = "TableDef.settings";
 }
 
 bool TableDefProcessor::isTargetObject(QAxObject *object) const
@@ -267,10 +269,10 @@ void TableDefProcessor::loadSetting(Setting *projectSetting)
     Q_UNUSED(projectSetting)
 
     // Setting
-    Setting setting(m_projectContainer->sourcePath() + "\\" + "TableDef.settings", m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());
-    if (setting.load())
+    Setting *setting = createSetting();
+    if (setting->load())
     {
-        SettingElement *element = setting.at(0)->toElement();
+        SettingElement *element = setting->at(0)->toElement();
         Q_ASSERT(element != NULL);
         Q_ASSERT(element->name() == "TableData");
         for ( int i = 0 ; i < element->count() ; ++i )
@@ -283,6 +285,7 @@ void TableDefProcessor::loadSetting(Setting *projectSetting)
             m_tableDataTargets.append( keyValue->value().toString() );
         }
     }
+    delete setting;
 }
 
 void TableDefProcessor::saveSetting(Setting *projectSetting)
@@ -290,8 +293,8 @@ void TableDefProcessor::saveSetting(Setting *projectSetting)
     Q_UNUSED(projectSetting)
 
     // Setting
-    Setting setting(m_projectContainer->sourcePath() + "\\" + "TableDef.settings", m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());
-    SettingElement *element = setting.append("TableData");
+    Setting *setting = createSetting();
+    SettingElement *element = setting->append("TableData");
     {
         QStringList tableNames = m_tableDataTargets;
         tableNames.sort(Qt::CaseSensitive);
@@ -300,7 +303,8 @@ void TableDefProcessor::saveSetting(Setting *projectSetting)
             element->append("TableName", (*it) );
         }
     }
-    setting.save();
+    setting->save();
+    delete setting;
 }
 
 void TableDefProcessor::updateSetting(QList<ObjectItem *> *items)

@@ -104,6 +104,7 @@ protected:
         return dynamic_cast<T*>(m_projectContainer);
     }
 
+    Setting *createSetting();
 
 protected:
     Model::ObjectType m_objectType;
@@ -120,6 +121,8 @@ protected:
     QString m_dataTempFileExtension;
     QString m_dataFileExtension;
     QString m_reportPropFileExtension;
+
+    QString m_settingFileName;
 
     ProjectContainer *m_projectContainer;
 
