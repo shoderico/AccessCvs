@@ -268,21 +268,29 @@ void TableDefProcessor::loadSetting(Setting *projectSetting)
 {
     Q_UNUSED(projectSetting)
 
+    m_tableDataTargets.clear();
+
     // Setting
     Setting *setting = createSetting();
     if (setting->load())
     {
-        SettingElement *element = setting->at(0)->toElement();
-        Q_ASSERT(element != NULL);
-        Q_ASSERT(element->name() == "TableData");
-        for ( int i = 0 ; i < element->count() ; ++i )
+        foreach (const SettingNode *node, setting->nodes())
         {
-            SettingKeyValue *keyValue = element->at(i)->toKeyValue();
-            Q_ASSERT(keyValue != NULL);
-            Q_ASSERT(keyValue->key() == "TableName");
-            Q_ASSERT(keyValue->value().isNull() == false);
-            Q_ASSERT(keyValue->value().toString().isEmpty() == false);
-            m_tableDataTargets.append( keyValue->value().toString() );
+            if (node->isElement())
+            {
+                SettingElement *element = node->toElement();
+                Q_ASSERT(element != NULL);
+                Q_ASSERT(element->name() == "TableData");
+                for ( int i = 0 ; i < element->count() ; ++i )
+                {
+                    SettingKeyValue *keyValue = element->at(i)->toKeyValue();
+                    Q_ASSERT(keyValue != NULL);
+                    Q_ASSERT(keyValue->key() == "TableName");
+                    Q_ASSERT(keyValue->value().isNull() == false);
+                    Q_ASSERT(keyValue->value().toString().isEmpty() == false);
+                    m_tableDataTargets.append( keyValue->value().toString() );
+                }
+            }
         }
     }
     delete setting;
@@ -310,6 +318,7 @@ void TableDefProcessor::saveSetting(Setting *projectSetting)
 void TableDefProcessor::updateSetting(QList<ObjectItem *> *items)
 {
     m_tableDataTargets.clear();
+
     for (QList<ObjectItem*>::iterator it = items->begin() ; it != items->end() ; ++it  )
     {
         if ( (*it)->hasData() )

@@ -26,7 +26,7 @@ accesslib.depends += officelib
 excellib.depends += officelib
 
 # model layer
-cvsmodel.depends   += util accesslib
+cvsmodel.depends   += util accesslib excellib
 accmodel.depends += util accesslib
 
 # controller layer
@@ -43,7 +43,8 @@ accesscvs.depends += resource addin \
 excelcvs.depends += resource addin \
                     excellib \
                     util \
-                    helpcontroller
+                    helpcontroller \
+                    cvscontroller
 
 # cli layer
 acccmd.depends += accmodel

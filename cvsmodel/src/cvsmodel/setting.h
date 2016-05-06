@@ -23,8 +23,8 @@ public:
     bool isKeyValue() const;
     bool isElement() const;
 
-    SettingKeyValue *toKeyValue();
-    SettingElement *toElement();
+    SettingKeyValue *toKeyValue() const;
+    SettingElement *toElement() const;
 
 protected:
     NodeType m_nodeType;
@@ -64,6 +64,7 @@ public:
     int count() const;
     SettingNode *at(const int i) const;
     QVariant value(const QString &key, const QVariant &defaultValue = QVariant());
+    const QList<SettingNode*> &nodes() const;
 
 private:
     QString m_name;
