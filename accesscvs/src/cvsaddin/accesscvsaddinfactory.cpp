@@ -52,6 +52,7 @@ QAxAggregated *AccessCvsAddInFactory::createAggregate(QObject *parent)
     addInImpl->appendController( new AccessCvsController(this) );
     addInImpl->appendController( new AccController(this) );
     addInImpl->appendController( new HelpController(this) );
+    m_addInImpl = addInImpl;
     return addInImpl;
 }
 
@@ -83,6 +84,16 @@ int AccessCvsAddInFactory::applicationHwnd()
 void AccessCvsAddInFactory::onBeforeConnectionEvent()
 {
     Q_INIT_RESOURCE(resource);
+}
+
+void AccessCvsAddInFactory::onAfterConnectionEvent()
+{
+    // show manual dialog if ribbon ui is not supported
+    QString accessVer = m_application->SysCmd( Access::acSysCmdAccessVer ).toString();
+    if ( accessVer < "12.0" )
+    {
+        m_addInImpl->onButtonClicked( QString("StandardManualButton") );
+    }
 }
 
 void AccessCvsAddInFactory::onAfterDisconnectionEvent()

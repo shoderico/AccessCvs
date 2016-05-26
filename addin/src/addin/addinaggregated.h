@@ -87,12 +87,14 @@ public:
         /* [in] */ IDispatch *ribbonControl,
         /* [retval][out] */ /* external definition not present */ IPictureDisp **picture);
 
+
+    virtual HRESULT onButtonClicked(const QString &controlId) = 0;
+
 protected:
     virtual void onConnectionEvent() = 0;
     virtual void onDisconnectionEvent() = 0;
     virtual QString ribbomXml() = 0;
     virtual IPictureDisp *buttonImage(const QString &controlId) = 0;
-    virtual HRESULT onButtonClicked(const QString &controlId) = 0;
 
     AddInFactory *factory() const;
 

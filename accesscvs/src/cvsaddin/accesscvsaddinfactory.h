@@ -7,6 +7,8 @@ namespace Access {
 class Application;
 } // namespace Access
 
+class AddInControllerImpl;
+
 class AccessCvsAddInFactory : public AddInFactory
 {
     Q_OBJECT
@@ -20,10 +22,12 @@ public:
     virtual QAxObject *application() const;
     virtual int applicationHwnd();
     virtual void onBeforeConnectionEvent();
+    virtual void onAfterConnectionEvent();
     virtual void onAfterDisconnectionEvent();
 
 private:
     Access::Application *m_application;
+    AddInControllerImpl *m_addInImpl;
 
 };
 

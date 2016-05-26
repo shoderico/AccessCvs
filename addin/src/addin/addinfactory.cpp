@@ -82,6 +82,11 @@ void AddInFactory::onBeforeConnectionEvent()
 
 }
 
+void AddInFactory::onAfterConnectionEvent()
+{
+
+}
+
 void AddInFactory::onAfterDisconnectionEvent()
 {
 
