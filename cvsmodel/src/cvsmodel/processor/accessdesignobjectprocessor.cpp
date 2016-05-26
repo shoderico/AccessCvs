@@ -276,17 +276,27 @@ void AccessDesignObjectProcessor::determineCodecForProject()
             }
             else
             {
-                ComPtr<Access::CurrentProject> currentProject = m_projectContainer->application<Access::Application>()->CurrentProject();
-                int fileFormat = currentProject->FileFormat();
-                switch (fileFormat)
+                QString accessVer = m_projectContainer->application<Access::Application>()->SysCmd( Access::acSysCmdAccessVer ).toString();
+
+                // Access 2000
+                if ( accessVer == "9.0" )
                 {
-                    case Access::acFileFormatAccess2:       isUcs2 = false; break;
-                    case Access::acFileFormatAccess95:      isUcs2 = false; break;
-                    case Access::acFileFormatAccess97:      isUcs2 = false; break;
-                    case Access::acFileFormatAccess2000:    isUcs2 = false; break;
-                    case Access::acFileFormatAccess2002:    isUcs2 = false; break;
-                    case Access::acFileFormatAccess2007:    isUcs2 = true;  break;
-                    default:                                isUcs2 = true;  break;
+                    isUcs2 = false;
+                }
+                else
+                {
+                    ComPtr<Access::CurrentProject> currentProject = m_projectContainer->application<Access::Application>()->CurrentProject();
+                    int fileFormat = currentProject->FileFormat();
+                    switch (fileFormat)
+                    {
+                        case Access::acFileFormatAccess2:       isUcs2 = false; break;
+                        case Access::acFileFormatAccess95:      isUcs2 = false; break;
+                        case Access::acFileFormatAccess97:      isUcs2 = false; break;
+                        case Access::acFileFormatAccess2000:    isUcs2 = false; break;
+                        case Access::acFileFormatAccess2002:    isUcs2 = false; break;
+                        case Access::acFileFormatAccess2007:    isUcs2 = true;  break;
+                        default:                                isUcs2 = true;  break;
+                    }
                 }
             }
         }
