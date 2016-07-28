@@ -20,12 +20,13 @@ public:
     void setRibbonTabId(const QString &tabId);
     void setRibbonTabLabel(const QString &tabLabel);
 
+    virtual HRESULT onButtonClicked(const QString &controlId);
+
 protected:
     virtual void onConnectionEvent();
     virtual void onDisconnectionEvent();
     virtual QString ribbomXml();
     virtual IPictureDisp *buttonImage(const QString &controlId);
-    virtual HRESULT onButtonClicked(const QString &controlId);
 
 private:
     WindowWidgetManager     *m_winWidgetManager;

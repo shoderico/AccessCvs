@@ -10,18 +10,9 @@
 AccessObjectModel::AccessObjectModel(QObject *parent)
     : ObjectModel(parent)
 {
-    QList<Model::ObjectType> objectTypes;
-    objectTypes << Model::TableDef
-                << Model::Query
-                << Model::Form
-                << Model::Report
-                << Model::Macro
-                << Model::Module
-                   ;
+    ProjectContainer *projectContainer = new AccessProjectContainer(this);
 
-    ProjectContainer *project = new AccessProjectContainer(this);
-
-    init(objectTypes, project);
+    init(projectContainer);
 }
 
 void AccessObjectModel::setApplication(QAxObject *application)

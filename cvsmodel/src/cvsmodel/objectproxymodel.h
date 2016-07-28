@@ -7,12 +7,15 @@
 #include <QObject>
 #include <QSortFilterProxyModel>
 
+class ObjectModel;
+
 class CVSMODEL_SHARED_EXPORT ObjectProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 public:
     explicit ObjectProxyModel(QObject *parent = 0);
-    void init(const QList<Model::ObjectType> &objectTypes);
+
+    void setSourceModel(QAbstractItemModel *sourceModel);
 
     bool lessThan(const QModelIndex &source_left, const QModelIndex &source_right) const;
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;
@@ -32,6 +35,8 @@ public slots:
 private:
     QMap<int, bool> m_showObjectTypes;
     bool m_showSelectedOnly;
+    QList<Model::ObjectType> m_objectTypes;
+    ObjectModel *m_model;
 
 };
 

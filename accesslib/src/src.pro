@@ -11,6 +11,9 @@ SOURCES += \
     accesslib/access.cpp \
     accesslib/adodb.cpp \
     accesslib/dao.cpp \
+    accesslib/access_impl.cpp \
+    accesslib/adodb_impl.cpp \
+    accesslib/dao_impl.cpp
 
 HEADERS +=\
     accesslib/access.h \
@@ -22,3 +25,7 @@ HEADERS +=\
 include(../../common.pri)
 include(../../submodule.pri)
 include(../$${TARGET}_dep.pri)
+
+win32-msvc* {
+    QMAKE_CXXFLAGS += -bigobj
+}

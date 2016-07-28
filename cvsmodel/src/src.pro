@@ -62,7 +62,9 @@ SOURCES += \
     cvsmodel/processor/vbeprocessor.cpp \
     cvsmodel/excelprojectcontainer.cpp \
     cvsmodel/excelobjectproxymodel.cpp \
-    cvsmodel/excelobjectmodel.cpp
+    cvsmodel/excelobjectmodel.cpp \
+    cvsmodel/processor/odbctableprocessor.cpp \
+    cvsmodel/processor/tableobjectprocessor.cpp
 
 HEADERS += \
     cvsmodel/cvsmodel_global.h \
@@ -119,7 +121,9 @@ HEADERS += \
     cvsmodel/processor/vbeprocessor.h \
     cvsmodel/excelprojectcontainer.h \
     cvsmodel/excelobjectproxymodel.h \
-    cvsmodel/excelobjectmodel.h
+    cvsmodel/excelobjectmodel.h \
+    cvsmodel/processor/odbctableprocessor.h \
+    cvsmodel/processor/tableobjectprocessor.h
 
 include(../../common.pri)
 include(../../submodule.pri)

@@ -49,6 +49,7 @@ public slots:
     void refreshItems();
     void executeExport();
     void executeImport();
+    void showSettingDialog();
 
 protected:
     virtual void init();
@@ -65,10 +66,10 @@ protected:
     QAxObject *m_application;
     ObjectModel *m_model;
     ObjectProxyModel *m_proxyModel;
+    MainDialog *m_mainDlg;
+    QWidget *m_parentWidget;
 
 private:
-    QWidget *m_parentWidget;
-    MainDialog *m_dlg;
     CvsProgressDialog *m_progressDlg;
 };
 

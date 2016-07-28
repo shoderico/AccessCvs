@@ -22,6 +22,7 @@ MacroProcessor::MacroProcessor(ProjectContainer *parent)
     m_objectPathName      = "macros";
     m_containerName       = "Scripts";
     m_iconPath            = ":/images/script.png";
+    m_uiText              = "Macros";
 
     m_tempFileExtension   = "tmp";
     m_designFileExtension = "mcr";

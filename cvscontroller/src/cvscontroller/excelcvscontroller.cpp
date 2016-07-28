@@ -2,6 +2,7 @@
 
 #include "cvsmodel/excelobjectmodel.h"
 #include "cvsmodel/excelobjectproxymodel.h"
+#include "view/maindialog.h"
 
 ExcelCvsController::ExcelCvsController(QObject *parent)
     : CvsController(parent)
@@ -21,6 +22,11 @@ void ExcelCvsController::init()
     {
         m_proxyModel = new ExcelObjectProxyModel(this);
         m_proxyModel->setSourceModel(m_model);
+    }
+
+    if (!m_mainDlg)
+    {
+        m_mainDlg = new MainDialog( m_model, m_proxyModel, m_parentWidget );
     }
 
     CvsController::init();

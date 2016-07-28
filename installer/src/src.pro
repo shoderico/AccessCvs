@@ -17,14 +17,14 @@ LIBS =
 
 #----------------------------------------------------------------------------------------------
 # directories and files
-BUILD_DIR        = $${BUILD_ROOT}/$${BUILD_TYPE}/installer
+Release|Debug:BUILD_DIR = $${BUILD_ROOT}/$${BUILD_TYPE}/installer
 DST_PACKAGE_DIR  = $${BUILD_DIR}/packages
 SRC_CONFIG_DIR   = $${PWD}/config
 SRC_PACKAGE_DIR  = $${PWD}/packages
 
 SRC_CONFIG_FILE  = $${SRC_CONFIG_DIR}/config.xml
 
-IFW_BIN_DIR      = C:/Qt/QtIFW2.0.1/bin
+IFW_BIN_DIR      = C:/Qt/QtIFW2.0.3/bin
 
 SRC_REPOS_DIR    = $${PWD}/repository
 DST_REPOS_DIR    = $${BUILD_DIR}/repository
@@ -42,6 +42,19 @@ QMAKE_EXTRA_TARGETS += copy_configs
 
 #----------------------------------------------------------------------------------------------
 # copy files
+win32-msvc* {
+    DEP_DLLS_QT.files += \
+        $${PWD}/../depends/msvc2013_x86/msvcp120.dll \
+        $${PWD}/../depends/msvc2013_x86/msvcr120.dll \
+        $${PWD}/../depends/msvc2013_x86/mfc120.dll
+}
+win32-g++ {
+    DEP_DLLS_QT.files += \
+        $$[QT_INSTALL_BINS]/libstdc++-6.dll \
+        $$[QT_INSTALL_BINS]/libwinpthread-1.dll \
+        $$[QT_INSTALL_BINS]/libgcc_s_dw2-1.dll
+}
+
 installQtDlls(       $${DST_PACKAGE_DIR}/$${PKG_ACCESSCVS_DIR}/data )
 installModuleDlls(   $${DST_PACKAGE_DIR}/$${PKG_ACCESSCVS_DIR}/data )
 installExternalDlls( $${DST_PACKAGE_DIR}/$${PKG_ACCESSCVS_DIR}/data )

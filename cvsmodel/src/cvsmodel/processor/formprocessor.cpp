@@ -18,6 +18,7 @@ FormProcessor::FormProcessor(ProjectContainer *parent)
     m_objectPathName      = "forms";
     m_containerName       = "Forms";
     m_iconPath            = ":/images/application_form.png";
+    m_uiText              = "Forms";
 
     m_tempFileExtension   = "tmp";
     m_designFileExtension = "frm";

@@ -13,6 +13,7 @@
 
 #include "cvsmodel/projectcontainer.h"
 #include "cvsmodel/objectitem.h"
+#include "cvsmodel/setting.h"
 
 
 ObjectProcessor::ObjectProcessor(ProjectContainer *parent)
@@ -299,4 +300,17 @@ void ObjectProcessor::mkpathObjectPath(ObjectProcessor::DirectoryType dirType)
 {
     QDir dir( objectPath(dirType) );
     dir.mkpath(".");
+}
+
+Setting *ObjectProcessor::createSetting()
+{
+    QDir(m_projectContainer->sourcePath()).mkpath(".");
+
+    CodecInfo codec;
+    codec.setCodec( QTextCodec::codecForName("UTF-8") );
+    codec.setBom(false);
+    codec.setLineEnd("\r\n");
+
+    Setting *setting = new Setting(m_projectContainer->sourcePath() + "\\" + m_settingFileName, codec.codec(), codec.bom(), codec.lineEnd());
+    return setting;
 }

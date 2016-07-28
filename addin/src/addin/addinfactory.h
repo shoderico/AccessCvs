@@ -31,6 +31,7 @@ public:
     virtual QAxObject *application() const = 0;
     virtual int applicationHwnd() = 0;
     virtual void onBeforeConnectionEvent();
+    virtual void onAfterConnectionEvent();
     virtual void onAfterDisconnectionEvent();
 
 protected:

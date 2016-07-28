@@ -17,14 +17,16 @@ bool SettingNode::isElement() const
     return (m_nodeType == Element);
 }
 
-SettingKeyValue *SettingNode::toKeyValue()
+SettingKeyValue *SettingNode::toKeyValue() const
 {
-    return static_cast<SettingKeyValue*>(this);
+    SettingNode *pthis = const_cast<SettingNode*>(this);
+    return static_cast<SettingKeyValue*>( pthis );
 }
 
-SettingElement *SettingNode::toElement()
+SettingElement *SettingNode::toElement() const
 {
-    return static_cast<SettingElement*>(this);
+    SettingNode *pthis = const_cast<SettingNode*>(this);
+    return static_cast<SettingElement*>( pthis );
 }
 
 SettingKeyValue::SettingKeyValue(const QString &key, const QVariant &value)
@@ -113,6 +115,11 @@ QVariant SettingElement::value(const QString &key, const QVariant &defaultValue)
         }
     }
     return defaultValue;
+}
+
+const QList<SettingNode *> &SettingElement::nodes() const
+{
+    return m_nodes;
 }
 
 Setting::Setting(const QString &fileName, QTextCodec *codec, const bool bom, const QString &lineEnd)

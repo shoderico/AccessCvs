@@ -18,7 +18,8 @@ SOURCES += \
     cvscontroller/view/progresshelper.cpp \
     cvscontroller/view/appsignalhandler.cpp \
     cvscontroller/accesscvscontroller.cpp \
-    cvscontroller/excelcvscontroller.cpp
+    cvscontroller/excelcvscontroller.cpp \
+    cvscontroller/view/settingdialog.cpp
 
 HEADERS += \
     cvscontroller/cvscontroller_global.h \
@@ -30,11 +31,13 @@ HEADERS += \
     cvscontroller/view/progresshelper.h \
     cvscontroller/view/appsignalhandler.h \
     cvscontroller/accesscvscontroller.h \
-    cvscontroller/excelcvscontroller.h
+    cvscontroller/excelcvscontroller.h \
+    cvscontroller/view/settingdialog.h
 
 FORMS += \
     cvscontroller/view/maindialog.ui \
-    cvscontroller/view/cvsprogressdialog.ui
+    cvscontroller/view/cvsprogressdialog.ui \
+    cvscontroller/view/settingdialog.ui
 
 include(../../common.pri)
 include(../../submodule.pri)

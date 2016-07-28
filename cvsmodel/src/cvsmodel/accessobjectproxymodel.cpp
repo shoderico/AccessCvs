@@ -5,19 +5,5 @@
 AccessObjectProxyModel::AccessObjectProxyModel(QObject *parent)
     : ObjectProxyModel(parent)
 {
-    QList<Model::ObjectType> objectTypes;
-    objectTypes
-            << Model::TableDef
-            << Model::Query
-            << Model::Form
-            << Model::Report
-            << Model::Macro
-            << Model::Module
-            << Model::Reference
-            << Model::ProjectFile
-            << Model::VBProject
-           ;
-
-    init(objectTypes);
 }
 

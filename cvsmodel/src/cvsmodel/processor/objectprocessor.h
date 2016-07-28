@@ -10,9 +10,9 @@
 class ProjectContainer;
 class CodecInfo;
 class ObjectItem;
+class Setting;
 
 class QAxObject;
-class QSettings;
 class QFileInfo;
 
 class CVSMODEL_SHARED_EXPORT ObjectProcessor : public QObject
@@ -24,6 +24,9 @@ public:
     virtual bool isTargetObject(QAxObject *object) const = 0;
 
     Model::ObjectType objectType() const { return m_objectType; }
+    Model::SelectObjectType selectObjectType() const { return m_selectObjectType; }
+    QString uiText() const { return m_uiText; }
+    QString iconPath() const { return m_iconPath; }
 
     QString existCheckExtension() const { return m_existCheckExtension; }
 
@@ -63,8 +66,10 @@ public:
 
     void updateFileTimeInTempDir(const QString &objectName, const QDateTime &fileTime);
 
-    virtual void loadSettings(QSettings *settings) { Q_UNUSED(settings) }
-    virtual void saveSettings(QSettings *settings) { Q_UNUSED(settings) }
+    virtual void loadSetting(Setting *projectSetting) { Q_UNUSED(projectSetting) }
+    virtual void saveSetting(Setting *projectSetting) { Q_UNUSED(projectSetting) }
+
+    virtual void updateSetting(QList<ObjectItem*> *items) { Q_UNUSED(items) }
 
     virtual void determineCodecForProject();
 protected:
@@ -102,6 +107,7 @@ protected:
         return dynamic_cast<T*>(m_projectContainer);
     }
 
+    Setting *createSetting();
 
 protected:
     Model::ObjectType m_objectType;
@@ -110,6 +116,7 @@ protected:
     QString m_objectPathName;
     QString m_containerName;
     QString m_iconPath;
+    QString m_uiText;
 
     QString m_tempFileExtension;
     QString m_designFileExtension;
@@ -118,6 +125,8 @@ protected:
     QString m_dataTempFileExtension;
     QString m_dataFileExtension;
     QString m_reportPropFileExtension;
+
+    QString m_settingFileName;
 
     ProjectContainer *m_projectContainer;
 

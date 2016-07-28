@@ -135,6 +135,7 @@ HRESULT AddInAggregated::OnConnection(IDispatch *Application, ext_ConnectMode Co
     m_factory->setApplication(m_applicationIDisp);
     m_factory->onBeforeConnectionEvent();
     onConnectionEvent();
+    m_factory->onAfterConnectionEvent();
 
     // If we are connecting during startup, we should wait for OnStartupComplete
     // before modifying the user-interface and prompting the user. Otherwise, we

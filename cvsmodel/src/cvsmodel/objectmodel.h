@@ -21,7 +21,7 @@ class CVSMODEL_SHARED_EXPORT ObjectModel : public QAbstractItemModel
     Q_OBJECT
 public:
     ObjectModel(QObject * parent = 0);
-    void init(const QList<Model::ObjectType> &objectTypes, ProjectContainer *project);
+    void init(ProjectContainer *projectContainer);
 
     //----------------------------------------------------------------------------------------------------------------------
     // QAbstractItemModel overrides
@@ -40,6 +40,9 @@ public:
     bool setData(const QModelIndex &index, const QVariant &value, int role);
 
     void saveSettigs();
+
+    ProjectContainer *projectContainer() const;
+
 
     // TODO: split Model and Manager
 
@@ -100,9 +103,9 @@ signals:
 private:
     QAxObject *m_application;
     QList<ObjectItem*> m_items;
-    ObjectItemMap* m_mapItems;
-    QList<Model::ObjectType> m_objectTypes;
-    ProjectContainer *m_project;
+    ObjectItemMap* m_itemMap;
+    QList<Model::ObjectType> m_objectTypesForItemMap;
+    ProjectContainer *m_projectContainer;
 
     void mergeItemProperties(ObjectItem* itemSrc, ObjectItem* itemDst);
 };

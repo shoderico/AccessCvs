@@ -1,6 +1,8 @@
 #include "maindialog.h"
 #include "ui_maindialog.h"
 
+#include "cvsmodel/processor/objectprocessor.h"
+#include "cvsmodel/projectcontainer.h"
 #include "cvsmodel/objectmodel.h"
 #include "cvsmodel/objectproxymodel.h"
 
@@ -23,26 +25,15 @@ MainDialog::MainDialog(ObjectModel *model, ObjectProxyModel *proxyModel, QWidget
 {
     ui->setupUi(this);
 
+    foreach( Model::ObjectType objectType, model->projectContainer()->objectTypes()  )
+    {
+        ObjectProcessor *processor = model->projectContainer()->operator []( objectType );
 
-    m_selectionChecks.append( new ObjectItemCheckBox(tr("Tables"), Model::TableDefObjectType, this) );
-    m_selectionChecks.append( new ObjectItemCheckBox(tr("Queries"), Model::QueryObjectType, this) );
-    m_selectionChecks.append( new ObjectItemCheckBox(tr("Forms"), Model::FormObjectType, this) );
-    m_selectionChecks.append( new ObjectItemCheckBox(tr("Reports"), Model::ReportObjectType, this) );
-    m_selectionChecks.append( new ObjectItemCheckBox(tr("Macros"), Model::MacroObjectType, this) );
-    m_selectionChecks.append( new ObjectItemCheckBox(tr("Modules"), Model::ModuleObjectType, this) );
-    m_selectionChecks.append( new ObjectItemCheckBox(tr("References"), Model::ReferenceObjectType, this) );
-    m_selectionChecks.append( new ObjectItemCheckBox(tr("AccessProject"), Model::ProjectFileType, this) );
-    m_selectionChecks.append( new ObjectItemCheckBox(tr("VBEProject"), Model::VBProjectType, this) );
+        m_selectionChecks .append( new ObjectItemCheckBox( processor, this) );
+        m_filterChecks    .append( new ObjectItemCheckBox( processor, this) );
+    }
 
-    m_filterChecks.append( new ObjectItemCheckBox(tr("Tables"), Model::TableDefObjectType, this) );
-    m_filterChecks.append( new ObjectItemCheckBox(tr("Queries"), Model::QueryObjectType, this) );
-    m_filterChecks.append( new ObjectItemCheckBox(tr("Forms"), Model::FormObjectType, this) );
-    m_filterChecks.append( new ObjectItemCheckBox(tr("Reports"), Model::ReportObjectType, this) );
-    m_filterChecks.append( new ObjectItemCheckBox(tr("Macros"), Model::MacroObjectType, this) );
-    m_filterChecks.append( new ObjectItemCheckBox(tr("Modules"), Model::ModuleObjectType, this) );
-    m_filterChecks.append( new ObjectItemCheckBox(tr("References"), Model::ReferenceObjectType, this) );
-    m_filterChecks.append( new ObjectItemCheckBox(tr("AccessProject"), Model::ProjectFileType, this) );
-    m_filterChecks.append( new ObjectItemCheckBox(tr("VBEProject"), Model::VBProjectType, this) );
+
 
 
     // FIXME: to be canceled
@@ -279,9 +270,14 @@ void MainDialog::setSelectObjectType(int objectTypes)
 }
 
 
-ObjectItemCheckBox::ObjectItemCheckBox(const QString &text, const int selectObjectType, QWidget *parent)
-    : QCheckBox(text, parent)
-    , m_selectObjectType(selectObjectType)
+ObjectItemCheckBox::ObjectItemCheckBox(ObjectProcessor *processor, QWidget *parent)
+    : QCheckBox(parent)
+    , m_selectObjectType(processor->selectObjectType())
 {
+    if ( !processor->iconPath().isEmpty() )
+        setIcon( QIcon(processor->iconPath()) );
+
+    if ( !processor->uiText().isEmpty())
+        setToolTip( processor->uiText() );
 
 }

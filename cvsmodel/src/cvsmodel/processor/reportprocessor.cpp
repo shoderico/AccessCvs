@@ -25,6 +25,7 @@ ReportProcessor::ReportProcessor(ProjectContainer *parent)
     m_objectPathName      = "reports";
     m_containerName       = "Reports";
     m_iconPath            = ":/images/report.png";
+    m_uiText              = "Reports";
 
     m_tempFileExtension   = "tmp";
     m_designFileExtension = "rpt";
@@ -204,7 +205,7 @@ bool ReportProcessor::afterImportFromTempDirToProject(QAxObject *object, const Q
 
         // consturct new PrtDevMode
         DEVMODEA dm;
-        mempcpy( &dm, (const void*)prtDevModeDataSrc.constData(), sizeof(dm) );
+        memcpy( &dm, (const void*)prtDevModeDataSrc.constData(), sizeof(dm) );
         dm.dmOrientation = dmTemp.dmOrientation;
         dm.dmPaperSize   = dmTemp.dmPaperSize;
         dm.dmPaperLength = dmTemp.dmPaperLength;

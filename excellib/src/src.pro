@@ -9,6 +9,7 @@ DEFINES += EXCELLIB_LIBRARY
 
 SOURCES += \
     excellib/excel.cpp \
+    excellib/excel_impl.cpp
 
 HEADERS +=\
     excellib/excel.h \
@@ -18,3 +19,7 @@ HEADERS +=\
 include(../../common.pri)
 include(../../submodule.pri)
 include(../$${TARGET}_dep.pri)
+
+win32-msvc* {
+    QMAKE_CXXFLAGS += -bigobj
+}

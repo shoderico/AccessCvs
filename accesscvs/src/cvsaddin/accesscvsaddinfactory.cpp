@@ -9,6 +9,8 @@
 #include "acccontroller/acccontroller.h"
 #include "helpcontroller/helpcontroller.h"
 
+#include "resource/resource.h"
+
 static const char LibraryID[]     = "{27e3bd9e-2ee3-41ba-a69d-61f510fda820}";
 static const char ApplicationID[] = "{18bf0f9a-c557-4324-b5d8-f4077561a87e}";
 static const char ClassID[]       = "{85842016-1eb7-4e60-ae2d-a473360251a8}";
@@ -52,6 +54,7 @@ QAxAggregated *AccessCvsAddInFactory::createAggregate(QObject *parent)
     addInImpl->appendController( new AccessCvsController(this) );
     addInImpl->appendController( new AccController(this) );
     addInImpl->appendController( new HelpController(this) );
+    m_addInImpl = addInImpl;
     return addInImpl;
 }
 
@@ -82,12 +85,24 @@ int AccessCvsAddInFactory::applicationHwnd()
 
 void AccessCvsAddInFactory::onBeforeConnectionEvent()
 {
-    Q_INIT_RESOURCE(resource);
+    Resource res;
+    res.init();
+}
+
+void AccessCvsAddInFactory::onAfterConnectionEvent()
+{
+    // show manual dialog if ribbon ui is not supported
+    QString accessVer = m_application->SysCmd( Access::acSysCmdAccessVer ).toString();
+    if ( accessVer < "12.0" )
+    {
+        m_addInImpl->onButtonClicked( QString("StandardManualButton") );
+    }
 }
 
 void AccessCvsAddInFactory::onAfterDisconnectionEvent()
 {
-    Q_CLEANUP_RESOURCE(resource);
+    Resource res;
+    res.cleanup();
 }
 
 // onAddInImplConnection : init Resource

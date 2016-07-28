@@ -13,10 +13,12 @@ CONFIG += dll
 
 DEFINES += RESOURCE_LIBRARY
 
-SOURCES +=
+SOURCES += \
+    resource/resource.cpp
 
 HEADERS += \
-    resource/resource_global.h
+    resource/resource_global.h \
+    resource/resource.h
 
 RESOURCES += \
     resource/resource.qrc

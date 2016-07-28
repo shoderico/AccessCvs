@@ -44,16 +44,16 @@
 ObjectModel::ObjectModel(QObject * parent)
     : QAbstractItemModel(parent)
     , m_application(0)
-    , m_mapItems(0)
+    , m_itemMap(0)
 {
 }
 
-void ObjectModel::init(const QList<Model::ObjectType> &objectTypes, ProjectContainer *project)
+void ObjectModel::init(ProjectContainer *projectContainer)
 {
-    m_objectTypes = objectTypes;
-    m_mapItems = new ObjectItemMap(objectTypes);
+    m_objectTypesForItemMap = projectContainer->objectTypesForItemMap();
+    m_itemMap = new ObjectItemMap(m_objectTypesForItemMap);
 
-    m_project = project;
+    m_projectContainer = projectContainer;
 }
 
 int ObjectModel::columnCount(const QModelIndex &parent) const
@@ -210,21 +210,6 @@ bool ObjectModel::setData(const QModelIndex &index, const QVariant &value, int r
                 emit dataChanged( createIndex(index.row(), Model::DifferentColumn),  createIndex(index.row(), Model::DifferentColumn) );
                 emit dataChanged( createIndex(index.row(), Model::ExportDateColumn), createIndex(index.row(), Model::ExportDateColumn) );
 
-                // no need to do this because Refresh() does clear temp dir
-                /*
-                // Export dataFile into TempDir with hasData = true,
-                // and then change hasData to false and do Refresh,
-                // the item is always DifferentContents because *.dat file in TempDir but not in SourceDir.
-                // so, we have to clear TempDir if hasData is changed.
-                if ( item->hasData() )
-                {
-                    ObjectItemMap target;
-                    target[ item->objectType() ].insert( item->name(), item );
-                    DeleteFromTempDirCommand deleteFromTempDir(m_application, this);
-                    deleteFromTempDir.execute( &target );
-                }
-                */
-
                 // save settings
                 saveSettigs();
                 return true;
@@ -240,23 +225,13 @@ bool ObjectModel::setData(const QModelIndex &index, const QVariant &value, int r
 void ObjectModel::saveSettigs()
 {
     // save settings
-    ObjectProcessor *processor;
+    m_projectContainer->updateSetting( &m_items );
+    m_projectContainer->saveSetting();
+}
 
-    {
-        QStringList tableDataTargets;
-        QList<ObjectItem*> items = m_mapItems->value( Model::TableDef ).values();
-        for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it  )
-        {
-            if ( (*it)->hasData() )
-                tableDataTargets.append( (*it)->name() );
-        }
-
-        processor = m_project->operator []( Model::TableDef );
-        TableDefProcessor *tableDataProcessor = static_cast<TableDefProcessor*>(processor);
-        tableDataProcessor->setTableDataTargets( &tableDataTargets );
-    }
-
-    m_project->saveSettings();
+ProjectContainer *ObjectModel::projectContainer() const
+{
+    return m_projectContainer;
 }
 
 void ObjectModel::setApplication(QAxObject *application)
@@ -377,17 +352,17 @@ void ObjectModel::prepareMerge()
 
 bool ObjectModel::clearItemsCache()
 {
-    m_project->initialize(m_application);
+    m_projectContainer->initialize(m_application);
 
-    ObjectItemMap targets(m_objectTypes);
+    ObjectItemMap targets(m_objectTypesForItemMap);
     getItems(&targets, Model::AllItems, true /*selectedOnly*/, false /* modifiedOnly */);
 
-    DeleteFromTempDirCommand deleteFromTempDir(m_project, m_application, this);
+    DeleteFromTempDirCommand deleteFromTempDir(m_projectContainer, m_application, this);
     deleteFromTempDir.execute(&targets);
 
     // smart-refresh : post-process
-    UpdateItemsExportDateCommand updateItemsExportDate(QDateTime(), Model::AllDifferenceTypes,  m_project, m_application, &m_items, this);
-    UpdateItemsDifferenceCommand updateItemsDifference(Model::Unchecked_OD,                     m_project, m_application, &m_items, this);
+    UpdateItemsExportDateCommand updateItemsExportDate(QDateTime(), Model::AllDifferenceTypes,  m_projectContainer, m_application, &m_items, this);
+    UpdateItemsDifferenceCommand updateItemsDifference(Model::Unchecked_OD,                     m_projectContainer, m_application, &m_items, this);
     updateItemsExportDate.execute(&targets);
     updateItemsDifference.execute(&targets);
 
@@ -396,7 +371,7 @@ bool ObjectModel::clearItemsCache()
 
 bool ObjectModel::refreshItems()
 {
-    m_project->initialize(m_application);
+    m_projectContainer->initialize(m_application);
 
     //-------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------
@@ -418,30 +393,30 @@ bool ObjectModel::refreshItems()
     // for InBoth
     {
 
-        ObjectItemMap targetsAll(m_objectTypes);
+        ObjectItemMap targetsAll(m_objectTypesForItemMap);
         getItems(&targetsAll, Model::InBoth, false/*selectedOnly*/, false/*modifiedOnly*/);
 
 
         // smart-refresh : pre-process
-        UpdateItemsDifferenceAsIsCommand updateItemsDifferenceAsIs(m_project, m_application, &m_items, this);
+        UpdateItemsDifferenceAsIsCommand updateItemsDifferenceAsIs(m_projectContainer, m_application, &m_items, this);
 //        updateItemsDifferenceByFileTime(&targetsAll); // for smart refresh, we assume the contents are the same if item's updateDate <= filetime of TempFile
         updateItemsDifferenceAsIs.execute(&targetsAll); // for smart refresh, we set item to be SameContents if TempDir and SourceDir are exactly the same
 
 
-        ObjectItemMap targets(m_objectTypes);
+        ObjectItemMap targets(m_objectTypesForItemMap);
         getItems(&targets, Model::InBoth_NotSame, false/*selectedOnly*/, false/*modifiedOnly*/);
 
-        ExportFromProjectToTempDirCommand   exportFromProjectToTempDir  (m_project, m_application, this);
-        SanitizeTempDirCommand              sanitizeTempDir             (m_project, m_application, this);
-        CompareTempDirCommand               compareTempDir              (m_project, m_application, &m_items, this);
+        ExportFromProjectToTempDirCommand   exportFromProjectToTempDir  (m_projectContainer, m_application, this);
+        SanitizeTempDirCommand              sanitizeTempDir             (m_projectContainer, m_application, this);
+        CompareTempDirCommand               compareTempDir              (m_projectContainer, m_application, &m_items, this);
         exportFromProjectToTempDir  .execute(&targets); // InBoth           : BLOCK :                   :
         sanitizeTempDir             .execute(&targets); // InBoth           :       :                   :
         compareTempDir              .execute(&targets); // InBoth           :       :                   :
 
 
         // smart-refresh : post-process
-        UpdateFileTimeInTempDirByExportDateCommand  updateFileTimeInTempDirByExportDate (Model::DifferentContentsTypes,                         m_project, m_application, &m_items, this);
-        UpdateItemsExportDateCommand                updateItemsExportDate               (QDateTime::currentDateTime(), Model::SameContentsType, m_project, m_application, &m_items, this);
+        UpdateFileTimeInTempDirByExportDateCommand  updateFileTimeInTempDirByExportDate (Model::DifferentContentsTypes,                         m_projectContainer, m_application, &m_items, this);
+        UpdateItemsExportDateCommand                updateItemsExportDate               (QDateTime::currentDateTime(), Model::SameContentsType, m_projectContainer, m_application, &m_items, this);
         updateFileTimeInTempDirByExportDate .execute(&targets); // for smart refresh, we must rollback filetime of TempFile if different.
         updateItemsExportDate               .execute(&targets); // for smart-refresh, update exportDate
 
@@ -457,7 +432,7 @@ bool ObjectModel::refreshItems()
 
 bool ObjectModel::executeExport()
 {
-    m_project->initialize(m_application);
+    m_projectContainer->initialize(m_application);
 
     //-------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------
@@ -470,10 +445,10 @@ bool ObjectModel::executeExport()
     // because each process changes the states of items
     bool selectedOnly = true;
 
-    ObjectItemMap targetsInProjectOnly(m_objectTypes);
-    ObjectItemMap targetsInSourceDirOnly(m_objectTypes);
-    ObjectItemMap targetsInBoth_Different(m_objectTypes);
-    ObjectItemMap targetsInBoth_Same(m_objectTypes);
+    ObjectItemMap targetsInProjectOnly(m_objectTypesForItemMap);
+    ObjectItemMap targetsInSourceDirOnly(m_objectTypesForItemMap);
+    ObjectItemMap targetsInBoth_Different(m_objectTypesForItemMap);
+    ObjectItemMap targetsInBoth_Same(m_objectTypesForItemMap);
 
     getItems(&targetsInProjectOnly,    Model::InProjectOnly,    selectedOnly, false/*modifiedOnly*/);
     getItems(&targetsInSourceDirOnly,  Model::InSourceDirOnly,  selectedOnly, false/*modifiedOnly*/);
@@ -485,9 +460,9 @@ bool ObjectModel::executeExport()
         {
             ObjectItemMap *targets = &targetsInProjectOnly;
 
-            ExportFromProjectToTempDirCommand   exportFromProjectToTempDir  (m_project, m_application, this);
-            SanitizeTempDirCommand              sanitizeTempDir             (m_project, m_application, this);
-            CopyFromTempDirToSourceDirCommand   copyFromTempDirToSourceDir  (m_project, m_application, this);
+            ExportFromProjectToTempDirCommand   exportFromProjectToTempDir  (m_projectContainer, m_application, this);
+            SanitizeTempDirCommand              sanitizeTempDir             (m_projectContainer, m_application, this);
+            CopyFromTempDirToSourceDirCommand   copyFromTempDirToSourceDir  (m_projectContainer, m_application, this);
             exportFromProjectToTempDir  .execute(targets);  // InProjectOnly    : BLOCK :                   :
             sanitizeTempDir             .execute(targets);  // InProjectOnly    :       :                   :
             copyFromTempDirToSourceDir  .execute(targets);  // InProjectOnly    :       : Dirty SourceDir  : need one-more step? like confirm
@@ -495,9 +470,9 @@ bool ObjectModel::executeExport()
 
             // smart-refresh : post-process
             QDateTime currentTime = QDateTime::currentDateTime();
-            UpdateItemsExportDateCommand    updateItemsExportDate   (currentTime, Model::AllDifferenceTypes,    m_project, m_application, &m_items, this);
-            UpdateItemsInSourceDirCommand   updateItemsInSourceDir  (Model::Present,                            m_project, m_application, &m_items, this);
-            UpdateItemsDifferenceCommand    updateItemsDifference   (Model::SameContents,                       m_project, m_application, &m_items, this);
+            UpdateItemsExportDateCommand    updateItemsExportDate   (currentTime, Model::AllDifferenceTypes,    m_projectContainer, m_application, &m_items, this);
+            UpdateItemsInSourceDirCommand   updateItemsInSourceDir  (Model::Present,                            m_projectContainer, m_application, &m_items, this);
+            UpdateItemsDifferenceCommand    updateItemsDifference   (Model::SameContents,                       m_projectContainer, m_application, &m_items, this);
             updateItemsExportDate   .execute(targets);  // set exportDate
             updateItemsInSourceDir  .execute(targets);  // set inSourceDir flag to Present
             updateItemsDifference   .execute(targets);  // set isDifferent  flag to SameContents
@@ -510,7 +485,7 @@ bool ObjectModel::executeExport()
         {
             ObjectItemMap *targets = &targetsInSourceDirOnly;
 
-            DeleteFromSourceDirCommand deleteFromSourceDir(m_project, m_application, this);
+            DeleteFromSourceDirCommand deleteFromSourceDir(m_projectContainer, m_application, this);
             deleteFromSourceDir.execute(targets);                                             // InSourceDirOnly :       : Dirty SourceDir  : need one-more step? like confirm
 
             // smart-refresh : post-process
@@ -524,15 +499,15 @@ bool ObjectModel::executeExport()
         {
             ObjectItemMap *targets = &targetsInBoth_Different;
 
-            CopyFromTempDirToSourceDirCommand copyFromTempDirToSourceDir(m_project, m_application, this);
+            CopyFromTempDirToSourceDirCommand copyFromTempDirToSourceDir(m_projectContainer, m_application, this);
             copyFromTempDirToSourceDir.execute(targets);                                  // InBoth_Different :       : Dirty SourceDir  : need one-more step? like confirm
 
 
             // smart-refresh : post-process
             QDateTime currentTime = QDateTime::currentDateTime();
-            UpdateFileTimeInTempDirCommand  updateFileTimeInTempDir (currentTime, Model::AllDifferenceTypes,    m_project, m_application, this);
-            UpdateItemsExportDateCommand    updateItemsExportDate   (currentTime, Model::AllDifferenceTypes,    m_project, m_application, &m_items, this);
-            UpdateItemsDifferenceCommand    updateItemsDifference   (Model::SameContents,                       m_project, m_application, &m_items, this);
+            UpdateFileTimeInTempDirCommand  updateFileTimeInTempDir (currentTime, Model::AllDifferenceTypes,    m_projectContainer, m_application, this);
+            UpdateItemsExportDateCommand    updateItemsExportDate   (currentTime, Model::AllDifferenceTypes,    m_projectContainer, m_application, &m_items, this);
+            UpdateItemsDifferenceCommand    updateItemsDifference   (Model::SameContents,                       m_projectContainer, m_application, &m_items, this);
             updateFileTimeInTempDir .execute(targets);     // for smart-refresh, we need to update filetime which rollbacked in smart-refresh process
             updateItemsExportDate   .execute(targets);     // for smart-refresh, update exportDate too.
             updateItemsDifference   .execute(targets);     // set isDifferent flag to SameContents
@@ -543,14 +518,14 @@ bool ObjectModel::executeExport()
         {
             ObjectItemMap *targets = &targetsInBoth_Same;
 
-            CopyFromTempDirToSourceDirCommand copyFromTempDirToSourceDir(m_project, m_application, this);
+            CopyFromTempDirToSourceDirCommand copyFromTempDirToSourceDir(m_projectContainer, m_application, this);
             copyFromTempDirToSourceDir.execute(targets);    // InBoth_Same      :       : Dirty SourceDir  : need one-more step? like confirm
 
 
             // smart-refresh : post-process
             QDateTime currentTime = QDateTime::currentDateTime();
-            UpdateFileTimeInTempDirCommand  updateFileTimeInTempDir (currentTime, Model::AllDifferenceTypes,    m_project, m_application, this);
-            UpdateItemsExportDateCommand    updateItemsExportDate   (currentTime, Model::AllDifferenceTypes,    m_project, m_application, &m_items, this);
+            UpdateFileTimeInTempDirCommand  updateFileTimeInTempDir (currentTime, Model::AllDifferenceTypes,    m_projectContainer, m_application, this);
+            UpdateItemsExportDateCommand    updateItemsExportDate   (currentTime, Model::AllDifferenceTypes,    m_projectContainer, m_application, &m_items, this);
             updateFileTimeInTempDir .execute(targets);  // we need to update filetime which rollbacked in smart-refresh process
             updateItemsExportDate   .execute(targets);  // update exportDate too.
 
@@ -563,7 +538,7 @@ bool ObjectModel::executeExport()
 
 bool ObjectModel::executeImport()
 {
-    m_project->initialize(m_application);
+    m_projectContainer->initialize(m_application);
 
     //-------------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------------
@@ -576,10 +551,10 @@ bool ObjectModel::executeImport()
     // because each process changes the states of items
     bool selectedOnly = true;
 
-    ObjectItemMap targetsInProjectOnly(m_objectTypes);
-    ObjectItemMap targetsInSourceDirOnly(m_objectTypes);
-    ObjectItemMap targetsInBoth_Different(m_objectTypes);
-    ObjectItemMap targetsInBoth_Same(m_objectTypes);
+    ObjectItemMap targetsInProjectOnly(m_objectTypesForItemMap);
+    ObjectItemMap targetsInSourceDirOnly(m_objectTypesForItemMap);
+    ObjectItemMap targetsInBoth_Different(m_objectTypesForItemMap);
+    ObjectItemMap targetsInBoth_Same(m_objectTypesForItemMap);
 
     getItems(&targetsInProjectOnly,    Model::InProjectOnly,    selectedOnly, false/*modifiedOnly*/);
     getItems(&targetsInSourceDirOnly,  Model::InSourceDirOnly,  selectedOnly, false/*modifiedOnly*/);
@@ -592,7 +567,7 @@ bool ObjectModel::executeImport()
         {
             ObjectItemMap *targets = &targetsInProjectOnly;
 
-            DeleteFromProjectCommand deleteFromProject(m_project, m_application, this);
+            DeleteFromProjectCommand deleteFromProject(m_projectContainer, m_application, this);
             deleteFromProject.execute(targets); // InProjectOnly    : BLOCK : Dirty Project : need one-more step? like confirm
 
             // smart-refresh : post-process
@@ -605,9 +580,9 @@ bool ObjectModel::executeImport()
         {
             ObjectItemMap *targets = &targetsInSourceDirOnly;
 
-            CopyFromSourceDirToTempDirCommand   copyFromSourceDirToTempDir  (m_project, m_application, this);
-            DesanitizeTempDirCommand            desanitizeTempDir           (m_project, m_application, this);
-            ImportFromTempDirToProjectCommand   importFromTempDirToProject  (m_project, m_application, this);
+            CopyFromSourceDirToTempDirCommand   copyFromSourceDirToTempDir  (m_projectContainer, m_application, this);
+            DesanitizeTempDirCommand            desanitizeTempDir           (m_projectContainer, m_application, this);
+            ImportFromTempDirToProjectCommand   importFromTempDirToProject  (m_projectContainer, m_application, this);
             copyFromSourceDirToTempDir  .execute(targets);  // InFileSytemOnly  :       :               :
             desanitizeTempDir           .execute(targets);  // InFileSytemOnly  :       :               :
             importFromTempDirToProject  .execute(targets);  // InSourceDirOnly : BLOCK : Dirty Project : need one-more step? like confirm
@@ -615,11 +590,11 @@ bool ObjectModel::executeImport()
 
             // smart-refresh : post-process
             QDateTime currentTime = QDateTime::currentDateTime();
-            UpdateFileTimeInTempDirCommand                  updateFileTimeInTempDir                 (currentTime, Model::AllDifferenceTypes,    m_project, m_application, this);
-            UpdateItemsExportDateCommand                    updateItemsExportDate                   (currentTime, Model::AllDifferenceTypes,    m_project, m_application, &m_items, this);
-            UpdateItemsInProjectCommand                     updateItemsInProject                    (Model::Present,                            m_project, m_application, &m_items, this);
-            UpdateItemsDifferenceCommand                    updateItemsDifference                   (Model::SameContents,                       m_project, m_application, &m_items, this);
-            UpdateItemsCreateUpdateDateFromProjectCommand   updateItemsCreateUpdateDateFromProject  (                                           m_project, m_application, &m_items, this);
+            UpdateFileTimeInTempDirCommand                  updateFileTimeInTempDir                 (currentTime, Model::AllDifferenceTypes,    m_projectContainer, m_application, this);
+            UpdateItemsExportDateCommand                    updateItemsExportDate                   (currentTime, Model::AllDifferenceTypes,    m_projectContainer, m_application, &m_items, this);
+            UpdateItemsInProjectCommand                     updateItemsInProject                    (Model::Present,                            m_projectContainer, m_application, &m_items, this);
+            UpdateItemsDifferenceCommand                    updateItemsDifference                   (Model::SameContents,                       m_projectContainer, m_application, &m_items, this);
+            UpdateItemsCreateUpdateDateFromProjectCommand   updateItemsCreateUpdateDateFromProject  (                                           m_projectContainer, m_application, &m_items, this);
             updateFileTimeInTempDir                 .execute(targets);  // for smart refresh, update filetime of TempFile if imported
             updateItemsExportDate                   .execute(targets);  // for smart-refresh, update exportDate too.
             updateItemsInProject                    .execute(targets);  // set inProject   flag to Present
@@ -635,9 +610,9 @@ bool ObjectModel::executeImport()
         {
             ObjectItemMap *targets = &targetsInBoth_Different;
 
-            CopyFromSourceDirToTempDirCommand   copyFromSourceDirToTempDir  (m_project, m_application, this);
-            DesanitizeTempDirCommand            desanitizeTempDir           (m_project, m_application, this);
-            ImportFromTempDirToProjectCommand   importFromTempDirToProject  (m_project, m_application, this);
+            CopyFromSourceDirToTempDirCommand   copyFromSourceDirToTempDir  (m_projectContainer, m_application, this);
+            DesanitizeTempDirCommand            desanitizeTempDir           (m_projectContainer, m_application, this);
+            ImportFromTempDirToProjectCommand   importFromTempDirToProject  (m_projectContainer, m_application, this);
             copyFromSourceDirToTempDir  .execute(targets);  // InBoth_Different :       :               :
             desanitizeTempDir           .execute(targets);  // InBoth_Different :       :               :
             importFromTempDirToProject  .execute(targets);  // InBoth_Different : BLOCK : Dirty Project : need one-more step? like confirm
@@ -645,10 +620,10 @@ bool ObjectModel::executeImport()
 
             // smart-refresh : post-process
             QDateTime currentTime = QDateTime::currentDateTime();
-            UpdateFileTimeInTempDirCommand                  updateFileTimeInTempDir                 (currentTime, Model::AllDifferenceTypes,    m_project, m_application, this);
-            UpdateItemsExportDateCommand                    updateItemsExportDate                   (currentTime, Model::AllDifferenceTypes,    m_project, m_application, &m_items, this);
-            UpdateItemsDifferenceCommand                    updateItemsDifference                   (Model::SameContents,                       m_project, m_application, &m_items, this);
-            UpdateItemsCreateUpdateDateFromProjectCommand   updateItemsCreateUpdateDateFromProject  (                                           m_project, m_application, &m_items, this);
+            UpdateFileTimeInTempDirCommand                  updateFileTimeInTempDir                 (currentTime, Model::AllDifferenceTypes,    m_projectContainer, m_application, this);
+            UpdateItemsExportDateCommand                    updateItemsExportDate                   (currentTime, Model::AllDifferenceTypes,    m_projectContainer, m_application, &m_items, this);
+            UpdateItemsDifferenceCommand                    updateItemsDifference                   (Model::SameContents,                       m_projectContainer, m_application, &m_items, this);
+            UpdateItemsCreateUpdateDateFromProjectCommand   updateItemsCreateUpdateDateFromProject  (                                           m_projectContainer, m_application, &m_items, this);
             updateFileTimeInTempDir                 .execute(targets);  // for smart refresh, update filetime of TempFile if imported
             updateItemsExportDate                   .execute(targets);  // for smart-refresh, update exportDate too.
             updateItemsDifference                   .execute(targets);  // set isDifferent flag to SameContents
@@ -659,9 +634,9 @@ bool ObjectModel::executeImport()
         {
             ObjectItemMap *targets = &targetsInBoth_Same;
 
-            CopyFromSourceDirToTempDirCommand   copyFromSourceDirToTempDir  (m_project, m_application, this);
-            DesanitizeTempDirCommand            desanitizeTempDir           (m_project, m_application, this);
-            ImportFromTempDirToProjectCommand   importFromTempDirToProject  (m_project, m_application, this);
+            CopyFromSourceDirToTempDirCommand   copyFromSourceDirToTempDir  (m_projectContainer, m_application, this);
+            DesanitizeTempDirCommand            desanitizeTempDir           (m_projectContainer, m_application, this);
+            ImportFromTempDirToProjectCommand   importFromTempDirToProject  (m_projectContainer, m_application, this);
             copyFromSourceDirToTempDir  .execute(targets);  // InBoth_Same      :       :               :
             desanitizeTempDir           .execute(targets);  // InBoth_Same      :       :               :
             importFromTempDirToProject  .execute(targets);  // InBoth_Same      : BLOCK : Dirty Project : need one-more step? like confirm
@@ -669,9 +644,9 @@ bool ObjectModel::executeImport()
 
             // smart-refresh : post-process
             QDateTime currentTime = QDateTime::currentDateTime();
-            UpdateFileTimeInTempDirCommand                  updateFileTimeInTempDir                 (currentTime, Model::AllDifferenceTypes,    m_project, m_application, this);
-            UpdateItemsExportDateCommand                    updateItemsExportDate                   (currentTime, Model::AllDifferenceTypes,    m_project, m_application, &m_items, this);
-            UpdateItemsCreateUpdateDateFromProjectCommand   updateItemsCreateUpdateDateFromProject  (                                           m_project, m_application, &m_items, this);
+            UpdateFileTimeInTempDirCommand                  updateFileTimeInTempDir                 (currentTime, Model::AllDifferenceTypes,    m_projectContainer, m_application, this);
+            UpdateItemsExportDateCommand                    updateItemsExportDate                   (currentTime, Model::AllDifferenceTypes,    m_projectContainer, m_application, &m_items, this);
+            UpdateItemsCreateUpdateDateFromProjectCommand   updateItemsCreateUpdateDateFromProject  (                                           m_projectContainer, m_application, &m_items, this);
             updateFileTimeInTempDir                 .execute(targets);  // for smart refresh, update filetime of TempFile if imported
             updateItemsExportDate                   .execute(targets);  // for smart-refresh, update exportDate too.
             updateItemsCreateUpdateDateFromProject  .execute(targets);  // set create/updateDate from Access Object
@@ -825,7 +800,7 @@ void ObjectModel::selectItems(Model::ItemsTypes itemsType, bool selected, bool r
         helper.changedAll();
     }
 
-    ObjectItemMap targets(m_objectTypes);
+    ObjectItemMap targets(m_objectTypesForItemMap);
     getItems(&targets, itemsType, false/*selectedOnly*/, false/*modifiedOnly*/);
     foreach (const Model::ObjectType &objectType, targets.keys() )
     {
@@ -855,7 +830,7 @@ void ObjectModel::selectItemsByObjectType(Model::SelectObjectTypes objectTypes, 
         helper.changedAll();
     }
 
-    ObjectItemMap targets(m_objectTypes);
+    ObjectItemMap targets(m_objectTypesForItemMap);
     getItems(&targets, Model::AllItems, objectTypes, false/*selectedOnly*/, false/*modifiedOnly*/);
     foreach (const Model::ObjectType &objectType, targets.keys() )
     {
@@ -877,9 +852,9 @@ void ObjectModel::selectItemsByObjectType(Model::SelectObjectTypes objectTypes, 
 void ObjectModel::emitSelectionChanged()
 {
     int objectTypes = 0;
-    foreach( const Model::ObjectType &objectType, m_mapItems->keys() )
+    foreach( const Model::ObjectType &objectType, m_itemMap->keys() )
     {
-       foreach( const ObjectItem *item, m_mapItems->value( objectType ).values() )
+       foreach( const ObjectItem *item, m_itemMap->value( objectType ).values() )
        {
            if (item->isSelected())
            {
@@ -911,7 +886,7 @@ void ObjectModel::deleteItems(ObjectItemMap *allTargets)
 
             int row = m_items.indexOf( (*it) );
             beginRemoveRows( QModelIndex(), row, row );
-            m_mapItems->operator []( objectType ).remove( (*it)->name() );
+            m_itemMap->operator []( objectType ).remove( (*it)->name() );
             m_items.removeAll( (*it) );
             delete (*it);
             endRemoveRows();
@@ -923,7 +898,7 @@ void ObjectModel::deleteItems(ObjectItemMap *allTargets)
 
 void ObjectModel::reloadAndMergeItems()
 {
-    m_project->initialize(m_application);
+    m_projectContainer->initialize(m_application);
 
     // FIXME: conjunction with BLOCKING and non-blocking, can be async ?
 
@@ -932,8 +907,8 @@ void ObjectModel::reloadAndMergeItems()
     QList<ObjectItem*> itemsFromProject;
     QList<ObjectItem*> itemsFromSourceDir;
 
-    LoadItemsFromProjectCommand     loadItemsFromProject    (m_project, m_application, &itemsFromProject, this);
-    LoadItemsFromSourceDirCommand   loadItemsFromSourceDir  (m_project, m_application, &itemsFromSourceDir, this);
+    LoadItemsFromProjectCommand     loadItemsFromProject    (m_projectContainer, m_application, &itemsFromProject, this);
+    LoadItemsFromSourceDirCommand   loadItemsFromSourceDir  (m_projectContainer, m_application, &itemsFromSourceDir, this);
     loadItemsFromProject    .execute( NULL );
     loadItemsFromSourceDir  .execute( NULL );
 
@@ -946,7 +921,7 @@ void ObjectModel::reloadAndMergeItems()
 
     // first of all, we merge both items into one
     QList<ObjectItem*> items;
-    ObjectItemMap mapItems(m_objectTypes);
+    ObjectItemMap mapItems(m_objectTypesForItemMap);
 
     // merged from Project
     for ( QList<ObjectItem*>::iterator it = itemsFromProject.begin(); it != itemsFromProject.end(); ++it )
@@ -987,7 +962,7 @@ void ObjectModel::reloadAndMergeItems()
         if ( !mapItems[ (*it)->objectType() ].contains( (*it)->name() ) )
         {
             ObjectItem *item = (*it);
-            m_mapItems->operator []( (*it)->objectType() ).remove( (*it)->name() );
+            m_itemMap->operator []( (*it)->objectType() ).remove( (*it)->name() );
             it = m_items.erase( it );
             --it; // back one
             delete item;
@@ -997,10 +972,10 @@ void ObjectModel::reloadAndMergeItems()
     // add new-item to member  if not exist in member
     for ( QList<ObjectItem*>::iterator it = items.begin(); it != items.end(); ++it )
     {
-        if ( !m_mapItems->value( (*it)->objectType() ).contains( (*it)->name() ) )
+        if ( !m_itemMap->value( (*it)->objectType() ).contains( (*it)->name() ) )
         {
             ObjectItem *item = new ObjectItem( (*it) , this);
-            m_mapItems->operator []( (*it)->objectType() ).insert( (*it)->name(), item );
+            m_itemMap->operator []( (*it)->objectType() ).insert( (*it)->name(), item );
             m_items.append( item );
         }
     }
@@ -1008,9 +983,9 @@ void ObjectModel::reloadAndMergeItems()
     // and now, we merge  from new-item to local-item
     for ( QList<ObjectItem*>::iterator it = items.begin(); it != items.end(); ++it )
     {
-        if ( m_mapItems->value( (*it)->objectType() ).contains( (*it)->name() ) )
+        if ( m_itemMap->value( (*it)->objectType() ).contains( (*it)->name() ) )
         {
-            ObjectItem *item = m_mapItems->value( (*it)->objectType() ).value( (*it)->name() );
+            ObjectItem *item = m_itemMap->value( (*it)->objectType() ).value( (*it)->name() );
 
             //  * update values
             //      * must keep

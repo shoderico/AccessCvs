@@ -20,7 +20,7 @@
 // TableDef
 
 TableDefProcessor::TableDefProcessor(ProjectContainer *parent)
-    : ObjectProcessor(parent)
+    : TableObjectProcessor(parent)
     , m_tableDefSanitizer(new TableDefSanitizer(this))
     , m_tableDataSanitizer(new TableDataSanitizer(this))
 {
@@ -30,6 +30,7 @@ TableDefProcessor::TableDefProcessor(ProjectContainer *parent)
     m_objectPathName      = "tabledefs";
     m_containerName       = "";
     m_iconPath            = ":/images/table.png";
+    m_uiText              = "Tables";
 
     m_tempFileExtension   = "tmp";
     m_designFileExtension = "xml";
@@ -38,34 +39,32 @@ TableDefProcessor::TableDefProcessor(ProjectContainer *parent)
 
     m_dataTempFileExtension = "dattmp";
     m_dataFileExtension     = "dat";
+
+    m_settingFileName       = "TableDef.settings";
 }
 
 bool TableDefProcessor::isTargetObject(QAxObject *object) const
 {
-    DAO::TableDef *tableDef = dynamic_cast<DAO::TableDef*>(object);
-    if (tableDef)
+    bool result = TableObjectProcessor::isTargetObject(object);
+    if (result)
     {
-        QString name = tableDef->Name();
-        return !name.startsWith("MSys") && !name.startsWith("~") && tableDef->Connect().isEmpty();
+        DAO::TableDef *tableDef = dynamic_cast<DAO::TableDef*>(object);
+        if (tableDef)
+        {
+            if (!tableDef->Connect().isEmpty())
+                result = false;
+        }
     }
-    return false;
+    return result;
 }
 
 ObjectItem *TableDefProcessor::createItemFromProject(QAxObject *object, QObject *parent)
 {
-    ObjectItem *item = new ObjectItem(parent);
+    ObjectItem *item = TableObjectProcessor::createItemFromProject(object, parent);
 
     DAO::TableDef *tableDef = dynamic_cast<DAO::TableDef*>(object);
     if (tableDef)
     {
-        item->setObjectType( m_objectType );
-        item->setSelectObjectType( m_selectObjectType );
-        item->setIconPath( m_iconPath );
-        item->setName( tableDef->Name() );
-        item->setInProject( Model::Present );
-        item->setCreateDate( tableDef->DateCreated().toDateTime() );
-        item->setUpdateDate( tableDef->LastUpdated().toDateTime() );
-        item->setExportDate( FileUtil::fileTime( filePath(TempDir, TempFile, item->name()) ) );
         item->setHasData( m_tableDataTargets.contains( item->name() ) );
     }
 
@@ -74,7 +73,7 @@ ObjectItem *TableDefProcessor::createItemFromProject(QAxObject *object, QObject 
 
 ObjectItem *TableDefProcessor::createItemFromSourceDir(QFileInfo &fileInfo, QObject *parent)
 {
-    ObjectItem *item = ObjectProcessor::createItemFromSourceDir(fileInfo, parent);
+    ObjectItem *item = TableObjectProcessor::createItemFromSourceDir(fileInfo, parent);
     if (item)
     {
         item->setHasData( m_tableDataTargets.contains( item->name() ) );
@@ -266,180 +265,45 @@ bool TableDefProcessor::desanitizeTempDir(QAxObject *object, const QString &obje
     return true;
 }
 
-bool TableDefProcessor::prepareItemCollection()
+void TableDefProcessor::loadSetting(Setting *projectSetting)
 {
-    if (!projectContainer<AccessProjectContainer>()->isMDB())
-        return false;
-
-    ComPtr<DAO::Database> currentDb = m_projectContainer->application<Access::Application>()->CurrentDb();
-    if (!currentDb.is())
-        return false;
-
-    m_tableDefs.set( currentDb->TableDefs() );
-    return m_tableDefs.is();
-}
-
-int TableDefProcessor::itemCount()
-{
-    if (!m_tableDefs.is())
-        return 0;
-    return m_tableDefs->Count();
-}
-
-QAxObject *TableDefProcessor::itemUnsafePtr(const QVariant &index)
-{
-    if (!m_tableDefs.is())
-        return 0;
-    return m_tableDefs->Item(index);
-}
-
-void TableDefProcessor::loadSettings(QSettings *settings)
-{
-    Q_UNUSED(settings)
-
-    // QSettings
-    /*
-    // FIXME: groupName, keyName must be class level
-    settings->beginGroup("TableDef");
-    {
-        m_tableDataTargets.clear();
-        int size = settings->beginReadArray("TableData");
-        for ( int i = 0 ; i < size ; ++i )
-        {
-            settings->setArrayIndex(i);
-            QVariant tableName = settings->value("TableName");
-            if (tableName.isValid())
-                m_tableDataTargets.append( tableName.toString() );
-        }
-        settings->endArray();
-    }
-    settings->endGroup();
-    */
-
-    // Implement Own
-    /*
-    QString settingsFilePath = m_projectSetting->sourcePath() + "\\" + "TableDef.settings";
+    Q_UNUSED(projectSetting)
 
     m_tableDataTargets.clear();
 
-    QFile file(settingsFilePath);
-    if (!file.exists())
-        return;
-
-    file.open(QIODevice::ReadOnly);
-    QTextStream stream( &file );
-    stream.setGenerateByteOrderMark( m_codecForCvs->bom() );
-    stream.setCodec( m_codecForCvs->codec() );
-
-    QRegularExpression regExpBegin;
-    regExpBegin.setPattern("^\\s*Begin (.*)$");
-    QRegularExpression regExpEnd;
-    regExpEnd.setPattern("^\\s*End$");
-    QRegularExpression regExpKeyValue;
-    regExpKeyValue.setPattern("^\\s*([^=]+) =(.*)$");
-
-    while (!stream.atEnd())
+    // Setting
+    Setting *setting = createSetting();
+    if (setting->load())
     {
-        QString line = stream.readLine();
-        QRegularExpressionMatch matchBegin = regExpBegin.match(line);
-        if (matchBegin.hasMatch())
+        foreach (const SettingNode *node, setting->nodes())
         {
-            QString elementName = matchBegin.captured(1);
-            if (elementName == "TableData")
+            if (node->isElement())
             {
-                while (!stream.atEnd())
+                SettingElement *element = node->toElement();
+                Q_ASSERT(element != NULL);
+                Q_ASSERT(element->name() == "TableData");
+                for ( int i = 0 ; i < element->count() ; ++i )
                 {
-                    line = stream.readLine();
-
-                    if (regExpEnd.match(line).hasMatch())
-                        break;
-
-                    QRegularExpressionMatch matchKeyValue = regExpKeyValue.match(line);
-                    if (matchKeyValue.hasMatch())
-                    {
-                        QString value = matchKeyValue.captured(2);
-                        m_tableDataTargets.append(value);
-                    }
+                    SettingKeyValue *keyValue = element->at(i)->toKeyValue();
+                    Q_ASSERT(keyValue != NULL);
+                    Q_ASSERT(keyValue->key() == "TableName");
+                    Q_ASSERT(keyValue->value().isNull() == false);
+                    Q_ASSERT(keyValue->value().toString().isEmpty() == false);
+                    m_tableDataTargets.append( keyValue->value().toString() );
                 }
             }
         }
     }
-
-    file.close();
-    */
-
-    // Setting
-    Setting setting(m_projectContainer->sourcePath() + "\\" + "TableDef.settings", m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());
-    if (setting.load())
-    {
-        SettingElement *element = setting.at(0)->toElement();
-        Q_ASSERT(element != NULL);
-        Q_ASSERT(element->name() == "TableData");
-        for ( int i = 0 ; i < element->count() ; ++i )
-        {
-            SettingKeyValue *keyValue = element->at(i)->toKeyValue();
-            Q_ASSERT(keyValue != NULL);
-            Q_ASSERT(keyValue->key() == "TableName");
-            Q_ASSERT(keyValue->value().isNull() == false);
-            Q_ASSERT(keyValue->value().toString().isEmpty() == false);
-            m_tableDataTargets.append( keyValue->value().toString() );
-        }
-    }
+    delete setting;
 }
 
-void TableDefProcessor::saveSettings(QSettings *settings)
+void TableDefProcessor::saveSetting(Setting *projectSetting)
 {
-    Q_UNUSED(settings)
-
-    // QSettings
-    /*
-    // FIXME: groupName, keyName must be class level
-    settings->beginGroup("TableDef");
-    {
-        settings->beginWriteArray("TableData");
-        int i = 0;
-        for ( QStringList::iterator it = m_tableDataTargets.begin() ; it != m_tableDataTargets.end() ; ++it )
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("TableName", (*it) );
-            ++i;
-        }
-        settings->endArray();
-    }
-    settings->endGroup();
-    */
-
-    // Implement Own
-    /*
-    QString settingsFilePath = m_projectSetting->sourcePath() + "\\" + "TableDef.settings";
-
-    if (QFile(settingsFilePath).exists())
-        QFile(settingsFilePath).remove();
-
-    QFile file(settingsFilePath);
-    file.open(QIODevice::WriteOnly);
-    QTextStream stream( &file );
-    stream.setGenerateByteOrderMark( m_codecForCvs->bom() );
-    stream.setCodec( m_codecForCvs->codec() );
-    QString lineEnd = m_codecForCvs->lineEnd();
-
-    stream << "Begin TableData" << lineEnd;
-    {
-        QStringList tableNames = m_tableDataTargets;
-        tableNames.sort(Qt::CaseSensitive);
-        for ( QStringList::iterator it = tableNames.begin() ; it != tableNames.end() ; ++it )
-        {
-            stream << "    " << "TableName" << " =" << (*it) << lineEnd;
-        }
-    }
-    stream << "End" << lineEnd;
-
-    file.close();
-    */
+    Q_UNUSED(projectSetting)
 
     // Setting
-    Setting setting(m_projectContainer->sourcePath() + "\\" + "TableDef.settings", m_codecForCvs->codec(), m_codecForCvs->bom(), m_codecForCvs->lineEnd());
-    SettingElement *element = setting.append("TableData");
+    Setting *setting = createSetting();
+    SettingElement *element = setting->append("TableData");
     {
         QStringList tableNames = m_tableDataTargets;
         tableNames.sort(Qt::CaseSensitive);
@@ -448,42 +312,17 @@ void TableDefProcessor::saveSettings(QSettings *settings)
             element->append("TableName", (*it) );
         }
     }
-    setting.save();
+    setting->save();
+    delete setting;
 }
 
-void TableDefProcessor::setTableDataTargets(QStringList *newTargets)
+void TableDefProcessor::updateSetting(QList<ObjectItem *> *items)
 {
     m_tableDataTargets.clear();
-    for ( QStringList::iterator it = newTargets->begin() ; it != newTargets->end() ; ++it )
-        m_tableDataTargets.append( (*it) );
-}
 
-void TableDefProcessor::determineCodecForProject()
-{
-    if (!m_codecForProject)
+    for (QList<ObjectItem*>::iterator it = items->begin() ; it != items->end() ; ++it  )
     {
-        m_codecForProject = new CodecInfo(this);
-        m_codecForProject->setCodec( QTextCodec::codecForName("UTF-8") );
-        m_codecForProject->setBom( false );
-        m_codecForProject->setLineEnd("\r\n");
+        if ( (*it)->hasData() )
+            m_tableDataTargets.append( (*it)->name() );
     }
 }
-
-
-//=============================================================================
-// TableData
-// TODO: imeplement tabledata export/import
-
-//TableDataSetting::TableDataSetting(ProjectSetting *parent)
-//    : ObjectSetting(parent)
-//{
-//    m_objectType          = Model::TableData;
-//    m_accessObjectType    = Access::acTable;
-//    m_objectPathName      = "tabledatas";
-//    m_containerName       = "";
-
-//    m_tempFileExtension   = "tmp";
-//    m_designFileExtension = "csv";
-//    m_moduleFileExtension = "";
-//    m_existCheckExtension = m_designFileExtension;
-//}

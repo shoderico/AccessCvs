@@ -15,6 +15,8 @@ class ObjectModel;
 class ObjectProxyModel;
 class ProgressHelper;
 class ObjectItemCheckBox;
+class ObjectItemCheckConfig;
+class ObjectProcessor;
 
 //class QCheckBox;
 #include <QCheckBox>
@@ -86,12 +88,24 @@ class ObjectItemCheckBox : public QCheckBox
 {
     Q_OBJECT
 public:
-    explicit ObjectItemCheckBox(const QString & text, const int selectObjectType, QWidget * parent = 0);
+    explicit ObjectItemCheckBox(ObjectProcessor *processor, QWidget * parent = 0);
     int selectObjectType() const { return m_selectObjectType; }
 private:
     int m_selectObjectType;
 };
 
+class ObjectItemCheckConfig
+{
+public:
+    ObjectItemCheckConfig(const QString &name, const int value)
+    {
+        this->name = name;
+        this->value = value;
+    }
+
+    QString name;
+    int value;
+};
 
 
 #endif // MAINDIALOG_H

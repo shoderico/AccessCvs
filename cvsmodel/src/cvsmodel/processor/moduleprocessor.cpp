@@ -21,6 +21,7 @@ ModuleProcessor::ModuleProcessor(ProjectContainer *parent)
     m_objectPathName      = "modules";
     m_containerName       = "Modules";
     m_iconPath            = ":/images/page.png";
+    m_uiText              = "Modules";
 
     m_tempFileExtension   = "tmp";
     m_designFileExtension = "";
