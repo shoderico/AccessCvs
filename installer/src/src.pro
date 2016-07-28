@@ -24,7 +24,7 @@ SRC_PACKAGE_DIR  = $${PWD}/packages
 
 SRC_CONFIG_FILE  = $${SRC_CONFIG_DIR}/config.xml
 
-IFW_BIN_DIR      = C:/Qt/QtIFW2.0.1/bin
+IFW_BIN_DIR      = C:/Qt/QtIFW2.0.3/bin
 
 SRC_REPOS_DIR    = $${PWD}/repository
 DST_REPOS_DIR    = $${BUILD_DIR}/repository
