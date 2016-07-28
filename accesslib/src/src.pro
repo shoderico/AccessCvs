@@ -11,6 +11,9 @@ SOURCES += \
     accesslib/access.cpp \
     accesslib/adodb.cpp \
     accesslib/dao.cpp \
+    accesslib/access_impl.cpp \
+    accesslib/adodb_impl.cpp \
+    accesslib/dao_impl.cpp
 
 HEADERS +=\
     accesslib/access.h \

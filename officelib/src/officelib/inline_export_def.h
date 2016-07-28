@@ -1,0 +1,6 @@
+#ifndef INLINE_EXPORT_DEF_H
+#define INLINE_EXPORT_DEF_H
+
+#define INLINE_EXPORT
+
+#endif // INLINE_EXPORT_DEF_H

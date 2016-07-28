@@ -8,6 +8,8 @@
 //#include "acccontroller/acccontroller.h"
 #include "helpcontroller/helpcontroller.h"
 
+#include "resource/resource.h"
+
 static const char LibraryID[]     = "{91A0CABD-B244-47D0-B23F-9CA3A55FE638}";
 static const char ApplicationID[] = "{AC2609B7-EF6C-4A93-A5C2-1226C0A2D422}";
 static const char ClassID[]       = "{9025340A-966D-444E-818C-114FC0D5E981}";
@@ -81,12 +83,14 @@ int ExcelCvsAddInFactory::applicationHwnd()
 
 void ExcelCvsAddInFactory::onBeforeConnectionEvent()
 {
-    Q_INIT_RESOURCE(resource);
+    Resource res;
+    res.init();
 }
 
 void ExcelCvsAddInFactory::onAfterDisconnectionEvent()
 {
-    Q_CLEANUP_RESOURCE(resource);
+    Resource res;
+    res.cleanup();
 }
 
 // onAddInImplConnection : init Resource

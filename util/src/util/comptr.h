@@ -4,7 +4,7 @@
 #include "util_global.h"
 
 template <typename T>
-class UTIL_SHARED_EXPORT ComPtr
+class /*UTIL_SHARED_EXPORT*/ ComPtr
 {
 public:
     ComPtr(T* ptr) : m_ptr(ptr){}

@@ -9,6 +9,7 @@ DEFINES += EXCELLIB_LIBRARY
 
 SOURCES += \
     excellib/excel.cpp \
+    excellib/excel_impl.cpp
 
 HEADERS +=\
     excellib/excel.h \
