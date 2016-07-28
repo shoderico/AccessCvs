@@ -17,7 +17,7 @@ LIBS =
 
 #----------------------------------------------------------------------------------------------
 # directories and files
-BUILD_DIR        = $${BUILD_ROOT}/$${BUILD_TYPE}/installer
+Release|Debug:BUILD_DIR = $${BUILD_ROOT}/$${BUILD_TYPE}/installer
 DST_PACKAGE_DIR  = $${BUILD_DIR}/packages
 SRC_CONFIG_DIR   = $${PWD}/config
 SRC_PACKAGE_DIR  = $${PWD}/packages
