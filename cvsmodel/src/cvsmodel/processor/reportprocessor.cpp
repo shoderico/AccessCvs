@@ -205,7 +205,7 @@ bool ReportProcessor::afterImportFromTempDirToProject(QAxObject *object, const Q
 
         // consturct new PrtDevMode
         DEVMODEA dm;
-        mempcpy( &dm, (const void*)prtDevModeDataSrc.constData(), sizeof(dm) );
+        memcpy( &dm, (const void*)prtDevModeDataSrc.constData(), sizeof(dm) );
         dm.dmOrientation = dmTemp.dmOrientation;
         dm.dmPaperSize   = dmTemp.dmPaperSize;
         dm.dmPaperLength = dmTemp.dmPaperLength;
