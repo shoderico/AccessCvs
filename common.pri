@@ -39,6 +39,13 @@ win32-g++ {
     LIB_EXT = a
 }
 
+Debug {
+    DEP_DLLS_POSTFIX = d
+}
+Release {
+    DEP_DLLS_POSTFIX =
+}
+
 # message($${PWD}) # return this file's dir
 # message($${OUT_PWD}) # return caller's dir
 # message($$_PRO_FILE_PWD_) # return caller's pro dir
@@ -55,11 +62,11 @@ DEP_DLLS_EXTERNAL.destdir = .
 
 win32-msvc* {
     DEP_DLLS_QT.files += \
-        $$[QT_INSTALL_BINS]/Qt5Core.dll
+        $$[QT_INSTALL_BINS]/Qt5Core$${DEP_DLLS_POSTFIX}.dll
 }
 win32-g++ {
     DEP_DLLS_QT.files += \
-        $$[QT_INSTALL_BINS]/Qt5Core.dll
+        $$[QT_INSTALL_BINS]/Qt5Core$${DEP_DLLS_POSTFIX}.dll
 }
 
 
