@@ -14,7 +14,7 @@
 
 # copy lib*.a fiies to lib,
 QMAKE_POST_LINK += $(CHK_DIR_EXISTS) $$system_path($${PROJECT_LIBRARY_DIR}) $(MKDIR) $$system_path($${PROJECT_LIBRARY_DIR})$$escape_expand(\n\t)
-QMAKE_POST_LINK += $(COPY) $$system_path($${OUT_PWD}/$${BUILD_TYPE}/lib$${TARGET}.$${LIB_EXT}) $$system_path($${PROJECT_LIBRARY_DIR})$$escape_expand(\n\t)
+QMAKE_POST_LINK += $(COPY) $$system_path($${OUT_PWD}/$${BUILD_TYPE}/$${LIB_PREFIX}$${TARGET}.$${LIB_EXT}) $$system_path($${PROJECT_LIBRARY_DIR})$$escape_expand(\n\t)
 
 # copy  *.dll files to bin
 contains (CONFIG, dll) {

@@ -1,8 +1,14 @@
 # inc.pri : external module
 # QtSolutions
 QTSOLUTIONS_DIR     = $${LIBRARY_ROOT}/QtSolutions/qtwinmigrate
-QTSOLUTIONS_BIN_DIR = $${QTSOLUTIONS_DIR}/lib
-QTSOLUTIONS_LIB_DIR = $${QTSOLUTIONS_DIR}/lib
+win32-msvc* {
+    QTSOLUTIONS_BIN_DIR = $${QTSOLUTIONS_DIR}/lib_msvc_x86
+    QTSOLUTIONS_LIB_DIR = $${QTSOLUTIONS_DIR}/lib_msvc_x86
+}
+win32-g++ {
+    QTSOLUTIONS_BIN_DIR = $${QTSOLUTIONS_DIR}/lib_mingw_x86
+    QTSOLUTIONS_LIB_DIR = $${QTSOLUTIONS_DIR}/lib_mingw_x86
+}
 QTSOLUTIONS_INC_DIR = $${QTSOLUTIONS_DIR}/src
 QTSOLUTIONS_LIBNAME = QtSolutions_MFCMigrationFramework-head
 QTSOLUTIONS_FILES   = $${QTSOLUTIONS_BIN_DIR}/$${QTSOLUTIONS_LIBNAME}.dll

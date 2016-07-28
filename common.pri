@@ -5,10 +5,12 @@ Release:BUILD_TYPE = release
 Debug:  BUILD_TYPE = debug
 #export(BUILD_TYPE)
 #BUILD_TYPE = $${BUILD_TYPE}
-OBJECTS_DIR = $${BUILD_TYPE}/.obj
-MOC_DIR     = $${BUILD_TYPE}/.moc
-RCC_DIR     = $${BUILD_TYPE}/.rcc
-UI_DIR      = $${BUILD_TYPE}/.ui
+Release|Debug {
+    OBJECTS_DIR = $${BUILD_TYPE}/.obj
+    MOC_DIR     = $${BUILD_TYPE}/.moc
+    RCC_DIR     = $${BUILD_TYPE}/.rcc
+    UI_DIR      = $${BUILD_TYPE}/.ui
+}
 
 PROJECT_INCLUDE_DIR     = $${BUILD_ROOT}/include
 PROJECT_INCLUDE_DIR_WNT = $${PROJECT_INCLUDE_DIR}
@@ -29,9 +31,11 @@ PWD_WNT = $${_PRO_FILE_PWD_}
 PWD_WNT ~= s,/,\\,g
 
 win32-msvc* {
+    LIB_PREFIX =
     LIB_EXT = lib
 }
 win32-g++ {
+    LIB_PREFIX = lib
     LIB_EXT = a
 }
 
@@ -49,11 +53,21 @@ DEP_DLLS_QT_PLATFORMS.destdir = platforms
 DEP_DLLS_MODULE.destdir = .
 DEP_DLLS_EXTERNAL.destdir = .
 
-DEP_DLLS_QT.files += \
-    $$[QT_INSTALL_BINS]/libstdc++-6.dll \
-    $$[QT_INSTALL_BINS]/libwinpthread-1.dll \
-    $$[QT_INSTALL_BINS]/libgcc_s_dw2-1.dll \
-    $$[QT_INSTALL_BINS]/Qt5Core.dll
+win32-msvc* {
+
+    DEP_DLLS_QT.files += \
+        $$[QT_INSTALL_BINS]/Qt5Core.dll
+
+}
+win32-g++ {
+
+    DEP_DLLS_QT.files += \
+        $$[QT_INSTALL_BINS]/Qt5Core.dll \
+        $$[QT_INSTALL_BINS]/libstdc++-6.dll \
+        $$[QT_INSTALL_BINS]/libwinpthread-1.dll \
+        $$[QT_INSTALL_BINS]/libgcc_s_dw2-1.dll
+
+}
 
 
 INCLUDEPATH += $${PROJECT_INCLUDE_DIR}
@@ -120,7 +134,7 @@ defineTest(includeSharedLib) {
 
     LIBS           += -L$${PROJECT_LIBRARY_DIR}/ -l$${myTARGET}
     INCLUDEPATH    += $${PROJECT_ROOT}/$${myTARGET}/src
-    PRE_TARGETDEPS += $${PROJECT_LIBRARY_DIR}/lib$${myTARGET}.$${LIB_EXT}
+    PRE_TARGETDEPS += $${PROJECT_LIBRARY_DIR}/$${LIB_PREFIX}$${myTARGET}.$${LIB_EXT}
     export(LIBS)
     export(INCLUDEPATH)
     export(PRE_TARGETDEPS)
@@ -145,7 +159,7 @@ defineTest(includeStaticLib) {
 
     LIBS           += -L$${PROJECT_LIBRARY_DIR}/ -l$${myTARGET}
     INCLUDEPATH    += $${PROJECT_ROOT}/$${myTARGET}/src
-    PRE_TARGETDEPS += $${PROJECT_LIBRARY_DIR}/lib$${myTARGET}.$${LIB_EXT}
+    PRE_TARGETDEPS += $${PROJECT_LIBRARY_DIR}/$${LIB_PREFIX}$${myTARGET}.$${LIB_EXT}
     export(LIBS)
     export(INCLUDEPATH)
     export(PRE_TARGETDEPS)

@@ -19,3 +19,7 @@ HEADERS +=\
 include(../../common.pri)
 include(../../submodule.pri)
 include(../$${TARGET}_dep.pri)
+
+win32-msvc* {
+    QMAKE_CXXFLAGS += -bigobj
+}
