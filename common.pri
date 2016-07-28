@@ -54,19 +54,12 @@ DEP_DLLS_MODULE.destdir = .
 DEP_DLLS_EXTERNAL.destdir = .
 
 win32-msvc* {
-
     DEP_DLLS_QT.files += \
         $$[QT_INSTALL_BINS]/Qt5Core.dll
-
 }
 win32-g++ {
-
     DEP_DLLS_QT.files += \
-        $$[QT_INSTALL_BINS]/Qt5Core.dll \
-        $$[QT_INSTALL_BINS]/libstdc++-6.dll \
-        $$[QT_INSTALL_BINS]/libwinpthread-1.dll \
-        $$[QT_INSTALL_BINS]/libgcc_s_dw2-1.dll
-
+        $$[QT_INSTALL_BINS]/Qt5Core.dll
 }
 
 
