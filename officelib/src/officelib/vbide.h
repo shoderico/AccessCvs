@@ -30,7 +30,7 @@ namespace Office {
     class CommandBars;
 }
 
-Q_DECLARE_OPAQUE_POINTER(Office::CommandBars*)
+//Q_DECLARE_OPAQUE_POINTER(Office::CommandBars*)
 
 namespace VBIDE {
 

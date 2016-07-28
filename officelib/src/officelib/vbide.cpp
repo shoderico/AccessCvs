@@ -6,6 +6,9 @@
 **
 ****************************************************************************/
 
+#define QAX_DUMPCPP_OFFICE_NOINLINES
+#include "office.h"
+
 #define QAX_DUMPCPP_VBIDE_NOINLINES
 #include "vbide.h"
 
