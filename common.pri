@@ -12,6 +12,8 @@ Release|Debug {
     UI_DIR      = $${BUILD_TYPE}/.ui
 }
 
+DEFINES += DETECT_MEMORY_LEAKS
+
 PROJECT_INCLUDE_DIR     = $${BUILD_ROOT}/include
 PROJECT_INCLUDE_DIR_WNT = $${PROJECT_INCLUDE_DIR}
 PROJECT_INCLUDE_DIR_WNT ~= s,/,\\,g
@@ -66,7 +68,10 @@ win32-msvc* {
 }
 win32-g++ {
     DEP_DLLS_QT.files += \
-        $$[QT_INSTALL_BINS]/Qt5Core$${DEP_DLLS_POSTFIX}.dll
+        $$[QT_INSTALL_BINS]/Qt5Core$${DEP_DLLS_POSTFIX}.dll \
+        $$[QT_INSTALL_BINS]/libstdc++-6.dll \
+        $$[QT_INSTALL_BINS]/libwinpthread-1.dll \
+        $$[QT_INSTALL_BINS]/libgcc_s_dw2-1.dll
 }
 
 

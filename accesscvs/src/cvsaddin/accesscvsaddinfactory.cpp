@@ -11,7 +11,55 @@
 
 #include "resource/resource.h"
 
+#include <QDebug>
+
 #include "pch.hpp"
+#if defined(_DEBUG) && defined(_MSC_VER) && defined(DETECT_MEMORY_LEAKS)
+
+// http://stackoverflow.com/questions/6825376/how-to-detect-memory-leaks-in-qtcreator-on-windows
+
+_CRT_REPORT_HOOK prevHook;
+
+int customReportHook(int /* reportType */, char* message, int* /* returnValue */) {
+  // This function is called several times for each memory leak.
+  // Each time a part of the error message is supplied.
+  // This holds number of subsequent detail messages after
+  // a leak was reported
+  const int numFollowupDebugMsgParts = 2;
+  static bool ignoreMessage = false;
+  static int debugMsgPartsCount = 0;
+
+  // check if the memory leak reporting starts
+  if ((strncmp(message,"Detected memory leaks!\n", 10) == 0)
+    || ignoreMessage)
+  {
+    // check if the memory leak reporting ends
+    if (strncmp(message,"Object dump complete.\n", 10) == 0)
+    {
+      _CrtSetReportHook(prevHook);
+      ignoreMessage = false;
+    } else
+      ignoreMessage = true;
+
+    // something from our own code?
+    if(strstr(message, ".cpp") == NULL)
+    {
+      if(debugMsgPartsCount++ < numFollowupDebugMsgParts)
+        // give it back to _CrtDbgReport() to be printed to the console
+        return FALSE;
+      else
+        return TRUE;  // ignore it
+    } else
+    {
+      debugMsgPartsCount = 0;
+      // give it back to _CrtDbgReport() to be printed to the console
+      return FALSE;
+    }
+  } else
+    // give it back to _CrtDbgReport() to be printed to the console
+    return FALSE;
+}
+#endif
 
 static const char LibraryID[]     = "{27e3bd9e-2ee3-41ba-a69d-61f510fda820}";
 static const char ApplicationID[] = "{18bf0f9a-c557-4324-b5d8-f4077561a87e}";
@@ -25,8 +73,9 @@ AccessCvsAddInFactory::AccessCvsAddInFactory(const QUuid &app, const QUuid &lib)
     , m_application(0)
 {
 
-#if _DEBUG
+#if defined(_DEBUG) && defined(_MSC_VER) && defined(DETECT_MEMORY_LEAKS)
     _CrtSetDbgFlag( _CrtSetDbgFlag( _CRTDBG_REPORT_FLAG )| _CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);
+    prevHook = _CrtSetReportHook(customReportHook);
 #endif
 
     setRegistryRoot( QLatin1String("HKEY_CURRENT_USER\\Software") );
