@@ -4,6 +4,8 @@
 #include "cvsmodel/objectmodel.h"
 #include "progresshelper.h"
 
+#include "pch.hpp"
+
 CvsProgressDialog::CvsProgressDialog(ObjectModel *model, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::CvsProgressDialog)

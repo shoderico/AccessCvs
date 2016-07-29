@@ -19,6 +19,8 @@
 
 #include "processor/projectfileprocessor.h"
 
+#include "pch.hpp"
+
 
 AccessProjectContainer::AccessProjectContainer(QObject *parent)
     : ProjectContainer(parent)

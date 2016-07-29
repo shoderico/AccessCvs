@@ -14,6 +14,8 @@
 #include <QUuid>
 #include <windows.h>
 
+#include "pch.hpp"
+
 OdbcTableProcessor::OdbcTableProcessor(ProjectContainer *parent)
     : TableObjectProcessor(parent)
 {

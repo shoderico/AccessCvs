@@ -12,6 +12,8 @@
 #include "cvsmodel/accessprojectcontainer.h"
 #include "cvsmodel/setting.h"
 
+#include "pch.hpp"
+
 ModuleProcessor::ModuleProcessor(ProjectContainer *parent)
     : AccessObjectProcessor(parent)
 {

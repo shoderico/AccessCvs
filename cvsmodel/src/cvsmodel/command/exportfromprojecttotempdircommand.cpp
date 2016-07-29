@@ -10,6 +10,8 @@
 
 #include <QAxObject>
 
+#include "pch.hpp"
+
 ExportFromProjectToTempDirCommand::ExportFromProjectToTempDirCommand(ProjectContainer *project, QAxObject *application, QObject *parent)
     : CommandBase(project, application, parent)
 {

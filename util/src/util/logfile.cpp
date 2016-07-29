@@ -4,6 +4,8 @@
 #include <QTextCodec>
 #include <QDateTime>
 
+#include "pch.hpp"
+
 static LogFile *static_instance = NULL;
 
 LogFile::LogFile(const QString &path, const QString &baseFileName, const bool append)

@@ -7,6 +7,8 @@
 
 #include <QDebug>
 
+#include "pch.hpp"
+
 AccessObjectModel::AccessObjectModel(QObject *parent)
     : ObjectModel(parent)
 {

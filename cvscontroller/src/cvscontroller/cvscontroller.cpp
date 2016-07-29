@@ -12,6 +12,8 @@
 
 #include <QMessageBox>
 
+#include "pch.hpp"
+
 
 CvsController::CvsController(QObject *parent)
     : QObject(parent)

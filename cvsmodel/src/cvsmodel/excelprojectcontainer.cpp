@@ -8,6 +8,8 @@
 #include "processor/referenceprocessor.h"
 #include "processor/vbprojectprocessor.h"
 
+#include "pch.hpp"
+
 ExcelProjectContainer::ExcelProjectContainer(QObject *parent)
     : ProjectContainer(parent)
 {

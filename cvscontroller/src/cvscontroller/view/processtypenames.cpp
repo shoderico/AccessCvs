@@ -2,6 +2,8 @@
 
 #include "cvsmodel/objectmodel.h"
 
+#include "pch.hpp"
+
 ProcessTypeNames::ProcessTypeNames(QObject *parent) : QObject(parent)
 {
     m_processTypeNames[ Model::RefreshProcess ] = tr("RefreshProcess");

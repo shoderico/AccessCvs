@@ -9,6 +9,8 @@
 
 #include <ActiveQt/QAxObject>
 
+#include "pch.hpp"
+
 GetComObject::GetComObject(const QString &targetExeName, const QString &targetWindowClassName)
     : m_targetExeName( targetExeName )
     , m_targetWndClassName( targetWindowClassName )

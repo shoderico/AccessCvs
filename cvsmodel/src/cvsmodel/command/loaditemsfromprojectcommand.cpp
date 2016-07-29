@@ -13,6 +13,8 @@
 #include <QtConcurrent>
 #include <QAxObject>
 
+#include "pch.hpp"
+
 LoadItemsFromProjectCommand::LoadItemsFromProjectCommand(ProjectContainer *project, QAxObject *application, QList<ObjectItem *> *items, QObject *parent)
     : CommandBase(project, application, items, parent)
 {

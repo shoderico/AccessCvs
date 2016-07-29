@@ -1,5 +1,7 @@
 #include "objectitem.h"
 
+#include "pch.hpp"
+
 ObjectItem::ObjectItem(QObject *parent)
     : QObject(parent)
     , m_isSelected(false)

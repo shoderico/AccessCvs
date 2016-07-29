@@ -6,6 +6,8 @@
 
 #include "cvsmodel/projectcontainer.h"
 
+#include "pch.hpp"
+
 
 
 //=============================================================================

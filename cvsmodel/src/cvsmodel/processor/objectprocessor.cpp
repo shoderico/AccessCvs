@@ -15,6 +15,8 @@
 #include "cvsmodel/objectitem.h"
 #include "cvsmodel/setting.h"
 
+#include "pch.hpp"
+
 
 ObjectProcessor::ObjectProcessor(ProjectContainer *parent)
     : QObject(parent)

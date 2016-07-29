@@ -15,6 +15,8 @@
 #include "cvsmodel/sanitizer/accessdesignobjectsanitizer.h"
 #include "cvsmodel/setting.h"
 
+#include "pch.hpp"
+
 AccessDesignObjectProcessor::AccessDesignObjectProcessor(ProjectContainer *parent)
     : AccessObjectProcessor(parent)
     , m_sanitizer(new AccessDesignObjectSanitizer(this))

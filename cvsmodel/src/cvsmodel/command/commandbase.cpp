@@ -2,6 +2,8 @@
 
 #include "util/datachangedhelper.h"
 
+#include "pch.hpp"
+
 CommandBase::CommandBase(ProjectContainer *project, QObject *parent) : QObject(parent)
   , m_project(project)
   , m_application(0)

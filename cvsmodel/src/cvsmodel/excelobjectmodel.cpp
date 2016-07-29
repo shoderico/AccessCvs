@@ -7,6 +7,8 @@
 
 #include <QDebug>
 
+#include "pch.hpp"
+
 ExcelObjectModel::ExcelObjectModel(QObject *parent)
     : ObjectModel(parent)
 {

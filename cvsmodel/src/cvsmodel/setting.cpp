@@ -2,6 +2,8 @@
 
 #include <QFile>
 
+#include "pch.hpp"
+
 SettingNode::SettingNode(SettingNode::NodeType nodeType)
     : m_nodeType(nodeType)
 {

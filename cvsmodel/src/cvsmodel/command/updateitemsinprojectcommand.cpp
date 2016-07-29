@@ -12,6 +12,8 @@
 
 #include <QtConcurrent>
 
+#include "pch.hpp"
+
 UpdateItemsInProjectCommand::UpdateItemsInProjectCommand(const int existence, ProjectContainer *project, QAxObject *application, QList<ObjectItem*> *items, QObject *parent)
     : CommandBase(project, application, items, parent)
     , m_existence(existence)

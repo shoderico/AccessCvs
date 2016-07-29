@@ -11,6 +11,8 @@
 #include "cvsmodel/objectitem.h"
 #include "cvsmodel/accessprojectcontainer.h"
 
+#include "pch.hpp"
+
 TableObjectProcessor::TableObjectProcessor(ProjectContainer *parent)
     : ObjectProcessor(parent)
 {

@@ -15,6 +15,8 @@
 
 #include <windows.h>
 
+#include "pch.hpp"
+
 
 ProjectFileProcessor::ProjectFileProcessor(ProjectContainer *parent)
     : ProjectLevelObjectProcessor(parent)

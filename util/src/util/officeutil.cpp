@@ -3,6 +3,8 @@
 #include <QSettings>
 #include <QScopedPointer>
 
+#include "pch.hpp"
+
 
 QString OfficeUtil::getExePath(const QString &progId)
 {

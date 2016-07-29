@@ -4,6 +4,8 @@
 
 #include <QMessageBox>
 
+#include "pch.hpp"
+
 HelpController::HelpController(QObject *parent)
     : QObject(parent)
     , m_application(0)

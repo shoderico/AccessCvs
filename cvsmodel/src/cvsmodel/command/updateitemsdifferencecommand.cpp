@@ -12,6 +12,8 @@
 
 #include <QtConcurrent>
 
+#include "pch.hpp"
+
 UpdateItemsDifferenceCommand::UpdateItemsDifferenceCommand(const int difference, ProjectContainer *project, QAxObject *application, QList<ObjectItem *> *items, QObject *parent)
     : CommandBase(project, application, items, parent)
     , m_difference(difference)

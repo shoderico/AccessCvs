@@ -16,6 +16,8 @@
 #include <windows.h>
 #include <wingdi.h>
 
+#include "pch.hpp"
+
 ReportProcessor::ReportProcessor(ProjectContainer *parent)
     : AccessDesignObjectProcessor(parent)
 {

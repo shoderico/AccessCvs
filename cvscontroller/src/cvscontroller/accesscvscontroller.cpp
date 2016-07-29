@@ -4,6 +4,8 @@
 #include "cvsmodel/accessobjectproxymodel.h"
 #include "view/maindialog.h"
 
+#include "pch.hpp"
+
 AccessCvsController::AccessCvsController(QObject *parent)
     : CvsController(parent)
 {

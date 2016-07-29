@@ -10,6 +10,8 @@
 #include "cvsmodel/accessprojectcontainer.h"
 #include "cvsmodel/objectitem.h"
 
+#include "pch.hpp"
+
 
 
 

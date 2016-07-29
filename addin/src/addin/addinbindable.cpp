@@ -2,6 +2,8 @@
 
 #include "addinfactory.h"
 
+#include "pch.hpp"
+
 AddInBindable::AddInBindable(AddInFactory *factory, QObject *parent)
     : QObject(parent)
     , m_factory(factory)

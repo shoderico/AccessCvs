@@ -7,6 +7,8 @@
 #include "processtypenames.h"
 #include "cvsmodel/objectmodel.h"
 
+#include "pch.hpp"
+
 ProgressHelper::ProgressHelper(QObject *parent)
     : QObject(parent)
     , m_processTypeNames(new ProcessTypeNames(this))

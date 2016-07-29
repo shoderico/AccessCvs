@@ -2,6 +2,8 @@
 
 #include <QWinWidget>
 
+#include "pch.hpp"
+
 WindowWidgetManager::WindowWidgetManager(int applicationHwnd, QObject *parent)
     : QObject(parent)
 {

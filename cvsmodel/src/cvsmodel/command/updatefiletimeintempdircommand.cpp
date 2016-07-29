@@ -11,6 +11,8 @@
 
 #include <QtConcurrent>
 
+#include "pch.hpp"
+
 UpdateFileTimeInTempDirCommand::UpdateFileTimeInTempDirCommand(const QDateTime &fileTime, const int differenceTypes, ProjectContainer *project, QAxObject *application, QObject *parent)
     : CommandBase(project, application, parent)
     , m_fileTime(fileTime)

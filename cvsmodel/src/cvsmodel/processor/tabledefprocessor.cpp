@@ -16,6 +16,8 @@
 #include "cvsmodel/setting.h"
 #include "cvsmodel/objectitem.h"
 
+#include "pch.hpp"
+
 //=============================================================================
 // TableDef
 

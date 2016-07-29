@@ -1,5 +1,7 @@
 #include "datachangedhelper.h"
 
+#include "pch.hpp"
+
 DataChangedHelper::DataChangedHelper(int count)
     : m_count(count)
     , m_first(count)

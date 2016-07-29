@@ -7,6 +7,8 @@
 
 #include <QScreen>
 
+#include "pch.hpp"
+
 class ProcessingDialog : public QDialog
 {
     QLabel *m_label;

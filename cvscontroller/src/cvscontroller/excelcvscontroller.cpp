@@ -4,6 +4,8 @@
 #include "cvsmodel/excelobjectproxymodel.h"
 #include "view/maindialog.h"
 
+#include "pch.hpp"
+
 ExcelCvsController::ExcelCvsController(QObject *parent)
     : CvsController(parent)
 {

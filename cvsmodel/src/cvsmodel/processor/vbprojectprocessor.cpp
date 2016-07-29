@@ -11,6 +11,8 @@
 #include "cvsmodel/projectcontainer.h"
 #include "cvsmodel/setting.h"
 
+#include "pch.hpp"
+
 
 VBProjectProcessor::VBProjectProcessor(ProjectContainer *parent)
     : VBEProcessor(parent)

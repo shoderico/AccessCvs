@@ -4,6 +4,8 @@
 
 #include "util/codecinfo.h"
 
+#include "pch.hpp"
+
 TableDataSanitizer::TableDataSanitizer(QObject *parent) : QObject(parent)
 {
     QString sPattern;

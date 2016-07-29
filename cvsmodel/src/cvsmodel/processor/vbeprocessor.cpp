@@ -10,6 +10,8 @@
 #include <QUuid>
 #include <windows.h>
 
+#include "pch.hpp"
+
 VBEProcessor::VBEProcessor(ProjectContainer *parent)
     : ProjectLevelObjectProcessor(parent)
 {

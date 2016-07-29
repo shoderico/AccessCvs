@@ -6,6 +6,8 @@
 #include "addinutil/addincontroller.h"
 #include "windowwidgetmanager.h"
 
+#include "pch.hpp"
+
 AddInControllerImpl::AddInControllerImpl(AddInFactory *factory, QObject *parent)
     : AddInAggregated(factory, parent)
     , m_winWidgetManager(0)

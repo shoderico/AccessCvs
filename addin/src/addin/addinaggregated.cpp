@@ -6,6 +6,8 @@
 
 #include "addinfactory.h"
 
+#include "pch.hpp"
+
 //#include <comdef.h>
 //_COM_SMARTPTR_TYPEDEF(ITypeInfo, __uuidof(ITypeInfo));
 

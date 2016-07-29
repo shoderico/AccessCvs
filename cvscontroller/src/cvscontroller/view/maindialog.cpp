@@ -12,6 +12,8 @@
 
 #include <QSignalBlocker>
 
+#include "pch.hpp"
+
 
 
 

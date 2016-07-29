@@ -12,6 +12,8 @@
 
 #include <QtConcurrent>
 
+#include "pch.hpp"
+
 UpdateItemsDifferenceAsIsCommand::UpdateItemsDifferenceAsIsCommand(ProjectContainer *project, QAxObject *application, QList<ObjectItem *> *items, QObject *parent)
     : CommandBase(project, application, items, parent)
 {

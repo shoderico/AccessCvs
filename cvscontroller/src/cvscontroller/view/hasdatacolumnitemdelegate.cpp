@@ -2,6 +2,8 @@
 
 #include "cvsmodel/objectmodel.h"
 
+#include "pch.hpp"
+
 HasDataColumnItemDelegate::HasDataColumnItemDelegate(QObject *parent) : BoolCheckBoxItemDelegate(parent)
 {
 

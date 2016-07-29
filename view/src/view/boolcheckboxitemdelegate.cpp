@@ -4,6 +4,8 @@
 #include <QApplication>
 #include <QKeyEvent>
 
+#include "pch.hpp"
+
 //#include "cvsmodel/objectmodel.h"
 
 BoolCheckBoxItemDelegate::BoolCheckBoxItemDelegate(QObject *parent)

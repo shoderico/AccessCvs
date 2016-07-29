@@ -8,6 +8,8 @@
 
 #include "cvsmodel/accessprojectcontainer.h"
 
+#include "pch.hpp"
+
 
 FormProcessor::FormProcessor(ProjectContainer *parent)
     : AccessDesignObjectProcessor(parent)

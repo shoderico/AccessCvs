@@ -40,6 +40,8 @@
 #include "command/loaditemsfromprojectcommand.h"
 #include "command/loaditemsfromsourcedircommand.h"
 
+#include "pch.hpp"
+
 
 ObjectModel::ObjectModel(QObject * parent)
     : QAbstractItemModel(parent)

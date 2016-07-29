@@ -3,6 +3,8 @@
 #include "objectmodel.h"
 #include "projectcontainer.h"
 
+#include "pch.hpp"
+
 ObjectProxyModel::ObjectProxyModel(QObject *parent)
     : QSortFilterProxyModel(parent)
     , m_showSelectedOnly(false)

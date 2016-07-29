@@ -4,6 +4,8 @@
 
 #include "util/codecinfo.h"
 
+#include "pch.hpp"
+
 
 TableDefSanitizer::TableDefSanitizer(QObject *parent) : QObject(parent)
 {

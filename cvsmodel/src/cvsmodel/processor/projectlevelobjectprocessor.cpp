@@ -10,6 +10,8 @@
 #include "cvsmodel/setting.h"
 #include "cvsmodel/objectitem.h"
 
+#include "pch.hpp"
+
 
 ProjectLevelObjectProcessor::ProjectLevelObjectProcessor(ProjectContainer *parent)
     : ObjectProcessor(parent)

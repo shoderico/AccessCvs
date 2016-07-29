@@ -4,6 +4,8 @@
 
 #include <QMessageBox>
 
+#include "pch.hpp"
+
 
 AppSignalHandler::AppSignalHandler(Access::Application *application, QObject *parent)
     : QObject(parent)

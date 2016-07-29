@@ -11,6 +11,8 @@
 #include <QCryptographicHash>
 #include <qt_windows.h>
 
+#include "pch.hpp"
+
 void FileUtil::saveToFile(const QString &contents, const QString &filePath, CodecInfo *codec)
 {
     QFile file( filePath );

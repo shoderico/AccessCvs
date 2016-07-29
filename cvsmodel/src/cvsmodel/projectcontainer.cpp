@@ -11,6 +11,8 @@
 #include "processor/objectprocessor.h"
 #include "setting.h"
 
+#include "pch.hpp"
+
 ProjectContainer::ProjectContainer(QObject *parent)
     : QObject(parent)
 {

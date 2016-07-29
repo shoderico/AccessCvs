@@ -10,6 +10,8 @@
 #include <olectl.h>
 #include <ocidl.h>
 
+#include "pch.hpp"
+
 IPictureDisp *ComUtil::loadPicture(const QString &imagePath)
 {
     QPixmap pixmap( imagePath );

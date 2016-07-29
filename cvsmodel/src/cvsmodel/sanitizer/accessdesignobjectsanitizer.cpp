@@ -9,6 +9,8 @@
 #include <QTextEncoder>
 #include <QByteArray>
 
+#include "pch.hpp"
+
 
 AccessDesignObjectSanitizer::AccessDesignObjectSanitizer(QObject *parent) : QObject(parent)
 {

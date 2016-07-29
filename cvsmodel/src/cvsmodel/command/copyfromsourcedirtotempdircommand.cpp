@@ -9,6 +9,8 @@
 
 #include <QtConcurrent>
 
+#include "pch.hpp"
+
 CopyFromSourceDirToTempDirCommand::CopyFromSourceDirToTempDirCommand(ProjectContainer *project, QAxObject *application, QObject *parent)
     : CommandBase(project, application, parent)
 {

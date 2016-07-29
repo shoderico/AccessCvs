@@ -3,6 +3,8 @@
 #include <QGuiApplication>
 #include <QScreen>
 
+#include "pch.hpp"
+
 
 QSize AddInUtil::ribbonIconSize(AddInUtil::IconSizeType sizeType)
 {

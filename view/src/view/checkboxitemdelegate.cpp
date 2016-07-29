@@ -3,6 +3,8 @@
 #include <QPainter>
 #include <QApplication>
 
+#include "pch.hpp"
+
 //#include "cvsmodel/objectitem.h"
 
 CheckBoxItemDelegate::CheckBoxItemDelegate(QObject *parent)

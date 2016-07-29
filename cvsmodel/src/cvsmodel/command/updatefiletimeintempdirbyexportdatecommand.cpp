@@ -12,6 +12,8 @@
 
 #include <QtConcurrent>
 
+#include "pch.hpp"
+
 UpdateFileTimeInTempDirByExportDateCommand::UpdateFileTimeInTempDirByExportDateCommand(const int differenceTypes, ProjectContainer *project, QAxObject *application, QList<ObjectItem *> *items, QObject *parent)
     : CommandBase(project, application, items, parent)
     , m_differenceTypes(differenceTypes)

@@ -15,6 +15,7 @@
 #include <winuser.h>
 #include <oleacc.h>
 
+#include "pch.hpp"
 
 // http://www.codeproject.com/Questions/78801/How-to-get-the-main-thread-ID-of-a-process-known-b
 #ifndef MAKEULONGLONG

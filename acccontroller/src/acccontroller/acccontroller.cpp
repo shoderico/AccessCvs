@@ -14,6 +14,7 @@
 #include <QFileInfo>
 #include <QDir>
 
+#include "pch.hpp"
 
 AccController::AccController(QObject *parent)
     : QObject(parent)

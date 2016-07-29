@@ -1,5 +1,7 @@
 #include "objectitemmap.h"
 
+#include "pch.hpp"
+
 ObjectItemMap::ObjectItemMap(const QList<Model::ObjectType> &objectTypes)
 {
     // add Object-Level object types ( not Project-Level )

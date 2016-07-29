@@ -71,9 +71,13 @@ win32-g++ {
 
 
 INCLUDEPATH += $${PROJECT_INCLUDE_DIR}
+INCLUDEPATH += $${PROJECT_ROOT}/common
 
-
-
+#win32-msvc* {
+#    CONFIG += precompile_header
+#    PRECOMPILED_HEADER = $${PROJECT_ROOT}/common/pch.hpp
+#    HEADERS += $${PROJECT_ROOT}/common/pch.hpp
+#}
 
 #----------------------------------------------------------------
 # copy files

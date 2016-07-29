@@ -6,6 +6,8 @@
 #include <QSettings>
 #include <QFileInfo>
 
+#include "pch.hpp"
+
 extern QAxFactory *qax_instantiate();
 
 AddInFactory::AddInFactory(const QUuid &app, const QUuid &lib)

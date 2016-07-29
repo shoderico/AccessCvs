@@ -7,6 +7,8 @@
 #include "cvsmodel/objectitemmap.h"
 #include "cvsmodel/cvsmodel_const.h"
 
+#include "pch.hpp"
+
 DeleteFromProjectCommand::DeleteFromProjectCommand(ProjectContainer *project, QAxObject *application, QObject *parent)
     : CommandBase(project, application, parent)
 {

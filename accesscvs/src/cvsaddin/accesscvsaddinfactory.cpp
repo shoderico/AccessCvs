@@ -11,6 +11,8 @@
 
 #include "resource/resource.h"
 
+#include "pch.hpp"
+
 static const char LibraryID[]     = "{27e3bd9e-2ee3-41ba-a69d-61f510fda820}";
 static const char ApplicationID[] = "{18bf0f9a-c557-4324-b5d8-f4077561a87e}";
 static const char ClassID[]       = "{85842016-1eb7-4e60-ae2d-a473360251a8}";
@@ -22,6 +24,11 @@ AccessCvsAddInFactory::AccessCvsAddInFactory(const QUuid &app, const QUuid &lib)
     : AddInFactory(app, lib)
     , m_application(0)
 {
+
+#if _DEBUG
+    _CrtSetDbgFlag( _CrtSetDbgFlag( _CRTDBG_REPORT_FLAG )| _CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);
+#endif
+
     setRegistryRoot( QLatin1String("HKEY_CURRENT_USER\\Software") );
     setRegistryPath( QLatin1String("\\Microsoft\\Office\\Access\\Addins") );
 

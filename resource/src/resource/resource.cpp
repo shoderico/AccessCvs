@@ -1,5 +1,7 @@
 #include "resource.h"
 
+#include "pch.hpp"
+
 Resource::Resource(QObject *parent) : QObject(parent)
 {
 

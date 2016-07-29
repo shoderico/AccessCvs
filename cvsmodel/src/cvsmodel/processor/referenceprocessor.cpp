@@ -13,6 +13,8 @@
 #include "cvsmodel/projectcontainer.h"
 #include "cvsmodel/setting.h"
 
+#include "pch.hpp"
+
 
 ReferenceProcessor::ReferenceProcessor(ProjectContainer *parent)
     : VBEProcessor(parent)

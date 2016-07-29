@@ -9,6 +9,8 @@
 #include "cvsmodel/accessprojectcontainer.h"
 #include "cvsmodel/setting.h"
 
+#include "pch.hpp"
+
 
 //=============================================================================
 // Macro

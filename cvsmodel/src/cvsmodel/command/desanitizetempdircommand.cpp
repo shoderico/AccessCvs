@@ -9,6 +9,8 @@
 
 #include <QtConcurrent>
 
+#include "pch.hpp"
+
 DesanitizeTempDirCommand::DesanitizeTempDirCommand(ProjectContainer *project, QAxObject *application, QObject *parent)
     : CommandBase(project, application, parent)
 {
