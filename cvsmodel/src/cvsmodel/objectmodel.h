@@ -21,6 +21,7 @@ class CVSMODEL_SHARED_EXPORT ObjectModel : public QAbstractItemModel
     Q_OBJECT
 public:
     ObjectModel(QObject * parent = 0);
+    ~ObjectModel();
     void init(ProjectContainer *projectContainer);
 
     //----------------------------------------------------------------------------------------------------------------------

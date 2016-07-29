@@ -50,6 +50,12 @@ ObjectModel::ObjectModel(QObject * parent)
 {
 }
 
+ObjectModel::~ObjectModel()
+{
+    if (m_itemMap)
+        delete m_itemMap;
+}
+
 void ObjectModel::init(ProjectContainer *projectContainer)
 {
     m_objectTypesForItemMap = projectContainer->objectTypesForItemMap();
