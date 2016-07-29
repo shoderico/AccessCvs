@@ -88,6 +88,8 @@ AccessDesignObjectSanitizer::~AccessDesignObjectSanitizer()
     delete m_reBlock;
     delete m_reSingleLine;
     delete m_reMultiLine;
+    delete m_rePictureData;
+    delete m_rePictureDataFirstLine;
 }
 
 void AccessDesignObjectSanitizer::sanitize(QTextStream &streamSrc, CodecInfo *codecSrc, QTextStream &streamDstDesign, QTextStream &streamDstModule, CodecInfo *codecDst)

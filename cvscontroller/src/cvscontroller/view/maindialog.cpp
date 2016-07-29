@@ -42,10 +42,10 @@ MainDialog::MainDialog(ObjectModel *model, ObjectProxyModel *proxyModel, QWidget
 
     ui->treeView->setModel(m_proxyModel);
     ui->treeView->setIndentation(0);
-    ui->treeView->setItemDelegateForColumn( Model::InProjectColumn,     new CheckBoxItemDelegate(Model::State_NoChange, Model::State_On, Model::State_Off) );
-    ui->treeView->setItemDelegateForColumn( Model::InSourceDirColumn,   new CheckBoxItemDelegate(Model::State_NoChange, Model::State_On, Model::State_Off) );
-    ui->treeView->setItemDelegateForColumn( Model::DifferentColumn,     new CheckBoxItemDelegate(Model::State_NoChange, Model::State_On, Model::State_Off) );
-    ui->treeView->setItemDelegateForColumn( Model::HasDataColumn,       new HasDataColumnItemDelegate() );
+    ui->treeView->setItemDelegateForColumn( Model::InProjectColumn,     new CheckBoxItemDelegate(Model::State_NoChange, Model::State_On, Model::State_Off, this) );
+    ui->treeView->setItemDelegateForColumn( Model::InSourceDirColumn,   new CheckBoxItemDelegate(Model::State_NoChange, Model::State_On, Model::State_Off, this) );
+    ui->treeView->setItemDelegateForColumn( Model::DifferentColumn,     new CheckBoxItemDelegate(Model::State_NoChange, Model::State_On, Model::State_Off, this) );
+    ui->treeView->setItemDelegateForColumn( Model::HasDataColumn,       new HasDataColumnItemDelegate(this) );
     ui->treeView->setColumnWidth(Model::InProjectColumn,    35);
     ui->treeView->setColumnWidth(Model::InSourceDirColumn, 35);
     ui->treeView->setColumnWidth(Model::DifferentColumn,    35);
