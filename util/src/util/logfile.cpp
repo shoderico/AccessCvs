@@ -62,6 +62,8 @@ void LogFile::MessageOutput(QtMsgType type, const QMessageLogContext &context, c
     }
     static_instance->m_stream << datetime << typeMsg << msg << contextMsg << "\n";
 
+    static_instance->m_stream.flush();
+
     if (type == QtFatalMsg)
         abort();
 }
