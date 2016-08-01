@@ -1,16 +1,25 @@
-PROJECT_ROOT = $$PWD
-LIBRARY_ROOT = $$PWD/..
-BUILD_ROOT = $${PROJECT_ROOT}/build
+
+# Debug/Release
 Release:BUILD_TYPE = release
 Debug:  BUILD_TYPE = debug
-#export(BUILD_TYPE)
-#BUILD_TYPE = $${BUILD_TYPE}
 Release|Debug {
     OBJECTS_DIR = $${BUILD_TYPE}/.obj
     MOC_DIR     = $${BUILD_TYPE}/.moc
     RCC_DIR     = $${BUILD_TYPE}/.rcc
     UI_DIR      = $${BUILD_TYPE}/.ui
 }
+
+
+# Build Identifier
+BUILD_IDENTIFIER=Qt$${QT_VERSION}_$${QMAKE_COMPILER}$${MSVC_VER}
+#message($${BUILD_IDENTIFIER})
+
+
+# Root directories
+PROJECT_ROOT = $$PWD
+LIBRARY_ROOT = $$PWD/..
+BUILD_ROOT   = $${PROJECT_ROOT}/build_$${BUILD_IDENTIFIER}
+
 
 DEFINES += DETECT_MEMORY_LEAKS
 
