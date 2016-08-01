@@ -3923,7 +3923,13 @@ public:
 class ADODB_EXPORT Connection : public QAxObject
 {
 public:
-    Connection(const QString &licenseKey = QString(), QObject *parent = 0)
+    Connection(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    Connection(const QString &licenseKey /*= QString()*/, QObject *parent = 0)
     : QAxObject(parent)
     {
         if (licenseKey.isEmpty())
@@ -4160,7 +4166,13 @@ public:
 class ADODB_EXPORT Command : public QAxObject
 {
 public:
-    Command(const QString &licenseKey = QString(), QObject *parent = 0)
+    Command(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    Command(const QString &licenseKey /*= QString()*/, QObject *parent = 0)
     : QAxObject(parent)
     {
         if (licenseKey.isEmpty())
@@ -4331,7 +4343,13 @@ public:
 class ADODB_EXPORT Recordset : public QAxObject
 {
 public:
-    Recordset(const QString &licenseKey = QString(), QObject *parent = 0)
+    Recordset(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    Recordset(const QString &licenseKey /*= QString()*/, QObject *parent = 0)
     : QAxObject(parent)
     {
         if (licenseKey.isEmpty())
@@ -5002,7 +5020,13 @@ public:
 class ADODB_EXPORT Parameter : public QAxObject
 {
 public:
-    Parameter(const QString &licenseKey = QString(), QObject *parent = 0)
+    Parameter(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    Parameter(const QString &licenseKey /*= QString()*/, QObject *parent = 0)
     : QAxObject(parent)
     {
         if (licenseKey.isEmpty())

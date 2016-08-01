@@ -2396,7 +2396,13 @@ public:
 class VBIDE_EXPORT Windows : public QAxObject
 {
 public:
-    Windows(QObject *parent = 0)
+    Windows(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    Windows(QObject *parent /*= 0*/)
     : QAxObject(parent)
     {
         setControl("{0002e185-0000-0000-c000-000000000046}");
@@ -2460,7 +2466,13 @@ public:
 class VBIDE_EXPORT LinkedWindows : public QAxObject
 {
 public:
-    LinkedWindows(QObject *parent = 0)
+    LinkedWindows(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    LinkedWindows(QObject *parent /*= 0*/)
     : QAxObject(parent)
     {
         setControl("{0002e187-0000-0000-c000-000000000046}");
@@ -2531,7 +2543,13 @@ public:
 class VBIDE_EXPORT ReferencesEvents : public QAxObject
 {
 public:
-    ReferencesEvents(QObject *parent = 0)
+    ReferencesEvents(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    ReferencesEvents(QObject *parent /*= 0*/)
     : QAxObject(parent)
     {
         setControl("{0002e119-0000-0000-c000-000000000046}");
@@ -2553,7 +2571,13 @@ public:
 class VBIDE_EXPORT CommandBarEvents : public QAxObject
 {
 public:
-    CommandBarEvents(QObject *parent = 0)
+    CommandBarEvents(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    CommandBarEvents(QObject *parent /*= 0*/)
     : QAxObject(parent)
     {
         setControl("{0002e132-0000-0000-c000-000000000046}");
@@ -2575,7 +2599,13 @@ public:
 class VBIDE_EXPORT ProjectTemplate : public QAxObject
 {
 public:
-    ProjectTemplate(QObject *parent = 0)
+    ProjectTemplate(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    ProjectTemplate(QObject *parent /*= 0*/)
     : QAxObject(parent)
     {
         setControl("{32cdf9e0-1602-11ce-bfdc-08002b2b8cda}");
@@ -2604,7 +2634,13 @@ public:
 class VBIDE_EXPORT VBProject : public QAxObject
 {
 public:
-    VBProject(QObject *parent = 0)
+    VBProject(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    VBProject(QObject *parent /*= 0*/)
     : QAxObject(parent)
     {
         setControl("{0002e169-0000-0000-c000-000000000046}");
@@ -2750,7 +2786,13 @@ public:
 class VBIDE_EXPORT VBProjects : public QAxObject
 {
 public:
-    VBProjects(QObject *parent = 0)
+    VBProjects(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    VBProjects(QObject *parent /*= 0*/)
     : QAxObject(parent)
     {
         setControl("{0002e101-0000-0000-c000-000000000046}");
@@ -2828,7 +2870,13 @@ public:
 class VBIDE_EXPORT Components : public QAxObject
 {
 public:
-    Components(QObject *parent = 0)
+    Components(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    Components(QObject *parent /*= 0*/)
     : QAxObject(parent)
     {
         setControl("{be39f3d6-1b13-11d0-887f-00a0c90f2744}");
@@ -2906,7 +2954,13 @@ public:
 class VBIDE_EXPORT VBComponents : public QAxObject
 {
 public:
-    VBComponents(QObject *parent = 0)
+    VBComponents(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    VBComponents(QObject *parent /*= 0*/)
     : QAxObject(parent)
     {
         setControl("{be39f3d7-1b13-11d0-887f-00a0c90f2744}");
@@ -3005,7 +3059,13 @@ public:
 class VBIDE_EXPORT Component : public QAxObject
 {
 public:
-    Component(QObject *parent = 0)
+    Component(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    Component(QObject *parent /*= 0*/)
     : QAxObject(parent)
     {
         setControl("{be39f3d8-1b13-11d0-887f-00a0c90f2744}");
@@ -3050,7 +3110,13 @@ public:
 class VBIDE_EXPORT VBComponent : public QAxObject
 {
 public:
-    VBComponent(QObject *parent = 0)
+    VBComponent(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    VBComponent(QObject *parent /*= 0*/)
     : QAxObject(parent)
     {
         setControl("{be39f3da-1b13-11d0-887f-00a0c90f2744}");
@@ -3164,7 +3230,13 @@ public:
 class VBIDE_EXPORT Properties : public QAxObject
 {
 public:
-    Properties(QObject *parent = 0)
+    Properties(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    Properties(QObject *parent /*= 0*/)
     : QAxObject(parent)
     {
         setControl("{0002e18b-0000-0000-c000-000000000046}");
@@ -3228,7 +3300,13 @@ public:
 class VBIDE_EXPORT Addins : public QAxObject
 {
 public:
-    Addins(QObject *parent = 0)
+    Addins(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    Addins(QObject *parent /*= 0*/)
     : QAxObject(parent)
     {
         setControl("{da936b63-ac8b-11d1-b6e5-00a0c90f2744}");
@@ -3292,7 +3370,13 @@ public:
 class VBIDE_EXPORT CodeModule : public QAxObject
 {
 public:
-    CodeModule(QObject *parent = 0)
+    CodeModule(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    CodeModule(QObject *parent /*= 0*/)
     : QAxObject(parent)
     {
         setControl("{0002e170-0000-0000-c000-000000000046}");
@@ -3462,7 +3546,13 @@ public:
 class VBIDE_EXPORT CodePanes : public QAxObject
 {
 public:
-    CodePanes(QObject *parent = 0)
+    CodePanes(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    CodePanes(QObject *parent /*= 0*/)
     : QAxObject(parent)
     {
         setControl("{0002e174-0000-0000-c000-000000000046}");
@@ -3527,7 +3617,13 @@ public:
 class VBIDE_EXPORT CodePane : public QAxObject
 {
 public:
-    CodePane(QObject *parent = 0)
+    CodePane(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    CodePane(QObject *parent /*= 0*/)
     : QAxObject(parent)
     {
         setControl("{0002e178-0000-0000-c000-000000000046}");
@@ -3620,7 +3716,13 @@ public:
 class VBIDE_EXPORT References : public QAxObject
 {
 public:
-    References(QObject *parent = 0)
+    References(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    References(QObject *parent /*= 0*/)
     : QAxObject(parent)
     {
         setControl("{0002e17c-0000-0000-c000-000000000046}");

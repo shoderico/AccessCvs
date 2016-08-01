@@ -467,9 +467,28 @@ excel_impl.cpp
 
 
 
+#=========================================================================
+#=========================================================================
+#=========================================================================
+デフォルトコンストラクタを追加変更
+    戻り値が オブジェクトの場合に、大量に setControl の Warning が出てしまうため。
 
+    AllMacros(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+    AllMacros(QObject *parent /*= 0*/)
+    : QAxObject(parent)
+    {
+        setControl("{08f6c815-3cfd-11d1-98bc-006008197d41}");
+    }
 
+実際は、以下のコマンドを、ソースのルートで実行する
 
+perl -07 -pi -e 's|public\:\r\n    (.+)\(QObject \*parent = 0\)|public\:\r\n    \1\(IDispatch \*subobject = 0, QAxObject \*parent = 0\)\r\n    \: QAxObject\(\(IUnknown\*\)subobject, parent\)\r\n    \{\r\n        internalRelease\(\);\r\n    \}\r\n\r\n    \1\(QObject \*parent \/\*= 0\*\/\)|g' accesslib/src/accesslib/*.h officelib/src/officelib/*.h excellib/src/excellib/*.h
+perl -07 -pi -e 's|public\:\r\n    (.+)\(const QString &licenseKey = QString\(\), QObject \*parent = 0\)|public\:\r\n    \1\(IDispatch \*subobject = 0, QAxObject \*parent = 0\)\r\n    \: QAxObject\(\(IUnknown\*\)subobject, parent\)\r\n    \{\r\n        internalRelease\(\);\r\n    \}\r\n\r\n    \1\(const QString &licenseKey \/\*= QString\(\)\*\/, QObject \*parent = 0\)|g' accesslib/src/accesslib/*.h officelib/src/officelib/*.h excellib/src/excellib/*.h
+perl -07 -pi -e 's|public\:\r\n    (.+)\(QWidget \*parent = 0, Qt::WindowFlags f = 0\)|public\:\r\n    \1\(IDispatch \*subobject = 0, QWidget \*parent = 0, Qt::WindowFlags f = 0\)\r\n    \: QAxWidget\(\(IUnknown\*\)subobject, parent, f\)\r\n    \{\r\n        internalRelease\(\);\r\n    \}\r\n\r\n    \1\(QWidget \*parent \/\*= 0\*\/, Qt::WindowFlags f = 0\)|g' accesslib/src/accesslib/*.h officelib/src/officelib/*.h excellib/src/excellib/*.h
 
 
 #=========================================================================

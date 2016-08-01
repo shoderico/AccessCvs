@@ -30266,7 +30266,13 @@ public:
 class OFFICE_EXPORT CustomXMLSchemaCollection : public QAxObject
 {
 public:
-    CustomXMLSchemaCollection(QObject *parent = 0)
+    CustomXMLSchemaCollection(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    CustomXMLSchemaCollection(QObject *parent /*= 0*/)
     : QAxObject(parent)
     {
         setControl("{000cdb0d-0000-0000-c000-000000000046}");

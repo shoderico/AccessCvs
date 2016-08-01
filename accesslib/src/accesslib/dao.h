@@ -5926,7 +5926,13 @@ public:
 class DAO_EXPORT TableDef : public QAxObject
 {
 public:
-    TableDef(const QString &licenseKey = QString(), QObject *parent = 0)
+    TableDef(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    TableDef(const QString &licenseKey /*= QString()*/, QObject *parent = 0)
     : QAxObject(parent)
     {
         if (licenseKey.isEmpty())
@@ -6168,7 +6174,13 @@ public:
 class DAO_EXPORT Field : public QAxObject
 {
 public:
-    Field(const QString &licenseKey = QString(), QObject *parent = 0)
+    Field(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    Field(const QString &licenseKey /*= QString()*/, QObject *parent = 0)
     : QAxObject(parent)
     {
         if (licenseKey.isEmpty())
@@ -6416,7 +6428,13 @@ public:
 class DAO_EXPORT Index : public QAxObject
 {
 public:
-    Index(const QString &licenseKey = QString(), QObject *parent = 0)
+    Index(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    Index(const QString &licenseKey /*= QString()*/, QObject *parent = 0)
     : QAxObject(parent)
     {
         if (licenseKey.isEmpty())
@@ -6581,7 +6599,13 @@ public:
 class DAO_EXPORT QueryDef : public QAxObject
 {
 public:
-    QueryDef(const QString &licenseKey = QString(), QObject *parent = 0)
+    QueryDef(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    QueryDef(const QString &licenseKey /*= QString()*/, QObject *parent = 0)
     : QAxObject(parent)
     {
         if (licenseKey.isEmpty())
@@ -6957,7 +6981,13 @@ public:
 class DAO_EXPORT Relation : public QAxObject
 {
 public:
-    Relation(const QString &licenseKey = QString(), QObject *parent = 0)
+    Relation(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    Relation(const QString &licenseKey /*= QString()*/, QObject *parent = 0)
     : QAxObject(parent)
     {
         if (licenseKey.isEmpty())
@@ -7064,7 +7094,13 @@ public:
 class DAO_EXPORT User : public QAxObject
 {
 public:
-    User(const QString &licenseKey = QString(), QObject *parent = 0)
+    User(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    User(const QString &licenseKey /*= QString()*/, QObject *parent = 0)
     : QAxObject(parent)
     {
         if (licenseKey.isEmpty())
@@ -7148,7 +7184,13 @@ public:
 class DAO_EXPORT Group : public QAxObject
 {
 public:
-    Group(const QString &licenseKey = QString(), QObject *parent = 0)
+    Group(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    Group(const QString &licenseKey /*= QString()*/, QObject *parent = 0)
     : QAxObject(parent)
     {
         if (licenseKey.isEmpty())
@@ -7224,7 +7266,13 @@ public:
 class DAO_EXPORT DBEngine : public QAxObject
 {
 public:
-    DBEngine(const QString &licenseKey = QString(), QObject *parent = 0)
+    DBEngine(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    DBEngine(const QString &licenseKey /*= QString()*/, QObject *parent = 0)
     : QAxObject(parent)
     {
         if (licenseKey.isEmpty())
@@ -7542,7 +7590,13 @@ public:
 class DAO_EXPORT PrivDBEngine : public QAxObject
 {
 public:
-    PrivDBEngine(const QString &licenseKey = QString(), QObject *parent = 0)
+    PrivDBEngine(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+
+    PrivDBEngine(const QString &licenseKey /*= QString()*/, QObject *parent = 0)
     : QAxObject(parent)
     {
         if (licenseKey.isEmpty())
