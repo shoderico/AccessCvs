@@ -1,3 +1,6 @@
+rem http://blog.kintarou.com/2016/03/28/bulding_qt/
+rem http://qiita.com/informationsea/items/df2775c325769d6f56b3
+
 call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86
 
 set SOURCE_ROOT=C:\Qt\source
