@@ -52,6 +52,7 @@ class SettingElement : public SettingNode
 {
 public:
     SettingElement(const QString &name);
+    ~SettingElement();
 
     QString name() const;
     void setName(const QString &name);

@@ -64,6 +64,11 @@ SettingElement::SettingElement(const QString &name)
 {
 }
 
+SettingElement::~SettingElement()
+{
+    qDeleteAll(m_nodes);
+}
+
 QString SettingElement::name() const
 {
     return m_name;
