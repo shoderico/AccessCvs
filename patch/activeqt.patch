@@ -1,0 +1,30 @@
+diff --git qtactiveqt/src/activeqt/shared/qaxtypes.cpp qtactiveqt/src/activeqt/shared/qaxtypes.cpp
+index df3b655..4faeac5 100644
+--- qtactiveqt/src/activeqt/shared/qaxtypes.cpp
++++ qtactiveqt/src/activeqt/shared/qaxtypes.cpp
+@@ -54,6 +54,7 @@
+ #ifdef QAX_SERVER
+ #   include <qaxfactory.h>
+ #   include <private/qsystemlibrary_p.h>
++#   include <qaxobject.h>
+ #else
+ #   include <quuid.h>
+ #   include <qaxobject.h>
+@@ -952,7 +953,7 @@ QVariant VARIANTToQVariant(const VARIANT &arg, const QByteArray &typeName, uint
+                         if (arg.vt & VT_BYREF) {
+                             var = QVariant(qRegisterMetaType<IDispatch**>("IDispatch**"), &arg.ppdispVal);
+                         } else {
+-#ifndef QAX_SERVER
++//#ifndef QAX_SERVER
+                             if (typeName == "QVariant") {
+                                 QAxObject *object = new QAxObject(disp);
+                                 var = QVariant::fromValue<QAxObject*>(object);
+@@ -966,7 +967,7 @@ QVariant VARIANTToQVariant(const VARIANT &arg, const QByteArray &typeName, uint
+                                 QAxObject *object = (QAxObject*)qax_createObjectWrapper(metaType, disp);
+                                 var = QVariant(QMetaType::type(typeName), &object);
+                             } else
+-#endif
++//#endif
+                                 var = QVariant(qRegisterMetaType<IDispatch*>(typeName), &disp);
+                         }
+                     }
