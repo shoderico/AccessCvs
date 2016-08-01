@@ -93,6 +93,8 @@ bool ProjectFileProcessor::exportFromProjectToTempDir(QAxObject *object, const Q
     }
     setting.save();
 
+    qDeleteAll( propMap.values() );
+
     return true;
 }
 
@@ -241,6 +243,9 @@ bool ProjectFileProcessor::importFromTempDirToProject(QAxObject *object, const Q
             qDebug() << "insert : " << prop->Name << " : " << prop->Value << " : " << prop->Type;
         }
     }
+
+    qDeleteAll( propMapTempDir.values() );
+    qDeleteAll( propMapProject.values() );
 
     return true;
 }
