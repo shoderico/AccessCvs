@@ -327,7 +327,7 @@ bool ReferenceProcessor::importFromTempDirToProject(QAxObject *object, const QSt
     {
         SettingElement *element = refsElement->at(i)->toElement();
         Q_ASSERT(element != NULL);
-        Q_ASSERT(element->name() == "Rerefence");
+        Q_ASSERT(element->name() == "Reference");
 
         QString name     = element->value("Name"            ).toString();
         bool    builtIn  = element->value("BuiltIn" , true  ).toBool();
