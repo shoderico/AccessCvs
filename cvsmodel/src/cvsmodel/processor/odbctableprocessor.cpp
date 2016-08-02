@@ -9,7 +9,7 @@
 #include "util/codecinfo.h"
 
 #include "cvsmodel/accessprojectcontainer.h"
-#include "cvsmodel/setting.h"
+#include "util/setting.h"
 
 #include <QUuid>
 #include <windows.h>

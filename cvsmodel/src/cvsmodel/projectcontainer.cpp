@@ -9,7 +9,7 @@
 #include "util/codecinfo.h"
 
 #include "processor/objectprocessor.h"
-#include "setting.h"
+#include "util/setting.h"
 
 #include "pch.hpp"
 

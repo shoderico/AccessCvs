@@ -8,7 +8,7 @@
 #include "util/fileutil.h"
 
 #include "cvsmodel/accessprojectcontainer.h"
-#include "cvsmodel/setting.h"
+#include "util/setting.h"
 #include "cvsmodel/objectitem.h"
 
 #include "pch.hpp"

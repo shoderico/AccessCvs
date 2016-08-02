@@ -20,7 +20,8 @@ HEADERS += \
     util/progressnotifier.h \
     util/officeutil.h \
     util/threadedinvoker.h \
-    util/logfile.h
+    util/logfile.h \
+    util/setting.h
 
 SOURCES += \
     util/codecinfo.cpp \
@@ -32,7 +33,8 @@ SOURCES += \
     util/progressnotifier.cpp \
     util/officeutil.cpp \
     util/threadedinvoker.cpp \
-    util/logfile.cpp
+    util/logfile.cpp \
+    util/setting.cpp
 
 include(../../common.pri)
 include(../../submodule.pri)

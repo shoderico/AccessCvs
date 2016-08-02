@@ -13,7 +13,6 @@ SOURCES += \
     cvsmodel/objectitem.cpp \
     cvsmodel/objectmodel.cpp \
     cvsmodel/objectproxymodel.cpp \
-    cvsmodel/setting.cpp \
     cvsmodel/sanitizer/accessdesignobjectsanitizer.cpp \
     cvsmodel/sanitizer/tabledatasanitizer.cpp \
     cvsmodel/sanitizer/tabledefsanitizer.cpp \
@@ -71,7 +70,6 @@ HEADERS += \
     cvsmodel/objectitem.h \
     cvsmodel/objectmodel.h \
     cvsmodel/objectproxymodel.h \
-    cvsmodel/setting.h \
     cvsmodel/sanitizer/accessdesignobjectsanitizer.h \
     cvsmodel/sanitizer/tabledatasanitizer.h \
     cvsmodel/sanitizer/tabledefsanitizer.h \

@@ -13,7 +13,7 @@
 
 #include "cvsmodel/accessprojectcontainer.h"
 #include "cvsmodel/sanitizer/accessdesignobjectsanitizer.h"
-#include "cvsmodel/setting.h"
+#include "util/setting.h"
 
 #include "pch.hpp"
 

@@ -13,7 +13,7 @@
 #include "cvsmodel/accessprojectcontainer.h"
 #include "cvsmodel/sanitizer/tabledefsanitizer.h"
 #include "cvsmodel/sanitizer/tabledatasanitizer.h"
-#include "cvsmodel/setting.h"
+#include "util/setting.h"
 #include "cvsmodel/objectitem.h"
 
 #include "pch.hpp"

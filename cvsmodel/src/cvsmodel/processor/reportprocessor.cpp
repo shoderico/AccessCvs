@@ -11,7 +11,7 @@
 
 #include "cvsmodel/accessprojectcontainer.h"
 #include "cvsmodel/sanitizer/accessdesignobjectsanitizer.h"
-#include "cvsmodel/setting.h"
+#include "util/setting.h"
 
 #include <windows.h>
 #include <wingdi.h>

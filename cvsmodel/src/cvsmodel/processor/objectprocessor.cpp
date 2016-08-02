@@ -13,7 +13,7 @@
 
 #include "cvsmodel/projectcontainer.h"
 #include "cvsmodel/objectitem.h"
-#include "cvsmodel/setting.h"
+#include "util/setting.h"
 
 #include "pch.hpp"
 

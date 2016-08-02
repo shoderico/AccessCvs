@@ -11,7 +11,7 @@
 #include "util/codecinfo.h"
 
 #include "cvsmodel/projectcontainer.h"
-#include "cvsmodel/setting.h"
+#include "util/setting.h"
 
 #include "pch.hpp"
 
