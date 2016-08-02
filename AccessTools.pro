@@ -58,4 +58,5 @@ OTHER_FILES += \
     subexe.pri \
     mod_src.pro.tmpl \
     mod_dep.pri.tmpl \
-    mod_inc.pri.tmpl
+    mod_inc.pri.tmpl \
+    mod.pro.tmpl
