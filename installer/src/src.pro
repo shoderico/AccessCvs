@@ -1,9 +1,5 @@
 TEMPLATE = aux
 
-# installer name
-INSTALLER = AccessCvsInstaller
-INSTALLER_ONLINE = $${INSTALLER}_online
-INSTALLER_OFFLINE = $${INSTALLER}_offline
 TARGET    = installer
 
 include(../../common.pri)
@@ -13,6 +9,14 @@ include(../$${TARGET}_dep.pri) # dependencies for self
 # clear unecessary variables
 LIBS =
 #PRE_TARGETDEPS =
+
+
+#----------------------------------------------------------------------------------------------
+# installer name
+INSTALLER = AccessCvsInstaller_$${APP_VERSION}_$${BUILD_IDENTIFIER}_$${BUILD_TYPE}
+INSTALLER_ONLINE = $${INSTALLER}_online
+INSTALLER_OFFLINE = $${INSTALLER}_offline
+
 
 
 #----------------------------------------------------------------------------------------------
