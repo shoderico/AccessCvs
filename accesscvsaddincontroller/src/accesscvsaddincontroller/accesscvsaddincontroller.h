@@ -1,17 +1,17 @@
-#ifndef ACCESSCVSCONTROLLER_H
-#define ACCESSCVSCONTROLLER_H
+#ifndef ACCESSCVSADDINCONTROLLER_H
+#define ACCESSCVSADDINCONTROLLER_H
 
 #include "accesscvsaddincontroller_global.h"
 #include "cvscontroller/cvscontroller.h"
 
-class ACCESSCVSADDINCONTROLLER_SHARED_EXPORT AccessCvsController : public CvsController
+class ACCESSCVSADDINCONTROLLER_SHARED_EXPORT AccessCvsAddinController : public CvsController
 {
     Q_OBJECT
 public:
-    explicit AccessCvsController(QObject *parent = 0);
+    explicit AccessCvsAddinController(QObject *parent = 0);
 
 protected:
     virtual void init();
 };
 
-#endif // ACCESSCVSCONTROLLER_H
+#endif // ACCESSCVSADDINCONTROLLER_H

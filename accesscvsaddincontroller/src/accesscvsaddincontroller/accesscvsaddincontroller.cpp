@@ -6,13 +6,13 @@
 
 #include "pch.hpp"
 
-AccessCvsController::AccessCvsController(QObject *parent)
+AccessCvsAddinController::AccessCvsAddinController(QObject *parent)
     : CvsController(parent)
 {
 
 }
 
-void AccessCvsController::init()
+void AccessCvsAddinController::init()
 {
     if (!m_model)
     {
