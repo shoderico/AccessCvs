@@ -2,7 +2,7 @@
 
 #include "cvsmodel/accessobjectmodel.h"
 #include "cvsmodel/accessobjectproxymodel.h"
-#include "cvscontroller/view/maindialog.h"
+#include "cvsaddincontroller/view/maindialog.h"
 
 #include "pch.hpp"
 

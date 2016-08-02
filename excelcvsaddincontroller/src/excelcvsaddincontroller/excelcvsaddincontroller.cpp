@@ -2,7 +2,7 @@
 
 #include "cvsmodel/excelobjectmodel.h"
 #include "cvsmodel/excelobjectproxymodel.h"
-#include "cvscontroller/view/maindialog.h"
+#include "cvsaddincontroller/view/maindialog.h"
 
 #include "pch.hpp"
 

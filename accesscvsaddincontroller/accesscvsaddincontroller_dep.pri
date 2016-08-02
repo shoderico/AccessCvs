@@ -1,6 +1,6 @@
 # directly dependent libraries for this module
 includeDepModule( cvsmodel )
-includeDepModule( cvscontroller )
+includeDepModule( cvsaddincontroller )
 #include($${PROJECT_ROOT}/external/mod_inc.pri)
 
 

@@ -2,7 +2,7 @@
 #define ACCESSCVSADDINCONTROLLER_H
 
 #include "accesscvsaddincontroller_global.h"
-#include "cvscontroller/cvscontroller.h"
+#include "cvsaddincontroller/cvsaddincontroller.h"
 
 class ACCESSCVSADDINCONTROLLER_SHARED_EXPORT AccessCvsAddinController : public CvsController
 {

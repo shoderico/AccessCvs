@@ -2,7 +2,7 @@
 #define EXCELCVSADDINCONTROLLER_H
 
 #include "excelcvsaddincontroller_global.h"
-#include "cvscontroller/cvscontroller.h"
+#include "cvsaddincontroller/cvsaddincontroller.h"
 
 class EXCALCVSADDINCONTROLLER_SHARED_EXPORT ExcelCvsAddinController : public CvsController
 {
