@@ -16,7 +16,7 @@
 
 #include "pch.hpp"
 
-AccController::AccController(QObject *parent)
+AccessController::AccessController(QObject *parent)
     : QObject(parent)
     , m_application(0)
     , m_parentWidget(0)
@@ -25,13 +25,13 @@ AccController::AccController(QObject *parent)
 {
 }
 
-AccController::~AccController()
+AccessController::~AccessController()
 {
     delete m_uiBlocker;
     delete m_threadedInvoker;
 }
 
-void AccController::initialize(QAxObject *application, QWidget *parentWidget)
+void AccessController::initialize(QAxObject *application, QWidget *parentWidget)
 {
     m_application = static_cast<Access::Application*>(application);
     m_parentWidget = parentWidget;
@@ -43,7 +43,7 @@ void AccController::initialize(QAxObject *application, QWidget *parentWidget)
     connect(m_threadedInvoker, SIGNAL(finished()), m_uiBlocker, SLOT(hide()) );
 }
 
-QString AccController::ribbonXml()
+QString AccessController::ribbonXml()
 {
     QString content =
         "<group id=\"UtilGroup\" "
@@ -83,7 +83,7 @@ QString AccController::ribbonXml()
     return content;
 }
 
-bool AccController::imagePath(const QString &controlId, QString &imagePath, QSize &size)
+bool AccessController::imagePath(const QString &controlId, QString &imagePath, QSize &size)
 {
     Q_UNUSED(controlId)
     Q_UNUSED(imagePath)
@@ -91,7 +91,7 @@ bool AccController::imagePath(const QString &controlId, QString &imagePath, QSiz
     return false;
 }
 
-bool AccController::handleButtonClick(const QString &controlId)
+bool AccessController::handleButtonClick(const QString &controlId)
 {
     if (controlId == "UtilDecompileButton")
         decompile();
@@ -110,7 +110,7 @@ bool AccController::handleButtonClick(const QString &controlId)
     return true;
 }
 
-void AccController::decompile()
+void AccessController::decompile()
 {
     QString fileName;
     if (!getCurrentFileName(fileName))
@@ -120,7 +120,7 @@ void AccController::decompile()
     m_threadedInvoker->start(this, SLOT(doDecompile()) );
 }
 
-void AccController::compactRepair()
+void AccessController::compactRepair()
 {
     QString fileName;
     if (!getCurrentFileName(fileName))
@@ -130,7 +130,7 @@ void AccController::compactRepair()
     m_threadedInvoker->start(this, SLOT(doCompactRepair()) );
 }
 
-void AccController::decompileAndCompactRepair()
+void AccessController::decompileAndCompactRepair()
 {
     QString fileName;
     if (!getCurrentFileName(fileName))
@@ -140,7 +140,7 @@ void AccController::decompileAndCompactRepair()
     m_threadedInvoker->start(this, SLOT(doDecompileAndCompactRepair()) );
 }
 
-void AccController::openInExplorer()
+void AccessController::openInExplorer()
 {
     QString fileName;
     if (!getCurrentFileName(fileName))
@@ -157,7 +157,7 @@ void AccController::openInExplorer()
 
 }
 
-void AccController::openInConsole()
+void AccessController::openInConsole()
 {
     QString fileName;
     if (!getCurrentFileName(fileName))
@@ -178,7 +178,7 @@ void AccController::openInConsole()
     QProcess::startDetached(command);
 }
 
-void AccController::doDecompile()
+void AccessController::doDecompile()
 {
     QString fileName;
     if (getCurrentFileName(fileName))
@@ -194,7 +194,7 @@ void AccController::doDecompile()
     m_threadedInvoker->finish();
 }
 
-void AccController::doCompactRepair()
+void AccessController::doCompactRepair()
 {
     QString fileName;
     if (getCurrentFileName(fileName))
@@ -209,7 +209,7 @@ void AccController::doCompactRepair()
     m_threadedInvoker->finish();
 }
 
-void AccController::doDecompileAndCompactRepair()
+void AccessController::doDecompileAndCompactRepair()
 {
     QString fileName;
     if (getCurrentFileName(fileName))
@@ -226,7 +226,7 @@ void AccController::doDecompileAndCompactRepair()
     m_threadedInvoker->finish();
 }
 
-bool AccController::getCurrentFileName(QString &fileName)
+bool AccessController::getCurrentFileName(QString &fileName)
 {
     fileName = "";
     ComPtr<Access::CurrentProject> currentProject = m_application->CurrentProject();

@@ -15,14 +15,14 @@ namespace Access {
 class Application;
 } // namespace Access
 
-class ACCESSCONTROLLER_SHARED_EXPORT AccController : public QObject, public AddInController
+class ACCESSCONTROLLER_SHARED_EXPORT AccessController : public QObject, public AddInController
 {
     Q_OBJECT
 //    Q_PLUGIN_METADATA(IID "com.shoderitz.addin.AddInController" FILE "basictools.json")
     Q_INTERFACES(AddInController)
 public:
-    explicit AccController(QObject *parent = 0);
-    ~AccController();
+    explicit AccessController(QObject *parent = 0);
+    ~AccessController();
 
     void initialize(QAxObject *application, QWidget *parentWidget);
     QString ribbonXml();

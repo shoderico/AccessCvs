@@ -108,7 +108,7 @@ QAxAggregated *AccessCvsAddInFactory::createAggregate(QObject *parent)
     addInImpl->setRibbonTabId("AccessCvs");
     addInImpl->setRibbonTabLabel("AccessCvs");
     addInImpl->appendController( new AccessCvsController(this) );
-    addInImpl->appendController( new AccController(this) );
+    addInImpl->appendController( new AccessController(this) );
     addInImpl->appendController( new HelpController(this) );
     m_addInImpl = addInImpl;
     return addInImpl;
