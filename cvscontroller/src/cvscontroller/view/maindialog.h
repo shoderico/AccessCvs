@@ -1,6 +1,8 @@
 #ifndef MAINDIALOG_H
 #define MAINDIALOG_H
 
+#include "../cvscontroller_global.h"
+
 #include <QDialog>
 
 namespace Ui {
@@ -21,7 +23,7 @@ class ObjectProcessor;
 //class QCheckBox;
 #include <QCheckBox>
 
-class MainDialog : public QDialog
+class CVSCONTROLLER_SHARED_EXPORT MainDialog : public QDialog
 {
     Q_OBJECT
 

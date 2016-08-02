@@ -5,7 +5,7 @@
 #include "addin/addincontrollerimpl.h"
 #include "accesslib/accesslib.h"
 
-#include "cvscontroller/accesscvscontroller.h"
+#include "accesscvsaddincontroller/accesscvsaddincontroller.h"
 #include "accesscontroller/accesscontroller.h"
 #include "helpcontroller/helpcontroller.h"
 
