@@ -3,7 +3,7 @@
 #include "accesslib/accesslib.h"
 #include "util/comptr.h"
 #include "util/threadedinvoker.h"
-#include "accmodel/accmodel.h"
+#include "accessmodel/accessmodel.h"
 #include "view/uiblocker.h"
 #include "addinutil/addinutil.h"
 

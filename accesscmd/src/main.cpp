@@ -3,7 +3,7 @@
 #include <QCommandLineParser>
 #include <QDebug>
 
-#include "accmodel/accmodel.h"
+#include "accessmodel/accessmodel.h"
 //#include "officelib/officelib.h"
 #include <windows.h>
 

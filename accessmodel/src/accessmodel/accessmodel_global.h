@@ -1,0 +1,12 @@
+#ifndef ACCESSMODEL_GLOBAL_H
+#define ACCESSMODEL_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(ACCESSMODEL_LIBRARY)
+#  define ACCESSMODEL_SHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define ACCESSMODEL_SHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // ACCESSMODEL_GLOBAL_H

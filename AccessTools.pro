@@ -7,7 +7,7 @@ SUBDIRS += \
     util \
     accesscvs \
     accesscmd \
-    accmodel \
+    accessmodel \
     external \
     resource \
     cvsmodel \
@@ -27,11 +27,11 @@ excellib.depends += officelib
 
 # model layer
 cvsmodel.depends   += util accesslib excellib
-accmodel.depends += util accesslib
+accessmodel.depends += util accesslib
 
 # controller layer
 cvscontroller.depends        += view addinutil cvsmodel
-acccontroller.depends        += view addinutil accmodel
+acccontroller.depends        += view addinutil accessmodel
 helpcontroller.depends       +=      addinutil comutil
 
 # addin layer
@@ -47,7 +47,7 @@ excelcvs.depends += resource addin \
                     cvscontroller
 
 # cli layer
-accesscmd.depends += accmodel
+accesscmd.depends += accessmodel
 
 # installer layer
 installer.depends += accesscmd accesscvs

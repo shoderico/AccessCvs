@@ -1,7 +1,7 @@
 # directly dependent libraries for this module
 includeDepModule( view )
 includeDepModule( addinutil )
-includeDepModule( accmodel )
+includeDepModule( accessmodel )
 
 
 # directly dependent qt dlls for this module
