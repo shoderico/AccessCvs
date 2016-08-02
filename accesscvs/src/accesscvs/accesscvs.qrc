@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/cvsaddin">
+        <file>ribbon.xml</file>
+    </qresource>
+</RCC>
