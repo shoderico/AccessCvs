@@ -4,7 +4,7 @@
 #include "excelcvsaddincontroller_global.h"
 #include "cvsaddincontroller/cvsaddincontroller.h"
 
-class EXCALCVSADDINCONTROLLER_SHARED_EXPORT ExcelCvsAddinController : public CvsController
+class EXCALCVSADDINCONTROLLER_SHARED_EXPORT ExcelCvsAddinController : public CvsAddinController
 {
     Q_OBJECT
 public:

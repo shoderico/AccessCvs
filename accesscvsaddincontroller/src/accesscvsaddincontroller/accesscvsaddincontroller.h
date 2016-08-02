@@ -4,7 +4,7 @@
 #include "accesscvsaddincontroller_global.h"
 #include "cvsaddincontroller/cvsaddincontroller.h"
 
-class ACCESSCVSADDINCONTROLLER_SHARED_EXPORT AccessCvsAddinController : public CvsController
+class ACCESSCVSADDINCONTROLLER_SHARED_EXPORT AccessCvsAddinController : public CvsAddinController
 {
     Q_OBJECT
 public:

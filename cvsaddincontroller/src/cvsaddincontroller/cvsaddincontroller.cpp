@@ -15,7 +15,7 @@
 #include "pch.hpp"
 
 
-CvsController::CvsController(QObject *parent)
+CvsAddinController::CvsAddinController(QObject *parent)
     : QObject(parent)
     , m_application(0)
     , m_model(0)
@@ -26,7 +26,7 @@ CvsController::CvsController(QObject *parent)
 {
 }
 
-CvsController::~CvsController()
+CvsAddinController::~CvsAddinController()
 {
     if (m_mainDlg)
     {
@@ -41,14 +41,14 @@ CvsController::~CvsController()
     }
 }
 
-void CvsController::initialize(QAxObject *application, QWidget *parentWidget)
+void CvsAddinController::initialize(QAxObject *application, QWidget *parentWidget)
 {
     m_application = application;
     m_parentWidget = parentWidget;
     init();
 }
 
-QString CvsController::ribbonXml()
+QString CvsAddinController::ribbonXml()
 {
     QString content;
     content =
@@ -95,7 +95,7 @@ QString CvsController::ribbonXml()
     return content;
 }
 
-bool CvsController::imagePath(const QString &controlId, QString &imagePath, QSize &size)
+bool CvsAddinController::imagePath(const QString &controlId, QString &imagePath, QSize &size)
 {
     // Standard
     if ( controlId == "StandardManualButton")
@@ -129,7 +129,7 @@ bool CvsController::imagePath(const QString &controlId, QString &imagePath, QSiz
     return true;
 }
 
-bool CvsController::handleButtonClick(const QString &controlId)
+bool CvsAddinController::handleButtonClick(const QString &controlId)
 {
     if (controlId == "StandardManualButton")
         prepareManual();
@@ -148,12 +148,12 @@ bool CvsController::handleButtonClick(const QString &controlId)
     return true;
 }
 
-void CvsController::prepareManual()
+void CvsAddinController::prepareManual()
 {
     m_mainDlg->showAsManual();
 }
 
-void CvsController::prepareImport()
+void CvsAddinController::prepareImport()
 {
     prepare(Import, false /*clearCache*/);
     if ( m_model->selectedRowCount() == 0)
@@ -161,7 +161,7 @@ void CvsController::prepareImport()
     m_mainDlg->showAsAutoImport();
 }
 
-void CvsController::prepareExport()
+void CvsAddinController::prepareExport()
 {
     prepare(Export, false /*clearCache*/);
     if ( m_model->selectedRowCount() == 0)
@@ -169,7 +169,7 @@ void CvsController::prepareExport()
     m_mainDlg->showAsAutoExport();
 }
 
-void CvsController::clearCacheAndPrepareImport()
+void CvsAddinController::clearCacheAndPrepareImport()
 {
     prepare(Import, true /*clearCache*/);
     if ( m_model->selectedRowCount() == 0)
@@ -177,7 +177,7 @@ void CvsController::clearCacheAndPrepareImport()
     m_mainDlg->showAsAutoImport();
 }
 
-void CvsController::clearCacheAndPrepareExport()
+void CvsAddinController::clearCacheAndPrepareExport()
 {
     prepare(Export, true /*clearCache*/);
     if ( m_model->selectedRowCount() == 0)
@@ -185,27 +185,27 @@ void CvsController::clearCacheAndPrepareExport()
     m_mainDlg->showAsAutoExport();
 }
 
-void CvsController::selectAuto()
+void CvsAddinController::selectAuto()
 {
     m_model->selectItemsForProcess( true/*selected*/, true/*resetSelection*/ );
 }
 
-void CvsController::selectAllObject(bool select)
+void CvsAddinController::selectAllObject(bool select)
 {
     m_model->selectItems( Model::AllItems, select, true/*resetSelection*/ );
 }
 
-void CvsController::selectObject(int objectType, bool select)
+void CvsAddinController::selectObject(int objectType, bool select)
 {
     m_model->selectItemsByObjectType( (Model::SelectObjectType)objectType, select, false /*resetSelection*/ );
 }
 
-void CvsController::showSelectedOnly(bool selectedOnly)
+void CvsAddinController::showSelectedOnly(bool selectedOnly)
 {
     m_proxyModel->setFilterShowSelectedOnly( selectedOnly );
 }
 
-void CvsController::showAllObject(bool show)
+void CvsAddinController::showAllObject(bool show)
 {
     int objectTypes = show ? Model::AllObjectTypes : 0 ;
     m_proxyModel->setFilterShowObjectType( objectTypes );
@@ -214,7 +214,7 @@ void CvsController::showAllObject(bool show)
     // view slot handle it and update checkstate itself
 }
 
-void CvsController::showObject(int objectType, bool show)
+void CvsAddinController::showObject(int objectType, bool show)
 {
     int objectTypes = m_proxyModel->showObjectType();
     if (show)
@@ -224,33 +224,33 @@ void CvsController::showObject(int objectType, bool show)
     m_proxyModel->setFilterShowObjectType( objectTypes );
 }
 
-void CvsController::clearCache()
+void CvsAddinController::clearCache()
 {
     m_model->clearItemsCache();
 }
 
-void CvsController::refreshItems()
+void CvsAddinController::refreshItems()
 {
     m_mainDlg->beginBatch();
     m_model->refreshItems();
     m_mainDlg->endBatch();
 }
 
-void CvsController::executeExport()
+void CvsAddinController::executeExport()
 {
     m_mainDlg->beginBatch();
     m_model->executeExport();
     m_mainDlg->endBatch();
 }
 
-void CvsController::executeImport()
+void CvsAddinController::executeImport()
 {
     m_mainDlg->beginBatch();
     m_model->executeImport();
     m_mainDlg->endBatch();
 }
 
-void CvsController::showSettingDialog()
+void CvsAddinController::showSettingDialog()
 {
     if ( !m_model->checkProjectState() )
     {
@@ -261,7 +261,7 @@ void CvsController::showSettingDialog()
     dlg.exec();
 }
 
-void CvsController::init()
+void CvsAddinController::init()
 {
     if (!m_progressDlg)
     {
@@ -283,7 +283,7 @@ void CvsController::init()
     m_proxyModel->setFilterShowSelectedOnly( true/*selected*/ );
 }
 
-void CvsController::prepare(const CvsController::PrepareType prepareType, const bool clearCache)
+void CvsAddinController::prepare(const CvsAddinController::PrepareType prepareType, const bool clearCache)
 {
     Q_UNUSED(prepareType)
     // this must be shown in tiny progress dialog

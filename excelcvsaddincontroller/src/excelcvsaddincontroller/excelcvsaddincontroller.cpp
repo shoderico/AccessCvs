@@ -7,7 +7,7 @@
 #include "pch.hpp"
 
 ExcelCvsAddinController::ExcelCvsAddinController(QObject *parent)
-    : CvsController(parent)
+    : CvsAddinController(parent)
 {
 
 }
@@ -31,6 +31,6 @@ void ExcelCvsAddinController::init()
         m_mainDlg = new MainDialog( m_model, m_proxyModel, m_parentWidget );
     }
 
-    CvsController::init();
+    CvsAddinController::init();
 }
 

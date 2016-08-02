@@ -15,14 +15,14 @@ class ObjectProxyModel;
 //class Application;
 //} // namespace Access
 
-class CVSADDINCONTROLLER_SHARED_EXPORT CvsController : public QObject, public AddInController
+class CVSADDINCONTROLLER_SHARED_EXPORT CvsAddinController : public QObject, public AddInController
 {
     Q_OBJECT
 //    Q_PLUGIN_METADATA(IID "com.shoderitz.addin.AddInController" FILE "basictools.json")
     Q_INTERFACES(AddInController)
 public:
-    explicit CvsController(QObject *parent = 0);
-    ~CvsController();
+    explicit CvsAddinController(QObject *parent = 0);
+    ~CvsAddinController();
 
     void initialize(QAxObject *application, QWidget *parentWidget);
     QString ribbonXml();
