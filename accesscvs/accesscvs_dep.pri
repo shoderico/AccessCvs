@@ -3,7 +3,7 @@ includeDepModule( officelib )
 includeDepModule( resource )
 includeDepModule( addin )
 # controllers
-includeDepModule( acccontroller )
+includeDepModule( accesscontroller )
 includeDepModule( cvscontroller )
 includeDepModule( helpcontroller )
 

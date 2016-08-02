@@ -4,7 +4,7 @@ includeDepModule( resource )
 includeDepModule( addin )
 includeDepModule( util )
 # controllers
-#includeDepModule( acccontroller )
+#includeDepModule( accesscontroller )
 includeDepModule( cvscontroller )
 includeDepModule( helpcontroller )
 

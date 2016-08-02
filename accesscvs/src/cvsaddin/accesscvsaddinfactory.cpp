@@ -6,7 +6,7 @@
 #include "accesslib/accesslib.h"
 
 #include "cvscontroller/accesscvscontroller.h"
-#include "acccontroller/acccontroller.h"
+#include "accesscontroller/accesscontroller.h"
 #include "helpcontroller/helpcontroller.h"
 
 #include "resource/resource.h"
