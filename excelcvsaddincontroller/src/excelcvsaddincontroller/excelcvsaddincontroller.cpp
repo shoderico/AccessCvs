@@ -6,13 +6,13 @@
 
 #include "pch.hpp"
 
-ExcelCvsController::ExcelCvsController(QObject *parent)
+ExcelCvsAddinController::ExcelCvsAddinController(QObject *parent)
     : CvsController(parent)
 {
 
 }
 
-void ExcelCvsController::init()
+void ExcelCvsAddinController::init()
 {
     if (!m_model)
     {

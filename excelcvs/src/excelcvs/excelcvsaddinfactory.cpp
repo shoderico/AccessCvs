@@ -50,7 +50,7 @@ QAxAggregated *ExcelCvsAddInFactory::createAggregate(QObject *parent)
     AddInControllerImpl *addInImpl = new AddInControllerImpl(this, parent);
     addInImpl->setRibbonTabId("ExcelCvs");
     addInImpl->setRibbonTabLabel("ExcelCvs");
-    addInImpl->appendController( new ExcelCvsController(this) );
+    addInImpl->appendController( new ExcelCvsAddinController(this) );
 //    addInImpl->appendController( new AccController(this) );
     addInImpl->appendController( new HelpController(this) );
     return addInImpl;
