@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    AccModel au;
+    AccessModel au;
     Access::Application *application = NULL;
     if (CoInitialize( NULL ) != S_OK )
         qDebug() << "CoInitialize is failed";

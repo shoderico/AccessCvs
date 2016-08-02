@@ -81,7 +81,7 @@ HWND GetWindowHandle(const DWORD TargetID)
     return NULL;
 }
 
-bool AccModel::decompile(const QString &fileName, quint64 threadIdForAttachInput)
+bool AccessModel::decompile(const QString &fileName, quint64 threadIdForAttachInput)
 {
     if (!QFile(fileName).exists())
         return false;
@@ -231,7 +231,7 @@ bool AccModel::decompile(const QString &fileName, quint64 threadIdForAttachInput
     return true;
 }
 
-bool AccModel::compactRepair(Access::Application *application, const QString &fileName, const int repeatCount)
+bool AccessModel::compactRepair(Access::Application *application, const QString &fileName, const int repeatCount)
 {
     if (!QFile(fileName).exists())
         return false;
@@ -273,7 +273,7 @@ bool AccModel::compactRepair(Access::Application *application, const QString &fi
     return true;
 }
 
-bool AccModel::openCurrentDatabase(Access::Application *application, const QString &fileName)
+bool AccessModel::openCurrentDatabase(Access::Application *application, const QString &fileName)
 {
     HWND targetHwnd = (HWND)application->hWndAccessApp();
     DWORD targetProcessId = 0;
@@ -318,7 +318,7 @@ bool AccModel::openCurrentDatabase(Access::Application *application, const QStri
     return true;
 }
 
-quint64 AccModel::getAccessThreadId(Access::Application *application)
+quint64 AccessModel::getAccessThreadId(Access::Application *application)
 {
     HWND currentHwnd = (HWND)application->hWndAccessApp();
     DWORD currentProcessId = 0;
@@ -327,13 +327,13 @@ quint64 AccModel::getAccessThreadId(Access::Application *application)
     return currentThreadId;
 }
 
-Access::Application *AccModel::createAccessApplication(QObject *parent)
+Access::Application *AccessModel::createAccessApplication(QObject *parent)
 {
     Access::Application *application = new Access::Application(parent);
     return application;
 }
 
-void AccModel::quitAndDeleteApplication(Access::Application *application)
+void AccessModel::quitAndDeleteApplication(Access::Application *application)
 {
     application->Quit();
     delete application;

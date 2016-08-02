@@ -185,7 +185,7 @@ void AccController::doDecompile()
     {
         m_application->CloseCurrentDatabase();
 
-        AccModel au;
+        AccessModel au;
         quint64 currentThreadId = au.getAccessThreadId(m_application);
         au.decompile(fileName, currentThreadId);
 
@@ -201,7 +201,7 @@ void AccController::doCompactRepair()
     {
         m_application->CloseCurrentDatabase();
 
-        AccModel au;
+        AccessModel au;
         au.compactRepair(m_application, fileName, 1);
 
         au.openCurrentDatabase(m_application, fileName);
@@ -216,7 +216,7 @@ void AccController::doDecompileAndCompactRepair()
     {
         m_application->CloseCurrentDatabase();
 
-        AccModel au;
+        AccessModel au;
         quint64 currentThreadId = au.getAccessThreadId(m_application);
         au.decompile(fileName, currentThreadId);
         au.compactRepair(m_application, fileName, 1);

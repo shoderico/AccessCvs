@@ -9,11 +9,11 @@ namespace Access {
 class Application;
 } // namespace Access
 
-class ACCESSMODEL_SHARED_EXPORT AccModel
+class ACCESSMODEL_SHARED_EXPORT AccessModel
 {
 
 public:
-    AccModel(){}
+    AccessModel(){}
 
     Access::Application *createAccessApplication(QObject *parent = 0);
     void quitAndDeleteApplication(Access::Application *application);
