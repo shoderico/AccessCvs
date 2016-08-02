@@ -7,6 +7,8 @@
 //#include "officelib/officelib.h"
 #include <windows.h>
 
+#include "pch.hpp"
+
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
@@ -16,7 +18,7 @@ int main(int argc, char *argv[])
 
     // version
     parser.addVersionOption();
-    app.setApplicationVersion("1.0.4");
+    app.setApplicationVersion( APP_VERSION_STR );
 
     // decompile
     QCommandLineOption optDecompile(QStringList() << "d" << "decompile", QCoreApplication::translate("main", "Decompile"));

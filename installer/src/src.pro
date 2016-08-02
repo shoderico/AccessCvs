@@ -30,7 +30,13 @@ SRC_REPOS_DIR    = $${PWD}/repository
 DST_REPOS_DIR    = $${BUILD_DIR}/repository
 
 PKG_ACCESSCVS_DIR = com.shoderitz.AccessCvs
-PKG_ACCESSCVS_VER = 1.0.4
+PKG_ACCESSCVS_VER = APP_VERSION
+
+
+#----------------------------------------------------------------------------------------------
+# process *.in files
+processConfigureIn( $${SRC_CONFIG_FILE} )
+processConfigureIn( $${SRC_PACKAGE_DIR}/$${PKG_ACCESSCVS_DIR}/meta/package.xml )
 
 
 #----------------------------------------------------------------------------------------------
@@ -119,8 +125,8 @@ QMAKE_POST_LINK += $(COPY) \"$$system_path($${OUT_PWD}/$${BUILD_TYPE}/$${INSTALL
 # other files
 OTHER_FILES = \
     $$PWD/README \
-    $$PWD/config/config.xml \
-    $$PWD/packages/$${PKG_ACCESSCVS_DIR}/meta/package.xml \
+    $$PWD/config/config.xml.in \
+    $$PWD/packages/$${PKG_ACCESSCVS_DIR}/meta/package.xml.in \
     $$PWD/packages/$${PKG_ACCESSCVS_DIR}/meta/installscript.qs \
     $$PWD/packages/$${PKG_ACCESSCVS_DIR}/meta/cc0.txt \
     $$PWD/packages/$${PKG_ACCESSCVS_DIR}/meta/gpl3.txt

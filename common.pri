@@ -1,3 +1,12 @@
+# Application attributes
+APP_VERSION=1.0.4
+APP_VERSION_STR=\\\"$${APP_VERSION}\\\"
+DEFINES += APP_VERSION=$${APP_VERSION}
+DEFINES += APP_VERSION_STR=$${APP_VERSION_STR}
+
+APP_RELEASE_DATE = 2015-09-25
+
+
 
 # Debug/Release
 Release:BUILD_TYPE = release
@@ -222,3 +231,19 @@ defineTest(includeDepModule) {
     myTARGET = $$1
     include($${PROJECT_ROOT}/$${myTARGET}/$${myTARGET}_inc.pri)
 }
+
+
+
+#----------------------------------------------------------------
+# process *.in
+defineTest(processConfigureIn) {
+    unset(myTARGET)
+    myTARGET = $$1
+
+    CONTENTS = $$cat( $${myTARGET}.in, lines )
+    CONTENTS = $$replace( CONTENTS, \\$APP_VERSION\\$, $${APP_VERSION} )
+    CONTENTS = $$replace( CONTENTS, \\$APP_RELEASE_DATE\\$, $${APP_RELEASE_DATE} )
+    write_file( $${myTARGET}, CONTENTS )
+}
+
+

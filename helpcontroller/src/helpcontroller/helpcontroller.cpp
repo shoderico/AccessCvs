@@ -70,7 +70,7 @@ void HelpController::about()
 {
     QMessageBox msg(m_parentWidget);
     msg.setWindowTitle(tr("About AccessCvs"));
-    msg.setText(tr("<h2>AccessCvs 1.0.4</h2>"
+    msg.setText(tr("<h2>AccessCvs " APP_VERSION_STR  "</h2>"
                    "<p>Copyright &copy; 2015 shodeitz</p>"
                    ));
     msg.setStandardButtons(QMessageBox::Ok);
