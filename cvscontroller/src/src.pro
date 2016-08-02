@@ -17,7 +17,6 @@ SOURCES += \
     cvscontroller/view/processtypenames.cpp \
     cvscontroller/view/progresshelper.cpp \
     cvscontroller/view/appsignalhandler.cpp \
-    cvscontroller/excelcvscontroller.cpp \
     cvscontroller/view/settingdialog.cpp
 
 HEADERS += \
@@ -29,7 +28,6 @@ HEADERS += \
     cvscontroller/view/processtypenames.h \
     cvscontroller/view/progresshelper.h \
     cvscontroller/view/appsignalhandler.h \
-    cvscontroller/excelcvscontroller.h \
     cvscontroller/view/settingdialog.h
 
 FORMS += \

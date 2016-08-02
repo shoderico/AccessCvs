@@ -4,7 +4,7 @@
 #include "addin/addincontrollerimpl.h"
 #include "excellib/excellib.h"
 
-#include "cvscontroller/excelcvscontroller.h"
+#include "excelcvsaddincontroller/excelcvsaddincontroller.h"
 //#include "accesscontroller/accesscontroller.h"
 #include "helpcontroller/helpcontroller.h"
 

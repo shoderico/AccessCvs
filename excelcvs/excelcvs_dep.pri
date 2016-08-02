@@ -5,7 +5,7 @@ includeDepModule( addin )
 includeDepModule( util )
 # controllers
 #includeDepModule( accesscontroller )
-includeDepModule( cvscontroller )
+includeDepModule( excelcvsaddincontroller )
 includeDepModule( helpcontroller )
 
 
