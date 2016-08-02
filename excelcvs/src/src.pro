@@ -21,8 +21,8 @@ SOURCES += \
 HEADERS += \
     excelcvs/excelcvsaddinfactory.h
 
-include(../../common.pri)
-include(../../submodule.pri)
+include(../../qmake/common.pri)
+include(../../qmake/submodule.pri)
 include(../$${TARGET}_dep.pri) # dependencies for self
 
 installQtDlls(       $$OUT_PWD/$${BUILD_TYPE} )

@@ -1,20 +1,15 @@
-QT += gui
-QT += widgets
-QT += axcontainer
+QT -= gui
 
 CONFIG += dll
 
-TARGET   = accesscontroller
+TARGET   = AccessCvs
 TEMPLATE = lib
 
-DEFINES += ACCESSCONTROLLER_LIBRARY
+DEFINES += ACCESSCVS_LIBRARY
 
 SOURCES += \
-    accesscontroller/accesscontroller.cpp
 
 HEADERS += \
-    accesscontroller/accesscontroller.h \
-    accesscontroller/accesscontroller_global.h
 
 include(../../qmake/common.pri)
 include(../../qmake/submodule.pri)

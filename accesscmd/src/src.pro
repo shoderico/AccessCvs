@@ -18,8 +18,8 @@ TEMPLATE = app
 
 SOURCES += main.cpp
 
-include(../../common.pri) # directory declarations
-include(../../subexe.pri) # copy *.exe to build/*/bin
+include(../../qmake/common.pri) # directory declarations
+include(../../qmake/subexe.pri) # copy *.exe to build/*/bin
 include(../$${TARGET}_dep.pri) # dependencies for self
 
 # copy dependent files for execution to OUT_PWD?

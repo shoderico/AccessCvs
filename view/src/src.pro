@@ -19,8 +19,8 @@ HEADERS += \
     view/checkboxitemdelegate.h \
     view/uiblocker.h
 
-include(../../common.pri)
-include(../../submodule.pri)
+include(../../qmake/common.pri)
+include(../../qmake/submodule.pri)
 include(../$${TARGET}_dep.pri) # dependencies for self
 
 #LIBS += -loleacc

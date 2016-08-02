@@ -16,8 +16,8 @@ HEADERS +=\
     excellib/excellib.h \
     excellib/excellib_global.h
 
-include(../../common.pri)
-include(../../submodule.pri)
+include(../../qmake/common.pri)
+include(../../qmake/submodule.pri)
 include(../$${TARGET}_dep.pri)
 
 win32-msvc* {

@@ -53,10 +53,10 @@ accesscmd.depends += accessmodel
 installer.depends += accesscmd accesscvs
 
 OTHER_FILES += \
-    common.pri \
-    submodule.pri \
-    subexe.pri \
-    mod_src.pro.tmpl \
-    mod_dep.pri.tmpl \
-    mod_inc.pri.tmpl \
-    mod.pro.tmpl
+    qmake/common.pri \
+    qmake/submodule.pri \
+    qmake/subexe.pri \
+    qmake/mod_src.pro.tmpl \
+    qmake/mod_dep.pri.tmpl \
+    qmake/mod_inc.pri.tmpl \
+    qmake/mod.pro.tmpl

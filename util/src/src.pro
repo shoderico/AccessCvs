@@ -36,6 +36,6 @@ SOURCES += \
     util/logfile.cpp \
     util/setting.cpp
 
-include(../../common.pri)
-include(../../submodule.pri)
+include(../../qmake/common.pri)
+include(../../qmake/submodule.pri)
 include(../$${TARGET}_dep.pri)
