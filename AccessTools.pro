@@ -6,7 +6,7 @@ SUBDIRS += \
     excellib \
     util \
     accesscvs \
-    acccmd \
+    accesscmd \
     accmodel \
     external \
     resource \
@@ -47,10 +47,10 @@ excelcvs.depends += resource addin \
                     cvscontroller
 
 # cli layer
-acccmd.depends += accmodel
+accesscmd.depends += accmodel
 
 # installer layer
-installer.depends += acccmd accesscvs
+installer.depends += accesscmd accesscvs
 
 OTHER_FILES += \
     common.pri \
