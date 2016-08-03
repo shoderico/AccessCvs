@@ -1,10 +1,7 @@
 # directly dependent libraries for this module
-includeDepModule( excellib )
 includeDepModule( resource )
 includeDepModule( addin )
-includeDepModule( util )
 # controllers
-#includeDepModule( accesscontroller )
 includeDepModule( excelcvsaddincontroller )
 includeDepModule( helpcontroller )
 

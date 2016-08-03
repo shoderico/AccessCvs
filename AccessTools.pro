@@ -36,20 +36,21 @@ excelcvsmodel.depends += cvsmodel excellib
 accessmodel.depends += util accesslib
 
 # controller layer
-cvsaddincontroller.depends   += view addinutil accesscvsmodel
-accesscontroller.depends     += view addinutil accessmodel
-helpcontroller.depends       +=      addinutil comutil
+cvsaddincontroller.depends += view addinutil cvsmodel
+accesscontroller.depends += view addinutil accessmodel
+helpcontroller.depends += addinutil comutil
 
 accesscvsaddincontroller.depends += accesscvsmodel cvsaddincontroller
 excelcvsaddincontroller.depends += excelcvsmodel cvsaddincontroller
 
 # addin layer
-addin.depends     += comutil addinutil
+addin.depends += comutil addinutil external
 accesscvs.depends += resource addin \
-                     accesscontroller accesscvsaddincontroller helpcontroller
+                     helpcontroller \
+                     accesscvsaddincontroller \
+                     accesscontroller
+
 excelcvs.depends += resource addin \
-                    excellib \
-                    util \
                     helpcontroller \
                     excelcvsaddincontroller
 
@@ -57,7 +58,7 @@ excelcvs.depends += resource addin \
 accesscmd.depends += accessmodel
 
 # installer layer
-installer.depends += accesscmd accesscvs
+installer.depends += accesscmd accesscvs excelcvs
 
 OTHER_FILES += \
     qmake/common.pri \
