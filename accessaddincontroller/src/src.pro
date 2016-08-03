@@ -4,17 +4,17 @@ QT += axcontainer
 
 CONFIG += dll
 
-TARGET   = accesscontroller
+TARGET   = accessaddincontroller
 TEMPLATE = lib
 
-DEFINES += ACCESSCONTROLLER_LIBRARY
+DEFINES += ACCESSADDINCONTROLLER_LIBRARY
 
 SOURCES += \
-    accesscontroller/accesscontroller.cpp
+    accessaddincontroller/accessaddincontroller.cpp
 
 HEADERS += \
-    accesscontroller/accesscontroller.h \
-    accesscontroller/accesscontroller_global.h
+    accessaddincontroller/accessaddincontroller.h \
+    accessaddincontroller/accessaddincontroller_global.h
 
 include(../../qmake/common.pri)
 include(../../qmake/submodule.pri)

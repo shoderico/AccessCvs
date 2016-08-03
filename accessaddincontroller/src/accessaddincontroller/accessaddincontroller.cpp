@@ -1,4 +1,4 @@
-#include "accesscontroller.h"
+#include "accessaddincontroller.h"
 
 #include "accesslib/accesslib.h"
 #include "util/comptr.h"
@@ -16,7 +16,7 @@
 
 #include "pch.hpp"
 
-AccessController::AccessController(QObject *parent)
+AccessAddinController::AccessAddinController(QObject *parent)
     : QObject(parent)
     , m_application(0)
     , m_parentWidget(0)
@@ -25,13 +25,13 @@ AccessController::AccessController(QObject *parent)
 {
 }
 
-AccessController::~AccessController()
+AccessAddinController::~AccessAddinController()
 {
     delete m_uiBlocker;
     delete m_threadedInvoker;
 }
 
-void AccessController::initialize(QAxObject *application, QWidget *parentWidget)
+void AccessAddinController::initialize(QAxObject *application, QWidget *parentWidget)
 {
     m_application = static_cast<Access::Application*>(application);
     m_parentWidget = parentWidget;
@@ -43,7 +43,7 @@ void AccessController::initialize(QAxObject *application, QWidget *parentWidget)
     connect(m_threadedInvoker, SIGNAL(finished()), m_uiBlocker, SLOT(hide()) );
 }
 
-QString AccessController::ribbonXml()
+QString AccessAddinController::ribbonXml()
 {
     QString content =
         "<group id=\"UtilGroup\" "
@@ -83,7 +83,7 @@ QString AccessController::ribbonXml()
     return content;
 }
 
-bool AccessController::imagePath(const QString &controlId, QString &imagePath, QSize &size)
+bool AccessAddinController::imagePath(const QString &controlId, QString &imagePath, QSize &size)
 {
     Q_UNUSED(controlId)
     Q_UNUSED(imagePath)
@@ -91,7 +91,7 @@ bool AccessController::imagePath(const QString &controlId, QString &imagePath, Q
     return false;
 }
 
-bool AccessController::handleButtonClick(const QString &controlId)
+bool AccessAddinController::handleButtonClick(const QString &controlId)
 {
     if (controlId == "UtilDecompileButton")
         decompile();
@@ -110,7 +110,7 @@ bool AccessController::handleButtonClick(const QString &controlId)
     return true;
 }
 
-void AccessController::decompile()
+void AccessAddinController::decompile()
 {
     QString fileName;
     if (!getCurrentFileName(fileName))
@@ -120,7 +120,7 @@ void AccessController::decompile()
     m_threadedInvoker->start(this, SLOT(doDecompile()) );
 }
 
-void AccessController::compactRepair()
+void AccessAddinController::compactRepair()
 {
     QString fileName;
     if (!getCurrentFileName(fileName))
@@ -130,7 +130,7 @@ void AccessController::compactRepair()
     m_threadedInvoker->start(this, SLOT(doCompactRepair()) );
 }
 
-void AccessController::decompileAndCompactRepair()
+void AccessAddinController::decompileAndCompactRepair()
 {
     QString fileName;
     if (!getCurrentFileName(fileName))
@@ -140,7 +140,7 @@ void AccessController::decompileAndCompactRepair()
     m_threadedInvoker->start(this, SLOT(doDecompileAndCompactRepair()) );
 }
 
-void AccessController::openInExplorer()
+void AccessAddinController::openInExplorer()
 {
     QString fileName;
     if (!getCurrentFileName(fileName))
@@ -157,7 +157,7 @@ void AccessController::openInExplorer()
 
 }
 
-void AccessController::openInConsole()
+void AccessAddinController::openInConsole()
 {
     QString fileName;
     if (!getCurrentFileName(fileName))
@@ -178,7 +178,7 @@ void AccessController::openInConsole()
     QProcess::startDetached(command);
 }
 
-void AccessController::doDecompile()
+void AccessAddinController::doDecompile()
 {
     QString fileName;
     if (getCurrentFileName(fileName))
@@ -194,7 +194,7 @@ void AccessController::doDecompile()
     m_threadedInvoker->finish();
 }
 
-void AccessController::doCompactRepair()
+void AccessAddinController::doCompactRepair()
 {
     QString fileName;
     if (getCurrentFileName(fileName))
@@ -209,7 +209,7 @@ void AccessController::doCompactRepair()
     m_threadedInvoker->finish();
 }
 
-void AccessController::doDecompileAndCompactRepair()
+void AccessAddinController::doDecompileAndCompactRepair()
 {
     QString fileName;
     if (getCurrentFileName(fileName))
@@ -226,7 +226,7 @@ void AccessController::doDecompileAndCompactRepair()
     m_threadedInvoker->finish();
 }
 
-bool AccessController::getCurrentFileName(QString &fileName)
+bool AccessAddinController::getCurrentFileName(QString &fileName)
 {
     fileName = "";
     ComPtr<Access::CurrentProject> currentProject = m_application->CurrentProject();

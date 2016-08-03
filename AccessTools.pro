@@ -14,7 +14,7 @@ SUBDIRS += \
     accesscvsmodel \
     excelcvsmodel \
     addin \
-    accesscontroller \
+    accessaddincontroller \
     cvsaddincontroller \
     accesscvsaddincontroller \
     excelcvsaddincontroller \
@@ -37,7 +37,7 @@ accessmodel.depends += util accesslib
 
 # controller layer
 cvsaddincontroller.depends += view addinutil cvsmodel
-accesscontroller.depends += view addinutil accessmodel
+accessaddincontroller.depends += view addinutil accessmodel
 helpaddincontroller.depends += addinutil comutil
 
 accesscvsaddincontroller.depends += accesscvsmodel cvsaddincontroller
@@ -48,7 +48,7 @@ addin.depends += comutil addinutil external
 accesscvs.depends += resource addin \
                      helpaddincontroller \
                      accesscvsaddincontroller \
-                     accesscontroller
+                     accessaddincontroller
 
 excelcvs.depends += resource addin \
                     helpaddincontroller \

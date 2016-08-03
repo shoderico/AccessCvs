@@ -2,7 +2,7 @@
 includeDepModule( resource )
 includeDepModule( addin )
 # controllers
-includeDepModule( accesscontroller )
+includeDepModule( accessaddincontroller )
 includeDepModule( accesscvsaddincontroller )
 includeDepModule( helpaddincontroller )
 
