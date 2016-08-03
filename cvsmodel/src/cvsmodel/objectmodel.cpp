@@ -8,7 +8,7 @@
 
 #include <QtConcurrent>
 
-#include "accesslib/accesslib.h"
+//#include "officelib/officelib.h"
 #include "util/comptr.h"
 #include "util/progressnotifier.h"
 #include "util/datachangedhelper.h"
@@ -16,7 +16,7 @@
 
 #include "projectcontainer.h"
 #include "processor/objectprocessor.h"
-#include "processor/tabledefprocessor.h"
+//#include "processor/tabledefprocessor.h"
 #include "objectitem.h"
 
 #include "command/exportfromprojecttotempdircommand.h"

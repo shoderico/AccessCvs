@@ -18,19 +18,9 @@ SOURCES += \
     cvsmodel/sanitizer/tabledefsanitizer.cpp \
     cvsmodel/processor/objectprocessor.cpp \
     cvsmodel/processor/vbprojectprocessor.cpp \
-    cvsmodel/processor/projectfileprocessor.cpp \
     cvsmodel/processor/referenceprocessor.cpp \
     cvsmodel/processor/projectlevelobjectprocessor.cpp \
-    cvsmodel/processor/moduleprocessor.cpp \
-    cvsmodel/processor/macroprocessor.cpp \
-    cvsmodel/processor/reportprocessor.cpp \
-    cvsmodel/processor/formprocessor.cpp \
-    cvsmodel/processor/accessdesignobjectprocessor.cpp \
-    cvsmodel/processor/accessobjectprocessor.cpp \
-    cvsmodel/processor/queryasobjectprocessor.cpp \
-    cvsmodel/processor/queryassqlprocessor.cpp \
-    cvsmodel/processor/relationprocessor.cpp \
-    cvsmodel/processor/tabledefprocessor.cpp \
+    cvsmodel/processor/vbeprocessor.cpp \
     cvsmodel/command/sanitizetempdircommand.cpp \
     cvsmodel/command/commandbase.cpp \
     cvsmodel/command/desanitizetempdircommand.cpp \
@@ -54,16 +44,7 @@ SOURCES += \
     cvsmodel/command/loaditemsfromprojectcommand.cpp \
     cvsmodel/command/loaditemsfromsourcedircommand.cpp \
     cvsmodel/objectitemmap.cpp \
-    cvsmodel/accessobjectmodel.cpp \
-    cvsmodel/accessobjectproxymodel.cpp \
-    cvsmodel/projectcontainer.cpp \
-    cvsmodel/accessprojectcontainer.cpp \
-    cvsmodel/processor/vbeprocessor.cpp \
-    cvsmodel/excelprojectcontainer.cpp \
-    cvsmodel/excelobjectproxymodel.cpp \
-    cvsmodel/excelobjectmodel.cpp \
-    cvsmodel/processor/odbctableprocessor.cpp \
-    cvsmodel/processor/tableobjectprocessor.cpp
+    cvsmodel/projectcontainer.cpp
 
 HEADERS += \
     cvsmodel/cvsmodel_global.h \
@@ -75,19 +56,9 @@ HEADERS += \
     cvsmodel/sanitizer/tabledefsanitizer.h \
     cvsmodel/processor/objectprocessor.h \
     cvsmodel/processor/vbprojectprocessor.h \
-    cvsmodel/processor/projectfileprocessor.h \
     cvsmodel/processor/referenceprocessor.h \
     cvsmodel/processor/projectlevelobjectprocessor.h \
-    cvsmodel/processor/moduleprocessor.h \
-    cvsmodel/processor/macroprocessor.h \
-    cvsmodel/processor/reportprocessor.h \
-    cvsmodel/processor/formprocessor.h \
-    cvsmodel/processor/accessdesignobjectprocessor.h \
-    cvsmodel/processor/accessobjectprocessor.h \
-    cvsmodel/processor/queryasobjectprocessor.h \
-    cvsmodel/processor/queryassqlprocessor.h \
-    cvsmodel/processor/relationprocessor.h \
-    cvsmodel/processor/tabledefprocessor.h \
+    cvsmodel/processor/vbeprocessor.h \
     cvsmodel/cvsmodel_const.h \
     cvsmodel/command/sanitizetempdircommand.h \
     cvsmodel/command/commandbase.h \
@@ -112,16 +83,7 @@ HEADERS += \
     cvsmodel/command/loaditemsfromprojectcommand.h \
     cvsmodel/command/loaditemsfromsourcedircommand.h \
     cvsmodel/objectitemmap.h \
-    cvsmodel/accessobjectmodel.h \
-    cvsmodel/accessobjectproxymodel.h \
-    cvsmodel/projectcontainer.h \
-    cvsmodel/accessprojectcontainer.h \
-    cvsmodel/processor/vbeprocessor.h \
-    cvsmodel/excelprojectcontainer.h \
-    cvsmodel/excelobjectproxymodel.h \
-    cvsmodel/excelobjectmodel.h \
-    cvsmodel/processor/odbctableprocessor.h \
-    cvsmodel/processor/tableobjectprocessor.h
+    cvsmodel/projectcontainer.h
 
 include(../../qmake/common.pri)
 include(../../qmake/submodule.pri)

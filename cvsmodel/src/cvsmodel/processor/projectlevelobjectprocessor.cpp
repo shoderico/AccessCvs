@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-#include "accesslib/accesslib.h"
+#include "officelib/officelib.h"
 
 #include "util/fileutil.h"
 

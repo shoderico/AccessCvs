@@ -1,4 +1,5 @@
 # directly dependent libraries for this module
+includeDepModule( excelcvsmodel )
 includeDepModule( cvsaddincontroller )
 #include($${PROJECT_ROOT}/external/mod_inc.pri)
 

@@ -1,6 +1,5 @@
 # directly dependent libraries for this module
-includeDepModule( accesslib )
-includeDepModule( excellib )
+includeDepModule( officelib )
 includeDepModule( util )
 
 

@@ -13,7 +13,7 @@ namespace VBIDE {
 class VBProject;
 }
 
-class VBProjectProcessor : public VBEProcessor
+class CVSMODEL_SHARED_EXPORT VBProjectProcessor : public VBEProcessor
 {
 public:
     explicit VBProjectProcessor(ProjectContainer *parent);

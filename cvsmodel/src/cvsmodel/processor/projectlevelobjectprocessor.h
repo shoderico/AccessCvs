@@ -9,7 +9,7 @@ class ObjectItem;
 
 class QAxObject;
 
-class ProjectLevelObjectProcessor : public ObjectProcessor
+class CVSMODEL_SHARED_EXPORT ProjectLevelObjectProcessor : public ObjectProcessor
 {
 public:
     explicit ProjectLevelObjectProcessor(ProjectContainer *parent);

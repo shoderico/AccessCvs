@@ -13,7 +13,7 @@ namespace VBIDE {
 class VBProject;
 }
 
-class VBEProcessor : public ProjectLevelObjectProcessor
+class CVSMODEL_SHARED_EXPORT VBEProcessor : public ProjectLevelObjectProcessor
 {
     Q_OBJECT
 public:

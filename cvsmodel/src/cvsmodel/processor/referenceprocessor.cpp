@@ -4,7 +4,6 @@
 #include <QDir>
 #include <QFile>
 
-//#include "accesslib/accesslib.h"
 #include "officelib/officelib.h"
 
 #include "util/comptr.h"

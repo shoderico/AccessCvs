@@ -11,6 +11,8 @@ SUBDIRS += \
     external \
     resource \
     cvsmodel \
+    accesscvsmodel \
+    excelcvsmodel \
     addin \
     accesscontroller \
     cvsaddincontroller \
@@ -28,16 +30,18 @@ accesslib.depends += officelib
 excellib.depends += officelib
 
 # model layer
-cvsmodel.depends   += util accesslib excellib
+cvsmodel.depends += util officelib
+accesscvsmodel.depends += cvsmodel accesslib
+excelcvsmodel.depends += cvsmodel excellib
 accessmodel.depends += util accesslib
 
 # controller layer
-cvsaddincontroller.depends   += view addinutil cvsmodel
+cvsaddincontroller.depends   += view addinutil accesscvsmodel
 accesscontroller.depends     += view addinutil accessmodel
 helpcontroller.depends       +=      addinutil comutil
 
-accesscvsaddincontroller.depends += cvsmodel cvsaddincontroller
-excelcvsaddincontroller.depends += cvsmodel cvsaddincontroller
+accesscvsaddincontroller.depends += accesscvsmodel cvsaddincontroller
+excelcvsaddincontroller.depends += excelcvsmodel cvsaddincontroller
 
 # addin layer
 addin.depends     += comutil addinutil

@@ -1,19 +1,17 @@
 #include "objectprocessor.h"
 
+#include "officelib/officelib.h"
+#include "util/comptr.h"
+#include "util/codecinfo.h"
+#include "util/fileutil.h"
+#include "util/setting.h"
+#include "cvsmodel/projectcontainer.h"
+#include "cvsmodel/objectitem.h"
+
 #include <QDebug>
 #include <QDir>
 #include <QTextCodec>
 #include <QFileInfo>
-
-#include "accesslib/accesslib.h"
-
-#include "util/comptr.h"
-#include "util/codecinfo.h"
-#include "util/fileutil.h"
-
-#include "cvsmodel/projectcontainer.h"
-#include "cvsmodel/objectitem.h"
-#include "util/setting.h"
 
 #include "pch.hpp"
 
@@ -146,12 +144,8 @@ bool ObjectProcessor::deleteFromSourceDir(const QString &objectName)
 
 bool ObjectProcessor::deleteFromProject(const QString &objectName)
 {
-    // TODO: cache DoCmd object
-    if (m_accessObjectType != -1)
-    {
-        ComPtr<Access::DoCmd> doCmd = m_projectContainer->application<Access::Application>()->DoCmd();
-        doCmd->DeleteObject( (Access::AcObjectType)m_accessObjectType, objectName );
-    }
+    // in subclass, override this function
+    Q_UNUSED(objectName)
     return true;
 }
 

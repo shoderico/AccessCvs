@@ -3,15 +3,16 @@
 
 #include <QObject>
 
-namespace Access {
-class Application;
-}
+//namespace Access {
+//class Application;
+//}
+class QAxObject;
 
 class AppSignalHandler : public QObject
 {
     Q_OBJECT
 public:
-    explicit AppSignalHandler(Access::Application *application, QObject *parent = 0);
+    explicit AppSignalHandler(QAxObject *application, QObject *parent = 0);
     ~AppSignalHandler();
 
 signals:
@@ -22,7 +23,7 @@ public slots:
     void	signal(const QString & name, int argc, void * argv);
 
 private:
-    Access::Application *m_application;
+    QAxObject *m_application;
     QWidget *m_parentWidget;
 
 };

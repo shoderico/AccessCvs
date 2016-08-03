@@ -8,7 +8,7 @@ class ProjectContainer;
 
 class QAxObject;
 
-class ReferenceProcessor : public VBEProcessor
+class CVSMODEL_SHARED_EXPORT ReferenceProcessor : public VBEProcessor
 {
 public:
     explicit ReferenceProcessor(ProjectContainer *parent);
