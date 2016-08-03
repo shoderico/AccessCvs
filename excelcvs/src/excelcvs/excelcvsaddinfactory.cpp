@@ -6,7 +6,7 @@
 
 #include "excelcvsaddincontroller/excelcvsaddincontroller.h"
 //#include "accesscontroller/accesscontroller.h"
-#include "helpcontroller/helpcontroller.h"
+#include "helpaddincontroller/helpaddincontroller.h"
 
 #include "resource/resource.h"
 
@@ -52,7 +52,7 @@ QAxAggregated *ExcelCvsAddInFactory::createAggregate(QObject *parent)
     addInImpl->setRibbonTabLabel("ExcelCvs");
     addInImpl->appendController( new ExcelCvsAddinController(this) );
 //    addInImpl->appendController( new AccController(this) );
-    addInImpl->appendController( new HelpController(this) );
+    addInImpl->appendController( new HelpAddinController(this) );
     return addInImpl;
 }
 

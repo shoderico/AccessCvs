@@ -4,8 +4,7 @@ includeDepModule( addin )
 # controllers
 includeDepModule( accesscontroller )
 includeDepModule( accesscvsaddincontroller )
-includeDepModule( helpcontroller )
-
+includeDepModule( helpaddincontroller )
 
 # directly dependent qt dlls for for this module
 DEP_DLLS_QT.files += \

@@ -3,8 +3,7 @@ includeDepModule( resource )
 includeDepModule( addin )
 # controllers
 includeDepModule( excelcvsaddincontroller )
-includeDepModule( helpcontroller )
-
+includeDepModule( helpaddincontroller )
 
 # directly dependent qt dlls for for this module
 DEP_DLLS_QT.files += \

@@ -7,7 +7,7 @@
 
 #include "accesscvsaddincontroller/accesscvsaddincontroller.h"
 #include "accesscontroller/accesscontroller.h"
-#include "helpcontroller/helpcontroller.h"
+#include "helpaddincontroller/helpaddincontroller.h"
 
 #include "resource/resource.h"
 
@@ -109,7 +109,7 @@ QAxAggregated *AccessCvsAddInFactory::createAggregate(QObject *parent)
     addInImpl->setRibbonTabLabel("AccessCvs");
     addInImpl->appendController( new AccessCvsAddinController(this) );
     addInImpl->appendController( new AccessController(this) );
-    addInImpl->appendController( new HelpController(this) );
+    addInImpl->appendController( new HelpAddinController(this) );
     m_addInImpl = addInImpl;
     return addInImpl;
 }

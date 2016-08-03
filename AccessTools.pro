@@ -22,7 +22,7 @@ SUBDIRS += \
     addinutil \
     comutil \
     installer \
-    helpcontroller \
+    helpaddincontroller \
     excelcvs
 
 # office lib layer
@@ -38,7 +38,7 @@ accessmodel.depends += util accesslib
 # controller layer
 cvsaddincontroller.depends += view addinutil cvsmodel
 accesscontroller.depends += view addinutil accessmodel
-helpcontroller.depends += addinutil comutil
+helpaddincontroller.depends += addinutil comutil
 
 accesscvsaddincontroller.depends += accesscvsmodel cvsaddincontroller
 excelcvsaddincontroller.depends += excelcvsmodel cvsaddincontroller
@@ -46,12 +46,12 @@ excelcvsaddincontroller.depends += excelcvsmodel cvsaddincontroller
 # addin layer
 addin.depends += comutil addinutil external
 accesscvs.depends += resource addin \
-                     helpcontroller \
+                     helpaddincontroller \
                      accesscvsaddincontroller \
                      accesscontroller
 
 excelcvs.depends += resource addin \
-                    helpcontroller \
+                    helpaddincontroller \
                     excelcvsaddincontroller
 
 # cli layer
