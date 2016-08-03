@@ -1,4 +1,4 @@
-#include "projectfileprocessor.h"
+#include "accessprojectfileprocessor.h"
 
 #include <QDebug>
 #include <QFile>
@@ -18,7 +18,7 @@
 #include "pch.hpp"
 
 
-ProjectFileProcessor::ProjectFileProcessor(ProjectContainer *parent)
+AccessProjectFileProcessor::AccessProjectFileProcessor(ProjectContainer *parent)
     : ProjectLevelObjectProcessor(parent)
 {
     m_objectName          = "AccessProject";
@@ -37,7 +37,7 @@ ProjectFileProcessor::ProjectFileProcessor(ProjectContainer *parent)
     m_existCheckExtension = m_tempFileExtension;
 }
 
-bool ProjectFileProcessor::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
+bool AccessProjectFileProcessor::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
@@ -98,7 +98,7 @@ bool ProjectFileProcessor::exportFromProjectToTempDir(QAxObject *object, const Q
     return true;
 }
 
-bool ProjectFileProcessor::importFromTempDirToProject(QAxObject *object, const QString &objectName)
+bool AccessProjectFileProcessor::importFromTempDirToProject(QAxObject *object, const QString &objectName)
 {
     Q_UNUSED(object)
     Q_UNUSED(objectName)
@@ -250,7 +250,7 @@ bool ProjectFileProcessor::importFromTempDirToProject(QAxObject *object, const Q
     return true;
 }
 
-void ProjectFileProcessor::loadProperties(QMap<QString, ProjectFileProcessor::ProjectFileProperty *> &propMap)
+void AccessProjectFileProcessor::loadProperties(QMap<QString, AccessProjectFileProcessor::ProjectFileProperty *> &propMap)
 {
     QString pattern;
     pattern  = "^(";

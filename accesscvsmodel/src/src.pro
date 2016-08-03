@@ -19,7 +19,7 @@ SOURCES += \
     accesscvsmodel/processor/macroprocessor.cpp \
     accesscvsmodel/processor/moduleprocessor.cpp \
     accesscvsmodel/processor/odbctableprocessor.cpp \
-    accesscvsmodel/processor/projectfileprocessor.cpp \
+    accesscvsmodel/processor/accessprojectfileprocessor.cpp \
     accesscvsmodel/processor/queryasobjectprocessor.cpp \
     accesscvsmodel/processor/queryassqlprocessor.cpp \
     accesscvsmodel/processor/relationprocessor.cpp \
@@ -38,7 +38,7 @@ HEADERS += \
     accesscvsmodel/processor/macroprocessor.h \
     accesscvsmodel/processor/moduleprocessor.h \
     accesscvsmodel/processor/odbctableprocessor.h \
-    accesscvsmodel/processor/projectfileprocessor.h \
+    accesscvsmodel/processor/accessprojectfileprocessor.h \
     accesscvsmodel/processor/queryasobjectprocessor.h \
     accesscvsmodel/processor/queryassqlprocessor.h \
     accesscvsmodel/processor/relationprocessor.h \

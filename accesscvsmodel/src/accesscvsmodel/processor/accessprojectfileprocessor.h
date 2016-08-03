@@ -1,5 +1,5 @@
-#ifndef PROJECTFILEPROCESSOR_H
-#define PROJECTFILEPROCESSOR_H
+#ifndef ACCESSPROJECTFILEPROCESSOR_H
+#define ACCESSPROJECTFILEPROCESSOR_H
 
 #include "accesscvsmodel/accesscvsmodel_global.h"
 #include "cvsmodel/processor/projectlevelobjectprocessor.h"
@@ -10,10 +10,10 @@ class ProjectContainer;
 
 class QAxObject;
 
-class ProjectFileProcessor : public ProjectLevelObjectProcessor
+class AccessProjectFileProcessor : public ProjectLevelObjectProcessor
 {
 public:
-    explicit ProjectFileProcessor(ProjectContainer *parent);
+    explicit AccessProjectFileProcessor(ProjectContainer *parent);
 //    virtual bool        isTargetObject(QAxObject *object) const;
 //    virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
     virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
@@ -43,4 +43,4 @@ private:
 };
 
 
-#endif // PROJECTFILEPROCESSOR_H
+#endif // ACCESSPROJECTFILEPROCESSOR_H

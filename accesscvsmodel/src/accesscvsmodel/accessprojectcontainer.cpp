@@ -17,7 +17,7 @@
 #include "cvsmodel/processor/referenceprocessor.h"
 #include "cvsmodel/processor/vbprojectprocessor.h"
 
-#include "processor/projectfileprocessor.h"
+#include "processor/accessprojectfileprocessor.h"
 
 #include "pch.hpp"
 
@@ -38,7 +38,7 @@ AccessProjectContainer::AccessProjectContainer(QObject *parent)
     m_objectProcessorList.append( new ModuleProcessor (this) );
     m_objectProcessorList.append( new ReferenceProcessor (this) );
     m_objectProcessorList.append( new VBProjectProcessor (this) );
-    m_objectProcessorList.append( new ProjectFileProcessor (this) );
+    m_objectProcessorList.append( new AccessProjectFileProcessor (this) );
 
     m_objectTypesForItemMap
         << Model::TableDef
