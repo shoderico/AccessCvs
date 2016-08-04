@@ -25,11 +25,11 @@ public:
     void registerClass(const QString &key, QSettings *settings) const;
     void unregisterClass(const QString &key, QSettings *settings) const;
 
-    virtual QAxAggregated *createAggregate(QObject *parent = 0) = 0;
-    virtual void setApplication(IDispatch *application) = 0;
-    virtual void releaseApplication() = 0;
-    virtual QAxObject *application() const = 0;
-    virtual int applicationHwnd() = 0;
+    virtual QAxAggregated *createAggregate(QObject *parent = 0);
+    virtual void setApplication(IDispatch *application);
+    virtual void releaseApplication();
+    virtual QAxObject *application() const;
+    virtual int applicationHwnd();
     virtual void onBeforeConnectionEvent();
     virtual void onAfterConnectionEvent();
     virtual void onAfterDisconnectionEvent();

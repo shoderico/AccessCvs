@@ -1,8 +1,10 @@
 QT -= gui
 QT += axcontainer
+QT += axserver
 
-#CONFIG += dll
-CONFIG += staticlib
+#CONFIG += staticlib
+CONFIG += dll
+CONFIG += qaxserver_no_postlink
 
 TARGET   = addin
 TEMPLATE = lib

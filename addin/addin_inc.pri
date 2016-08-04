@@ -1,5 +1,6 @@
 # inc.pri : static module
-includeStaticLib( addin )
+#includeStaticLib( addin )
+includeSharedLib( addin )
 
 defineTest(includeAddIn) {
     unset(MY_TARGET)

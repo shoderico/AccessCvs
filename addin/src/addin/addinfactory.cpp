@@ -79,6 +79,32 @@ void AddInFactory::unregisterClass(const QString &key, QSettings *settings) cons
     //if ( is64bit() ) unregisterClassInternal(key, ws64bit);
 }
 
+QAxAggregated *AddInFactory::createAggregate(QObject *parent)
+{
+    Q_UNUSED(parent)
+    return NULL;
+}
+
+void AddInFactory::setApplication(IDispatch *application)
+{
+    Q_UNUSED(application)
+}
+
+void AddInFactory::releaseApplication()
+{
+
+}
+
+QAxObject *AddInFactory::application() const
+{
+    return NULL;
+}
+
+int AddInFactory::applicationHwnd()
+{
+    return 0;
+}
+
 void AddInFactory::onBeforeConnectionEvent()
 {
 
@@ -190,3 +216,4 @@ void AddInFactory::unregisterClassInternal(const QString &key, AddInFactory::Wor
     }
 }
 
+QAXFACTORY_EXPORT(AddInFactory, "DummyLibraryID", "DummyApplicationID")
