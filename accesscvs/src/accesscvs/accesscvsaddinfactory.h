@@ -7,7 +7,7 @@ namespace Access {
 class Application;
 } // namespace Access
 
-class AddInControllerImpl;
+class AddInRibbonTab;
 
 class AccessCvsAddInFactory : public AddInFactory
 {
@@ -27,7 +27,7 @@ public:
 
 private:
     Access::Application *m_application;
-    AddInControllerImpl *m_addInImpl;
+    AddInRibbonTab *m_addInRibbonTab;
 
 };
 

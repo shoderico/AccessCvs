@@ -11,6 +11,7 @@
 #include "interface/ribboncallback.h"
 
 class AddInFactory;
+class AddInRibbonTab;
 
 class ADDIN_SHARED_EXPORT AddInAggregated
         : public QObject
@@ -88,15 +89,23 @@ public:
         /* [retval][out] */ /* external definition not present */ IPictureDisp **picture);
 
 
-    virtual HRESULT onButtonClicked(const QString &controlId) = 0;
+
+
+    bool loadTypeLib(const QString &serverFilePath);
+    void appendRibbonTab(AddInRibbonTab *ribbonTab);
+
+
+
+    virtual HRESULT onButtonClicked(const QString &controlId);
 
 protected:
-    virtual void onConnectionEvent() = 0;
-    virtual void onDisconnectionEvent() = 0;
-    virtual QString ribbomXml() = 0;
-    virtual IPictureDisp *buttonImage(const QString &controlId) = 0;
+    virtual void onConnectionEvent();
+    virtual void onDisconnectionEvent();
+    virtual QString ribbomXml();
+    virtual IPictureDisp *buttonImage(const QString &controlId);
 
     AddInFactory *factory() const;
+
 
 private:
     ITypeInfo *m_pTypeInfo;
@@ -105,6 +114,7 @@ private:
     IDispatch *m_addInInstIDisp;
 
     AddInFactory *m_factory;
+    QList<AddInRibbonTab *> m_ribbonTabs;
 };
 
 #endif // ADDINIMPL_H

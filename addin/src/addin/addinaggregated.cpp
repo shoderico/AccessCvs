@@ -5,6 +5,7 @@
 #include <QDebug>
 
 #include "addinfactory.h"
+#include "addinribbontab.h"
 
 #include "pch.hpp"
 
@@ -14,27 +15,11 @@
 
 AddInAggregated::AddInAggregated(AddInFactory *factory, QObject *parent)
     : QObject(parent)
+    , m_pTypeInfo(0)
     , m_applicationIDisp(0)
     , m_addInInstIDisp(0)
     , m_factory(factory)
 {
-    HRESULT hr;
-    ITypeLib *pTypeLib = NULL;
-    ITypeInfo *pTypeInfo = NULL;
-    QString typeLibResourcePath = QAxFactory::serverFilePath() + "\\999";
-    hr = LoadTypeLib( reinterpret_cast<const OLECHAR *>( typeLibResourcePath.utf16() ), &pTypeLib);
-    if ( SUCCEEDED( hr ) )
-    {
-        hr = pTypeLib->GetTypeInfoOfGuid( IID_IRibbonCallback, &pTypeInfo );
-        if ( !SUCCEEDED( hr ) )
-             qCritical() << "GetTypeInfoOfGuid failed";
-
-        pTypeLib->Release();
-    }
-    else
-        qCritical() << "LoadTypeLib failed";
-
-    m_pTypeInfo = pTypeInfo;
 }
 
 long AddInAggregated::queryInterface(const QUuid &iid, void **iface)
@@ -305,6 +290,82 @@ HRESULT AddInAggregated::GetButtonImage(IDispatch *ribbonControl, IPictureDisp *
         *picture = pd;
 
     return S_OK;
+}
+
+bool AddInAggregated::loadTypeLib(const QString &serverFilePath)
+{
+    HRESULT hr;
+    ITypeLib *pTypeLib = NULL;
+    ITypeInfo *pTypeInfo = NULL;
+    QString typeLibResourcePath = serverFilePath + "\\999";
+    qDebug() << typeLibResourcePath;
+    hr = LoadTypeLib( reinterpret_cast<const OLECHAR *>( typeLibResourcePath.utf16() ), &pTypeLib);
+    if ( SUCCEEDED( hr ) )
+    {
+        hr = pTypeLib->GetTypeInfoOfGuid( IID_IRibbonCallback, &pTypeInfo );
+        if ( !SUCCEEDED( hr ) )
+        {
+             qCritical() << "GetTypeInfoOfGuid failed";
+             return false;
+        }
+
+        pTypeLib->Release();
+    }
+    else
+    {
+        qCritical() << "LoadTypeLib failed";
+        return false;
+    }
+
+    m_pTypeInfo = pTypeInfo;
+    return true;
+}
+
+void AddInAggregated::appendRibbonTab(AddInRibbonTab *ribbonTab)
+{
+    m_ribbonTabs.append(ribbonTab);
+}
+
+HRESULT AddInAggregated::onButtonClicked(const QString &controlId)
+{
+    foreach( AddInRibbonTab *ribbonTab , m_ribbonTabs)
+       if( ribbonTab->onButtonClicked(controlId) )
+           return S_OK;
+    return S_OK;
+}
+
+void AddInAggregated::onConnectionEvent()
+{
+    foreach( AddInRibbonTab *ribbonTab , m_ribbonTabs)
+        ribbonTab->onConnectionEvent();
+}
+
+void AddInAggregated::onDisconnectionEvent()
+{
+    foreach( AddInRibbonTab *ribbonTab , m_ribbonTabs)
+        ribbonTab->onDisconnectionEvent();
+}
+
+QString AddInAggregated::ribbomXml()
+{
+    QString content;
+    content += "<customUI xmlns=\"http://schemas.microsoft.com/office/2006/01/customui\">";
+    content += "<ribbon>";
+    content += "<tabs>";
+    foreach( AddInRibbonTab *ribbonTab , m_ribbonTabs)
+        content += ribbonTab->ribbomXml();
+    content += "</tabs></ribbon></customUI>";
+    qDebug() << content;
+    return content;
+}
+
+IPictureDisp *AddInAggregated::buttonImage(const QString &controlId)
+{
+    IPictureDisp *ipictDisp = NULL;
+    foreach( AddInRibbonTab *ribbonTab , m_ribbonTabs)
+        if (ipictDisp = ribbonTab->buttonImage(controlId))
+            return ipictDisp;
+    return NULL;
 }
 
 AddInFactory *AddInAggregated::factory() const

@@ -1,7 +1,8 @@
 #include "excelcvsaddinfactory.h"
 
 #include "util/logfile.h"
-#include "addin/addincontrollerimpl.h"
+#include "addin/addinaggregated.h"
+#include "addin/addinribbontab.h"
 #include "excellib/excellib.h"
 
 #include "excelcvsaddincontroller/excelcvsaddincontroller.h"
@@ -47,13 +48,23 @@ ExcelCvsAddInFactory::~ExcelCvsAddInFactory()
 
 QAxAggregated *ExcelCvsAddInFactory::createAggregate(QObject *parent)
 {
-    AddInControllerImpl *addInImpl = new AddInControllerImpl(this, parent);
-    addInImpl->setRibbonTabId("ExcelCvs");
-    addInImpl->setRibbonTabLabel("ExcelCvs");
-    addInImpl->appendController( new ExcelCvsAddinController(this) );
-//    addInImpl->appendController( new AccController(this) );
-    addInImpl->appendController( new HelpAddinController(this) );
-    return addInImpl;
+    // controllers
+    ExcelCvsAddinController *excelCvsAddinController = new ExcelCvsAddinController(this);
+    HelpAddinController *helpAddinController = new HelpAddinController(this);
+
+    // ribbon tabs
+    AddInRibbonTab *addInRibbonTab = new AddInRibbonTab(this, parent);
+    addInRibbonTab->setRibbonTabId("ExcelCvs");
+    addInRibbonTab->setRibbonTabLabel("ExcelCvs");
+    addInRibbonTab->appendController( excelCvsAddinController );
+    addInRibbonTab->appendController( helpAddinController );
+
+    // aggregated
+    AddInAggregated *aggregated = new AddInAggregated(this, parent);
+    aggregated->loadTypeLib( QAxFactory::serverFilePath() );
+    aggregated->appendRibbonTab(addInRibbonTab);
+
+    return aggregated;
 }
 
 void ExcelCvsAddInFactory::setApplication(IDispatch *application)

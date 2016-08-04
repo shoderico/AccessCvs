@@ -1,8 +1,8 @@
 #include "accesscvsaddinfactory.h"
 
 #include "util/logfile.h"
-//#include "cvsaddinimpl.h"
-#include "addin/addincontrollerimpl.h"
+#include "addin/addinaggregated.h"
+#include "addin/addinribbontab.h"
 #include "accesslib/accesslib.h"
 
 #include "accesscvsaddincontroller/accesscvsaddincontroller.h"
@@ -104,14 +104,26 @@ AccessCvsAddInFactory::~AccessCvsAddInFactory()
 
 QAxAggregated *AccessCvsAddInFactory::createAggregate(QObject *parent)
 {
-    AddInControllerImpl *addInImpl = new AddInControllerImpl(this, parent);
-    addInImpl->setRibbonTabId("AccessCvs");
-    addInImpl->setRibbonTabLabel("AccessCvs");
-    addInImpl->appendController( new AccessCvsAddinController(this) );
-    addInImpl->appendController( new AccessAddinController(this) );
-    addInImpl->appendController( new HelpAddinController(this) );
-    m_addInImpl = addInImpl;
-    return addInImpl;
+    // controllers
+    AccessCvsAddinController *accessCvsAddinController = new AccessCvsAddinController(this);
+    AccessAddinController *accessAddinController = new AccessAddinController(this);
+    HelpAddinController *helpAddinController = new HelpAddinController(this);
+
+    // ribbonTabs
+    AddInRibbonTab *addInRibbonTab = new AddInRibbonTab(this, parent);
+    addInRibbonTab->setRibbonTabId("AccessCvs");
+    addInRibbonTab->setRibbonTabLabel("AccessCvs");
+    addInRibbonTab->appendController( accessCvsAddinController );
+    addInRibbonTab->appendController( accessAddinController );
+    addInRibbonTab->appendController( helpAddinController );
+    m_addInRibbonTab = addInRibbonTab;
+
+    // aggregated
+    AddInAggregated *aggregated = new AddInAggregated(this, parent);
+    aggregated->loadTypeLib( QAxFactory::serverFilePath() );
+    aggregated->appendRibbonTab(addInRibbonTab);
+
+    return aggregated;
 }
 
 void AccessCvsAddInFactory::setApplication(IDispatch *application)
@@ -151,7 +163,7 @@ void AccessCvsAddInFactory::onAfterConnectionEvent()
     QString accessVer = m_application->SysCmd( Access::acSysCmdAccessVer ).toString();
     if ( accessVer < "12.0" )
     {
-        m_addInImpl->onButtonClicked( QString("StandardManualButton") );
+        m_addInRibbonTab->onButtonClicked( QString("StandardManualButton") );
     }
 }
 

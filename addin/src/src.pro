@@ -16,10 +16,10 @@ SOURCES += \
     addin/interface/msaddndr_i.c \
     addin/interface/ribbon_i.c \
     addin/interface/ribboncallback_i.c \
-    addin/addincontrollerimpl.cpp \
     addin/windowwidgetmanager.cpp \
     addin/addinbindable.cpp \
-    addin/addinaggregated.cpp
+    addin/addinaggregated.cpp \
+    addin/addinribbontab.cpp
 
 HEADERS += \
     addin/addin_global.h \
@@ -27,10 +27,10 @@ HEADERS += \
     addin/interface/msaddndr.h \
     addin/interface/ribbon.h \
     addin/interface/ribboncallback.h \
-    addin/addincontrollerimpl.h \
     addin/windowwidgetmanager.h \
     addin/addinbindable.h \
-    addin/addinaggregated.h
+    addin/addinaggregated.h \
+    addin/addinribbontab.h
 
 OTHER_FILES += \
     addin/distfile/addin.def \

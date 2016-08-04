@@ -28,17 +28,6 @@ CvsAddinController::CvsAddinController(QObject *parent)
 
 CvsAddinController::~CvsAddinController()
 {
-    if (m_mainDlg)
-    {
-        m_mainDlg->close();
-        delete m_mainDlg;
-        m_mainDlg = 0;
-    }
-
-    if (m_progressDlg)
-    {
-        delete m_progressDlg;
-    }
 }
 
 void CvsAddinController::initialize(QAxObject *application, QWidget *parentWidget)
