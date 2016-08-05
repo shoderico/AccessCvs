@@ -3,6 +3,7 @@
 #include "comutil/comutil.h"
 
 #include <QMessageBox>
+#include <QUuid>
 
 #include "pch.hpp"
 
@@ -27,9 +28,9 @@ QString HelpAddinController::ribbonXml()
 {
     QString content;
     content =
-        "<group id=\"HelpGroup\" "
+        "<group id=\"HelpGroup." + QUuid::createUuid().toString().replace("{","").replace("}","") + "\" "
             "label=\"Help\"> "
-            "<button id=\"HelpAboutButton\" "
+            "<button id=\"HelpAboutButton." + QUuid::createUuid().toString().replace("{","").replace("}","") + "\" "
             "   size=\"normal\" "
             "   label=\"About\" "
             "   onAction=\"ButtonClicked\" "
@@ -45,7 +46,7 @@ bool HelpAddinController::imagePath(const QString &controlId, QString &imagePath
     Q_UNUSED(imagePath)
     Q_UNUSED(size)
 
-    if ( controlId == "HelpAboutButton")
+    if ( controlId.startsWith("HelpAboutButton.") )
     {
 //        imagePath = ":/images/manual.svg";
 //        size = AddInUtil::ribbonIconSize(AddInUtil::Large);
@@ -58,7 +59,7 @@ bool HelpAddinController::imagePath(const QString &controlId, QString &imagePath
 
 bool HelpAddinController::handleButtonClick(const QString &controlId)
 {
-    if (controlId == "HelpAboutButton")
+    if (controlId.startsWith("HelpAboutButton."))
         about();
 
     else

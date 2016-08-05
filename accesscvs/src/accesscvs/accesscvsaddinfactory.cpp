@@ -123,6 +123,13 @@ QAxAggregated *AccessCvsAddInFactory::createAggregate(QObject *parent)
     aggregated->loadTypeLib( QAxFactory::serverFilePath() );
     aggregated->appendRibbonTab(addInRibbonTab);
 
+    // test code for 1 controller owned by multiple tabs.
+    AddInRibbonTab *addInRibbonTab2 = new AddInRibbonTab(this, parent);
+    addInRibbonTab2->setRibbonTabId("AccessCvs2");
+    addInRibbonTab2->setRibbonTabLabel("AccessCvs");
+    addInRibbonTab2->appendController( helpAddinController );
+    aggregated->appendRibbonTab(addInRibbonTab2);
+
     return aggregated;
 }
 
