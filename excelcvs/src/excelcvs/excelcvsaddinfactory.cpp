@@ -48,20 +48,20 @@ ExcelCvsAddInFactory::~ExcelCvsAddInFactory()
 
 QAxAggregated *ExcelCvsAddInFactory::createAggregate(QObject *parent)
 {
+    // aggregated
+    AddInAggregated *aggregated = new AddInAggregated(this, parent);
+    aggregated->loadTypeLib( QAxFactory::serverFilePath() );
+
     // controllers
-    ExcelCvsAddinController *excelCvsAddinController = new ExcelCvsAddinController(this);
-    HelpAddinController *helpAddinController = new HelpAddinController(this);
+    ExcelCvsAddinController *excelCvsAddinController = new ExcelCvsAddinController(aggregated);
+    HelpAddinController *helpAddinController = new HelpAddinController(aggregated);
 
     // ribbon tabs
-    AddInRibbonTab *addInRibbonTab = new AddInRibbonTab(this, parent);
+    AddInRibbonTab *addInRibbonTab = new AddInRibbonTab(this, aggregated);
     addInRibbonTab->setRibbonTabId("ExcelCvs");
     addInRibbonTab->setRibbonTabLabel("ExcelCvs");
     addInRibbonTab->appendController( excelCvsAddinController );
     addInRibbonTab->appendController( helpAddinController );
-
-    // aggregated
-    AddInAggregated *aggregated = new AddInAggregated(this, parent);
-    aggregated->loadTypeLib( QAxFactory::serverFilePath() );
     aggregated->appendRibbonTab(addInRibbonTab);
 
     return aggregated;

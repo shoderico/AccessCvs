@@ -104,27 +104,27 @@ AccessCvsAddInFactory::~AccessCvsAddInFactory()
 
 QAxAggregated *AccessCvsAddInFactory::createAggregate(QObject *parent)
 {
-    // controllers
-    AccessCvsAddinController *accessCvsAddinController = new AccessCvsAddinController(this);
-    AccessAddinController *accessAddinController = new AccessAddinController(this);
-    HelpAddinController *helpAddinController = new HelpAddinController(this);
+    // aggregated
+    AddInAggregated *aggregated = new AddInAggregated(this, parent);
+    aggregated->loadTypeLib( QAxFactory::serverFilePath() );
 
-    // ribbonTabs
-    AddInRibbonTab *addInRibbonTab = new AddInRibbonTab(this, parent);
+    // controllers
+    AccessCvsAddinController *accessCvsAddinController = new AccessCvsAddinController(aggregated);
+    AccessAddinController *accessAddinController = new AccessAddinController(aggregated);
+    HelpAddinController *helpAddinController = new HelpAddinController(aggregated);
+
+    // ribbon tabs
+    AddInRibbonTab *addInRibbonTab = new AddInRibbonTab(this, aggregated);
     addInRibbonTab->setRibbonTabId("AccessCvs");
     addInRibbonTab->setRibbonTabLabel("AccessCvs");
     addInRibbonTab->appendController( accessCvsAddinController );
     addInRibbonTab->appendController( accessAddinController );
     addInRibbonTab->appendController( helpAddinController );
+    aggregated->appendRibbonTab(addInRibbonTab);
     m_addInRibbonTab = addInRibbonTab;
 
-    // aggregated
-    AddInAggregated *aggregated = new AddInAggregated(this, parent);
-    aggregated->loadTypeLib( QAxFactory::serverFilePath() );
-    aggregated->appendRibbonTab(addInRibbonTab);
-
     // test code for 1 controller owned by multiple tabs.
-    AddInRibbonTab *addInRibbonTab2 = new AddInRibbonTab(this, parent);
+    AddInRibbonTab *addInRibbonTab2 = new AddInRibbonTab(this, aggregated);
     addInRibbonTab2->setRibbonTabId("AccessCvs2");
     addInRibbonTab2->setRibbonTabLabel("AccessCvs");
     addInRibbonTab2->appendController( helpAddinController );
