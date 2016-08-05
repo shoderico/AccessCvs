@@ -13,12 +13,11 @@
 //_COM_SMARTPTR_TYPEDEF(ITypeInfo, __uuidof(ITypeInfo));
 
 
-AddInAggregated::AddInAggregated(AddInFactory *factory, QObject *parent)
+AddInAggregated::AddInAggregated(QObject *parent)
     : QObject(parent)
     , m_pTypeInfo(0)
     , m_applicationIDisp(0)
     , m_addInInstIDisp(0)
-    , m_factory(factory)
 {
 }
 
@@ -124,10 +123,10 @@ HRESULT AddInAggregated::OnConnection(IDispatch *Application, ext_ConnectMode Co
     m_addInInstIDisp = AddInInst;
     m_addInInstIDisp->AddRef();
 
-    m_factory->setApplication(m_applicationIDisp);
-    m_factory->onBeforeConnectionEvent();
-    onConnectionEvent();
-    m_factory->onAfterConnectionEvent();
+
+    // emit signal
+    emit addInConnection(m_applicationIDisp);
+
 
     // If we are connecting during startup, we should wait for OnStartupComplete
     // before modifying the user-interface and prompting the user. Otherwise, we
@@ -155,9 +154,10 @@ HRESULT AddInAggregated::OnDisconnection(ext_DisconnectMode RemoveMode, SAFEARRA
    if (RemoveMode != ext_dm_HostShutdown)
        OnBeginShutdown(custom);
 
-   onDisconnectionEvent();
-   m_factory->onAfterDisconnectionEvent();
-   m_factory->releaseApplication();
+
+   // emit signal
+   emit addInDisconnection();
+
 
    // Release the pointer...
    if (NULL != m_applicationIDisp) {
@@ -339,18 +339,6 @@ HRESULT AddInAggregated::onButtonClicked(const QString &controlId)
     return S_OK;
 }
 
-void AddInAggregated::onConnectionEvent()
-{
-    foreach( AddInRibbonTab *ribbonTab , m_ribbonTabs)
-        ribbonTab->onConnectionEvent();
-}
-
-void AddInAggregated::onDisconnectionEvent()
-{
-    foreach( AddInRibbonTab *ribbonTab , m_ribbonTabs)
-        ribbonTab->onDisconnectionEvent();
-}
-
 QString AddInAggregated::ribbomXml()
 {
     QString content;
@@ -371,9 +359,4 @@ IPictureDisp *AddInAggregated::buttonImage(const QString &controlId)
         if (ipictDisp = ribbonTab->buttonImage(controlId))
             return ipictDisp;
     return NULL;
-}
-
-AddInFactory *AddInAggregated::factory() const
-{
-    return m_factory;
 }

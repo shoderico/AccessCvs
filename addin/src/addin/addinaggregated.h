@@ -22,7 +22,7 @@ class ADDIN_SHARED_EXPORT AddInAggregated
 {
     Q_OBJECT
 public:
-    explicit AddInAggregated(AddInFactory *factory, QObject *parent = 0);
+    explicit AddInAggregated(QObject *parent = 0);
     virtual ~AddInAggregated();
 
     long queryInterface(const QUuid &iid, void **iface);
@@ -95,17 +95,15 @@ public:
     bool loadTypeLib(const QString &serverFilePath);
     void appendRibbonTab(AddInRibbonTab *ribbonTab);
 
-
-
     virtual HRESULT onButtonClicked(const QString &controlId);
 
+signals:
+    void addInConnection(IDispatch *application);
+    void addInDisconnection();
+
 protected:
-    virtual void onConnectionEvent();
-    virtual void onDisconnectionEvent();
     virtual QString ribbomXml();
     virtual IPictureDisp *buttonImage(const QString &controlId);
-
-    AddInFactory *factory() const;
 
 
 private:
@@ -114,7 +112,6 @@ private:
     IDispatch *m_applicationIDisp;
     IDispatch *m_addInInstIDisp;
 
-    AddInFactory *m_factory;
     QList<AddInRibbonTab *> m_ribbonTabs;
 };
 

@@ -1,11 +1,12 @@
 #ifndef WINDOWWIDGETMANAGER_H
 #define WINDOWWIDGETMANAGER_H
 
+#include "addin_global.h"
 #include <QObject>
 
 class QWinWidget;
 
-class WindowWidgetManager : public QObject
+class ADDIN_SHARED_EXPORT WindowWidgetManager : public QObject
 {
     Q_OBJECT
 public:

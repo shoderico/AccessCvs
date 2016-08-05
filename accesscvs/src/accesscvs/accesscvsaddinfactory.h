@@ -7,6 +7,7 @@ namespace Access {
 class Application;
 } // namespace Access
 
+class WindowWidgetManager;
 class AddInRibbonTab;
 
 class AccessCvsAddInFactory : public AddInFactory
@@ -17,16 +18,19 @@ public:
     ~AccessCvsAddInFactory();
 
     virtual QAxAggregated *createAggregate(QObject *parent = 0);
-    virtual void setApplication(IDispatch *application);
-    virtual void releaseApplication();
+
     virtual QAxObject *application() const;
-    virtual int applicationHwnd();
-    virtual void onBeforeConnectionEvent();
-    virtual void onAfterConnectionEvent();
-    virtual void onAfterDisconnectionEvent();
+
+signals:
+    void addInConnection(QAxObject *application, QWidget *parentWidget);
+
+public slots:
+    void onAddInConnection(IDispatch *application);
+    void onAddInDisconnection();
 
 private:
     Access::Application *m_application;
+    WindowWidgetManager *m_winWidgetManager;
     AddInRibbonTab *m_addInRibbonTab;
 
 };

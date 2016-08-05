@@ -3,6 +3,7 @@
 #include "util/logfile.h"
 #include "addin/addinaggregated.h"
 #include "addin/addinribbontab.h"
+#include "addin/windowwidgetmanager.h"
 #include "accesslib/accesslib.h"
 
 #include "accesscvsaddincontroller/accesscvsaddincontroller.h"
@@ -71,6 +72,8 @@ static const char ClassName[]     = "AddInMain";
 AccessCvsAddInFactory::AccessCvsAddInFactory(const QUuid &app, const QUuid &lib)
     : AddInFactory(app, lib)
     , m_application(0)
+    , m_winWidgetManager(0)
+    , m_addInRibbonTab(0)
 {
 
 #if defined(_DEBUG) && defined(_MSC_VER) && defined(DETECT_MEMORY_LEAKS)
@@ -107,16 +110,23 @@ AccessCvsAddInFactory::~AccessCvsAddInFactory()
 QAxAggregated *AccessCvsAddInFactory::createAggregate(QObject *parent)
 {
     // aggregated
-    AddInAggregated *aggregated = new AddInAggregated(this, parent);
+    AddInAggregated *aggregated = new AddInAggregated(parent);
     aggregated->loadTypeLib( QAxFactory::serverFilePath() );
+    connect( aggregated, SIGNAL(addInConnection(IDispatch*)), this, SLOT(onAddInConnection(IDispatch*)) );
+    connect( aggregated, SIGNAL(addInDisconnection()),        this, SLOT(onAddInDisconnection()) );
+
 
     // controllers
     AccessCvsAddinController *accessCvsAddinController = new AccessCvsAddinController(aggregated);
-    AccessAddinController *accessAddinController = new AccessAddinController(aggregated);
-    HelpAddinController *helpAddinController = new HelpAddinController(aggregated);
+    AccessAddinController    *accessAddinController    = new AccessAddinController(aggregated);
+    HelpAddinController      *helpAddinController      = new HelpAddinController(aggregated);
+    connect( this, SIGNAL(addInConnection(QAxObject*,QWidget*)), accessCvsAddinController, SLOT(initialize(QAxObject*,QWidget*)) );
+    connect( this, SIGNAL(addInConnection(QAxObject*,QWidget*)), accessAddinController,    SLOT(initialize(QAxObject*,QWidget*)) );
+    connect( this, SIGNAL(addInConnection(QAxObject*,QWidget*)), helpAddinController,      SLOT(initialize(QAxObject*,QWidget*)) );
+
 
     // ribbon tabs
-    AddInRibbonTab *addInRibbonTab = new AddInRibbonTab(this, aggregated);
+    AddInRibbonTab *addInRibbonTab = new AddInRibbonTab(aggregated);
     addInRibbonTab->setRibbonTabId("AccessCvs");
     addInRibbonTab->setRibbonTabLabel("AccessCvs");
     addInRibbonTab->appendController( accessCvsAddinController );
@@ -126,28 +136,14 @@ QAxAggregated *AccessCvsAddInFactory::createAggregate(QObject *parent)
     m_addInRibbonTab = addInRibbonTab;
 
     // test code for 1 controller owned by multiple tabs.
-    AddInRibbonTab *addInRibbonTab2 = new AddInRibbonTab(this, aggregated);
+    AddInRibbonTab *addInRibbonTab2 = new AddInRibbonTab(aggregated);
     addInRibbonTab2->setRibbonTabId("AccessCvs2");
     addInRibbonTab2->setRibbonTabLabel("AccessCvs");
     addInRibbonTab2->appendController( helpAddinController );
     aggregated->appendRibbonTab(addInRibbonTab2);
 
+
     return aggregated;
-}
-
-void AccessCvsAddInFactory::setApplication(IDispatch *application)
-{
-    Access::_Application *_application = new Access::_Application(application/*, this*/);
-    m_application = new Access::Application(_application);
-}
-
-void AccessCvsAddInFactory::releaseApplication()
-{
-    if (m_application)
-    {
-        delete m_application;
-        m_application = NULL;
-    }
 }
 
 QAxObject *AccessCvsAddInFactory::application() const
@@ -155,19 +151,23 @@ QAxObject *AccessCvsAddInFactory::application() const
     return m_application;
 }
 
-int AccessCvsAddInFactory::applicationHwnd()
+void AccessCvsAddInFactory::onAddInConnection(IDispatch *application)
 {
-    return m_application->hWndAccessApp();
-}
+    // create application wrapper
+    Access::_Application *_application = new Access::_Application(application/*, this*/);
+    m_application = new Access::Application(_application);
 
-void AccessCvsAddInFactory::onBeforeConnectionEvent()
-{
+    // initialize resource
     Resource res;
     res.init();
-}
 
-void AccessCvsAddInFactory::onAfterConnectionEvent()
-{
+    // create root widget
+    m_winWidgetManager = new WindowWidgetManager(m_application->hWndAccessApp(), this);
+
+    // initialize all controllers
+    emit addInConnection(m_application, m_winWidgetManager->widget());
+
+
     // show manual dialog if ribbon ui is not supported
     QString accessVer = m_application->SysCmd( Access::acSysCmdAccessVer ).toString();
     if ( accessVer < "12.0" )
@@ -176,14 +176,24 @@ void AccessCvsAddInFactory::onAfterConnectionEvent()
     }
 }
 
-void AccessCvsAddInFactory::onAfterDisconnectionEvent()
+void AccessCvsAddInFactory::onAddInDisconnection()
 {
+    // finalize all controllers
+
+    // delete root widget
+    delete m_winWidgetManager;
+    m_winWidgetManager = 0;
+
+    // cleanup resource
     Resource res;
     res.cleanup();
+
+    // release application
+    if (m_application)
+    {
+        delete m_application;
+        m_application = NULL;
+    }
 }
-
-// onAddInImplConnection : init Resource
-
-// onAddInImplDisconnection : release Resource
 
 QAXFACTORY_EXPORT(AccessCvsAddInFactory, LibraryID, ApplicationID)

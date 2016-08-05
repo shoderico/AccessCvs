@@ -14,7 +14,7 @@ class ADDIN_SHARED_EXPORT AddInRibbonTab : public QObject
 {
     Q_OBJECT
 public:
-    explicit AddInRibbonTab(AddInFactory *factory, QObject *parent = 0);
+    explicit AddInRibbonTab(QObject *parent = 0);
 
     void appendController(AddInController *controller);
 
@@ -22,14 +22,10 @@ public:
     void setRibbonTabLabel(const QString &tabLabel);
 
     virtual bool onButtonClicked(const QString &controlId);
-    virtual void onConnectionEvent();
-    virtual void onDisconnectionEvent();
     virtual QString ribbomXml();
     virtual IPictureDisp *buttonImage(const QString &controlId);
 
 private:
-    WindowWidgetManager     *m_winWidgetManager;
-    AddInFactory            *m_factory;
     QList<AddInController *> m_controllers;
 
     QString m_ribbonTabId;

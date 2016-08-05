@@ -3,6 +3,7 @@
 #include "util/logfile.h"
 #include "addin/addinaggregated.h"
 #include "addin/addinribbontab.h"
+#include "addin/windowwidgetmanager.h"
 #include "excellib/excellib.h"
 
 #include "excelcvsaddincontroller/excelcvsaddincontroller.h"
@@ -50,37 +51,27 @@ ExcelCvsAddInFactory::~ExcelCvsAddInFactory()
 QAxAggregated *ExcelCvsAddInFactory::createAggregate(QObject *parent)
 {
     // aggregated
-    AddInAggregated *aggregated = new AddInAggregated(this, parent);
+    AddInAggregated *aggregated = new AddInAggregated(parent);
     aggregated->loadTypeLib( QAxFactory::serverFilePath() );
+    connect( aggregated, SIGNAL(addInConnection(IDispatch*)), this, SLOT(onAddInConnection(IDispatch*)) );
+    connect( aggregated, SIGNAL(addInDisconnection()),        this, SLOT(onAddInDisconnection()) );
 
     // controllers
     ExcelCvsAddinController *excelCvsAddinController = new ExcelCvsAddinController(aggregated);
     HelpAddinController *helpAddinController = new HelpAddinController(aggregated);
+    connect( this, SIGNAL(addInConnection(QAxObject*,QWidget*)), excelCvsAddinController, SLOT(initialize(QAxObject*,QWidget*)) );
+    connect( this, SIGNAL(addInConnection(QAxObject*,QWidget*)), helpAddinController,     SLOT(initialize(QAxObject*,QWidget*)) );
 
     // ribbon tabs
-    AddInRibbonTab *addInRibbonTab = new AddInRibbonTab(this, aggregated);
+    AddInRibbonTab *addInRibbonTab = new AddInRibbonTab(aggregated);
     addInRibbonTab->setRibbonTabId("ExcelCvs");
     addInRibbonTab->setRibbonTabLabel("ExcelCvs");
     addInRibbonTab->appendController( excelCvsAddinController );
     addInRibbonTab->appendController( helpAddinController );
     aggregated->appendRibbonTab(addInRibbonTab);
 
+
     return aggregated;
-}
-
-void ExcelCvsAddInFactory::setApplication(IDispatch *application)
-{
-    Excel::_Application *_application = new Excel::_Application(application/*, this*/);
-    m_application = new Excel::Application(_application);
-}
-
-void ExcelCvsAddInFactory::releaseApplication()
-{
-    if (m_application)
-    {
-        delete m_application;
-        m_application = NULL;
-    }
 }
 
 QAxObject *ExcelCvsAddInFactory::application() const
@@ -88,25 +79,41 @@ QAxObject *ExcelCvsAddInFactory::application() const
     return m_application;
 }
 
-int ExcelCvsAddInFactory::applicationHwnd()
+void ExcelCvsAddInFactory::onAddInConnection(IDispatch *application)
 {
-    return m_application->Hwnd();
-}
+    // create application wrapper
+    Excel::_Application *_application = new Excel::_Application(application/*, this*/);
+    m_application = new Excel::Application(_application);
 
-void ExcelCvsAddInFactory::onBeforeConnectionEvent()
-{
+    // initialize resource
     Resource res;
     res.init();
+
+    // create root widget
+    m_winWidgetManager = new WindowWidgetManager(m_application->Hwnd(), this);
+
+    // initialize all controllers
+    emit addInConnection(m_application, m_winWidgetManager->widget());
 }
 
-void ExcelCvsAddInFactory::onAfterDisconnectionEvent()
+void ExcelCvsAddInFactory::onAddInDisconnection()
 {
+    // finalize all controllers
+
+    // delete root widget
+    delete m_winWidgetManager;
+    m_winWidgetManager = 0;
+
+    // cleanup resource
     Resource res;
     res.cleanup();
+
+    // release application
+    if (m_application)
+    {
+        delete m_application;
+        m_application = NULL;
+    }
 }
-
-// onAddInImplConnection : init Resource
-
-// onAddInImplDisconnection : release Resource
 
 QAXFACTORY_EXPORT(ExcelCvsAddInFactory, LibraryID, ApplicationID)

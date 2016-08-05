@@ -7,6 +7,8 @@ namespace Excel {
 class Application;
 } // namespace Access
 
+class WindowWidgetManager;
+
 class ExcelCvsAddInFactory : public AddInFactory
 {
     Q_OBJECT
@@ -15,15 +17,19 @@ public:
     ~ExcelCvsAddInFactory();
 
     virtual QAxAggregated *createAggregate(QObject *parent = 0);
-    virtual void setApplication(IDispatch *application);
-    virtual void releaseApplication();
+
     virtual QAxObject *application() const;
-    virtual int applicationHwnd();
-    virtual void onBeforeConnectionEvent();
-    virtual void onAfterDisconnectionEvent();
+
+signals:
+    void addInConnection(QAxObject *application, QWidget *parentWidget);
+
+public slots:
+    void onAddInConnection(IDispatch *application);
+    void onAddInDisconnection();
 
 private:
     Excel::Application *m_application;
+    WindowWidgetManager *m_winWidgetManager;
 
 };
 

@@ -4,16 +4,13 @@
 
 #include "addinfactory.h"
 #include "addinutil/addincontroller.h"
-#include "windowwidgetmanager.h"
 
 #include <QDebug>
 
 #include "pch.hpp"
 
-AddInRibbonTab::AddInRibbonTab(AddInFactory *factory, QObject *parent)
+AddInRibbonTab::AddInRibbonTab(QObject *parent)
     : QObject(parent)
-    , m_winWidgetManager(0)
-    , m_factory(factory)
 {
 
 }
@@ -32,26 +29,6 @@ void AddInRibbonTab::setRibbonTabId(const QString &tabId)
 void AddInRibbonTab::setRibbonTabLabel(const QString &tabLabel)
 {
     m_ribbonTabLabel = tabLabel;
-}
-
-void AddInRibbonTab::onConnectionEvent()
-{
-    m_winWidgetManager = new WindowWidgetManager(m_factory->applicationHwnd(), this);
-
-    foreach (AddInController *c, m_controllers)
-        c->initialize(m_factory->application(), m_winWidgetManager->widget());
-}
-
-void AddInRibbonTab::onDisconnectionEvent()
-{
-    //qDeleteAll(m_controllers); // controller is owned by multiple ribbonTabs.
-    m_controllers.clear();
-
-    if (m_winWidgetManager)
-    {
-        delete m_winWidgetManager;
-        m_winWidgetManager = 0;
-    }
 }
 
 QString AddInRibbonTab::ribbomXml()

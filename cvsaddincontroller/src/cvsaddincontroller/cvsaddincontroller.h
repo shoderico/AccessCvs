@@ -24,6 +24,7 @@ public:
     explicit CvsAddinController(QObject *parent = 0);
     ~CvsAddinController();
 
+public slots:
     void initialize(QAxObject *application, QWidget *parentWidget);
     QString ribbonXml();
     bool imagePath(const QString &controlId, QString &imagePath, QSize &size);
