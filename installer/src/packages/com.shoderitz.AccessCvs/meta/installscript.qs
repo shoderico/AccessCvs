@@ -13,10 +13,10 @@ Component.prototype.createOperations = function()
     component.createOperations();
 
     component.addElevatedOperation(
-        "Execute",
-        "regsvr32", "/s" , '"' + "@TargetDir@\\AccessCvs.dll" + '"'
-        ,"UNDOEXECUTE",
-        "regsvr32", "/s /u" , '"' + "@TargetDir@\\AccessCvs.dll" + '"'
+         "Execute"
+        ,"@TargetDir@\\install_accesscvs.bat", "/dummy"
+        ,"UNDOEXECUTE"
+        ,"@TargetDir@\\uninstall_accesscvs.bat", "/dummy"
         );
 
     component.addOperation(

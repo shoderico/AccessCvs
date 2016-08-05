@@ -133,4 +133,7 @@ OTHER_FILES = \
     $$PWD/packages/$${PKG_ACCESSCVS_DIR}/meta/package.xml.in \
     $$PWD/packages/$${PKG_ACCESSCVS_DIR}/meta/installscript.qs \
     $$PWD/packages/$${PKG_ACCESSCVS_DIR}/meta/cc0.txt \
-    $$PWD/packages/$${PKG_ACCESSCVS_DIR}/meta/gpl3.txt
+    $$PWD/packages/$${PKG_ACCESSCVS_DIR}/meta/gpl3.txt \
+    $$PWD/packages/$${PKG_ACCESSCVS_DIR}/data/install_accesscvs.bat \
+    $$PWD/packages/$${PKG_ACCESSCVS_DIR}/data/uninstall_accesscvs.bat \
+    $$PWD/packages/$${PKG_ACCESSCVS_DIR}/data/uninstall_accesscvs.reg
