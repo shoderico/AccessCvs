@@ -297,7 +297,7 @@ bool AddInAggregated::loadTypeLib(const QString &serverFilePath)
     HRESULT hr;
     ITypeLib *pTypeLib = NULL;
     ITypeInfo *pTypeInfo = NULL;
-    QString typeLibResourcePath = serverFilePath + "\\999";
+    QString typeLibResourcePath = serverFilePath + "\\999"; // 999 is defined at addin.rc
     qDebug() << typeLibResourcePath;
     hr = LoadTypeLib( reinterpret_cast<const OLECHAR *>( typeLibResourcePath.utf16() ), &pTypeLib);
     if ( SUCCEEDED( hr ) )
