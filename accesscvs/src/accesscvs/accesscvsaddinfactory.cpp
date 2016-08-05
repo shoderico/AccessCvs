@@ -88,6 +88,7 @@ AccessCvsAddInFactory::AccessCvsAddInFactory(const QUuid &app, const QUuid &lib)
     setInterfaceId( InterfaceID );
     setEventsId( EventsID );
     setClassName( ClassName );
+    setServerFilePath( QAxFactory::serverFilePath() );
 
     // FIXME: proper friendlyName and description
     setLoadBehavior( 3 );

@@ -171,9 +171,14 @@ void AddInFactory::setDescription(const QString &description)
     m_description = description;
 }
 
+void AddInFactory::setServerFilePath(const QString &serverFilePath)
+{
+    m_serverFilePath = serverFilePath;
+}
+
 QString AddInFactory::progID() const
 {
-    return QFileInfo( serverFilePath() ).baseName() + "." + m_className;
+    return QFileInfo( m_serverFilePath ).baseName() + "." + m_className;
 }
 
 bool AddInFactory::is64bit() const

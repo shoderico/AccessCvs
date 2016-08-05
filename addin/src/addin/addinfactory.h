@@ -45,6 +45,7 @@ protected:
     void setCommandLineSafe(const int commandLineSafe);
     void setFriendlyName(const QString &friendlyName);
     void setDescription(const QString &description);
+    void setServerFilePath(const QString &serverFilePath);
 
 private:
     QString m_className;
@@ -59,6 +60,7 @@ private:
 
     QString m_registryRoot;
     QString m_registryPath;
+    QString m_serverFilePath;
     QString progID() const;
 
     enum WordSize { ws32bit, ws64bit };
