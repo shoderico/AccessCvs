@@ -8,7 +8,8 @@
 
 static LogFile *static_instance = NULL;
 
-LogFile::LogFile(const QString &path, const QString &baseFileName, const bool append)
+LogFile::LogFile(const QString &path, const QString &baseFileName, const bool append, QObject *parent)
+    : QObject(parent)
 {
     static_instance = this;
 

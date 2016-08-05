@@ -19,6 +19,7 @@ AddInFactory::AddInFactory(const QUuid &app, const QUuid &lib)
 
 AddInFactory::~AddInFactory()
 {
+    qDebug() << "destructor";
 }
 
 QStringList AddInFactory::featureList() const

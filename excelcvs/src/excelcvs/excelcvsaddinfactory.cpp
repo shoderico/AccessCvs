@@ -37,13 +37,14 @@ ExcelCvsAddInFactory::ExcelCvsAddInFactory(const QUuid &app, const QUuid &lib)
     setDescription( tr("Description"));
 
     // log qDebug() output
-    (void)new LogFile( serverDirPath() + "\\log", "log_excel_", false );
+    (void)new LogFile( serverDirPath() + "\\log", "log_excel_", false, this );
     qInstallMessageHandler(LogFile::MessageOutput);
 }
 
 ExcelCvsAddInFactory::~ExcelCvsAddInFactory()
 {
-    delete LogFile::instance();
+    // delete by QObject
+    // delete LogFile::instance();
 }
 
 QAxAggregated *ExcelCvsAddInFactory::createAggregate(QObject *parent)

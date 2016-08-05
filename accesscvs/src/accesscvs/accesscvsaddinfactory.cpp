@@ -93,13 +93,15 @@ AccessCvsAddInFactory::AccessCvsAddInFactory(const QUuid &app, const QUuid &lib)
     setDescription( tr("Description"));
 
     // log qDebug() output
-    (void)new LogFile( serverDirPath() + "\\log", "log_access_", false );
+    (void)new LogFile( serverDirPath() + "\\log", "log_access_", false, this );
     qInstallMessageHandler(LogFile::MessageOutput);
 }
 
 AccessCvsAddInFactory::~AccessCvsAddInFactory()
 {
-    delete LogFile::instance();
+    qDebug() << "destructor";
+    // delete by QObject
+    // delete LogFile::instance();
 }
 
 QAxAggregated *AccessCvsAddInFactory::createAggregate(QObject *parent)

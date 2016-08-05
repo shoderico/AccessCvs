@@ -22,6 +22,11 @@ AddInAggregated::AddInAggregated(AddInFactory *factory, QObject *parent)
 {
 }
 
+AddInAggregated::~AddInAggregated()
+{
+    qDebug() << "destructor";
+}
+
 long AddInAggregated::queryInterface(const QUuid &iid, void **iface)
 {
     *iface = 0;

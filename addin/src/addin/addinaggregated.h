@@ -23,6 +23,7 @@ class ADDIN_SHARED_EXPORT AddInAggregated
     Q_OBJECT
 public:
     explicit AddInAggregated(AddInFactory *factory, QObject *parent = 0);
+    virtual ~AddInAggregated();
 
     long queryInterface(const QUuid &iid, void **iface);
 
