@@ -13,7 +13,7 @@ LIBS =
 
 #----------------------------------------------------------------------------------------------
 # installer name
-INSTALLER = AccessCvsInstaller_$${APP_VERSION}_$${BUILD_IDENTIFIER}_$${BUILD_TYPE}
+INSTALLER = AccessCvsInstaller_$${APP_VERSION}_$${APP_ARCH_TYPE}_$${BUILD_IDENTIFIER}_$${BUILD_TYPE}
 INSTALLER_ONLINE = $${INSTALLER}_online
 INSTALLER_OFFLINE = $${INSTALLER}_offline
 

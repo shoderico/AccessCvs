@@ -18,6 +18,14 @@ Release|Debug {
     UI_DIR      = $${BUILD_TYPE}/.ui
 }
 
+# x86/x64
+contains(QT_ARCH, x86_64) {
+    APP_ARCH_TYPE=x64
+}
+else:contains(QT_ARCH, i386) {
+    APP_ARCH_TYPE=x86
+}
+
 
 # Build Identifier
 BUILD_IDENTIFIER=Qt$${QT_VERSION}_$${QMAKE_COMPILER}$${MSVC_VER}
@@ -27,7 +35,8 @@ BUILD_IDENTIFIER=Qt$${QT_VERSION}_$${QMAKE_COMPILER}$${MSVC_VER}
 # Root directories
 PROJECT_ROOT = $$PWD/..
 LIBRARY_ROOT = $$PWD/../..
-BUILD_ROOT   = $${PROJECT_ROOT}/build_$${BUILD_IDENTIFIER}
+BUILD_ROOT   = $${PROJECT_ROOT}/build_$${APP_ARCH_TYPE}_$${BUILD_IDENTIFIER}
+#BUILD_ROOT   = $${OUT_PWD}/build_$${APP_ARCH_TYPE}_$${BUILD_IDENTIFIER}
 
 
 DEFINES += DETECT_MEMORY_LEAKS

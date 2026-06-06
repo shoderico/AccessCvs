@@ -2,8 +2,17 @@
 # QtSolutions
 QTSOLUTIONS_DIR     = $${LIBRARY_ROOT}/QtSolutions/qtwinmigrate
 win32-msvc* {
+
+contains(QT_ARCH, x86_64) {
+    QTSOLUTIONS_BIN_DIR = $${QTSOLUTIONS_DIR}/lib_msvc_x64
+    QTSOLUTIONS_LIB_DIR = $${QTSOLUTIONS_DIR}/lib_msvc_x64
+}
+else:contains(QT_ARCH, i386) {
     QTSOLUTIONS_BIN_DIR = $${QTSOLUTIONS_DIR}/lib_msvc_x86
     QTSOLUTIONS_LIB_DIR = $${QTSOLUTIONS_DIR}/lib_msvc_x86
+}
+
+
 }
 win32-g++ {
     QTSOLUTIONS_BIN_DIR = $${QTSOLUTIONS_DIR}/lib_mingw_x86
