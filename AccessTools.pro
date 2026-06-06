@@ -3,7 +3,6 @@ TEMPLATE = subdirs
 SUBDIRS += \
     officelib \
     accesslib \
-    excellib \
     util \
     accesscvs \
     accesscmd \
@@ -12,27 +11,28 @@ SUBDIRS += \
     resource \
     cvsmodel \
     accesscvsmodel \
-    excelcvsmodel \
     addin \
     accessaddincontroller \
     cvsaddincontroller \
     accesscvsaddincontroller \
-    excelcvsaddincontroller \
     view \
     addinutil \
     comutil \
     installer \
-    helpaddincontroller \
-    excelcvs
+    helpaddincontroller
+#    excellib \
+#    excelcvsmodel \
+#    excelcvsaddincontroller \
+#    excelcvs
 
 # office lib layer
 accesslib.depends += officelib
-excellib.depends += officelib
+#excellib.depends += officelib
 
 # model layer
 cvsmodel.depends += util officelib
 accesscvsmodel.depends += cvsmodel accesslib
-excelcvsmodel.depends += cvsmodel excellib
+#excelcvsmodel.depends += cvsmodel excellib
 accessmodel.depends += util accesslib
 
 # controller layer
@@ -41,7 +41,7 @@ accessaddincontroller.depends += view addinutil accessmodel
 helpaddincontroller.depends += addinutil comutil
 
 accesscvsaddincontroller.depends += accesscvsmodel cvsaddincontroller
-excelcvsaddincontroller.depends += excelcvsmodel cvsaddincontroller
+#excelcvsaddincontroller.depends += excelcvsmodel cvsaddincontroller
 
 # addin layer
 addin.depends += comutil addinutil external
@@ -50,15 +50,16 @@ accesscvs.depends += resource addin \
                      accesscvsaddincontroller \
                      accessaddincontroller
 
-excelcvs.depends += resource addin \
-                    helpaddincontroller \
-                    excelcvsaddincontroller
+#excelcvs.depends += resource addin \
+#                    helpaddincontroller \
+#                    excelcvsaddincontroller
 
 # cli layer
 accesscmd.depends += accessmodel
 
 # installer layer
-installer.depends += accesscmd accesscvs excelcvs
+#installer.depends += accesscmd accesscvs excelcvs
+installer.depends += accesscmd accesscvs
 
 OTHER_FILES += \
     qmake/common.pri \
