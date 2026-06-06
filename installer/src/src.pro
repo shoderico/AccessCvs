@@ -53,10 +53,19 @@ QMAKE_EXTRA_TARGETS += copy_configs
 #----------------------------------------------------------------------------------------------
 # copy files
 win32-msvc* {
+
+contains(QT_ARCH, x86_64) {
+    DEP_DLLS_QT.files += \
+        $${PWD}/../depends/msvc2013_x64/msvcp120.dll \
+        $${PWD}/../depends/msvc2013_x64/msvcr120.dll
+}
+else:contains(QT_ARCH, i386) {
     DEP_DLLS_QT.files += \
         $${PWD}/../depends/msvc2013_x86/msvcp120.dll \
         $${PWD}/../depends/msvc2013_x86/msvcr120.dll \
         $${PWD}/../depends/msvc2013_x86/mfc120.dll
+}
+
 }
 win32-g++ {
     DEP_DLLS_QT.files += \
