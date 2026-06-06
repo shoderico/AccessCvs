@@ -70,7 +70,7 @@ HWND GetWindowHandle(const DWORD TargetID)
 {
     HWND hWnd = GetTopWindow(NULL);
     do {
-        if (GetWindowLong( hWnd, GWL_HWNDPARENT ) != 0 || !IsWindowVisible( hWnd ) )
+        if (GetWindowLongPtr( hWnd, GWLP_HWNDPARENT ) != 0 || !IsWindowVisible( hWnd ) )
             continue;
         DWORD ProcessID;
         GetWindowThreadProcessId( hWnd, &ProcessID );
