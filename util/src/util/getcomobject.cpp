@@ -72,7 +72,7 @@ int GetProcessIdList(QList<DWORD> &processIdList, const QString &targetExeName)
 }
 
 
-BOOL CALLBACK EnumWindowsProc(HWND hWnd, long lParam)
+BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam)
 {
      QList<HWND> *pList = ( QList<HWND> *)lParam;
      pList->append( hWnd );
