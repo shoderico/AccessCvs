@@ -1,6 +1,6 @@
 # inc.pri : external module
 # QtSolutions
-QTSOLUTIONS_DIR     = $${LIBRARY_ROOT}/QtSolutions/qtwinmigrate
+QTSOLUTIONS_DIR     = $${LIBRARY_ROOT}/qt-solutions/qtwinmigrate
 win32-msvc* {
 
 contains(QT_ARCH, x86_64) {
