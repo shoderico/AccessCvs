@@ -29,6 +29,12 @@ SUBDIRS += \
 # qt-solutions/qtwinmigrate (external project added to SUBDIRS)
 qtwinmigrate.file   = ../qt-solutions/qtwinmigrate/buildlib/buildlib.pro
 
+# Enforce that config.pri exists (checked at qmake time)
+!exists(../qt-solutions/qtwinmigrate/config.pri) {
+    error("ERROR: ../qt-solutions/qtwinmigrate/config.pri does not exist. " \
+          "Please run `configure.bat -library` in the qtwinmigrate directory first.")
+}
+
 # office lib layer
 accesslib.depends += officelib
 #excellib.depends += officelib
