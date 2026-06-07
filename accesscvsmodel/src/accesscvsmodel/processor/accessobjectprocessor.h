@@ -1,0 +1,42 @@
+#ifndef ACCESSOBJECTPROCESSOR_H
+#define ACCESSOBJECTPROCESSOR_H
+
+#include "accesscvsmodel/accesscvsmodel_global.h"
+#include "cvsmodel/processor/objectprocessor.h"
+
+#include "util/comptr.h"
+
+class ProjectContainer;
+class ObjectItem;
+
+class QAxObject;
+class QVariant;
+
+namespace DAO {
+class Containers;
+class Container;
+class Documents;
+}
+
+
+class AccessObjectProcessor : public ObjectProcessor
+{
+public:
+    explicit AccessObjectProcessor(ProjectContainer *parent);
+    virtual bool        isTargetObject(QAxObject *object) const;
+    virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
+    virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
+    virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
+    virtual bool        deleteFromProject(const QString &objectName);
+
+    virtual bool        prepareItemCollection();
+    virtual int         itemCount();
+    virtual QAxObject  *itemUnsafePtr(const QVariant &index);
+protected:
+    ComPtr<DAO::Containers> m_containers;
+    ComPtr<DAO::Container> m_container;
+    ComPtr<DAO::Documents> m_documents;
+};
+
+
+#endif // ACCESSOBJECTPROCESSOR_H

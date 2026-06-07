@@ -9,6 +9,8 @@
 
 #include <ActiveQt/QAxObject>
 
+#include "pch.hpp"
+
 GetComObject::GetComObject(const QString &targetExeName, const QString &targetWindowClassName)
     : m_targetExeName( targetExeName )
     , m_targetWndClassName( targetWindowClassName )
@@ -43,7 +45,7 @@ int GetProcessIdList(QList<DWORD> &processIdList, const QString &targetExeName)
 {
     PROCESSENTRY32 pe;
     HANDLE hSnap;
-    WINBOOL bResult;
+    BOOL bResult;
 
     processIdList.clear();
 
@@ -70,7 +72,7 @@ int GetProcessIdList(QList<DWORD> &processIdList, const QString &targetExeName)
 }
 
 
-BOOL CALLBACK EnumWindowsProc(HWND hWnd, long lParam)
+BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam)
 {
      QList<HWND> *pList = ( QList<HWND> *)lParam;
      pList->append( hWnd );

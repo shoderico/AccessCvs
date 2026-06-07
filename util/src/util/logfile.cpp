@@ -4,9 +4,12 @@
 #include <QTextCodec>
 #include <QDateTime>
 
+#include "pch.hpp"
+
 static LogFile *static_instance = NULL;
 
-LogFile::LogFile(const QString &path, const QString &baseFileName, const bool append)
+LogFile::LogFile(const QString &path, const QString &baseFileName, const bool append, QObject *parent)
+    : QObject(parent)
 {
     static_instance = this;
 
@@ -59,6 +62,8 @@ void LogFile::MessageOutput(QtMsgType type, const QMessageLogContext &context, c
         case QtFatalMsg:    typeMsg = " [Fatal]    ";   break;
     }
     static_instance->m_stream << datetime << typeMsg << msg << contextMsg << "\n";
+
+    static_instance->m_stream.flush();
 
     if (type == QtFatalMsg)
         abort();

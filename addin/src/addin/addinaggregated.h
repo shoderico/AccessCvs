@@ -1,0 +1,118 @@
+#ifndef ADDINIMPL_H
+#define ADDINIMPL_H
+
+#include "addin_global.h"
+
+#include <QAxAggregated>
+#include <QObject>
+
+#include "interface/msaddndr.h"
+#include "interface/ribbon.h"
+#include "interface/ribboncallback.h"
+
+class AddInFactory;
+class AddInRibbonTab;
+
+class ADDIN_SHARED_EXPORT AddInAggregated
+        : public QObject
+        , public QAxAggregated
+        , public IDTExtensibility2
+        , public IRibbonExtensibility
+        , public IRibbonCallback
+{
+    Q_OBJECT
+public:
+    explicit AddInAggregated(QObject *parent = 0);
+    virtual ~AddInAggregated();
+
+    long queryInterface(const QUuid &iid, void **iface);
+
+    // IUnknown
+    QAXAGG_IUNKNOWN
+
+    // IDispatch
+    virtual HRESULT STDMETHODCALLTYPE GetTypeInfoCount(
+        UINT *pctinfo);
+
+    virtual HRESULT STDMETHODCALLTYPE GetTypeInfo(
+        UINT iTInfo,
+        LCID lcid,
+        ITypeInfo **ppTInfo);
+
+    virtual HRESULT STDMETHODCALLTYPE GetIDsOfNames(
+        REFIID riid,
+        LPOLESTR *rgszNames,
+        UINT cNames,
+        LCID lcid,
+        DISPID *rgDispId);
+
+    virtual HRESULT STDMETHODCALLTYPE Invoke(
+        DISPID dispIdMember,
+        REFIID riid,
+        LCID lcid,
+        WORD wFlags,
+        DISPPARAMS *pDispParams,
+        VARIANT *pVarResult,
+        EXCEPINFO *pExcepInfo,
+        UINT *puArgErr);
+
+    // IDTExtensibility2
+    virtual /* [id] */ HRESULT STDMETHODCALLTYPE OnConnection(
+        /* [in] */ IDispatch *Application,
+        /* [in] */ ext_ConnectMode ConnectMode,
+        /* [in] */ IDispatch *AddInInst,
+        /* [in] */ SAFEARRAY * *custom);
+
+    virtual /* [id] */ HRESULT STDMETHODCALLTYPE OnDisconnection(
+        /* [in] */ ext_DisconnectMode RemoveMode,
+        /* [in] */ SAFEARRAY * *custom);
+
+    virtual /* [id] */ HRESULT STDMETHODCALLTYPE OnAddInsUpdate(
+        /* [in] */ SAFEARRAY * *custom);
+
+    virtual /* [id] */ HRESULT STDMETHODCALLTYPE OnStartupComplete(
+        /* [in] */ SAFEARRAY * *custom);
+
+    virtual /* [id] */ HRESULT STDMETHODCALLTYPE OnBeginShutdown(
+        /* [in] */ SAFEARRAY * *custom);
+
+    // IRibbonExtensibility
+    virtual /* [helpcontext][id] */ HRESULT STDMETHODCALLTYPE GetCustomUI(
+        /* [in] */ BSTR RibbonID,
+        /* [retval][out] */ BSTR *RibbonXml);
+
+
+    // IRibbonCallback
+    virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE ButtonClicked(
+        /* [in] */ IDispatch *ribbonControl);
+    virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE GetButtonImage(
+        /* [in] */ IDispatch *ribbonControl,
+        /* [retval][out] */ /* external definition not present */ IPictureDisp **picture);
+
+
+
+
+    bool loadTypeLib(const QString &serverFilePath);
+    void appendRibbonTab(AddInRibbonTab *ribbonTab);
+
+    virtual HRESULT onButtonClicked(const QString &controlId);
+
+signals:
+    void addInConnection(IDispatch *application);
+    void addInDisconnection();
+
+protected:
+    virtual QString ribbomXml();
+    virtual IPictureDisp *buttonImage(const QString &controlId);
+
+
+private:
+    ITypeInfo *m_pTypeInfo;
+
+    IDispatch *m_applicationIDisp;
+    IDispatch *m_addInInstIDisp;
+
+    QList<AddInRibbonTab *> m_ribbonTabs;
+};
+
+#endif // ADDINIMPL_H

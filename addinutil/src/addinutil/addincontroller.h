@@ -3,16 +3,14 @@
 
 #include <QtPlugin>
 
-namespace Access {
-class Application;
-}
+class QAxObject;
 
 class AddInController
 {
 public:
     virtual ~AddInController(){}
 
-    virtual void initialize(Access::Application *application, QWidget *parentWidget);
+    virtual void initialize(QAxObject *application, QWidget *parentWidget) = 0;
 
     virtual QString ribbonXml() = 0;
     virtual bool imagePath(const QString &controlId, QString &imagePath, QSize &size) = 0;

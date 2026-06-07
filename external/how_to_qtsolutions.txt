@@ -1,0 +1,81 @@
+#--------------------------------------------------------------------
+# clone qt-solutions into $${PROJECT_ROOT}/QtSolutions
+#     $${PROJECT_ROOT} is the parent directory of AccessTools
+git clone https://github.com/qtproject/qt-solutions.git $${PROJECT_ROOT}/QtSolutions
+
+
+#--------------------------------------------------------------------
+# in qtwinmigrate.pro, comment out the following line
+# to exclude examples from build because it causes error for MinGW build.
+
+    # # SUBDIRS+=examples
+
+
+#====================================================================
+# MSVC
+#====================================================================
+
+#--------------------------------------------------------------------
+# open QtSolutions/gtwinmigrate/src/qtwinmigrate.pri
+# and make sure the following line is NOT commented out 
+    # qtwinmigrate-uselib:DEFINES *= _AFXDLL
+
+#--------------------------------------------------------------------
+# open 'Qt 5.x 32-bit for Desktop (MSVC xxxx)' command prompt
+cd $${PROJECT_ROOT}/QtSolutions/qtwinmigrate
+
+#--------------------------------------------------------------------
+# create config.pri
+configure.bat -library
+
+#--------------------------------------------------------------------
+# run vcvarsall.bat
+# VS2013 x86 Native Tools Command Prompt
+"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86
+
+#--------------------------------------------------------------------
+# build
+qmake
+nmake
+
+#--------------------------------------------------------------------
+# *.dll and *.lib are created in lib/.
+# so copy and rename from lib/ to lib_msvc_x86/
+
+#--------------------------------------------------------------------
+# finally clean created files.
+nmake distclean
+
+
+#====================================================================
+# MinGW
+#====================================================================
+
+#--------------------------------------------------------------------
+# open QtSolutions/gtwinmigrate/src/qtwinmigrate.pri
+# and make sure the following line is commented out 
+    # # qtwinmigrate-uselib:DEFINES *= _AFXDLL
+
+
+#--------------------------------------------------------------------
+# open 'Qt 5.x for Desktop (MinGW 4.9.2 32-bit)' command prompt
+
+#--------------------------------------------------------------------
+cd $${PROJECT_ROOT}/QtSolutions/qtwinmigrate
+
+#--------------------------------------------------------------------
+# create config.pri
+configure.bat -library
+
+#--------------------------------------------------------------------
+# build
+qmake
+C:\Qt\Tools\mingw492_32\bin\mingw32-make.exe
+
+#--------------------------------------------------------------------
+# *.dll and *.lib are created in lib/.
+# so copy and rename from lib/ to lib_mingw_x86/
+
+#--------------------------------------------------------------------
+# finally clean created files.
+C:\Qt\Tools\mingw492_32\bin\mingw32-make.exe distclean

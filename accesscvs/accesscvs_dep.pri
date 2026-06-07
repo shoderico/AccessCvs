@@ -1,20 +1,21 @@
 # directly dependent libraries for this module
-include($${PROJECT_ROOT}/resource/resource_inc.pri)
-include($${PROJECT_ROOT}/addin/addin_inc.pri)
+includeDepModule( resource )
+includeDepModule( addin )
 # controllers
-include($${PROJECT_ROOT}/acccontroller/acccontroller_inc.pri)
-include($${PROJECT_ROOT}/cvscontroller/cvscontroller_inc.pri)
-include($${PROJECT_ROOT}/gitcontroller/gitcontroller_inc.pri)
-include($${PROJECT_ROOT}/helpcontroller/helpcontroller_inc.pri)
+includeDepModule( accessaddincontroller )
+includeDepModule( accesscvsaddincontroller )
+includeDepModule( helpaddincontroller )
 
 # directly dependent qt dlls for for this module
 DEP_DLLS_QT.files += \
-    $$[QT_INSTALL_BINS]/Qt5Gui.dll \
-    $$[QT_INSTALL_BINS]/Qt5Widgets.dll \
-    $$[QT_INSTALL_BINS]/Qt5Concurrent.dll \
-    $$[QT_INSTALL_BINS]/Qt5Svg.dll \
-    $$[QT_INSTALL_BINS]/Qt5WinExtras.dll
+    $$[QT_INSTALL_BINS]/Qt5Gui$${DEP_DLLS_POSTFIX}.dll \
+    $$[QT_INSTALL_BINS]/Qt5Widgets$${DEP_DLLS_POSTFIX}.dll \
+    $$[QT_INSTALL_BINS]/Qt5Concurrent$${DEP_DLLS_POSTFIX}.dll \
+    $$[QT_INSTALL_BINS]/Qt5Svg$${DEP_DLLS_POSTFIX}.dll \
+    $$[QT_INSTALL_BINS]/Qt5WinExtras$${DEP_DLLS_POSTFIX}.dll
 
 DEP_DLLS_QT_PLATFORMS.files += \
-    $$[QT_INSTALL_PLUGINS]/platforms/qwindows.dll
+    $$[QT_INSTALL_PLUGINS]/platforms/qwindows$${DEP_DLLS_POSTFIX}.dll
 
+export(DEP_DLLS_QT.files)
+export(DEP_DLLS_QT_PLATFORMS.files)

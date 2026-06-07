@@ -1,23 +1,25 @@
 #include "addinfactory.h"
 
-#include "addinmain.h"
+#include "addinbindable.h"
 
 #include <QDebug>
 #include <QSettings>
 #include <QFileInfo>
 
+#include "pch.hpp"
+
 extern QAxFactory *qax_instantiate();
 
 AddInFactory::AddInFactory(const QUuid &app, const QUuid &lib)
     : QAxFactory(app, lib)
-//  , m_registryRoot( QLatin1String("HKEY_LOCAL_MACHINE\\SOFTWARE") )
-    , m_registryRoot( QLatin1String("HKEY_CURRENT_USER\\Software") )
-    , m_registryPath( QLatin1String("\\Microsoft\\Office\\Access\\Addins") )
+    , m_loadBehavior(3)
+    , m_commandLineSafe(0)
 {
 }
 
 AddInFactory::~AddInFactory()
 {
+    qDebug() << "destructor";
 }
 
 QStringList AddInFactory::featureList() const
@@ -30,14 +32,14 @@ QStringList AddInFactory::featureList() const
 const QMetaObject *AddInFactory::metaObject(const QString &key) const
 {
     if (key == m_className)
-        return &AddInMain::staticMetaObject;
+        return &AddInBindable::staticMetaObject;
     return 0;
 }
 
 QObject *AddInFactory::createObject(const QString &key)
 {
     if (key == m_className)
-        return  new AddInMain(this, this);
+        return  new AddInBindable(this, this);
     return 0;
 }
 
@@ -78,7 +80,38 @@ void AddInFactory::unregisterClass(const QString &key, QSettings *settings) cons
     //if ( is64bit() ) unregisterClassInternal(key, ws64bit);
 }
 
+QAxAggregated *AddInFactory::createAggregate(QObject *parent)
+{
+    Q_UNUSED(parent)
+    return NULL;
+}
+
+void AddInFactory::setApplication(IDispatch *application)
+{
+    Q_UNUSED(application)
+}
+
+void AddInFactory::releaseApplication()
+{
+
+}
+
+QAxObject *AddInFactory::application() const
+{
+    return NULL;
+}
+
+int AddInFactory::applicationHwnd()
+{
+    return 0;
+}
+
 void AddInFactory::onBeforeConnectionEvent()
+{
+
+}
+
+void AddInFactory::onAfterConnectionEvent()
 {
 
 }
@@ -86,6 +119,16 @@ void AddInFactory::onBeforeConnectionEvent()
 void AddInFactory::onAfterDisconnectionEvent()
 {
 
+}
+
+void AddInFactory::setRegistryRoot(const QString &registryRoot)
+{
+    m_registryRoot = registryRoot;
+}
+
+void AddInFactory::setRegistryPath(const QString &registryPath)
+{
+    m_registryPath = registryPath;
 }
 
 void AddInFactory::setClassName(const QString &className)
@@ -108,6 +151,16 @@ void AddInFactory::setEventsId(const QString &eventsId)
     m_eventsId = eventsId;
 }
 
+void AddInFactory::setLoadBehavior(const int loadBehavior)
+{
+    m_loadBehavior = loadBehavior;
+}
+
+void AddInFactory::setCommandLineSafe(const int commandLineSafe)
+{
+    m_commandLineSafe = commandLineSafe;
+}
+
 void AddInFactory::setFriendlyName(const QString &friendlyName)
 {
     m_friendlyName = friendlyName;
@@ -118,9 +171,14 @@ void AddInFactory::setDescription(const QString &description)
     m_description = description;
 }
 
+void AddInFactory::setServerFilePath(const QString &serverFilePath)
+{
+    m_serverFilePath = serverFilePath;
+}
+
 QString AddInFactory::progID() const
 {
-    return QFileInfo( serverFilePath() ).baseName() + "." + m_className;
+    return QFileInfo( m_serverFilePath ).baseName() + "." + m_className;
 }
 
 bool AddInFactory::is64bit() const
@@ -148,8 +206,8 @@ void AddInFactory::registerClassInternal(const QString &key, AddInFactory::WordS
     if ( key == m_className )
     {
         QScopedPointer<QSettings> st( new QSettings( registryPath(ws) , QSettings::NativeFormat));
-        st->setValue("/" + progID() + "/LoadBehavior",      3);
-        st->setValue("/" + progID() + "/CommandLineSafe",   0);
+        st->setValue("/" + progID() + "/LoadBehavior",      m_loadBehavior);
+        st->setValue("/" + progID() + "/CommandLineSafe",   m_commandLineSafe);
         st->setValue("/" + progID() + "/FriendlyName",      m_friendlyName);
         st->setValue("/" + progID() + "/Description",       m_description);
     }
@@ -164,3 +222,4 @@ void AddInFactory::unregisterClassInternal(const QString &key, AddInFactory::Wor
     }
 }
 
+QAXFACTORY_EXPORT(AddInFactory, "DummyLibraryID", "DummyApplicationID")

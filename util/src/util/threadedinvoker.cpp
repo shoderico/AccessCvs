@@ -3,6 +3,8 @@
 #include <QThread>
 #include <QTimer>
 
+#include "pch.hpp"
+
 ThreadedInvoker::ThreadedInvoker(const int msecLatency, QObject *parent)
     : QObject(parent)
     , m_latency(msecLatency)

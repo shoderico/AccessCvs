@@ -1,5 +1,7 @@
 #include "objectitem.h"
 
+#include "pch.hpp"
+
 ObjectItem::ObjectItem(QObject *parent)
     : QObject(parent)
     , m_isSelected(false)
@@ -31,6 +33,8 @@ ObjectItem::ObjectItem(ObjectItem *object, QObject *parent)
     this->m_objectType = object->m_objectType;
     this->m_gitStatusInIndex = object->m_gitStatusInIndex;
     this->m_gitStatusInWorkTree = object->m_gitStatusInWorkTree;
+    this->m_selectObjectType = object->m_selectObjectType;
+    this->m_iconPath = object->m_iconPath;
 
 }
 

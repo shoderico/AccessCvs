@@ -6,6 +6,7 @@
 #include <QAxFactory>
 
 class QAxAggregated;
+class QAxObject;
 
 class ADDIN_SHARED_EXPORT AddInFactory : public QAxFactory
 {
@@ -24,17 +25,27 @@ public:
     void registerClass(const QString &key, QSettings *settings) const;
     void unregisterClass(const QString &key, QSettings *settings) const;
 
-    virtual QAxAggregated *createAggregate(QObject *parent = 0) = 0;
+    virtual QAxAggregated *createAggregate(QObject *parent = 0);
+    virtual void setApplication(IDispatch *application);
+    virtual void releaseApplication();
+    virtual QAxObject *application() const;
+    virtual int applicationHwnd();
     virtual void onBeforeConnectionEvent();
+    virtual void onAfterConnectionEvent();
     virtual void onAfterDisconnectionEvent();
 
 protected:
+    void setRegistryRoot(const QString &registryRoot);
+    void setRegistryPath(const QString &registryPath);
     void setClassName(const QString &className);
     void setClassId(const QString &classId);
     void setInterfaceId(const QString &interfaceId);
     void setEventsId(const QString &eventsId);
+    void setLoadBehavior(const int loadBehavior);
+    void setCommandLineSafe(const int commandLineSafe);
     void setFriendlyName(const QString &friendlyName);
     void setDescription(const QString &description);
+    void setServerFilePath(const QString &serverFilePath);
 
 private:
     QString m_className;
@@ -42,11 +53,14 @@ private:
     QString m_interfaceId;
     QString m_eventsId;
 
+    int m_loadBehavior;
+    int m_commandLineSafe;
     QString m_friendlyName;
     QString m_description;
 
     QString m_registryRoot;
     QString m_registryPath;
+    QString m_serverFilePath;
     QString progID() const;
 
     enum WordSize { ws32bit, ws64bit };

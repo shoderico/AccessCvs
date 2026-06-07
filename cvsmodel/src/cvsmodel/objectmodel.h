@@ -2,15 +2,18 @@
 #define OBJECTMODEL_H
 
 #include "cvsmodel_global.h"
+#include "cvsmodel_const.h"
 
 #include <QAbstractItemModel>
 
-#include "objectitem.h"
-#include "objectitems.h"
+#include "objectitemmap.h"
 
-namespace Access {
-class Application;
-}
+//namespace Access {
+//class Application;
+//}
+class QAxObject;
+
+class ProjectContainer;
 
 
 class CVSMODEL_SHARED_EXPORT ObjectModel : public QAbstractItemModel
@@ -18,6 +21,8 @@ class CVSMODEL_SHARED_EXPORT ObjectModel : public QAbstractItemModel
     Q_OBJECT
 public:
     ObjectModel(QObject * parent = 0);
+    ~ObjectModel();
+    void init(ProjectContainer *projectContainer);
 
     //----------------------------------------------------------------------------------------------------------------------
     // QAbstractItemModel overrides
@@ -35,28 +40,17 @@ public:
 
     bool setData(const QModelIndex &index, const QVariant &value, int role);
 
-    enum Column
-    {
-        NameColumn = 0,
-        HasDataColumn,
-        InProjectColumn,
-        InSourceDirColumn,
-        DifferentColumn,
-        CreateDateColumn,
-        UpdateDateColumn,
-        ExportDateColumn,
-        ObjectTypeColumn,
-        ColumnCount
-    };
-
     void saveSettigs();
+
+    ProjectContainer *projectContainer() const;
+
 
     // TODO: split Model and Manager
 
     //----------------------------------------------------------------------------------------------------------------------
     // interface procedures
 
-    void setApplication(Access::Application *application);
+    virtual void setApplication(QAxObject *application);
 
     void prepareInit();
     void prepareClone();
@@ -68,71 +62,23 @@ public:
     bool refreshItems();
 
     bool executeExport();
-    bool executeImport();
+    virtual bool executeImport();
 
-    bool checkProjectState();
-
-
+    virtual bool checkProjectState();
 
 
-    // items getter
-    enum ItemsType
-    {
-      //NoItems          = 0,
-        InBoth           = 1,
-        InBoth_Different = 2,
-        InBoth_Same      = 4,
-        InBoth_NotSame   = 8,
-        InProjectOnly    = 16,
-        InSourceDirOnly = 32,
-        AllItems         = 63,
-    };
-    Q_DECLARE_FLAGS(ItemsTypes, ItemsType)
+    int selectedRowCount() const;
 
-    enum SelectObjectType
-    {
-      //NoObjectTypes = 0,
-        TableObjectType = 1,
-        QueryObjectType = 2,
-        FormObjectType = 4,
-        ReportObjectType = 8,
-        MacroObjectType = 16,
-        ModuleObjectType = 32,
-        ReferenceObjectType = 64,
-        ProjectFileType = 128,
-        VBProjectType = 256,
-        AllObjectTypes = 511,
-    };
-    Q_DECLARE_FLAGS(SelectObjectTypes, SelectObjectType)
-
-    enum ObjectDifferenceType
-    {
-        SameContentsType = 1,
-        DifferentContentsTypes = 2,
-        AllDifferenceTypes = 3,
-    };
-    Q_DECLARE_FLAGS(ObjectDifferenceTypes, ObjectDifferenceType)
-
-    void getItems(ObjectItems *pItems, ItemsTypes itemsType, bool selectedOnly /*= true*/, bool modifiedOnly /*= false*/) const;
-    void getItems(ObjectItems *pItems, ItemsTypes itemsType, SelectObjectTypes objectTypes, bool selectedOnly /*= true*/, bool modifiedOnly /*= false*/) const;
+    void getItems(ObjectItemMap *pItems, Model::ItemsTypes itemsType, bool selectedOnly /*= true*/, bool modifiedOnly /*= false*/) const;
+    void getItems(ObjectItemMap *pItems, Model::ItemsTypes itemsType, Model::SelectObjectTypes objectTypes, bool selectedOnly /*= true*/, bool modifiedOnly /*= false*/) const;
 
     void selectItemsForProcess(bool selected, bool resetSelection /*= true*/);
-    void selectItems(ItemsTypes itemsType, bool selected, bool resetSelection /*= true*/);
-    void selectItemsByObjectType(SelectObjectTypes objectTypes, bool selected, bool resetSelection /*= true*/);
-
-    void updateItemsExportDate(ObjectItems *allTargets, const QDateTime &exportDate, const ObjectDifferenceTypes differenceTypes);
-    void updateItemsInProject(ObjectItems *allTargets, Model::ObjectExistence existence);
-    void updateItemsInSourceDir(ObjectItems *allTargets, Model::ObjectExistence existence);
-    void updateItemsDifference(ObjectItems *allTargets, Model::ObjectDifference difference);
-    void updateItemsDifferenceByFileTime(ObjectItems *allTargets);
-    void updateItemsDifferenceAsIs(ObjectItems *allTargets);
-    void updateItemsCreateUpdateDateFromProject(ObjectItems *allTargets);
+    void selectItems(Model::ItemsTypes itemsType, bool selected, bool resetSelection /*= true*/);
+    void selectItemsByObjectType(Model::SelectObjectTypes objectTypes, bool selected, bool resetSelection /*= true*/);
+    void emitSelectionChanged();
 
 
-    void updateFileTimeInTempDirByExportDate(ObjectItems *allTargets, const ObjectDifferenceTypes differenceTypes);
-    void updateFileTimeInTempDir(ObjectItems *allTargets, const QDateTime &fileTime, const ObjectDifferenceTypes differenceTypes);
-
-    void deleteItems(ObjectItems *allTargets);
+    void deleteItems(ObjectItemMap *allTargets);
 
 
 
@@ -140,86 +86,29 @@ public:
     // internal procedures
 
     // load and build-up model-item from object/file
-    void loadItemsFromProject(QList<ObjectItem*> *items);        //                                                      : BLOCK
-    void loadItemsFromSourceDir(QList<ObjectItem*> *items);     //                                                      :
     void reloadAndMergeItems();
 
-    // import/export object
-    void exportFromProjectToTempDir(ObjectItems *allTargets);   // InBoth           , InProjectOnly ,                   : BLOCK
-    void importFromTempDirToProject(ObjectItems *allTargets);   // InBoth_DiffOnly  ,               , InSourceDirOnly  : BLOCK : Dirty Project
 
-    // copy files between directories
-    void copyFromTempDirToSourceDir(ObjectItems *allTargets);  // InBoth:DiffOnly  , InProjectOnly ,                   :       : Dirty SourceDir
-    void copyFromSourceDirToTempDir(ObjectItems *allTargets);  // InBoth_DiffOnly  ,               , InSourceDirOnly  :
-
-    // sanitize/de-sanitize files
-    void sanitizeTempDir(ObjectItems *allTargets);              // InBoth           , InProjectOnly ,                   :
-    void desanitizeTempDir(ObjectItems *allTargets);            // InBoth_DiffOnly  ,               , InSourceDirOnly  :
-
-    // compare files and update model-item status
-    void compareTempDir(ObjectItems *allTargets);               // InBoth           ,               ,                   :
-
-    // delete object/file
-    void deleteFromSourceDir(ObjectItems *allTargets);         //                  ,               , InSourceDirOnly  :       : Dirty FileSytem
-    void deleteFromProject(ObjectItems *allTargets);            //                  , InProjectOnly ,                   : BLOCK : Dirty Project
-
-    void deleteFromTempDir(ObjectItems *allTargets);
+public slots:
+    void itemDataChanged(int rowStart, int rowEnd, int columnStart, int columnEnd);
 
     //----------------------------------------------------------------------------------------------------------------------
     // progress notification
-public:
-    enum ProcessType
-    {
-        RefreshProcess,
-        ExportProcess,
-        ImportProcess,
-
-        LoadItemFromProjectProcess,
-        LoadItemFromSourceDirProcess,
-
-        ExportFromProjectToTempDirProcess,
-        ImportFromTempDirToProjectProcess,
-
-        CopyFromTempDirToSourceDirProcess,
-        CopyFromSourceDirToTempDirProcess,
-
-        SanitizeTempDirProcess,
-        DesanitizeTempDirProcess,
-        CompareTempDirProcess,
-
-        DeleteFromSourceDirProcess,
-        DeleteFromProjectProcess,
-
-        DeleteFromTempDirProcess,
-
-        UpdateItemsDifferenceByFileTimeProcess,
-        UpdateFileTimeInTempDirByExportDateProcess,
-        UpdateItemsExportDateProcess,
-        UpdateFileTimeInTempDirProcess,
-
-        UpdateItemsInProjectProcess,
-        UpdateItemsInSourceDirProcess,
-        UpdateItemsDifferenceProcess,
-        UpdateItemsDifferenceAsIsProcess,
-        DeleteItemsProcess,
-        UpdateItemsCreateUpdateDateFromProjectProcess,
-    };
 signals:
     void progressStart(int type, int count);
     void progressEnd(int type);
     void progressChange(int type, int position);
 
+    void selectionChanged(int objectTypes);
 
 private:
+    QAxObject *m_application;
     QList<ObjectItem*> m_items;
-    ObjectItems m_mapItems;
-    Access::Application *m_application;
+    ObjectItemMap* m_itemMap;
+    QList<Model::ObjectType> m_objectTypesForItemMap;
+    ProjectContainer *m_projectContainer;
 
     void mergeItemProperties(ObjectItem* itemSrc, ObjectItem* itemDst);
 };
-
-Q_DECLARE_OPERATORS_FOR_FLAGS(ObjectModel::ItemsTypes)
-Q_DECLARE_OPERATORS_FOR_FLAGS(ObjectModel::SelectObjectTypes)
-Q_DECLARE_OPERATORS_FOR_FLAGS(ObjectModel::ObjectDifferenceTypes)
 
 #endif // OBJECTMODEL_H

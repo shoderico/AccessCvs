@@ -11,6 +11,8 @@
 #include <QCryptographicHash>
 #include <qt_windows.h>
 
+#include "pch.hpp"
+
 void FileUtil::saveToFile(const QString &contents, const QString &filePath, CodecInfo *codec)
 {
     QFile file( filePath );
@@ -132,7 +134,7 @@ bool FileUtil::compare(const QString &filePathA, const QString &filePathB, const
     else if (isSame && !fileA.exists() && !fileB.exists())
     {
         // both NON-exists
-        // caller calls this method only when correspongind extension is set.
+        // caller calls this method only when corresponging extension is set.
         // so the case when both NON-exists must be treat as DIFFERENT.
         // BUT for optional files such as table-data, report-prop,
         // both-Non-Exists is as SAME.

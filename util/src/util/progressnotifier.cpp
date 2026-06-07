@@ -1,5 +1,7 @@
 #include "progressnotifier.h"
 
+#include "pch.hpp"
+
 ProgressNotifier::ProgressNotifier(int type, int count, QObject *parent)
     : QObject(parent)
     , m_type(type)

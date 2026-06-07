@@ -12,11 +12,11 @@ Component.prototype.createOperations = function()
     // call default implementation to actually install the files
     component.createOperations();
 
-    component.addOperation(
-        "Execute",
-        "regsvr32 /s    " + '"' + "@TargetDir@\\AccessCvs.dll" + '"',
-        "UNDOEXECUTE",
-        "regsvr32 /s /u " + '"' + "@TargetDir@\\AccessCvs.dll" + '"'
+    component.addElevatedOperation(
+         "Execute"
+        ,"@TargetDir@\\install_accesscvs.bat", "/dummy"
+        ,"UNDOEXECUTE"
+        ,"@TargetDir@\\uninstall_accesscvs.bat", "/dummy"
         );
 
     component.addOperation(

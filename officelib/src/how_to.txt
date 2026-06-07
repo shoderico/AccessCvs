@@ -1,26 +1,584 @@
-Qt付属の dumpcpp.exe を使って、QAx＊＊ベースのクラスファイルを生成する
+1) Qt付属の dumpcpp.exe を使って、QAx＊＊ベースのクラスファイルを生成する
 
-guid がいる
+C:\Qt\5.5\mingw492_32\bin\dumpcpp.exe
 
-Access,1,{4AFFC9A0-5F99-101B-AF4E-00AA003F0F07},9,0
-	OK
+各COMライブラリの guid がいる
 
-VBA,1,{000204EF-0000-0000-C000-000000000046},4,0
-	OK
 
-stdole,0,{00020430-0000-0000-C000-000000000046},2,0
-	OK
+##########################################################################
+#=========================================================================
+# officelib モジュール
+#=========================================================================
+##########################################################################
 
-DAO,0,{4AC9E1DA-5BAD-4AC7-86E3-24F4CDCECA28},12,0
-	OK
+#-------------------------------------------------------------------------
+inline_export_def.h
 
-ADODB,0,{00000201-0000-0010-8000-00AA006D2EA4},2,1
-	error
-		C:\Program Files\Common Files\System\ado 配下のTLBを指定
-		dumpcpp "C:\Program Files\Common Files\System\ado\msado21.tlb"
+    inline の定義変更用のヘッダーファイルを追加
+
+        #ifndef INLINE_EXPORT_DEF_H
+        #define INLINE_EXPORT_DEF_H
+
+        #define INLINE_EXPORT
+
+        #endif // INLINE_EXPORT_DEF_H
+
+
+#-------------------------------------------------------------------------
+officelib.h
+
+    外部からの include 用のヘッダーファイルを追加
+
+        #ifndef OFFICELIB_H
+        #define OFFICELIB_H
+
+        #ifndef QAX_DUMPCPP_OFFICE_NOINLINES
+        #define QAX_DUMPCPP_OFFICE_NOINLINES
+        #endif
+        #include "office.h"
+
+        #ifndef QAX_DUMPCPP_VBIDE_NOINLINES
+        #define QAX_DUMPCPP_VBIDE_NOINLINES
+        #endif
+        #include "vbide.h"
+
+        #endif // OFFICELIB_H
+
+
+
+
+#=========================================================================
+# Office
+#=========================================================================
+
+Office,{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}
+    OK
+
+#-------------------------------------------------------------------------
+office.h
+
+    先頭付近に、 OFFICE_EXPORT を定義
+
+        #include "officelib_global.h"
+        // Define this symbol to __declspec(dllexport) or __declspec(dllimport)
+        #ifndef OFFICE_EXPORT
+        #define OFFICE_EXPORT OFFICELIB_SHARED_EXPORT
+        #endif
+
+
+    enum の値を、 unsigned に変更
+        
+        enum MsoMixedType {
+            msoIntegerMixed         = 32768,
+            msoSingleMixed          = 0x80000000 //-2147483648
+        };
+
+
+    関数名 RGB を、 RGB_ に変更
+    （RGBはマクロ定義されているため）
+
+        ColorFormat::RGB
+        ThemeColor::RGB
+
+
+    以下の２関数の qRegisterMetaType<Office::ChartColorFormat>("ChartColorFormat", qax_pointer); をコメントアウトする。
+        inline Office::ChartColorFormat* ChartFillFormat::BackColor() const
+        inline Office::ChartColorFormat* ChartFillFormat::ForeColor() const
+    
+        （ChartColorFormat はインターフェースだが、 dumpcpp がオブジェクト生成しようとするコードを生成してしまうため）
+
+
+    inline → INLINE_EXPORT に一括
+        office.h    8020 occurences
+
+
+    #include "inline_export_def.h" を先頭付近に追加
+
+        
+#-------------------------------------------------------------------------
+office.cpp
+
+    変更なし
+    
+#-------------------------------------------------------------------------
+office_impl.cpp
+
+    新規作成（inline関数の実装のため）
+    以下のコードを貼り付け
+
+        #include "office.h"
+
+
+#=========================================================================
+# VBIDE
+#=========================================================================
 
 VBIDE,{0002E157-0000-0000-C000-000000000046},5,3
-	OK
+    OK
 
+#-------------------------------------------------------------------------
+vbide.h
+
+    先頭付近に、 VBIDE_EXPORT を定義
+    
+        #include "officelib_global.h"
+        // Define this symbol to __declspec(dllexport) or __declspec(dllimport)
+        #ifndef VBIDE_EXPORT
+        #define VBIDE_EXPORT OFFICELIB_SHARED_EXPORT
+        #endif
+
+    Q_DECLARE_OPAQUE_POINTER を、すべて、コメントアウト
+    （依存クラスは include するため、不要）
+
+
+    inline → INLINE_EXPORT に一括
+        vbide.h      856 occurences
+
+
+    #include "inline_export_def.h" を先頭付近に追加
+
+
+#-------------------------------------------------------------------------
+vbide.cpp
+
+    先頭に依存ヘッダの include を追加
+
+        #define QAX_DUMPCPP_OFFICE_NOINLINES
+        #include "office.h"
+
+
+#-------------------------------------------------------------------------
+vbide_impl.cpp
+
+    新規作成（inline関数の実装のため）
+    以下のコードを貼り付け
+
+        #define QAX_DUMPCPP_OFFICE_NOINLINES
+        #include "office.h"
+
+        #include "vbide.h"
+
+
+
+
+
+
+
+
+
+
+##########################################################################
+#=========================================================================
+# accesslib
+#=========================================================================
+##########################################################################
+
+#-------------------------------------------------------------------------
+accesslib.h
+
+    外部からの include 用のヘッダーファイルを追加
+
+        #ifndef ACCESSLIB_H
+        #define ACCESSLIB_H
+
+        #include "officelib/officelib.h"
+
+        #ifndef QAX_DUMPCPP_DAO_NOINLINES
+        #define QAX_DUMPCPP_DAO_NOINLINES
+        #endif
+        #include "dao.h"
+
+        #ifndef QAX_DUMPCPP_ADODB_NOINLINES
+        #define QAX_DUMPCPP_ADODB_NOINLINES
+        #endif
+        #include "adodb.h"
+
+        #ifndef QAX_DUMPCPP_ACCESS_NOINLINES
+        #define QAX_DUMPCPP_ACCESS_NOINLINES
+        #endif
+        #include "access.h"
+
+        #endif // ACCESSLIB_H
+
+
+
+
+#=========================================================================
+# DAO
+#=========================================================================
+
+DAO,0,{4AC9E1DA-5BAD-4AC7-86E3-24F4CDCECA28},12,0
+    OK
+
+#-------------------------------------------------------------------------
+dao.h
+
+    先頭付近に、 DAO_EXPORT を定義
+    
+        #include "accesslib_global.h"
+        // Define this symbol to __declspec(dllexport) or __declspec(dllimport)
+        #ifndef DAO_EXPORT
+        #define DAO_EXPORT ACCESSLIB_SHARED_EXPORT
+        #endif
+
+
+    関数名 EOF を、 EOF_ に変更
+    （EOFは予約語のため）
+        
+        Recordset::EOF
+        Recordset2::EOF
+
+
+    inline → INLINE_EXPORT に一括
+        dao.h        2192 occurences
+
+
+    #include "officelib/inline_export_def.h" を各hに追加
+
+
+
+#-------------------------------------------------------------------------
+dao.cpp
+
+    変更なし
+
+
+#-------------------------------------------------------------------------
+dao_impl.cpp
+
+    新規作成（inline関数の実装のため）
+    以下のコードを貼り付け
+
+        #include "dao.h"
+
+
+#=========================================================================
+# ADODB
+#=========================================================================
+
+ADODB,0,{00000201-0000-0010-8000-00AA006D2EA4},2,1
+    error
+        C:\Program Files\Common Files\System\ado 配下のTLBを指定
+        dumpcpp "C:\Program Files\Common Files\System\ado\msado21.tlb"
+        dumpcpp "C:\Program Files (x86)\Common Files\System\ado\msado21.tlb"
+
+#-------------------------------------------------------------------------
+adodb.h
+
+    先頭付近に、 DAO_EXPORT を定義
+    
+        #include "accesslib_global.h"
+        // Define this symbol to __declspec(dllexport) or __declspec(dllimport)
+        #ifndef ADODB_EXPORT
+        #define ADODB_EXPORT ACCESSLIB_SHARED_EXPORT
+        #endif
+
+
+    関数名 EOF を、 EOF_ に変更
+    （EOFは予約語のため）
+        
+        _Recordset::EOF
+        Recordset20::EOF
+        Recordset15::EOF
+        Recordset::EOF
+
+
+    inline → INLINE_EXPORT に一括
+        adodb.h      1420 occurences
+
+
+    #include "officelib/inline_export_def.h" を各hに追加
+
+
+#-------------------------------------------------------------------------
+adodb.cpp
+
+    変更なし
+    
+#-------------------------------------------------------------------------
+adodb_impl.cpp
+
+    新規作成（inline関数の実装のため）
+    以下のコードを貼り付け
+
+        #include "adodb.h"
+
+
+#=========================================================================
+# Access
+#=========================================================================
+
+Access,1,{4AFFC9A0-5F99-101B-AF4E-00AA003F0F07},9,0
+    OK
+
+#-------------------------------------------------------------------------
+access.h
+
+    先頭付近に、 DAO_EXPORT を定義
+    
+        #include "accesslib_global.h"
+        // Define this symbol to __declspec(dllexport) or __declspec(dllimport)
+        #ifndef ACCESS_EXPORT
+        #define ACCESS_EXPORT ACCESSLIB_SHARED_EXPORT
+        #endif
+
+
+    Q_DECLARE_OPAQUE_POINTER を、すべて、コメントアウト
+
+        //Q_DECLARE_OPAQUE_POINTER(Office::CommandBars*) // already declared in vbide.h
+
+
+    class ACCESS_EXPORT Application : public QAxObject に、以下のコンストラクタを追加
+    
+        Application(_Application *iface)
+        : QAxObject()
+        {
+            initializeFrom(iface);
+            delete iface;
+        }
+
+
+    inline → INLINE_EXPORT に一括
+        access.h    31286 occurences
+
+
+    #include "officelib/inline_export_def.h" を各hに追加
+
+
+#-------------------------------------------------------------------------
+access.cpp
+
+    先頭に以下を追加
+        #include "officelib/officelib.h"
+
+        #define QAX_DUMPCPP_DAO_NOINLINES
+        #include "dao.h"
+
+        #define QAX_DUMPCPP_ADODB_NOINLINES
+        #include "adodb.h"
+
+    
+#-------------------------------------------------------------------------
+access_impl.cpp
+
+    新規作成（inline関数の実装のため）
+    以下のコードを貼り付け
+
+        #include "officelib/officelib.h"
+
+        #define QAX_DUMPCPP_DAO_NOINLINES
+        #include "dao.h"
+
+        #define QAX_DUMPCPP_ADODB_NOINLINES
+        #include "adodb.h"
+
+        #include "access.h"
+
+
+##########################################################################
+#=========================================================================
+# excellib
+#=========================================================================
+##########################################################################
+
+#-------------------------------------------------------------------------
+excellib.h
+
+    外部からの include 用のヘッダーファイルを追加
+
+        #ifndef EXCELLIB_H
+        #define EXCELLIB_H
+
+        #include "officelib/officelib.h"
+
+        #ifndef QAX_DUMPCPP_EXCEL_NOINLINES
+        #define QAX_DUMPCPP_EXCEL_NOINLINES
+        #endif
+        #include "excel.h"
+
+        #endif // EXCELLIB_H
+
+
+
+
+
+
+
+#=========================================================================
+# Excel
+#=========================================================================
+
+Excel,{00024500-0000-0000-C000-000000000046}
+    error
+        dumpcpp.exe "C:\Program Files (x86)\Microsoft Office\Office12\EXCEL.EXE"
+
+#-------------------------------------------------------------------------
+excel.h
+
+    先頭付近に、 EXPORT を定義
+    
+        #include "excellib_global.h"
+        // Define this symbol to __declspec(dllexport) or __declspec(dllimport)
+        #ifndef EXCEL_EXPORT
+        #define EXCEL_EXPORT EXCELLIB_SHARED_EXPORT
+        #endif
+
+
+    Q_DECLARE_OPAQUE_POINTER を、すべて、コメントアウト
+
+
+    (Range* を (Excel::Range* に一括置換
+        718箇所
+
+
+    RGB -> RGB_ に変更
+        ColorFormat::RGB
+        ChartColorFormat::RGB
+        
+
+    DialogBox -> DialogBox_ に変更
+        Range::DialogBox(
+
+
+    inline → INLINE_EXPORT に一括
+        excel.h    28898 occurences
+
+
+    #include "officelib/inline_export_def.h" を各hに追加
+
+
+#-------------------------------------------------------------------------
+excel.cpp
+
+    先頭に以下を追加
+
+        #include "officelib/officelib.h"
+
+
+#-------------------------------------------------------------------------
+excel_impl.cpp
+
+    新規作成（inline関数の実装のため）
+    以下のコードを貼り付け
+
+        #include "officelib/officelib.h"
+
+        #include "excel.h"
+
+
+
+#=========================================================================
+#=========================================================================
+#=========================================================================
+デフォルトコンストラクタを追加変更
+    戻り値が オブジェクトの場合に、大量に setControl の Warning が出てしまうため。
+
+    AllMacros(IDispatch *subobject = 0, QAxObject *parent = 0)
+    : QAxObject((IUnknown*)subobject, parent)
+    {
+        internalRelease();
+    }
+    AllMacros(QObject *parent /*= 0*/)
+    : QAxObject(parent)
+    {
+        setControl("{08f6c815-3cfd-11d1-98bc-006008197d41}");
+    }
+
+実際は、以下のコマンドを、ソースのルートで実行する
+
+perl -07 -pi -e 's|public\:\r\n    (.+)\(QObject \*parent = 0\)|public\:\r\n    \1\(IDispatch \*subobject = 0, QAxObject \*parent = 0\)\r\n    \: QAxObject\(\(IUnknown\*\)subobject, parent\)\r\n    \{\r\n        internalRelease\(\);\r\n    \}\r\n\r\n    \1\(QObject \*parent \/\*= 0\*\/\)|g' accesslib/src/accesslib/*.h officelib/src/officelib/*.h excellib/src/excellib/*.h
+perl -07 -pi -e 's|public\:\r\n    (.+)\(const QString &licenseKey = QString\(\), QObject \*parent = 0\)|public\:\r\n    \1\(IDispatch \*subobject = 0, QAxObject \*parent = 0\)\r\n    \: QAxObject\(\(IUnknown\*\)subobject, parent\)\r\n    \{\r\n        internalRelease\(\);\r\n    \}\r\n\r\n    \1\(const QString &licenseKey \/\*= QString\(\)\*\/, QObject \*parent = 0\)|g' accesslib/src/accesslib/*.h officelib/src/officelib/*.h excellib/src/excellib/*.h
+perl -07 -pi -e 's|public\:\r\n    (.+)\(QWidget \*parent = 0, Qt::WindowFlags f = 0\)|public\:\r\n    \1\(IDispatch \*subobject = 0, QWidget \*parent = 0, Qt::WindowFlags f = 0\)\r\n    \: QAxWidget\(\(IUnknown\*\)subobject, parent, f\)\r\n    \{\r\n        internalRelease\(\);\r\n    \}\r\n\r\n    \1\(QWidget \*parent \/\*= 0\*\/, Qt::WindowFlags f = 0\)|g' accesslib/src/accesslib/*.h officelib/src/officelib/*.h excellib/src/excellib/*.h
+
+
+#=========================================================================
+#=========================================================================
+#=========================================================================
+#=========================================================================
+# 以下は、メモ（情報は古い）
+
+VBA,1,{000204EF-0000-0000-C000-000000000046},4,0
+    OK
+
+stdole,0,{00020430-0000-0000-C000-000000000046},2,0
+    OK
+
+
+
+
+2) ヘッダに __declspec(dllexport) or __declspec(dllimport) の定義を追加する
+
+例）
+    #include "officelib_global.h"
+    // Define this symbol to __declspec(dllexport) or __declspec(dllimport)
+    #ifndef VBIDE_EXPORT
+    #define VBIDE_EXPORT OFFICELIB_SHARED_EXPORT
+    #endif
+
+2-2) inline を解除する
+
+    *.h の inline を、XXXX_INLINE に置換する。
+        ex) inline -> OFFICE_INLINE
+
+    *.h の 先頭付近に、XXXX_INLINE の define を追加
+        #if defined _MSC_VER
+        #define OFFICE_INLINE    __declspec(noinline)
+        #elif defined __MINGW32__
+        #define OFFICE_INLINE
+        #endif
+
+    xxxx_impl.cpp を追加
+    xxxx_impl.cpp に、#include を追加
+        # 必要に応じて依存するヘッダーを include
+        #include "office.h"
+        
+        namespace Office {
+
+        }
+
+    xxxx.h の inline の実装部分をすべて、xxxx_impl.cpp に移動
+        xxxx.h
+            // member function implementation     : ここから
+            #ifndef QAX_DUMPCPP_OFFICE_NOINLINES
+            ...
+            #endif                                : ここまで
+
+        xxxx_impl.cpp
+        
+        namespace Office {
+            ここに貼り付け
+        }
+
+
+3) Mingwの場合：
+    C++11 がサポートされない
+    →　enum の forward declaration がサポートされない
+    →　コンパイルエラーが出る
+    ので、以下の対策をする
+
+3-1) ヘッダーhの Q_DECLARE_OPAQUE_POINTER をコメントアウト
+        access.h
+        excel.h
+
+3-2) ソースcppに #include <enum が定義されたヘッダ> を、自身のinclude 前に追加
+        access.cpp
+            #include "officelib/officelib.h"
+            #include "access.h"
+        excel.cpp
+            #include "officelib/officelib.h"
+            #include "excel.h"
+
+
+
+4) Access::Application に以下のコンストラクタを追加
+        access.cpp
+
+    Application(_Application *iface)
+    : QAxObject()
+    {
+        initializeFrom(iface);
+        delete iface;
+    }
+.
 
 

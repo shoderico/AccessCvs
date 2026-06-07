@@ -16,21 +16,21 @@ DEFINES += ACCESSCVS_LIBRARY
 DEFINES += QT_MESSAGELOGCONTEXT
 
 SOURCES += \
-    cvsaddin/cvsaddinfactory.cpp
+    accesscvs/accesscvsaddinfactory.cpp
 #    cvsaddin/cvsaddinimpl.cpp
 
-HEADERS +=\
-    cvsaddin/cvsaddinfactory.h
+HEADERS += \
+    accesscvs/accesscvsaddinfactory.h
 #    cvsaddin/cvsaddinimpl.h
 
 OTHER_FILES += \
-    cvsaddin/ribbon.xml
+    accesscvs/ribbon.xml
 
 RESOURCES += \
-    cvsaddin/cvsaddin.qrc
+    accesscvs/accesscvs.qrc
 
-include(../../common.pri)
-include(../../submodule.pri)
+include(../../qmake/common.pri)
+include(../../qmake/submodule.pri)
 include(../$${TARGET}_dep.pri) # dependencies for self
 
 installQtDlls(       $$OUT_PWD/$${BUILD_TYPE} )

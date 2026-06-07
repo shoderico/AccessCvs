@@ -1,0 +1,264 @@
+# Application attributes
+APP_VERSION=1.0.5
+APP_VERSION_STR=\\\"$${APP_VERSION}\\\"
+DEFINES += APP_VERSION=$${APP_VERSION}
+DEFINES += APP_VERSION_STR=$${APP_VERSION_STR}
+
+APP_RELEASE_DATE = 2026-06-07
+
+
+
+# Debug/Release
+Release:BUILD_TYPE = release
+Debug:  BUILD_TYPE = debug
+Release|Debug {
+    OBJECTS_DIR = $${BUILD_TYPE}/.obj
+    MOC_DIR     = $${BUILD_TYPE}/.moc
+    RCC_DIR     = $${BUILD_TYPE}/.rcc
+    UI_DIR      = $${BUILD_TYPE}/.ui
+}
+
+# x86/x64
+contains(QT_ARCH, x86_64) {
+    APP_ARCH_TYPE=x64
+}
+else:contains(QT_ARCH, i386) {
+    APP_ARCH_TYPE=x86
+}
+
+
+# Build Identifier
+BUILD_IDENTIFIER=Qt$${QT_VERSION}_$${QMAKE_COMPILER}$${MSVC_VER}
+#message($${BUILD_IDENTIFIER})
+
+
+# Root directories
+PROJECT_ROOT = $$PWD/..
+LIBRARY_ROOT = $$PWD/../..
+
+
+TOP_BUILD_ROOT = $$shadowed($${PROJECT_ROOT})
+#message($${TOP_BUILD_ROOT})
+
+
+BUILD_ROOT   = $${TOP_BUILD_ROOT}/build_$${APP_ARCH_TYPE}_$${BUILD_IDENTIFIER}
+#message($${BUILD_ROOT})
+
+
+DEFINES += DETECT_MEMORY_LEAKS
+
+PROJECT_INCLUDE_DIR     = $${BUILD_ROOT}/include
+PROJECT_INCLUDE_DIR_WNT = $${PROJECT_INCLUDE_DIR}
+PROJECT_INCLUDE_DIR_WNT ~= s,/,\\,g
+
+PROJECT_LIBRARY_DIR     = $${BUILD_ROOT}/$${BUILD_TYPE}/lib
+PROJECT_LIBRARY_DIR_WNT = $${PROJECT_LIBRARY_DIR}
+PROJECT_LIBRARY_DIR_WNT ~= s,/,\\,g
+
+PROJECT_BINARY_DIR = $${BUILD_ROOT}/$${BUILD_TYPE}/bin
+PROJECT_BINARY_DIR_WNT = $${PROJECT_BINARY_DIR}
+PROJECT_BINARY_DIR_WNT ~= s,/,\\,g
+
+OUT_PWD_WNT = $${OUT_PWD}
+OUT_PWD_WNT ~= s,/,\\,g
+
+PWD_WNT = $${_PRO_FILE_PWD_}
+PWD_WNT ~= s,/,\\,g
+
+win32-msvc* {
+    LIB_PREFIX =
+    LIB_EXT = lib
+}
+win32-g++ {
+    LIB_PREFIX = lib
+    LIB_EXT = a
+}
+
+Debug {
+    DEP_DLLS_POSTFIX = d
+}
+Release {
+    DEP_DLLS_POSTFIX =
+}
+
+# message($${PWD}) # return this file's dir
+# message($${OUT_PWD}) # return caller's dir
+# message($$_PRO_FILE_PWD_) # return caller's pro dir
+# message($${TARGET}) # return caller's target
+# for (h,HEADERS) {
+#    message($${h})
+# } # return caller's headers
+
+
+DEP_DLLS_QT.destdir = .
+DEP_DLLS_QT_PLATFORMS.destdir = platforms
+DEP_DLLS_MODULE.destdir = .
+DEP_DLLS_EXTERNAL.destdir = .
+
+win32-msvc* {
+    DEP_DLLS_QT.files += \
+        $$[QT_INSTALL_BINS]/Qt5Core$${DEP_DLLS_POSTFIX}.dll
+}
+win32-g++ {
+    DEP_DLLS_QT.files += \
+        $$[QT_INSTALL_BINS]/Qt5Core$${DEP_DLLS_POSTFIX}.dll \
+        $$[QT_INSTALL_BINS]/libstdc++-6.dll \
+        $$[QT_INSTALL_BINS]/libwinpthread-1.dll \
+        $$[QT_INSTALL_BINS]/libgcc_s_dw2-1.dll
+}
+
+
+INCLUDEPATH += $${PROJECT_INCLUDE_DIR}
+INCLUDEPATH += $${PROJECT_ROOT}/common
+
+#win32-msvc* {
+#    CONFIG += precompile_header
+#    PRECOMPILED_HEADER = $${PROJECT_ROOT}/common/pch.hpp
+#    HEADERS += $${PROJECT_ROOT}/common/pch.hpp
+#}
+
+#----------------------------------------------------------------
+# copy files
+defineTest(copyFiles) {
+    unset(arg)
+    arg = $$1
+    destdirs = $$eval($${arg}.destdirs)
+    srcfiles = $$eval($${arg}.files)
+    #message($$srcfiles)
+
+    for (destdir, destdirs) {
+        QMAKE_PRE_LINK += $(CHK_DIR_EXISTS) $$system_path($${destdir}) $(MKDIR) $$system_path($${destdir})$$escape_expand(\n\t)
+        for (file, srcfiles) {
+            QMAKE_PRE_LINK += $(COPY) \"$$system_path($${file})\" \"$$system_path($${destdir})\"$$escape_expand(\n\t)
+        }
+    }
+    export(QMAKE_PRE_LINK)
+}
+
+#----------------------------------------------------------------
+# installQtDlls
+defineTest(installQtDlls) {
+    unset(destdirs)
+    destdirs = $$1
+    installDlls( $$destdirs, DEP_DLLS_QT)
+    installDlls( $$destdirs, DEP_DLLS_QT_PLATFORMS)
+}
+defineTest(installModuleDlls) {
+    unset(destdirs)
+    destdirs = $$1
+    installDlls( $$destdirs, DEP_DLLS_MODULE)
+}
+defineTest(installExternalDlls) {
+    unset(destdirs)
+    destdirs = $$1
+    installDlls( $$destdirs, DEP_DLLS_EXTERNAL)
+}
+defineTest(installDlls) {
+    unset(destdirs)
+    destdirs = $$1
+    unset(target)
+    target = $$2
+
+    unset(toBeCopied)
+    for (destdir, destdirs) {
+        toBeCopied.destdirs += $${destdir}/$$eval($${target}.destdir)
+    }
+    toBeCopied.files = $$eval($${target}.files)
+    copyFiles(toBeCopied)
+}
+
+#----------------------------------------------------------------
+# inc.pri helper
+defineTest(includeSharedLib) {
+    unset(myTARGET)
+    myTARGET = $$1
+    myFILES  = $${PROJECT_BINARY_DIR}/$${myTARGET}.dll
+
+    LIBS           += -L$${PROJECT_LIBRARY_DIR}/ -l$${myTARGET}
+    INCLUDEPATH    += $${PROJECT_ROOT}/$${myTARGET}/src
+    PRE_TARGETDEPS += $${PROJECT_LIBRARY_DIR}/$${LIB_PREFIX}$${myTARGET}.$${LIB_EXT}
+    export(LIBS)
+    export(INCLUDEPATH)
+    export(PRE_TARGETDEPS)
+
+    # register dlls to module/external
+    DEP_DLLS_MODULE.files += $${myFILES}
+    #DEP_DLLS_EXTERNAL.files += $${myFILES}
+    export(DEP_DLLS_MODULE.files)
+
+    # load self dependencies
+    include($${PROJECT_ROOT}/$${myTARGET}/$${myTARGET}_dep.pri)
+
+    # export <MyTARGET>_FILES
+    MyTARGET = $$upper($${myTARGET})
+    eval($${MyTARGET}_FILES = $${myFILES})
+    export($${MyTARGET}_FILES)
+}
+#----------------------------------------------------------------
+defineTest(includeStaticLib) {
+    unset(myTARGET)
+    myTARGET = $$1
+
+    LIBS           += -L$${PROJECT_LIBRARY_DIR}/ -l$${myTARGET}
+    INCLUDEPATH    += $${PROJECT_ROOT}/$${myTARGET}/src
+    PRE_TARGETDEPS += $${PROJECT_LIBRARY_DIR}/$${LIB_PREFIX}$${myTARGET}.$${LIB_EXT}
+    export(LIBS)
+    export(INCLUDEPATH)
+    export(PRE_TARGETDEPS)
+
+    # load self dependencies
+    include($${PROJECT_ROOT}/$${myTARGET}/$${myTARGET}_dep.pri)
+}
+#----------------------------------------------------------------
+defineTest(includeFinalModule) {
+    unset(myTARGET)
+    unset(myEXT)
+    myTARGET = $$1
+    myEXT    = $$2
+    myFILES  = $${PROJECT_BINARY_DIR}/$${myTARGET}.$${myEXT}
+
+    #LIBS          += -L$${PROJECT_LIBRARY_DIR}/ -l$${myTARGET}
+    INCLUDEPATH    += $${PROJECT_ROOT}/$${myTARGET}/src
+    PRE_TARGETDEPS += $${PROJECT_BINARY_DIR}/$${myTARGET}.$${myEXT} # spacial case
+    export(INCLUDEPATH)
+    export(PRE_TARGETDEPS)
+
+    # register dlls to module/external
+    DEP_DLLS_MODULE.files += $${myFILES}
+    #DEP_DLLS_EXTERNAL.files += $${}
+    export(DEP_DLLS_MODULE.files)
+
+    # load self dependencies
+    include($${PROJECT_ROOT}/$${myTARGET}/$${myTARGET}_dep.pri)
+
+    # export <MyTARGET>_FILES
+    MyTARGET = $$upper($${myTARGET})
+    eval($${MyTARGET}_FILES = $${myFILES})
+    export($${MyTARGET}_FILES)
+}
+
+
+
+#----------------------------------------------------------------
+# dep.pri helper
+defineTest(includeDepModule) {
+    unset(myTARGET)
+    myTARGET = $$1
+    include($${PROJECT_ROOT}/$${myTARGET}/$${myTARGET}_inc.pri)
+}
+
+
+
+#----------------------------------------------------------------
+# process *.in
+defineTest(processConfigureIn) {
+    unset(myTARGET)
+    myTARGET = $$1
+
+    CONTENTS = $$cat( $${myTARGET}.in, lines )
+    CONTENTS = $$replace( CONTENTS, \\$APP_VERSION\\$, $${APP_VERSION} )
+    CONTENTS = $$replace( CONTENTS, \\$APP_RELEASE_DATE\\$, $${APP_RELEASE_DATE} )
+    write_file( $${myTARGET}, CONTENTS )
+}
+
+

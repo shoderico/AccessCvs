@@ -1,0 +1,15 @@
+#ifndef DESANITIZETEMPDIRCOMMAND_H
+#define DESANITIZETEMPDIRCOMMAND_H
+
+#include "commandbase.h"
+
+class DesanitizeTempDirCommand : public CommandBase
+{
+    Q_OBJECT
+public:
+    DesanitizeTempDirCommand(ProjectContainer *project, QAxObject *application, QObject *parent = 0);
+
+    virtual void execute(ObjectItemMap *allTargets);
+};
+
+#endif // DESANITIZETEMPDIRCOMMAND_H
