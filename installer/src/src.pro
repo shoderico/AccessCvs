@@ -19,8 +19,8 @@ message($${BUILD_TIMESTAMP})
 #----------------------------------------------------------------------------------------------
 # installer name
 INSTALLER = AccessCvsInstaller_$${APP_VERSION}_$${APP_ARCH_TYPE}_$${BUILD_IDENTIFIER}_$${BUILD_TYPE}_$${BUILD_TIMESTAMP}
-INSTALLER_ONLINE = $${INSTALLER}_online
-INSTALLER_OFFLINE = $${INSTALLER}_offline
+#INSTALLER_ONLINE = $${INSTALLER}_online
+INSTALLER_OFFLINE = $${INSTALLER}
 
 
 
@@ -79,13 +79,13 @@ QMAKE_EXTRA_TARGETS += copy_files
 INPUT = $${SRC_CONFIG_FILE} \
         $${SRC_PACKAGES_DIR}
 
-installer_online.input     = INPUT
-installer_online.output    = $${INSTALLER_ONLINE}
-installer_online.commands += $${IFW_BIN_DIR}/binarycreator --online-only -c $${SRC_CONFIG_FILE} -p $${DST_PACKAGE_DIR} $${BUILD_TYPE}/${QMAKE_FILE_OUT}
-installer_online.CONFIG   += combine no_link target_predeps
-installer_online.depends  += copy_files copy_configs
-
-QMAKE_EXTRA_COMPILERS += installer_online
+#installer_online.input     = INPUT
+#installer_online.output    = $${INSTALLER_ONLINE}
+#installer_online.commands += $${IFW_BIN_DIR}/binarycreator --online-only -c $${SRC_CONFIG_FILE} -p $${DST_PACKAGE_DIR} $${BUILD_TYPE}/${QMAKE_FILE_OUT}
+#installer_online.CONFIG   += combine no_link target_predeps
+#installer_online.depends  += copy_files copy_configs
+#
+##QMAKE_EXTRA_COMPILERS += installer_online
 
 installer_offline.input     = INPUT
 installer_offline.output    = $${INSTALLER_OFFLINE}
@@ -121,7 +121,7 @@ QMAKE_EXTRA_COMPILERS += repository
 #--remove               : Force removal of existing target directory before generating it again.
 
 
-QMAKE_POST_LINK += $(COPY) \"$$system_path($${OUT_PWD}/$${BUILD_TYPE}/$${INSTALLER_ONLINE}.exe)\" \"$$system_path($${BUILD_DIR})\"$$escape_expand(\n\t)
+#QMAKE_POST_LINK += $(COPY) \"$$system_path($${OUT_PWD}/$${BUILD_TYPE}/$${INSTALLER_ONLINE}.exe)\" \"$$system_path($${BUILD_DIR})\"$$escape_expand(\n\t)
 QMAKE_POST_LINK += $(COPY) \"$$system_path($${OUT_PWD}/$${BUILD_TYPE}/$${INSTALLER_OFFLINE}.exe)\" \"$$system_path($${BUILD_DIR})\"$$escape_expand(\n\t)
 
 
