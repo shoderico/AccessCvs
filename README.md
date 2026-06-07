@@ -27,7 +27,7 @@ This project is licensed under the GNU Lesser General Public License v3 (LGPL v3
 The installer is generated at:
 
 ```
-<BUILD_ROOT>\installer\src\release\AccessCvsInstaller_<Version>_<x86/x64>_<QtVersion>_<Compiler>_release_<Timestamp>_offline.exe
+<BUILD_ROOT>\installer\src\release\AccessCvs_<Version>_<x86|x64>_<QtVersion>_<Compiler>_release_<Timestamp>.exe
 ```
 
 ## Project Structure

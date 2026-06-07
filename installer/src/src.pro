@@ -18,7 +18,7 @@ message($${BUILD_TIMESTAMP})
 
 #----------------------------------------------------------------------------------------------
 # installer name
-INSTALLER = AccessCvsInstaller_$${APP_VERSION}_$${APP_ARCH_TYPE}_$${BUILD_IDENTIFIER}_$${BUILD_TYPE}_$${BUILD_TIMESTAMP}
+INSTALLER = AccessCvs_$${APP_VERSION}_$${APP_ARCH_TYPE}_$${BUILD_IDENTIFIER}_$${BUILD_TYPE}_$${BUILD_TIMESTAMP}
 #INSTALLER_ONLINE = $${INSTALLER}_online
 INSTALLER_OFFLINE = $${INSTALLER}
 
