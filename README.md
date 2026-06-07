@@ -31,9 +31,15 @@ This project is licensed under the GNU Lesser General Public License v3 (LGPL v3
 ## Setup
 
 1. Clone `qt-solutions` into the sibling folder (same directory level as the `AccessCvs` folder).
+   ```
+   git clone https://github.com/shoderico/AccessCvs.git
+   git clone https://github.com/qtproject/qt-solutions.git
+   ```
+
 2. Run the following command from the `qtwinmigrate` directory inside `qt-solutions`:
    ```
-   qtwinmigrate/configure.bat -library
+   cd qt-solutions/qtwinmigrate
+   configure.bat -library
    ```
 
 ## Building the Installer
