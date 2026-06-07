@@ -8,6 +8,7 @@ SUBDIRS += \
     accesscmd \
     accessmodel \
     external \
+    qtwinmigrate \
     resource \
     cvsmodel \
     accesscvsmodel \
@@ -24,6 +25,9 @@ SUBDIRS += \
 #    excelcvsmodel \
 #    excelcvsaddincontroller \
 #    excelcvs
+
+# qt-solutions/qtwinmigrate (external project added to SUBDIRS)
+qtwinmigrate.file   = ../qt-solutions/qtwinmigrate/buildlib/buildlib.pro
 
 # office lib layer
 accesslib.depends += officelib
@@ -42,6 +46,9 @@ helpaddincontroller.depends += addinutil comutil
 
 accesscvsaddincontroller.depends += accesscvsmodel cvsaddincontroller
 #excelcvsaddincontroller.depends += excelcvsmodel cvsaddincontroller
+
+# external layer
+external.depends += qtwinmigrate
 
 # addin layer
 addin.depends += comutil addinutil external
