@@ -57,7 +57,7 @@ accesscvsaddincontroller.depends += accesscvsmodel cvsaddincontroller
 external.depends += qtwinmigrate
 
 # addin layer
-addin.depends += comutil addinutil external
+addin.depends += comutil addinutil external qtwinmigrate
 accesscvs.depends += resource addin \
                      helpaddincontroller \
                      accesscvsaddincontroller \
