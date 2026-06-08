@@ -30,13 +30,19 @@ This project is licensed under the GNU Lesser General Public License v3 (LGPL v3
 
 ## Setup
 
-1. Clone `qt-solutions` into the sibling folder (same directory level as the `AccessCvs` folder).
+1. Install Qt Installer Framework 2.0.3 to `C:/Qt/QtIFW2.0.3`.
+
+   Download from https://download.qt.io/official_releases/qt-installer-framework/
+   (e.g. `QtInstallerFramework-win-x86.exe`) and install it to `C:/Qt/QtIFW2.0.3`
+   so that `C:/Qt/QtIFW2.0.3/bin/binarycreator.exe` exists.
+
+2. Clone `qt-solutions` into the sibling folder (same directory level as the `AccessCvs` folder).
    ```
    git clone https://github.com/shoderico/AccessCvs.git
    git clone https://github.com/qtproject/qt-solutions.git
    ```
 
-2. Run the following command from the `qtwinmigrate` directory inside `qt-solutions`:
+3. Run the following command from the `qtwinmigrate` directory inside `qt-solutions`:
    ```
    cd qt-solutions/qtwinmigrate
    configure.bat -library
