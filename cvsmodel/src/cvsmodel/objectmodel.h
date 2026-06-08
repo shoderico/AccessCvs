@@ -44,6 +44,8 @@ public:
 
     ProjectContainer *projectContainer() const;
 
+    QString objectTypeDisplayName(Model::ObjectType objectType) const;
+
 
     // TODO: split Model and Manager
 
@@ -98,6 +100,8 @@ signals:
     void progressStart(int type, int count);
     void progressEnd(int type);
     void progressChange(int type, int position);
+
+    void currentObjectTypeChanged(int objectType);
 
     void selectionChanged(int objectTypes);
 

@@ -27,6 +27,8 @@ signals:
     void progressEnd(int type);
     void progressChange(int type, int position);
 
+    void currentObjectTypeChanged(int objectType);
+
     void dataChanged(int rowStart, int rowEnd, int columnStart, int columnEnd);
 
 public slots:

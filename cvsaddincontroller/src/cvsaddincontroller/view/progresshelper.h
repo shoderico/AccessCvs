@@ -20,6 +20,7 @@ public:
 
     void initialize(QLabel *elapsedTimeLabel
             , QLabel *processTypeNameLabel
+            , QLabel *objectTypeNameLabel
             , QLabel *progressCountLabel
             , QProgressBar *progressBar
             , ObjectModel *model);
@@ -38,6 +39,8 @@ public slots:
 
     void setProcessTypeName(int type);
 
+    void onCurrentObjectTypeChanged(int objectType);
+
 private:
     QTime m_progressTime;
     QTimer m_progressTimer;
@@ -45,8 +48,11 @@ private:
 
     QLabel *m_elapsedTimeLabel;
     QLabel *m_processTypeNameLabel;
+    QLabel *m_objectTypeNameLabel;
     QLabel *m_progressCountLabel;
     QProgressBar *m_progressBar;
+
+    ObjectModel *m_model;
 };
 
 #endif // PROGRESSHELPER_H

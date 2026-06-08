@@ -20,6 +20,7 @@ CvsProgressDialog::CvsProgressDialog(ObjectModel *model, QWidget *parent) :
     m_progressHelper->initialize(
                   ui->elapsedTimeLabel
                 , ui->processTypeNameLabel
+                , ui->objectTypeNameLabel
                 , ui->progressCountLabel
                 , ui->progressBar
                 , m_model

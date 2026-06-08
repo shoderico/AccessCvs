@@ -31,6 +31,8 @@ void UpdateItemsCreateUpdateDateFromProjectCommand::execute(ObjectItemMap *allTa
 
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
+        emit currentObjectTypeChanged(objectType);
+
         processor = m_project->operator []( objectType );
         if (!processor->prepareItemCollection())
             continue;

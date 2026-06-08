@@ -47,6 +47,8 @@ void UpdateItemsDifferenceCommand::execute(ObjectItemMap *allTargets)
     ProgressNotifier mainProgress(Model::UpdateItemsDifferenceProcess, this);
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
+        emit currentObjectTypeChanged(objectType);
+
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
 
         //----------------------------------------------------------------------------------------

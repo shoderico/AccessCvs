@@ -26,6 +26,8 @@ void ImportFromTempDirToProjectCommand::execute(ObjectItemMap *allTargets)
 
     foreach (const Model::ObjectType &objectType, m_project->objectTypes())
     {
+        emit currentObjectTypeChanged(objectType);
+
         processor = m_project->operator []( objectType );
 
         if (!processor->prepareItemCollection())

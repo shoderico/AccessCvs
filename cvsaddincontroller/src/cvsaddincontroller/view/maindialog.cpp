@@ -90,6 +90,7 @@ MainDialog::MainDialog(ObjectModel *model, ObjectProxyModel *proxyModel, QWidget
     m_progressHelper->initialize(
                   ui->elapsedTimeLabel
                 , ui->processTypeNameLabel
+                , ui->objectTypeNameLabel
                 , ui->progressCountLabel
                 , ui->progressBar
                 , m_model

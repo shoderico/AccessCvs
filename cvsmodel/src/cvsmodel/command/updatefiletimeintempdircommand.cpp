@@ -59,6 +59,8 @@ void UpdateFileTimeInTempDirCommand::execute(ObjectItemMap *allTargets)
 
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
+        emit currentObjectTypeChanged(objectType);
+
         processor = m_project->operator []( objectType );
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
         //----------------------------------------------------------------------------------------

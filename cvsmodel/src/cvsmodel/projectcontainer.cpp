@@ -110,6 +110,22 @@ ObjectProcessor *ProjectContainer::operator[](Model::ObjectType objectType)
     return NULL;
 }
 
+const ObjectProcessor *ProjectContainer::operator[](Model::ObjectType objectType) const
+{
+    foreach( const ObjectProcessor *processor, m_objectProcessorList )
+    {
+        if ( processor->objectType() == objectType)
+            return processor;
+    }
+    return NULL;
+}
+
+QString ProjectContainer::objectTypeDisplayName(Model::ObjectType objectType) const
+{
+    const ObjectProcessor *p = (*this)[objectType];
+    return p ? p->uiText() : QString();
+}
+
 QAxObject *ProjectContainer::application() const
 {
     return m_application;

@@ -31,6 +31,9 @@ public:
     QString tempPath() const;
 
     ObjectProcessor* operator[](Model::ObjectType objectType);
+    const ObjectProcessor* operator[](Model::ObjectType objectType) const;
+
+    QString objectTypeDisplayName(Model::ObjectType objectType) const;
 
     QAxObject *application() const;
     template <typename T> T *application() const

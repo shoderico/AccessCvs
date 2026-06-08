@@ -40,6 +40,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QLabel" name="objectTypeNameLabel">
+         <property name="text">
+          <string>Type</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="processTypeNameLabel">
          <property name="text">
           <string>---</string>

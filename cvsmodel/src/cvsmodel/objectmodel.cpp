@@ -242,6 +242,11 @@ ProjectContainer *ObjectModel::projectContainer() const
     return m_projectContainer;
 }
 
+QString ObjectModel::objectTypeDisplayName(Model::ObjectType objectType) const
+{
+    return m_projectContainer ? m_projectContainer->objectTypeDisplayName(objectType) : QString();
+}
+
 void ObjectModel::setApplication(QAxObject *application)
 {
     m_application = application;
@@ -886,6 +891,8 @@ void ObjectModel::deleteItems(ObjectItemMap *allTargets)
 
     foreach (const Model::ObjectType &objectType, allTargets->keys() )
     {
+        emit currentObjectTypeChanged(objectType);
+
         QList<ObjectItem*> items = allTargets->value( objectType ).values();
         ProgressNotifier subProgress(mainProgress.type(), items.count(), this);
         for (QList<ObjectItem*>::iterator it = items.begin() ; it != items.end() ; ++it )
