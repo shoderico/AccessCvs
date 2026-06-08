@@ -75,7 +75,7 @@ QString CvsAddinController::ribbonXml()
             "   /> "
             "<button id=\"StandardSettingButton\" "
             "   size=\"normal\" "
-            "   label=\"Setting\" "
+            "   label=\"Addin Setting\" "
             "   onAction=\"ButtonClicked\" "
             "   getImage=\"GetButtonImage\" "
             "   /> "
