@@ -59,6 +59,13 @@ PROJECT_BINARY_DIR = $${BUILD_ROOT}/$${BUILD_TYPE}/bin
 PROJECT_BINARY_DIR_WNT = $${PROJECT_BINARY_DIR}
 PROJECT_BINARY_DIR_WNT ~= s,/,\\,g
 
+# Source tree bin directory (for final artifacts like installers, easy to find/copy without digging into build tree)
+SRC_BIN_DIR     = $${PROJECT_ROOT}/bin
+SRC_BIN_DIR_WNT = $${SRC_BIN_DIR}
+SRC_BIN_DIR_WNT ~= s,/,\\,g
+#message(SRC_BIN_DIR: $${SRC_BIN_DIR})
+#message(SRC_BIN_DIR_WNT: $${SRC_BIN_DIR_WNT})
+
 OUT_PWD_WNT = $${OUT_PWD}
 OUT_PWD_WNT ~= s,/,\\,g
 

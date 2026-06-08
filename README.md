@@ -56,6 +56,12 @@ The installer is generated at:
 <BUILD_ROOT>\installer\src\release\AccessCvs_<Version>_<x86|x64>_<QtVersion>_<Compiler>_release_<Timestamp>.exe
 ```
 
+Additionally, the finished installer is automatically copied to the source tree's `bin` directory (for easy access without digging into the build tree):
+
+```
+<SOURCE_ROOT>\bin\AccessCvs_<Version>_<x86|x64>_<QtVersion>_<Compiler>_release_<Timestamp>.exe
+```
+
 ## Pre-build binaries
 
 Download from the Releases section.

@@ -93,7 +93,9 @@ INPUT = $${SRC_CONFIG_FILE} \
 
 installer_offline.input     = INPUT
 installer_offline.output    = $${INSTALLER_OFFLINE}
-installer_offline.commands += $${IFW_BIN_DIR}/binarycreator --offline-only -c $${SRC_CONFIG_FILE} -p $${DST_PACKAGE_DIR} $${BUILD_TYPE}/${QMAKE_FILE_OUT}
+installer_offline.commands += $${IFW_BIN_DIR}/binarycreator --offline-only -c $${SRC_CONFIG_FILE} -p $${DST_PACKAGE_DIR} $${BUILD_TYPE}/${QMAKE_FILE_OUT} $$escape_expand(\n\t)
+installer_offline.commands += $(CHK_DIR_EXISTS) $$system_path($${SRC_BIN_DIR}) $(MKDIR) $$system_path($${SRC_BIN_DIR}) $$escape_expand(\n\t)
+installer_offline.commands += $(COPY) \"$$system_path($${OUT_PWD}/$${BUILD_TYPE}/$${INSTALLER_OFFLINE}.exe)\" \"$$system_path($${SRC_BIN_DIR}/$${INSTALLER_OFFLINE}.exe)\"
 installer_offline.CONFIG   += combine no_link target_predeps
 installer_offline.depends  += copy_files copy_configs
 
@@ -126,7 +128,7 @@ QMAKE_EXTRA_COMPILERS += repository
 
 
 #QMAKE_POST_LINK += $(COPY) \"$$system_path($${OUT_PWD}/$${BUILD_TYPE}/$${INSTALLER_ONLINE}.exe)\" \"$$system_path($${BUILD_DIR})\"$$escape_expand(\n\t)
-QMAKE_POST_LINK += $(COPY) \"$$system_path($${OUT_PWD}/$${BUILD_TYPE}/$${INSTALLER_OFFLINE}.exe)\" \"$$system_path($${BUILD_DIR})\"$$escape_expand(\n\t)
+#QMAKE_POST_LINK += $(COPY) \"$$system_path($${OUT_PWD}/$${BUILD_TYPE}/$${INSTALLER_OFFLINE}.exe)\" \"$$system_path($${BUILD_DIR})\"$$escape_expand(\n\t)
 
 
 # other files
