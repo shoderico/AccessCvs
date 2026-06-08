@@ -28,6 +28,7 @@ SUBDIRS += \
 
 # qt-solutions/qtwinmigrate (external project added to SUBDIRS)
 qtwinmigrate.file   = ../qt-solutions/qtwinmigrate/buildlib/buildlib.pro
+qtwinmigrate.builddir = $$shadowed($$PWD)/qtwinmigrate
 
 # Safely include only definitions (no side effects: LIBS/DEFINES/export etc. are not present)
 include(external/qtsolutions_paths.pri)
