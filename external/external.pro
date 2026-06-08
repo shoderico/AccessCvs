@@ -1,6 +1,7 @@
 TEMPLATE = aux
 
 OTHER_FILES += \
+    qtsolutions_paths.pri \
     qtsolutions_inc.pri \
     qtsolutions_dep.pri
 #    openssl_inc.pri \

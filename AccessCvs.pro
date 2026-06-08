@@ -29,6 +29,17 @@ SUBDIRS += \
 # qt-solutions/qtwinmigrate (external project added to SUBDIRS)
 qtwinmigrate.file   = ../qt-solutions/qtwinmigrate/buildlib/buildlib.pro
 
+# Safely include only definitions (no side effects: LIBS/DEFINES/export etc. are not present)
+include(external/qtsolutions_paths.pri)
+
+win32 {
+    QMAKE_CLEAN     += $$QTSOLUTIONS_CLEAN_FILES
+    QMAKE_DISTCLEAN += $$QTSOLUTIONS_CLEAN_FILES
+
+    message(qmake_clean setted using QTSOLUTIONS_CLEAN_FILES from qtsolutions_paths.pri);
+}
+
+
 # Enforce that config.pri exists (checked at qmake time)
 !exists(../qt-solutions/qtwinmigrate/config.pri) {
     error("ERROR: ../qt-solutions/qtwinmigrate/config.pri does not exist. " \

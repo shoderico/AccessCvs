@@ -1,16 +1,8 @@
 # inc.pri : external module
 # QtSolutions
-QTSOLUTIONS_DIR     = $${LIBRARY_ROOT}/qt-solutions/qtwinmigrate
+include(qtsolutions_paths.pri)
 
-# Reference build artifacts directly (no pre-placed lib_msvc_* folders)
-QTSOLUTIONS_LIB_DIR = $${QTSOLUTIONS_DIR}/lib
-QTSOLUTIONS_BIN_DIR = $${QTSOLUTIONS_DIR}/lib
-
-QTSOLUTIONS_INC_DIR = $${QTSOLUTIONS_DIR}/src
-QTSOLUTIONS_LIBNAME = QtSolutions_MFCMigrationFramework-head$${DEP_DLLS_POSTFIX}
-QTSOLUTIONS_FILES   = $${QTSOLUTIONS_BIN_DIR}/$${QTSOLUTIONS_LIBNAME}.dll
-
-#include($${QTSOLUTIONS_DIR}/src/qtwinmigrate.pri)
+# The following contains only side effects for consumers of this module
 LIBS += -L$${QTSOLUTIONS_LIB_DIR}/ -l$${QTSOLUTIONS_LIBNAME}
 INCLUDEPATH += $${QTSOLUTIONS_INC_DIR}
 DEPENDPATH  += $${LIBQGIT_BIN_DIR}
