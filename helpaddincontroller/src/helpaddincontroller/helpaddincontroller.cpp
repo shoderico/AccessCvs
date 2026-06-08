@@ -72,7 +72,7 @@ void HelpAddinController::about()
     QMessageBox msg(m_parentWidget);
     msg.setWindowTitle(tr("About AccessCvs"));
     msg.setText(tr("<h2>AccessCvs " APP_VERSION_STR  "</h2>"
-                   "<p>Copyright &copy; 2026 shodeitz</p>"
+                   "<p>Copyright &copy; 2026 shoderitz</p>"
                    ));
     msg.setStandardButtons(QMessageBox::Ok);
     msg.setIconPixmap( ComUtil::renderSvg(":/images/manual.svg", QSize(48,48)) );
