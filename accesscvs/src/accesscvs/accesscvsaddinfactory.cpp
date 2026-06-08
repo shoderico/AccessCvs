@@ -131,17 +131,17 @@ QAxAggregated *AccessCvsAddInFactory::createAggregate(QObject *parent)
     addInRibbonTab->setRibbonTabId("AccessCvs");
     addInRibbonTab->setRibbonTabLabel("AccessCvs");
     addInRibbonTab->appendController( accessCvsAddinController );
-    addInRibbonTab->appendController( accessAddinController );
+    // addInRibbonTab->appendController( accessAddinController );
     addInRibbonTab->appendController( helpAddinController );
     aggregated->appendRibbonTab(addInRibbonTab);
     m_addInRibbonTab = addInRibbonTab;
 
-    // test code for 1 controller owned by multiple tabs.
-    AddInRibbonTab *addInRibbonTab2 = new AddInRibbonTab(aggregated);
-    addInRibbonTab2->setRibbonTabId("AccessCvs2");
-    addInRibbonTab2->setRibbonTabLabel("AccessCvs");
-    addInRibbonTab2->appendController( helpAddinController );
-    aggregated->appendRibbonTab(addInRibbonTab2);
+    // // test code for 1 controller owned by multiple tabs.
+    // AddInRibbonTab *addInRibbonTab2 = new AddInRibbonTab(aggregated);
+    // addInRibbonTab2->setRibbonTabId("AccessCvs2");
+    // addInRibbonTab2->setRibbonTabLabel("AccessCvs");
+    // addInRibbonTab2->appendController( helpAddinController );
+    // aggregated->appendRibbonTab(addInRibbonTab2);
 
 
     return aggregated;
