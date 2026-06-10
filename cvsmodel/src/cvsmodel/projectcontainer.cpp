@@ -37,6 +37,15 @@ void ProjectContainer::initialize(QAxObject *application)
 
     if (isProjectOpened())
     {
+        // m_currentProjectName: 
+        //   - Access -> CurrentProject.Name. ex) Database1.accdb
+        //   - Excel  -> ActiveWorkbook.Name. ex) Book1.xlsx
+
+        // m_currentProjectPath:
+        //   - Access -> CurrentProject.Path. ex) C:\Users\user\Documents
+        //   - Excel  -> ActiveWorkbook.Path. ex) C:\Users\user\Documents
+
+
         QString projectConfigFileName = m_currentProjectName + ".config";
         QString projectConfigFilePath = m_currentProjectPath + "\\" + projectConfigFileName;
         qDebug() << projectConfigFilePath;
@@ -45,26 +54,32 @@ void ProjectContainer::initialize(QAxObject *application)
         {
             qDebug() << " projectConfigFilePath exists ";
             // read projectConfig file
+
             //-----------------------------------
+            // ProjectPath     : relative to currentProject->Path(). default currentProject->Path().
             // SourcePathName  : default 'source'
             // TempPathName    : default '.accesscvs'
             // SettingFileName : default 'project.settings'
-            // ProjectPath     : relative to currentProject->Path(). default currentProject->Path().
             QSettings *config = new QSettings( projectConfigFilePath, QSettings::IniFormat, this);
             config->setIniCodec( "UTF-8" );
+            m_projectPath      = QDir::cleanPath( QDir( m_currentProjectPath ).filePath( config->value( "ProjectPath", "." ).toString() ) ).replace(QString('/'),QString('\\'));
             m_sourcePathName   = config->value( "SourcePathName",  m_DefaultSourcePathName   ).toString();
             m_tempPathName     = config->value( "TempPathName",    m_DefaultTempPathName     ).toString();
             m_settingFileName  = config->value( "SettingFileName", m_DefaultSettingFileName  ).toString();
-            m_projectPath      = QDir::cleanPath( QDir( m_currentProjectPath ).filePath( config->value( "ProjectPath", "." ).toString() ) ).replace(QString('/'),QString('\\'));
         }
         else
         {
             qDebug() << " projectConfigFilePath NOT exists ";
+            m_projectPath      = m_currentProjectPath;
             m_sourcePathName   = m_DefaultSourcePathName;
             m_tempPathName     = m_DefaultTempPathName;
             m_settingFileName  = m_DefaultSettingFileName;
-            m_projectPath      = m_currentProjectPath;
         }
+
+
+
+
+        
 
         qDebug() << "m_projectPath     : " << m_projectPath;
         qDebug() << "m_sourcePathName  : " << m_sourcePathName;
@@ -92,12 +107,12 @@ QString ProjectContainer::projectPath() const
 
 QString ProjectContainer::sourcePath() const
 {
-    return m_projectPath + "\\" + m_sourcePathName;
+    return QDir::cleanPath( QDir(m_projectPath).filePath(m_sourcePathName) ).replace(QString('/'), QString('\\'));
 }
 
 QString ProjectContainer::tempPath() const
 {
-    return m_projectPath + "\\" + m_tempPathName;
+    return QDir::cleanPath( QDir(m_projectPath).filePath(m_tempPathName) ).replace(QString('/'), QString('\\'));
 }
 
 ObjectProcessor *ProjectContainer::operator[](Model::ObjectType objectType)
