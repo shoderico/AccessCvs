@@ -25,6 +25,26 @@ public:
     virtual void determineCodecForProject();
 
 protected:
+    // Export table structure (.xml) via ExportXML
+    bool exportTableStructure(const QString &objectName, const QString &schemaTarget);
+
+    // Export table data (.data) via ExportXML
+    bool exportTableData(const QString &objectName, const QString &dataTarget);
+
+    // Import table data (.data) via ImportXML (append mode)
+    bool importTableData(const QString &objectName, const QString &dataTarget);
+
+    // Sanitize table structure (*.xmltmp → *.xml)
+    bool sanitizeTableStructure(const QString &objectName);
+
+    // Sanitize table data (*.dattmp → *.dat / *.data)
+    bool sanitizeTableData(const QString &objectName);
+
+    // Load TableData targets from Setting (common for TableDef / OdbcTable)
+    void loadTableDataTargets(Setting *setting);
+
+    QStringList m_tableDataTargets;   // common for TableDef / OdbcTable
+
     ComPtr<DAO::TableDefs> m_tableDefs;
 };
 

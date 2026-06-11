@@ -1,12 +1,17 @@
 #include "tableobjectprocessor.h"
 
 #include <QDebug>
+#include <QFile>
 #include <QTextCodec>
 
 #include "accesslib/accesslib.h"
 
+#include "cvsmodel/sanitizer/tabledefsanitizer.h"
+#include "cvsmodel/sanitizer/tabledatasanitizer.h"
+
 #include "util/fileutil.h"
 #include "util/codecinfo.h"
+#include "util/setting.h"
 
 #include "cvsmodel/objectitem.h"
 #include "accesscvsmodel/accessprojectcontainer.h"
@@ -87,6 +92,152 @@ void TableObjectProcessor::determineCodecForProject()
         m_codecForProject->setCodec( QTextCodec::codecForName("UTF-8") );
         m_codecForProject->setBom( false );
         m_codecForProject->setLineEnd("\r\n");
+    }
+}
+
+//-----------------------------------------------------------------------------
+// Common Export/Import helpers for table structure and data
+// Used by TableDefProcessor and OdbcTableProcessor
+//-----------------------------------------------------------------------------
+
+bool TableObjectProcessor::exportTableStructure(const QString &objectName, const QString &schemaTarget)
+{
+    m_projectContainer->application<Access::Application>()
+        ->ExportXML(
+                Access::acExportTable
+                ,objectName
+                ,QString()                                   // DataTarget
+                ,schemaTarget                                // SchemaTarget
+                ,QString()                                   // PresentationTarget
+                ,QString()                                   // ImageTarget
+                ,Access::acUTF8                              // Encoding
+                ,Access::acExportAllTableAndFieldProperties  // OtherFlags
+                ,QString()                                   // WhereCondition
+                ,QVariant()                                  // AdditionalData
+                );
+    return true;
+}
+
+bool TableObjectProcessor::exportTableData(const QString &objectName, const QString &dataTarget)
+{
+    m_projectContainer->application<Access::Application>()
+        ->ExportXML(
+                Access::acExportTable
+                ,objectName
+                ,dataTarget          // DataTarget
+                ,QString()           // SchemaTarget
+                ,QString()           // PresentationTarget
+                ,QString()           // ImageTarget
+                ,Access::acUTF8      // Encoding
+                );
+    return true;
+}
+
+bool TableObjectProcessor::importTableData(const QString &objectName, const QString &dataTarget)
+{
+    if (QFile(dataTarget).exists())
+    {
+        m_projectContainer->application<Access::Application>()
+            ->ImportXML(dataTarget, Access::acAppendData);
+        return true;
+    }
+    return false;
+}
+
+//-----------------------------------------------------------------------------
+// Common sanitize helpers for table structure and data
+// Used by TableDefProcessor and OdbcTableProcessor
+//-----------------------------------------------------------------------------
+
+bool TableObjectProcessor::sanitizeTableStructure(const QString &objectName)
+{
+    QFile fileSrc( filePath(TempDir, TempFile,   objectName) );
+    QFile fileDst( filePath(TempDir, DesignFile, objectName) );
+
+    FileUtil::deleteFile( fileDst.fileName() );
+
+    if ( !fileSrc.open( QIODevice::ReadOnly) )
+        return false;
+    if ( !fileDst.open(QIODevice::WriteOnly) )
+    {
+        fileSrc.close();
+        return false;
+    }
+
+    QTextStream streamSrc( &fileSrc );
+    streamSrc.setCodec(m_codecForProject->codec());
+
+    QTextStream streamDst( &fileDst );
+    streamDst.setCodec(m_codecForCvs->codec());
+    streamDst.setGenerateByteOrderMark(m_codecForCvs->bom());
+
+    // sanitize table-def
+    TableDefSanitizer sanitizer(this);
+    sanitizer.sanitize( streamSrc, streamDst, m_codecForCvs );
+
+    fileSrc.close();
+    fileDst.close();
+
+    return true;
+}
+
+bool TableObjectProcessor::sanitizeTableData(const QString &objectName)
+{
+    QFile fileSrc( filePath(TempDir, DataTempFile, objectName) );
+    QFile fileDst( filePath(TempDir, DataFile,     objectName) );
+
+    FileUtil::deleteFile( fileDst.fileName() );
+
+    if ( !fileSrc.open( QIODevice::ReadOnly) )
+        return false;
+    if ( !fileDst.open(QIODevice::WriteOnly) )
+    {
+        fileSrc.close();
+        return false;
+    }
+
+    QTextStream streamSrc( &fileSrc );
+    streamSrc.setCodec(m_codecForProject->codec());
+
+    QTextStream streamDst( &fileDst );
+    streamDst.setCodec(m_codecForCvs->codec());
+    streamDst.setGenerateByteOrderMark(m_codecForCvs->bom());
+
+    // sanitize table-data
+    TableDataSanitizer sanitizer(this);
+    sanitizer.sanitize( streamSrc, streamDst, m_codecForCvs );
+
+    fileSrc.close();
+    fileDst.close();
+
+    return true;
+}
+
+//-----------------------------------------------------------------------------
+// Common TableData target loader
+//-----------------------------------------------------------------------------
+
+void TableObjectProcessor::loadTableDataTargets(Setting *setting)
+{
+    if (!setting) return;
+
+    foreach (const SettingNode *node, setting->nodes())
+    {
+        if (node->isElement())
+        {
+            SettingElement *element = node->toElement();
+            if (element && element->name() == "TableData")
+            {
+                for ( int i = 0 ; i < element->count() ; ++i )
+                {
+                    SettingKeyValue *keyValue = element->at(i)->toKeyValue();
+                    if (keyValue && keyValue->key() == "TableName" && !keyValue->value().toString().isEmpty())
+                    {
+                        m_tableDataTargets.append( keyValue->value().toString() );
+                    }
+                }
+            }
+        }
     }
 }
 

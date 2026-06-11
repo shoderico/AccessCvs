@@ -37,7 +37,9 @@ public:
     virtual void updateSetting(QList<ObjectItem*> *items);
 
 protected:
-    QStringList m_tableDataTargets;
+    // Import table structure (.xml) via ImportXML (structure only)
+    bool importTableStructure(const QString &objectName, const QString &schemaSource);
+
     TableDefSanitizer *m_tableDefSanitizer;
     TableDataSanitizer *m_tableDataSanitizer;
 };

@@ -72,21 +72,24 @@ bool ObjectProcessor::afterImportFromTempDirToProject(QAxObject *object, const Q
 
 bool ObjectProcessor::copyFromTempDirToSourceDir(const QString &objectName)
 {
+    // qDebug() << "copyFromTempDirToSourceDir" << objectName;
     deleteAllFileFromSourceDir(objectName);
-    copyFile(TempDir, SourceDir, DesignFile, objectName);
-    copyFile(TempDir, SourceDir, ModuleFile, objectName);
-    copyFile(TempDir, SourceDir, DataFile,   objectName);
+    copyFile(TempDir, SourceDir, DesignFile,     objectName);
+    copyFile(TempDir, SourceDir, ModuleFile,     objectName);
+    copyFile(TempDir, SourceDir, DataFile,       objectName);
     copyFile(TempDir, SourceDir, ReportPropFile, objectName);
+    copyFile(TempDir, SourceDir, OdbcFile,       objectName);
     return true;
 }
 
 bool ObjectProcessor::copyFromSourceDirToTempDir(const QString &objectName)
 {
     deleteAllFileFromTempDir(objectName);
-    copyFile(SourceDir, TempDir, DesignFile, objectName);
-    copyFile(SourceDir, TempDir, ModuleFile, objectName);
-    copyFile(SourceDir, TempDir, DataFile,   objectName);
+    copyFile(SourceDir, TempDir, DesignFile,     objectName);
+    copyFile(SourceDir, TempDir, ModuleFile,     objectName);
+    copyFile(SourceDir, TempDir, DataFile,       objectName);
     copyFile(SourceDir, TempDir, ReportPropFile, objectName);
+    copyFile(SourceDir, TempDir, OdbcFile,       objectName);
     return true;
 }
 
@@ -129,6 +132,12 @@ bool ObjectProcessor::compareTempDir(const QString &objectName, const ObjectItem
     {
         isSame = FileUtil::compare( filePath(TempDir,   ReportPropFile, objectName),
                                     filePath(SourceDir, ReportPropFile, objectName), false/*isSameIfBothNonExist*/ );
+    }
+    // odbc
+    if (isSame && !m_odbcFileExtension.isEmpty())
+    {
+        isSame = FileUtil::compare( filePath(TempDir,   OdbcFile, objectName),
+                                    filePath(SourceDir, OdbcFile, objectName), false/*isSameIfBothNonExist*/ );
     }
 
     *pisDifferent = !isSame;
@@ -182,6 +191,7 @@ void ObjectProcessor::updateFileTimeInTempDir(const QString &objectName, const Q
 {
     FileUtil::setFileTime( filePath(TempDir, TempFile,     objectName), fileTime, fileTime );
     FileUtil::setFileTime( filePath(TempDir, DataTempFile, objectName), fileTime, fileTime );
+    FileUtil::setFileTime( filePath(TempDir, OdbcTempFile, objectName), fileTime, fileTime );
 }
 
 void ObjectProcessor::determineCodecForProject()
@@ -192,10 +202,11 @@ void ObjectProcessor::determineCodecForProject()
 
 bool ObjectProcessor::deleteCvsFileFromTempDir(const QString &objectName)
 {
-    deleteFile(TempDir, DesignFile, objectName);
-    deleteFile(TempDir, ModuleFile, objectName);
-    deleteFile(TempDir, DataFile,   objectName);
+    deleteFile(TempDir, DesignFile,     objectName);
+    deleteFile(TempDir, ModuleFile,     objectName);
+    deleteFile(TempDir, DataFile,       objectName);
     deleteFile(TempDir, ReportPropFile, objectName);
+    deleteFile(TempDir, OdbcFile,       objectName);
     return true;
 }
 
@@ -203,6 +214,7 @@ bool ObjectProcessor::deleteTempFileFromTempDir(const QString &objectName)
 {
     deleteFile(TempDir, TempFile,     objectName);
     deleteFile(TempDir, DataTempFile, objectName);
+    deleteFile(TempDir, OdbcTempFile, objectName);
     return true;
 }
 
@@ -215,10 +227,11 @@ bool ObjectProcessor::deleteAllFileFromTempDir(const QString &objectName)
 
 bool ObjectProcessor::deleteAllFileFromSourceDir(const QString &objectName)
 {
-    deleteFile(SourceDir, DesignFile, objectName);
-    deleteFile(SourceDir, ModuleFile, objectName);
-    deleteFile(SourceDir, DataFile,   objectName);
+    deleteFile(SourceDir, DesignFile,     objectName);
+    deleteFile(SourceDir, ModuleFile,     objectName);
+    deleteFile(SourceDir, DataFile,       objectName);
     deleteFile(SourceDir, ReportPropFile, objectName);
+    deleteFile(SourceDir, OdbcFile,       objectName);
     return true;
 }
 
@@ -228,6 +241,7 @@ bool ObjectProcessor::deleteAllFileFromSourceDir(const QString &objectName)
 
 bool ObjectProcessor::copyFile(ObjectProcessor::DirectoryType dirTypeSrc, ObjectProcessor::DirectoryType dirTypeDst, ObjectProcessor::FileType fileType, const QString &objectName)
 {
+
     if (!fileExtension(fileType).isEmpty())
     {
         QFile fileSrc(    filePath(dirTypeSrc, fileType, objectName) );
@@ -235,6 +249,7 @@ bool ObjectProcessor::copyFile(ObjectProcessor::DirectoryType dirTypeSrc, Object
         {
             mkpathObjectPath(dirTypeDst);
             fileSrc.copy( filePath(dirTypeDst, fileType, objectName) );
+            // qDebug() << "copyFile " << filePath(dirTypeSrc, fileType, objectName) << "to" << filePath(dirTypeDst, fileType, objectName);
         }
     }
     return true;
@@ -283,6 +298,8 @@ QString ObjectProcessor::fileExtension(ObjectProcessor::FileType fileType) const
         case DataTempFile:  return m_dataTempFileExtension;
         case DataFile:      return m_dataFileExtension;
         case ReportPropFile: return m_reportPropFileExtension;
+        case OdbcTempFile:  return m_odbcTempFileExtension;
+        case OdbcFile:      return m_odbcFileExtension;
     }
     return QString();
 }

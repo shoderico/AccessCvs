@@ -34,7 +34,7 @@ TableDefProcessor::TableDefProcessor(ProjectContainer *parent)
     m_iconPath            = ":/images/table.png";
     m_uiText              = "Tables";
 
-    m_tempFileExtension   = "tmp";
+    m_tempFileExtension   = "xmltmp";
     m_designFileExtension = "xml";
     m_moduleFileExtension = "";
     m_existCheckExtension = m_designFileExtension;
@@ -90,35 +90,13 @@ bool TableDefProcessor::exportFromProjectToTempDir(QAxObject *object, const QStr
     DAO::TableDef *tableDef = dynamic_cast<DAO::TableDef*>(object);
     if (tableDef)
     {
-        // table-def
-        {
-            m_projectContainer->application<Access::Application>()
-                ->ExportXML(
-                        Access::acExportTable
-                        ,objectName
-                        ,QString() // DataTarget
-                        ,filePath(TempDir, TempFile, objectName) // SchemaTarget
-                        ,QString() //PresentationTarget
-                        ,QString() //ImageTarget
-                        ,Access::acUTF8 //Encoding
-                        ,Access::acExportAllTableAndFieldProperties //OtherFlags
-                        ,QString() //WhereCondition
-                        ,QVariant()//AdditionalData
-                        );
-        }
-        // table-data
+        // table structure (.xml)
+        exportTableStructure(objectName, filePath(TempDir, TempFile, objectName));
+
+        // table data (.data) — only for target tables
         if ( m_tableDataTargets.contains( objectName ) )
         {
-            m_projectContainer->application<Access::Application>()
-                ->ExportXML(
-                        Access::acExportTable
-                        ,objectName
-                        ,filePath(TempDir, DataTempFile, objectName) // DataTarget
-                        ,QString() // SchemaTarget
-                        ,QString() // PresentationTarget
-                        ,QString() // ImageTarget
-                        ,Access::acUTF8 // Encoding
-                        );
+            exportTableData(objectName, filePath(TempDir, DataTempFile, objectName));
         }
 
         return true;
@@ -136,23 +114,13 @@ bool TableDefProcessor::importFromTempDirToProject(QAxObject *object, const QStr
     }
 
     {
-        // table-def
-        {
-            // very slow but very accurate.
-            m_projectContainer->application<Access::Application>()
-                ->ImportXML(
-                        filePath(TempDir, TempFile, objectName)
-                        ,Access::acStructureOnly
-                        );
-        }
-        // table-data
+        // table structure (.xml)
+        importTableStructure(objectName, filePath(TempDir, TempFile, objectName));
+
+        // table data (.data) import (only for target tables)
         if ( m_tableDataTargets.contains(objectName) && QFile( filePath(TempDir, DataTempFile, objectName) ).exists() )
         {
-            m_projectContainer->application<Access::Application>()
-                ->ImportXML(
-                        filePath(TempDir, DataTempFile, objectName)
-                        ,Access::acAppendData
-                        );
+            importTableData(objectName, filePath(TempDir, DataTempFile, objectName));
         }
 
         return true;
@@ -162,84 +130,11 @@ bool TableDefProcessor::importFromTempDirToProject(QAxObject *object, const QStr
 
 bool TableDefProcessor::sanitizeTempDir(QAxObject *object, const QString &objectName)
 {
-    Q_UNUSED(object)
+    Q_UNUSED(object);
 
-    // codec
-//    determineCodecForProject();
-
-    // sanitize table-def
-    {
-        QFile fileSrc( filePath(TempDir, TempFile,   objectName) );
-        QFile fileDst( filePath(TempDir, DesignFile, objectName) );
-
-        // delete existing file
-        FileUtil::deleteFile( fileDst.fileName() );
-
-        // open files
-        if ( !fileSrc.open( QIODevice::ReadOnly) )
-        {
-            return false;
-        }
-        if ( !fileDst.open(QIODevice::WriteOnly) )
-        {
-            fileSrc.close();
-            return false;
-        }
-
-        // open streams
-        QTextStream streamSrc( &fileSrc );
-        streamSrc.setCodec(m_codecForProject->codec());
-        // bom resolved automatically
-
-        QTextStream streamDst( &fileDst );
-        streamDst.setCodec(m_codecForCvs->codec());
-        streamDst.setGenerateByteOrderMark(m_codecForCvs->bom());
-
-        // sanitize table-def
-        m_tableDefSanitizer->sanitize( streamSrc, streamDst, m_codecForCvs );
-
-        // close files
-        fileSrc.close();
-        fileDst.close();
-
-    }
-
-    // sanitize table-data
+    sanitizeTableStructure(objectName);
     if ( m_tableDataTargets.contains(objectName) )
-    {
-        QFile fileSrc( filePath(TempDir, DataTempFile, objectName) );
-        QFile fileDst( filePath(TempDir, DataFile,     objectName) );
-
-        // delete existing file
-        FileUtil::deleteFile( fileDst.fileName() );
-
-        // open files
-        if ( !fileSrc.open( QIODevice::ReadOnly) )
-        {
-            return false;
-        }
-        if ( !fileDst.open(QIODevice::WriteOnly) )
-        {
-            fileSrc.close();
-            return false;
-        }
-
-        // open streams
-        QTextStream streamSrc( &fileSrc );
-        streamSrc.setCodec(m_codecForProject->codec());
-        // bom resolved automatically
-
-        QTextStream streamDst( &fileDst );
-        streamDst.setCodec(m_codecForCvs->codec());
-        streamDst.setGenerateByteOrderMark(m_codecForCvs->bom());
-
-        // sanitize table-data
-        m_tableDataSanitizer->sanitize( streamSrc, streamDst, m_codecForCvs );
-
-        // close files
-        fileSrc.close();
-        fileDst.close();
-    }
+        sanitizeTableData(objectName);
 
     return true;
 }
@@ -269,32 +164,13 @@ bool TableDefProcessor::desanitizeTempDir(QAxObject *object, const QString &obje
 
 void TableDefProcessor::loadSetting(Setting *projectSetting)
 {
-    Q_UNUSED(projectSetting)
-
+    Q_UNUSED(projectSetting);
     m_tableDataTargets.clear();
 
-    // Setting
     Setting *setting = createSetting();
     if (setting->load())
     {
-        foreach (const SettingNode *node, setting->nodes())
-        {
-            if (node->isElement())
-            {
-                SettingElement *element = node->toElement();
-                Q_ASSERT(element != NULL);
-                Q_ASSERT(element->name() == "TableData");
-                for ( int i = 0 ; i < element->count() ; ++i )
-                {
-                    SettingKeyValue *keyValue = element->at(i)->toKeyValue();
-                    Q_ASSERT(keyValue != NULL);
-                    Q_ASSERT(keyValue->key() == "TableName");
-                    Q_ASSERT(keyValue->value().isNull() == false);
-                    Q_ASSERT(keyValue->value().toString().isEmpty() == false);
-                    m_tableDataTargets.append( keyValue->value().toString() );
-                }
-            }
-        }
+        loadTableDataTargets(setting);
     }
     delete setting;
 }
@@ -327,4 +203,16 @@ void TableDefProcessor::updateSetting(QList<ObjectItem *> *items)
         if ( (*it)->hasData() )
             m_tableDataTargets.append( (*it)->name() );
     }
+}
+
+//-----------------------------------------------------------------------------
+// Table structure import helper
+//-----------------------------------------------------------------------------
+
+bool TableDefProcessor::importTableStructure(const QString &objectName, const QString &schemaSource)
+{
+    // very slow but very accurate.
+    m_projectContainer->application<Access::Application>()
+        ->ImportXML(schemaSource, Access::acStructureOnly);
+    return true;
 }

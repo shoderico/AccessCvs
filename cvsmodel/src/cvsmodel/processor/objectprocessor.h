@@ -86,6 +86,8 @@ protected:
         DataTempFile,
         DataFile,
         ReportPropFile,
+        OdbcTempFile,
+        OdbcFile,
     };
     bool deleteCvsFileFromTempDir(const QString &objectName);
     bool deleteTempFileFromTempDir(const QString &objectName);
@@ -125,6 +127,10 @@ protected:
     QString m_dataTempFileExtension;
     QString m_dataFileExtension;
     QString m_reportPropFileExtension;
+
+    // ODBC-specific (for OdbcTableProcessor)
+    QString m_odbcTempFileExtension;
+    QString m_odbcFileExtension;
 
     QString m_settingFileName;
 

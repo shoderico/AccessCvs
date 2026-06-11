@@ -3,6 +3,11 @@
 
 #include "tableobjectprocessor.h"
 
+#include "cvsmodel/sanitizer/tabledefsanitizer.h"
+#include "cvsmodel/sanitizer/tabledatasanitizer.h"
+
+class ObjectItem;
+
 class OdbcTableProcessor : public TableObjectProcessor
 {
 public:
@@ -18,9 +23,21 @@ public:
 
     virtual void loadSetting(Setting *projectSetting);
     virtual void saveSetting(Setting *projectSetting);
+    virtual void updateSetting(QList<ObjectItem*> *items);
 
 private:
     bool m_toBeManaged;
+
+    TableDefSanitizer *m_tableDefSanitizer;
+    TableDataSanitizer *m_tableDataSanitizer;
+
+    // ODBC property export/import helpers
+    bool exportOdbcTable(QAxObject *object, const QString &objectName);
+    bool importOdbcTable(const QString &objectName);
+
+    // ODBC-specific sanitize/desanitize helpers
+    bool sanitizeOdbcProperty(const QString &objectName);
+    bool desanitizeOdbcProperty(const QString &objectName);
 
 };
 
