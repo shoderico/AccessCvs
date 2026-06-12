@@ -164,6 +164,51 @@ bool ObjectProcessor::deleteFromTempDir(const QString &objectName)
     return true;
 }
 
+// -----------------------------------------------------------------------------
+// removeDataFromSourceDir (post-UI-open HasData toggle OFF support, data-only)
+// -----------------------------------------------------------------------------
+// This is the off symmetric of ensureDataInTempDir (on toggle) + the dataCopyTargets dedicated path.
+// Purpose: when user opens UI (refreshItems has already placed .dat in SourceDir for a then-hasData InBoth item),
+//          then toggles HasData OFF in the tree, then selects the row and clicks Export, we must actively
+//          remove the .dat from SourceDir (tabledefs/ or odbctables/) so that the "data not managed" intent is
+//          reflected in the CVS working tree for this Export.
+//
+// Only the DataFile in SourceDir is deleted via deleteFile (safe if absent). Per explicit user decision
+// "leave stale", we do NOT delete the corresponding .dat / .dattmp from TempDir here. They are left behind
+// until the next full refreshItems (or manual sanitize). This keeps toggle-time behavior simple (no I/O in setData)
+// and matches the on-fix leave-stale choice.
+//
+// Why this is needed (root cause):
+// - setData(HasDataColumn) [objectmodel.cpp:210-222] does item->setHasData(false); setDifferent(Unchecked_OD); saveSettigs();
+//   (m_tableDataTargets is updated via the processor's updateSetting). No file I/O at all (B decision: keep toggle responsive).
+// - The 4 strict snapshots (targetsInBoth_Different etc.) require exact isDifferent() match at snapshot time.
+//   Unchecked_OD (0) matches only InBoth_NotSame (!= SameContents) and therefore never enters the InBoth copy blocks.
+// - InSourceDirOnly DeleteFromSourceDirCommand only covers items that are absent from Project (not our InBoth case).
+// - copyFromTempDirToSourceDir always does deleteAll + Data copy, but off items never reach any Copy or full-Delete command.
+// - ensure loop and dataCopyTargets only look at hasData==true.
+// - compareTempDir has a !hasData branch (treats stray data files as different) but it is diagnostic only.
+// Result (user symptom): "... SourceDirから .dat が消えないんだよね。"
+//
+// Approach (user confirmed C):
+// - Dedicated lightweight virtual (no-op default) + dataRemoveTargets map built from the *broad* ensureDataCandidates
+//   snapshot (which *does* capture the Unchecked InBoth_NotSame items).
+// - Filter exactly as dataCopyTargets but inverted: selected && !hasData && InBoth (Present in both).
+// - Call removeDataFromSourceDir (Source DataFile only) then same post-process trio used by dataCopyTargets
+//   (UpdateFileTimeInTempDirCommand + UpdateItemsExportDateCommand + UpdateItemsDifference(SameContents)).
+// - No changes to 4-bucket logic, getItems predicates, InBoth_NotSame block, or any structure-file handling.
+// - Temp data left (leave stale); protection against re-copy relies on the item not being present in any
+//   targetsInBoth_* or dataCopyTargets (hasData filter + Unchecked state).
+//
+// Called only for table processors that had hasData=true at refresh time and were toggled off post-open.
+// OdbcTable and TableDef both covered via inheritance (no override needed in TableObjectProcessor).
+// -----------------------------------------------------------------------------
+void ObjectProcessor::removeDataFromSourceDir(const QString &objectName)
+{
+    // Data-only removal from SourceDir. Structure files are never touched.
+    // Temp data files are left per "leave stale" decision (see long comment above).
+    deleteFile(SourceDir, DataFile, objectName);
+}
+
 bool ObjectProcessor::prepareItemCollection()
 {
     // in subclass, override this function

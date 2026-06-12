@@ -241,3 +241,27 @@ void TableObjectProcessor::loadTableDataTargets(Setting *setting)
     }
 }
 
+//-----------------------------------------------------------------------------
+// ensureDataInTempDir (follow-up for post-UI-open HasData toggle)
+//-----------------------------------------------------------------------------
+
+void TableObjectProcessor::ensureDataInTempDir(const QString &objectName)
+{
+    // Respect the current (post-toggle) TableData targets.
+    // This list was updated via setData(HasDataColumn) -> saveSettigs() -> updateSetting.
+    if (!m_tableDataTargets.contains(objectName))
+        return;
+
+    QString dataTempPath = filePath(TempDir, DataTempFile, objectName);
+    if (QFile(dataTempPath).exists())
+        return;  // already present (normal refresh path or previous ensure)
+
+    // Lightweight data-only path: no structure re-export, no full exportFromProjectToTempDir.
+    // exportTableData uses Access::ExportXML with DataTarget only.
+    // sanitizeTableData turns .dattmp into .dat (sanitized).
+    // Called from ObjectModel::executeExport for InBoth (and safely for InProjectOnly) items.
+    // User decision: B (defer to Export click), leave stale .dat on uncheck, force ensure for InBoth.
+    exportTableData(objectName, dataTempPath);
+    sanitizeTableData(objectName);
+}
+

@@ -15,6 +15,9 @@ public:
 
     virtual bool        isTargetObject(QAxObject *object) const;
 
+    virtual ObjectItem *createItemFromProject(QAxObject* object, QObject *parent = 0);
+    virtual ObjectItem *createItemFromSourceDir(QFileInfo &fileInfo, QObject *parent = 0);
+
     virtual bool        exportFromProjectToTempDir(QAxObject* object, const QString &objectName);
     virtual bool        importFromTempDirToProject(QAxObject* object, const QString &objectName);
 

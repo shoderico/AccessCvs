@@ -68,6 +68,29 @@ bool OdbcTableProcessor::isTargetObject(QAxObject *object) const
     return result;
 }
 
+ObjectItem *OdbcTableProcessor::createItemFromProject(QAxObject *object, QObject *parent)
+{
+    ObjectItem *item = TableObjectProcessor::createItemFromProject(object, parent);
+
+    DAO::TableDef *tableDef = dynamic_cast<DAO::TableDef*>(object);
+    if (tableDef)
+    {
+        item->setHasData( m_tableDataTargets.contains( item->name() ) );
+    }
+
+    return item;
+}
+
+ObjectItem *OdbcTableProcessor::createItemFromSourceDir(QFileInfo &fileInfo, QObject *parent)
+{
+    ObjectItem *item = TableObjectProcessor::createItemFromSourceDir(fileInfo, parent);
+    if (item)
+    {
+        item->setHasData( m_tableDataTargets.contains( item->name() ) );
+    }
+    return item;
+}
+
 bool OdbcTableProcessor::exportFromProjectToTempDir(QAxObject *object, const QString &objectName)
 {
     deleteAllFileFromTempDir(objectName);

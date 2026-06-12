@@ -72,6 +72,26 @@ public:
     virtual void updateSetting(QList<ObjectItem*> *items) { Q_UNUSED(items) }
 
     virtual void determineCodecForProject();
+
+    // Ensure table data file (.dat) exists in TempDir for hasData items that were toggled on
+    // after the initial UI open / refreshItems (which populates TempDir via ExportFromProjectToTempDirCommand).
+    // Called from ObjectModel::executeExport for InBoth_* buckets (and safely for InProjectOnly).
+    // Default no-op for non-table processors. TableObjectProcessor overrides with data-only logic
+    // (no structure re-export). See follow-up plan (user decision: B defer + leave stale + force InBoth).
+    virtual void ensureDataInTempDir(const QString &objectName) { Q_UNUSED(objectName) }
+
+    // Remove data artifacts (DataFile) from SourceDir for items whose hasData was toggled off after UI open.
+    // Only touches the DataFile in SourceDir; structure files (.xml etc.) and other artifacts are left untouched.
+    // TempDir data files (.dat / .dattmp) are intentionally NOT deleted here (per "leave stale" user decision for off case;
+    // they remain until next full refreshItems / sanitize). This is the off counterpart to ensureDataInTempDir + dataCopyTargets.
+    // Called from ObjectModel::executeExport dataRemoveTargets block for selected + !hasData + InBoth items.
+    // Default implementation (in .cpp) performs targeted DataFile removal from SourceDir only.
+    //
+    // User symptom (verbatim): 「UIが表示されたときは、HasDataがチェックオンだったテーブルに対して、HasDataチェックをオフにして、Export対象のチェックをオンにして、Exportを実行しても、SourceDirから .dat が消えないんだよね。」
+    // See off-bug-fix plan (user-selected option C: dedicated removeDataFromSourceDir for pure Data removal; B timing; leave stale in Temp; force InBoth; data-only, no structure side-effects).
+    // Symmetric to on-path; existing 4-bucket/getItems/InBoth_NotSame logic is untouched.
+    virtual void removeDataFromSourceDir(const QString &objectName);
+
 protected:
     enum DirectoryType
     {

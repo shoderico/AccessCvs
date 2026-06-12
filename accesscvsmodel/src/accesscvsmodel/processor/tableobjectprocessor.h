@@ -43,6 +43,13 @@ protected:
     // Load TableData targets from Setting (common for TableDef / OdbcTable)
     void loadTableDataTargets(Setting *setting);
 
+    // Ensure table data (.dat) exists in TempDir for items whose hasData was toggled on
+    // after UI open (refreshItems already ran ExportFromProjectToTempDirCommand).
+    // Called at executeExport time for InBoth_* (and safely for InProjectOnly) per user decision B.
+    // Only performs data export + sanitize (no structure re-export). Respects m_tableDataTargets.
+    // Stale .dat files on uncheck are intentionally left (user choice: leave).
+    void ensureDataInTempDir(const QString &objectName);
+
     QStringList m_tableDataTargets;   // common for TableDef / OdbcTable
 
     ComPtr<DAO::TableDefs> m_tableDefs;

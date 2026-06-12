@@ -128,6 +128,18 @@ End
 - `.dat` は `TableData` セクションで指定されたテーブルに対してのみ出力されます。
 - **構造（.xml）は Export のみ**で、Import 時には使用されません（Export-only）。
 
+**UI オープン後の HasData チェックボックス操作について**:
+UI を開いた時点で `refreshItems` により TempDir への初期エクスポートが行われます。
+その後、HasData 列のチェックボックスをオンにした場合、Export ボタン押下時に `ensureDataInTempDir` が自動で呼ばれ、該当 ODBC テーブルのデータ（.dat / .dattmp）が TempDir に補完されます。
+その後、通常の Copy 処理により SourceDir（`odbctables/`）へコピーされます。
+構造ファイル（.xml）の再出力は行われません（データ部分のみ）。
+
+チェックをオフにした場合（UI オープン時に hasData オンだった InBoth アイテムを後からオフにしたケース）:
+Export ボタン押下時に `removeDataFromSourceDir` が呼ばれ、SourceDir（`odbctables/`）の該当 .dat のみが削除されます。
+TempDir の .dat / .dattmp は削除されません（ユーザ選択: leave stale）。
+構造ファイル（.xml）は一切更新されません（データ部分のみのオフ）。
+（UI オープン時に hasData オフだったアイテムや、InSourceDirOnly のアイテムについては従来通りの動作です。）
+
 
 
 
@@ -153,6 +165,7 @@ End
 | 出力形式           | `.xml` + `.dat`                   | `.odbc` + `.xml` + `.dat`        |
 | テーブル構造出力   | 可能                              | 可能（Export のみ）               |
 | データ出力         | 可能（`.dat`、TableData 指定時） | 可能（`.dat`、TableData 指定時） |
+| データ出力対象指定（UI） | HasData列のチェックボックスで指定 | HasData列のチェックボックスで指定（対応済み） |
 | 構造の Import      | 可能                              | 不可（Export-only）               |
 
 ## 注意点
